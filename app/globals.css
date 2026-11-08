@@ -145,12 +145,13 @@ svg {
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .nav-menu {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 24px;
 }
 
 .nav-item {
@@ -158,6 +159,7 @@ svg {
   font-weight: 500;
   color: var(--text-secondary);
   transition: color var(--transition);
+  white-space: nowrap;
 }
 
 .nav-item:hover {
@@ -171,7 +173,44 @@ svg {
 .nav-cta-group {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+}
+
+.nav-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  transition: all var(--transition);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.nav-icon-discord {
+  background: var(--bg-gray);
+  color: #5865F2;
+  border: 1px solid var(--border-light);
+}
+
+.nav-icon-discord:hover {
+  background: #5865F2;
+  border-color: #5865F2;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(88, 101, 242, 0.28);
+}
+
+.nav-icon-itemsatis {
+  background: var(--itemsatis);
+  color: #ffffff;
+}
+
+.nav-icon-itemsatis:hover {
+  background: var(--itemsatis-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
 }
 
 .nav-btn-secondary {
