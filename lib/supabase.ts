@@ -26,3 +26,25 @@ export function createAdminSupabase() {
     },
   });
 }
+
+// 3. Kullanıcı Adı veya E-posta Girişini Supabase Formatına Dönüştürür
+export function resolveLoginIdentifier(identifier: string): string {
+  const clean = String(identifier || '').trim().toLowerCase();
+  if (!clean) return '';
+  if (clean.includes('@')) return clean;
+  // Kullanıcı adı girildiyse standart yerel domain ekle
+  const safeUsername = clean.replace(/[^a-z0-9._-]/g, '');
+  return `${safeUsername}@restrictedstudio.local`;
+}
+
+// 4. Kullanıcının Yönetici Olup Olmadığını Kontrol Eder
+export function isAdminIdentity(email?: string | null): boolean {
+  if (!email) return false;
+  const lower = email.toLowerCase();
+  const configuredAdmin = (process.env.ADMIN_EMAIL || 'emreador@gmail.com').toLowerCase();
+  return (
+    lower === configuredAdmin ||
+    lower === 'emreador@gmail.com' ||
+    lower === 'restricted@restrictedstudio.local'
+  );
+}

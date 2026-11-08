@@ -136,7 +136,9 @@ export default function DashboardPage() {
                 Yönetici Paneli
               </Link>
             )}
-            <span style={styles.userEmail}>{user?.email}</span>
+            <span style={styles.userEmail}>
+              {user?.user_metadata?.username || user?.email?.replace('@restrictedstudio.local', '')}
+            </span>
             <button onClick={handleLogout} style={styles.logoutBtn}>
               Çıkış Yap
             </button>

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAdminSupabase } from '@/lib/supabase';
+import { createAdminSupabase, isAdminIdentity } from '@/lib/supabase';
 import crypto from 'crypto';
 
 // Admin yetkilendirme kontrolü
@@ -13,13 +13,15 @@ async function verifyAdminAuth(request: Request) {
     return { authorized: true };
   }
 
-  // 2. Bearer token ile Admin Email kontrolü
+  // 2. Bearer token ile Admin Email veya Username kontrolü
   const authHeader = request.headers.get('authorization');
   if (authHeader) {
     const token = authHeader.replace(/^Bearer\s+/i, '');
     const { data: userData } = await adminSupabase.auth.getUser(token);
-    const adminEmail = process.env.ADMIN_EMAIL || 'emreador@gmail.com';
-    if (userData?.user?.email && userData.user.email.toLowerCase() === adminEmail.toLowerCase()) {
+    if (
+      userData?.user &&
+      (isAdminIdentity(userData.user.email) || Boolean(userData.user.user_metadata?.is_admin))
+    ) {
       return { authorized: true };
     }
   }

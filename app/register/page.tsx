@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { createClientSupabase } from '@/lib/supabase';
+import { createClientSupabase, resolveLoginIdentifier } from '@/lib/supabase';
 
 export default function RegisterPage() {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,9 +32,15 @@ export default function RegisterPage() {
     }
 
     try {
+      const resolvedEmail = resolveLoginIdentifier(identifier);
       const { data, error: authError } = await supabase.auth.signUp({
-        email: email.trim(),
+        email: resolvedEmail,
         password: password,
+        options: {
+          data: {
+            username: identifier.trim(),
+          },
+        },
       });
 
       if (authError) {
@@ -42,7 +48,6 @@ export default function RegisterPage() {
       }
 
       if (data?.user) {
-        // Oturum açılmışsa doğrudan dashboard'a yönlendir
         router.push('/dashboard');
         router.refresh();
       }
@@ -78,13 +83,13 @@ export default function RegisterPage() {
 
         <form onSubmit={handleRegister} style={styles.form}>
           <div style={styles.field}>
-            <label style={styles.label}>E-POSTA ADRESİ</label>
+            <label style={styles.label}>KULLANICI ADI VEYA E-POSTA</label>
             <input
-              type="email"
+              type="text"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="ornek@domain.com"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="Kullanıcı adı veya ornek@domain.com"
               style={styles.input}
             />
           </div>

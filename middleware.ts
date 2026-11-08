@@ -52,8 +52,15 @@ export async function middleware(request: NextRequest) {
       }
 
       if (user) {
-        const adminEmail = process.env.ADMIN_EMAIL || 'emreador@gmail.com';
-        if (user.email?.toLowerCase() !== adminEmail.toLowerCase()) {
+        const adminEmail = (process.env.ADMIN_EMAIL || 'emreador@gmail.com').toLowerCase();
+        const userEmail = user.email?.toLowerCase() || '';
+        const isAllowedAdmin =
+          userEmail === adminEmail ||
+          userEmail === 'emreador@gmail.com' ||
+          userEmail === 'restricted@restrictedstudio.local' ||
+          Boolean(user.user_metadata?.is_admin);
+
+        if (!isAllowedAdmin) {
           return NextResponse.redirect(new URL('/dashboard?error=unauthorized', request.url));
         }
       }

@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { createClientSupabase } from '@/lib/supabase';
+import { createClientSupabase, resolveLoginIdentifier } from '@/lib/supabase';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,13 +19,14 @@ export default function LoginPage() {
     setError(null);
 
     try {
+      const resolvedEmail = resolveLoginIdentifier(identifier);
       const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+        email: resolvedEmail,
         password: password,
       });
 
       if (authError) {
-        throw new Error(authError.message === 'Invalid login credentials' ? 'E-posta veya şifre hatalı.' : authError.message);
+        throw new Error(authError.message === 'Invalid login credentials' ? 'Kullanıcı adı/e-posta veya şifre hatalı.' : authError.message);
       }
 
       if (data?.user) {
@@ -64,13 +65,13 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} style={styles.form}>
           <div style={styles.field}>
-            <label style={styles.label}>E-POSTA ADRESİ</label>
+            <label style={styles.label}>KULLANICI ADI VEYA E-POSTA</label>
             <input
-              type="email"
+              type="text"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="ornek@domain.com"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="Restricted veya ornek@domain.com"
               style={styles.input}
             />
           </div>

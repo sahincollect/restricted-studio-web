@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
-import { createAdminSupabase } from '@/lib/supabase';
+import { createAdminSupabase, resolveLoginIdentifier } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const email = String(body.email || '').trim().toLowerCase();
+    const rawIdentifier = String(body.email || body.username || '').trim();
+    const email = resolveLoginIdentifier(rawIdentifier);
     const password = String(body.password || '');
     const hwid = String(body.hwid || '').trim();
     const productName = String(body.product_name || 'R-AI').trim();
@@ -12,7 +13,7 @@ export async function POST(request: Request) {
     // 1. Parametre kontrolü
     if (!email || !password) {
       return NextResponse.json(
-        { success: false, message: 'E-posta ve şifre zorunludur.' },
+        { success: false, message: 'Kullanıcı adı/e-posta ve şifre zorunludur.' },
         { status: 400 }
       );
     }

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAdminSupabase } from '@/lib/supabase';
+import { createAdminSupabase, isAdminIdentity } from '@/lib/supabase';
 
 export async function GET(request: Request) {
   try {
@@ -26,8 +26,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, message: licError.message }, { status: 500 });
     }
 
-    const adminEmail = (process.env.ADMIN_EMAIL || 'emreador@gmail.com').toLowerCase();
-    const isAdmin = userData.user.email?.toLowerCase() === adminEmail;
+    const isAdmin = isAdminIdentity(userData.user.email) || Boolean(userData.user.user_metadata?.is_admin);
 
     return NextResponse.json({
       success: true,
