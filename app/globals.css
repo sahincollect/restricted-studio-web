@@ -188,6 +188,27 @@ svg {
   background: #e8e8ed;
 }
 
+.nav-btn-portal {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #ffffff;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  background: #0d0d10;
+  border: 1px solid #0d0d10;
+  transition: all var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-btn-portal:hover {
+  background: #222228;
+  border-color: #222228;
+  transform: translateY(-1px);
+}
+
 .nav-btn-primary {
   font-size: 0.78rem;
   font-weight: 600;

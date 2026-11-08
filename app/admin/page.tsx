@@ -27,7 +27,8 @@ interface UserLicenseAdmin {
 
 export default function AdminPage() {
   const [token, setToken] = useState<string>('');
-  const [adminKey, setAdminKey] = useState<string>('RESTRICTED_ADMIN_SECRET_2026_V1');
+  const [adminKey, setAdminKey] = useState<string>('');
+  const [authorized, setAuthorized] = useState<boolean>(false);
   const [codes, setCodes] = useState<RedeemCode[]>([]);
   const [licenses, setLicenses] = useState<UserLicenseAdmin[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,6 +50,10 @@ export default function AdminPage() {
 
   const checkAdminAndLoad = async () => {
     setLoading(true);
+    const params = new URLSearchParams(window.location.search);
+    const urlKey = params.get('key') || '';
+    if (urlKey) setAdminKey(urlKey);
+
     const { data: sessionData } = await supabase.auth.getSession();
     const session = sessionData?.session;
 
@@ -56,26 +61,27 @@ export default function AdminPage() {
       setToken(session.access_token);
     }
 
-    await loadData(session?.access_token || '');
+    await loadData(session?.access_token || '', urlKey);
   };
 
-  const loadData = async (jwt: string) => {
+  const loadData = async (jwt: string, secretOverride?: string) => {
     try {
-      const headers: any = {
-        'x-admin-secret': adminKey,
-      };
-      if (jwt) {
-        headers['Authorization'] = `Bearer ${jwt}`;
-      }
+      const activeKey = secretOverride !== undefined ? secretOverride : adminKey;
+      const headers: any = {};
+      if (activeKey) headers['x-admin-secret'] = activeKey;
+      if (jwt) headers['Authorization'] = `Bearer ${jwt}`;
 
       const res = await fetch('/api/admin', { headers });
       const data = await res.json();
 
-      if (data.success) {
+      if (res.ok && data.success) {
+        setAuthorized(true);
         setCodes(data.codes || []);
         setLicenses(data.licenses || []);
+        setActionMsg(null);
       } else {
-        setActionMsg(data.message || 'Veriler alınamadı.');
+        setAuthorized(false);
+        setActionMsg(data.message || 'Yetkisiz erişim.');
       }
     } catch (err: any) {
       setActionMsg('Bağlantı hatası: ' + err.message);
@@ -207,6 +213,36 @@ export default function AdminPage() {
           </div>
         )}
 
+        {!loading && !authorized ? (
+          <div style={{ ...styles.card, maxWidth: '460px', margin: '48px auto' }}>
+            <h2 style={{ ...styles.cardTitle, marginBottom: '8px' }}>Yönetici Doğrulaması Gerekli</h2>
+            <p style={{ ...styles.cardSubtitle, marginBottom: '20px' }}>
+              Yönetici e-posta adresinizle (`emreador@gmail.com`) giriş yapın veya Admin Gizli Anahtarını (Secret Key) girin.
+            </p>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                loadData(token, adminKey);
+              }}
+              style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
+            >
+              <input
+                type="password"
+                value={adminKey}
+                onChange={(e) => setAdminKey(e.target.value)}
+                placeholder="ADMIN_SECRET_KEY giriniz..."
+                style={styles.input}
+              />
+              <button type="submit" style={styles.generateBtn}>
+                Doğrula ve Giriş Yap
+              </button>
+              <Link href="/login" style={{ ...styles.backBtn, textAlign: 'center', marginTop: '4px' }}>
+                Yönetici Hesabıyla Giriş Yap (/login)
+              </Link>
+            </form>
+          </div>
+        ) : (
+          <>
         {/* 1. TOPLU KOD ÜRETİCİ */}
         <div style={styles.card}>
           <div style={styles.cardHeader}>
@@ -380,6 +416,8 @@ export default function AdminPage() {
             </table>
           </div>
         </div>
+          </>
+        )}
       </main>
     </div>
   );

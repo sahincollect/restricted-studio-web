@@ -17,6 +17,7 @@ interface UserLicense {
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [token, setToken] = useState<string>('');
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [licenses, setLicenses] = useState<UserLicense[]>([]);
   const [loading, setLoading] = useState(true);
   const [redeemCode, setRedeemCode] = useState('');
@@ -43,15 +44,17 @@ export default function DashboardPage() {
     setUser(session.user);
     setToken(session.access_token);
 
-    // Kullanıcının lisanslarını getir
-    const { data: licenseData, error } = await supabase
-      .from('user_licenses')
-      .select('*')
-      .eq('user_id', session.user.id)
-      .order('created_at', { ascending: false });
-
-    if (!error && licenseData) {
-      setLicenses(licenseData as UserLicense[]);
+    try {
+      const res = await fetch('/api/licenses', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setLicenses(data.licenses || []);
+        setIsAdmin(Boolean(data.isAdmin));
+      }
+    } catch {
+      // Fallback
     }
     setLoading(false);
   };
@@ -116,6 +119,23 @@ export default function DashboardPage() {
             RESTRICTED STUDIO
           </Link>
           <div style={styles.userSection}>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  color: '#ffffff',
+                  backgroundColor: 'rgba(254, 0, 0, 0.16)',
+                  border: '1px solid rgba(254, 0, 0, 0.4)',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  textDecoration: 'none',
+                }}
+              >
+                Yönetici Paneli
+              </Link>
+            )}
             <span style={styles.userEmail}>{user?.email}</span>
             <button onClick={handleLogout} style={styles.logoutBtn}>
               Çıkış Yap

@@ -35,7 +35,14 @@ export async function middleware(request: NextRequest) {
 
     const path = request.nextUrl.pathname;
 
-    // /admin koruması: URL key varsa direkt geçir
+    // 1. /dashboard koruması: Oturum yoksa /login'e yönlendir
+    if (path.startsWith('/dashboard') && !user) {
+      const redirectUrl = new URL('/login', request.url);
+      redirectUrl.searchParams.set('redirect', path);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    // 2. /admin koruması: URL key varsa geçir, yoksa admin email oturumu ara
     if (path.startsWith('/admin')) {
       const adminKey = request.nextUrl.searchParams.get('key');
       const expectedSecret = process.env.ADMIN_SECRET_KEY || 'RESTRICTED_ADMIN_SECRET_2026_V1';

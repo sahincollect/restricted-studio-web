@@ -18,8 +18,8 @@ async function verifyAdminAuth(request: Request) {
   if (authHeader) {
     const token = authHeader.replace(/^Bearer\s+/i, '');
     const { data: userData } = await adminSupabase.auth.getUser(token);
-    const adminEmail = process.env.ADMIN_EMAIL;
-    if (userData?.user?.email && adminEmail && userData.user.email.toLowerCase() === adminEmail.toLowerCase()) {
+    const adminEmail = process.env.ADMIN_EMAIL || 'emreador@gmail.com';
+    if (userData?.user?.email && userData.user.email.toLowerCase() === adminEmail.toLowerCase()) {
       return { authorized: true };
     }
   }

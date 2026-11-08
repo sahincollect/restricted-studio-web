@@ -153,9 +153,19 @@ export default function HomePage() {
       portalBtn.id = 'navPortalBtn';
       portalBtn.href = '/dashboard';
       portalBtn.className = 'nav-btn-portal';
-      portalBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right:6px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Müşteri Portalı';
-      portalBtn.style.cssText = 'display:inline-flex;align-items:center;padding:7px 15px;border-radius:99px;font-size:12.5px;font-weight:700;color:#ffffff;background:rgba(254,0,0,0.18);border:1px solid rgba(254,0,0,0.45);text-decoration:none;transition:all 0.2s;';
+      portalBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right:6px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Müşteri Portalı';
       navCta.insertBefore(portalBtn, navCta.firstChild);
+    }
+
+    const mobileActions = document.querySelector('.mobile-nav-actions');
+    if (mobileActions && !document.getElementById('mobilePortalBtn')) {
+      const mBtn = document.createElement('a');
+      mBtn.id = 'mobilePortalBtn';
+      mBtn.href = '/dashboard';
+      mBtn.className = 'btn btn-full';
+      mBtn.style.cssText = 'background:#0d0d10;color:#ffffff;margin-bottom:8px;';
+      mBtn.textContent = 'Müşteri Portalı & Lisanslarım';
+      mobileActions.insertBefore(mBtn, mobileActions.firstChild);
     }
   }, []);
 

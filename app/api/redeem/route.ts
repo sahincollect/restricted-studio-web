@@ -43,8 +43,8 @@ export async function POST(request: Request) {
     const durationDays = Number(codeData.duration_days) || 30;
     const productName = codeData.product_name || 'R-AI';
 
-    // 3. Kod durumunu is_used = true olarak güncelle
-    const { error: updateCodeError } = await adminSupabase
+    // 3. Kod durumunu is_used = true olarak güncelle (Atomik kontrol: dönen satır sayısını doğrula)
+    const { data: updatedRows, error: updateCodeError } = await adminSupabase
       .from('redeem_codes')
       .update({
         is_used: true,
@@ -52,10 +52,11 @@ export async function POST(request: Request) {
         used_at: new Date().toISOString(),
       })
       .eq('id', codeData.id)
-      .eq('is_used', false); // Çift kullanımı önlemek için atomik kontrol
+      .eq('is_used', false)
+      .select('id');
 
-    if (updateCodeError) {
-      return NextResponse.json({ success: false, message: 'Kod kullanımı sırasında bir çakışma oluştu.' }, { status: 500 });
+    if (updateCodeError || !updatedRows || updatedRows.length === 0) {
+      return NextResponse.json({ success: false, message: 'Bu kod az önce kullanıldı veya işlem çakışması oluştu.' }, { status: 409 });
     }
 
     // 4. Kullanıcının mevcut lisansını kontrol et (Varsa süresini uzat, yoksa yeni ekle)
