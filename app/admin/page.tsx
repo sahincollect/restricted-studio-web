@@ -27,7 +27,10 @@ interface UserLicenseAdmin {
 
 export default function AdminPage() {
   const [token, setToken] = useState<string>('');
-  const [adminKey, setAdminKey] = useState<string>('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [loginBusy, setLoginBusy] = useState(false);
   const [authorized, setAuthorized] = useState<boolean>(false);
   const [codes, setCodes] = useState<RedeemCode[]>([]);
   const [licenses, setLicenses] = useState<UserLicenseAdmin[]>([]);
@@ -50,9 +53,6 @@ export default function AdminPage() {
 
   const checkAdminAndLoad = async () => {
     setLoading(true);
-    const urlKey = sessionStorage.getItem('rs_admin_key') || '';
-    if (urlKey) setAdminKey(urlKey);
-
     const { data: sessionData } = await supabase.auth.getSession();
     const session = sessionData?.session;
 
@@ -60,14 +60,12 @@ export default function AdminPage() {
       setToken(session.access_token);
     }
 
-    await loadData(session?.access_token || '', urlKey);
+    await loadData(session?.access_token || '');
   };
 
-  const loadData = async (jwt: string, secretOverride?: string) => {
+  const loadData = async (jwt: string) => {
     try {
-      const activeKey = secretOverride !== undefined ? secretOverride : adminKey;
       const headers: any = {};
-      if (activeKey) headers['x-admin-secret'] = activeKey;
       if (jwt) headers['Authorization'] = `Bearer ${jwt}`;
 
       const res = await fetch('/api/admin', { headers });
@@ -75,14 +73,12 @@ export default function AdminPage() {
 
       if (res.ok && data.success) {
         setAuthorized(true);
-        if (activeKey) sessionStorage.setItem('rs_admin_key', activeKey);
         setCodes(data.codes || []);
         setLicenses(data.licenses || []);
         setActionMsg(null);
       } else {
         setAuthorized(false);
-        sessionStorage.removeItem('rs_admin_key');
-        setActionMsg(activeKey ? 'Gizli anahtar hatalı.' : null);
+        setActionMsg(null);
       }
     } catch (err: any) {
       setActionMsg('Bağlantı hatası: ' + err.message);
@@ -91,6 +87,40 @@ export default function AdminPage() {
     }
   };
 
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginBusy(true);
+    setLoginError(null);
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username.trim(), password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        setLoginError(data.message || 'Giriş başarısız.');
+        setPassword('');
+        return;
+      }
+      setPassword('');
+      setLoading(true);
+      await loadData(token);
+    } catch {
+      setLoginError('Bağlantı hatası. Lütfen tekrar deneyin.');
+    } finally {
+      setLoginBusy(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await fetch('/api/admin/login', { method: 'DELETE' }).catch(() => undefined);
+    setAuthorized(false);
+    setCodes([]);
+    setLicenses([]);
+    setUsername('');
+    setPassword('');
+  };
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
     setGenLoading(true);
@@ -101,7 +131,6 @@ export default function AdminPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-secret': adminKey,
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
@@ -134,7 +163,6 @@ export default function AdminPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-secret': adminKey,
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
@@ -160,7 +188,6 @@ export default function AdminPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-secret': adminKey,
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
@@ -203,6 +230,11 @@ export default function AdminPage() {
             <Link href="/dashboard" style={styles.backBtn}>
               Müşteri Paneli
             </Link>
+            {authorized && (
+              <button type="button" onClick={handleLogout} style={styles.backBtn}>
+                Çıkış Yap
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -234,60 +266,60 @@ export default function AdminPage() {
           <div
             style={{
               ...styles.card,
-              maxWidth: '420px',
-              margin: '72px auto',
-              textAlign: 'center',
-              padding: '36px 32px',
-              boxShadow: '0 24px 70px rgba(0,0,0,0.6), 0 0 0 1px rgba(254,0,0,0.12)',
+              maxWidth: '400px',
+              margin: '80px auto',
+              padding: '36px 32px 28px',
+              borderTop: '2px solid #dc2626',
+              boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
             }}
           >
-            <div
-              style={{
-                width: 52,
-                height: 52,
-                margin: '0 auto 18px',
-                borderRadius: 14,
-                background: 'rgba(254,0,0,0.12)',
-                border: '1px solid rgba(254,0,0,0.35)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fe0000" strokeWidth="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
+            <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', color: '#ef4444', marginBottom: '10px' }}>
+              RESTRICTED STUDIO
             </div>
-            <h2 style={{ ...styles.cardTitle, fontSize: '20px', marginBottom: '6px' }}>Yönetici Girişi</h2>
-            <p style={{ ...styles.cardSubtitle, marginBottom: '22px' }}>
-              Gizli anahtarınızı girin veya yönetici hesabınızla giriş yapın.
+            <h2 style={{ ...styles.cardTitle, fontSize: '22px', fontWeight: 600, marginBottom: '6px' }}>Yönetici Girişi</h2>
+            <p style={{ ...styles.cardSubtitle, marginBottom: '24px' }}>
+              Bu alan yetkili personele aittir. Tüm erişimler denetlenir.
             </p>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setLoading(true);
-                loadData(token, adminKey.trim());
-              }}
-              style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
-            >
-              <input
-                type="password"
-                value={adminKey}
-                onChange={(e) => setAdminKey(e.target.value)}
-                placeholder="Admin gizli anahtarı"
-                autoFocus
-                style={{ ...styles.input, textAlign: 'center' }}
-              />
-              <button type="submit" disabled={!adminKey.trim()} style={styles.generateBtn}>
-                Doğrula ve Giriş Yap
+            <form onSubmit={handleLogin} autoComplete="off" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label htmlFor="admin-username" style={styles.label}>KULLANICI ADI</label>
+                <input
+                  id="admin-username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  autoComplete="username"
+                  autoFocus
+                  required
+                  style={styles.input}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label htmlFor="admin-password" style={styles.label}>PAROLA</label>
+                <input
+                  id="admin-password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                  style={styles.input}
+                />
+              </div>
+              {loginError && (
+                <div role="alert" style={{ fontSize: '12.5px', color: '#fca5a5', borderLeft: '2px solid #dc2626', paddingLeft: '10px' }}>
+                  {loginError}
+                </div>
+              )}
+              <button
+                type="submit"
+                disabled={loginBusy || !username.trim() || !password}
+                style={{ ...styles.generateBtn, opacity: loginBusy || !username.trim() || !password ? 0.6 : 1 }}
+              >
+                {loginBusy ? 'Doğrulanıyor...' : 'Giriş Yap'}
               </button>
-              <Link href="/login?redirect=/admin" style={{ ...styles.backBtn, textAlign: 'center', marginTop: '4px' }}>
-                Yönetici Hesabıyla Giriş Yap
-              </Link>
             </form>
-          </div>
-        ) : (
+          </div>        ) : (
           <>
         {/* 1. TOPLU KOD ÜRETİCİ */}
         <div style={styles.card}>

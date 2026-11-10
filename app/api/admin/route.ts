@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createAdminSupabase, isAdminUser } from '@/lib/supabase';
 import { verifyAdminSecret } from '@/lib/admin-secret';
+import { hasValidAdminSession } from '@/lib/admin-session';
 import crypto from 'crypto';
 
 const ALLOWED_PRODUCTS = ['R-AI', 'RESTRICTED-FIVEM'];
@@ -8,6 +9,11 @@ const ALLOWED_DURATIONS = [30, 90, 365, 9999];
 
 // Admin yetkilendirme kontrolü
 async function verifyAdminAuth(request: Request) {
+  // 0. Kullanıcı adı/parola ile açılmış imzalı oturum çerezi
+  if (hasValidAdminSession(request)) {
+    return { authorized: true };
+  }
+
   // 1. Header'da ADMIN_SECRET_KEY kontrolü (ortam değişkeni zorunlu, varsayılan değer yok)
   if (verifyAdminSecret(request.headers.get('x-admin-secret'))) {
     return { authorized: true };
