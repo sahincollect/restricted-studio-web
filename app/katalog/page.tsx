@@ -25,7 +25,7 @@ const CATEGORIES = [
 
 const DISCORD_INVITE = '/discord';
 const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
-const ITEMSATIS_LISTING_URL = 'https://www.itemsatis.com/fivem/sunucunuza-ozel-bulunamayan-script-mlo-5451486.html';
+const ITEMSATIS_LISTING_URL = 'https://www.itemsatis.com/p/saintstudio';
 const PAGE_SIZE = 60;
 
 export default function CatalogPage() {
@@ -34,6 +34,7 @@ export default function CatalogPage() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [copiedItem, setCopiedItem] = useState<CatalogItem | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showGuideModal, setShowGuideModal] = useState(true);
 
   // Compute category counts across all 6,400+ items
   const categoryCounts = useMemo(() => {
@@ -72,7 +73,7 @@ export default function CatalogPage() {
   }, [filteredItems, visibleCount]);
 
   const handleDemand = (item: CatalogItem) => {
-    const textToCopy = `Merhaba Restricted Studio ekibi, İtemsatış üzerinden şu paketi teslim almak istiyorum:\n[${item.id}] ${item.title}`;
+    const textToCopy = `Merhaba Restricted Studio ekibi, İtemsatış üzerinden şu paket hakkında bilgi almak ve sipariş vermek istiyorum:\n[${item.id}] ${item.title}\nPaket stok, sürüm ve fiyat durumunu teyit edebilir misiniz?`;
 
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(textToCopy);
@@ -80,9 +81,9 @@ export default function CatalogPage() {
 
     setCopiedItem(item);
 
-    // Redirect to İtemsatış listing as requested
+    // Redirect to İtemsatış store
     setTimeout(() => {
-      window.open(ITEMSATIS_LISTING_URL, '_blank', 'noopener,noreferrer');
+      window.open(ITEMSATIS_URL, '_blank', 'noopener,noreferrer');
     }, 600);
 
     setTimeout(() => {
@@ -210,13 +211,35 @@ export default function CatalogPage() {
             Restricted Studio özel arşivimizdeki binlerce popüler scripti, MLO mekanı, araç paketini ve kıyafeti tek bir katalogda topladık. Aradığınız paketi arama çubuğundan bulun, yeşil <strong>Teslim Al</strong> butonuna basarak İtemsatış güvencesiyle güvenle sipariş verin.
           </p>
 
-          <div className="catalog-highlight-note">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0 }}>
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-            <span>
-              <strong>İtemsatış &amp; Güvenli Teslimat:</strong> Teslim Al butonuna tıkladığınızda paket adı otomatik olarak panonuza kopyalanır ve resmi İtemsatış mağazamıza aktarılırsınız. Paketiniz arka kapılardan ve kilitlerden arındırılmış temiz açık kaynak kod olarak teslim edilir.
-            </span>
+          <div className="catalog-highlight-note" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: '260px' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0 }}>
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              <span>
+                <strong>İtemsatış &amp; Güvenli Teslimat:</strong> Teslim Al butonuna tıkladığınızda paket adı panonuza kopyalanır ve mağazamıza aktarılırsınız. İlanları doğrudan satın almayınız; satıcıya soru sorarak sipariş veriniz.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowGuideModal(true)}
+              style={{
+                backgroundColor: 'rgba(0, 113, 227, 0.12)',
+                color: '#0071e3',
+                border: '1px solid rgba(0, 113, 227, 0.3)',
+                padding: '7px 14px',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <span>ℹ️ Sipariş Yönergeleri</span>
+            </button>
           </div>
         </div>
       </section>
@@ -464,13 +487,13 @@ export default function CatalogPage() {
           </p>
           <div className="catalog-cta-btn-row">
             <a
-              href={ITEMSATIS_LISTING_URL}
+              href={ITEMSATIS_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-itemsatis"
               style={{ padding: '12px 28px' }}
             >
-              İtemsatış İlanından Sipariş Ver ↗
+              İtemsatış Mağazasından İletişime Geç ↗
             </a>
             <Link
               href={DISCORD_INVITE}
@@ -537,6 +560,170 @@ export default function CatalogPage() {
         </div>
       </footer>
 
+      {/* =====================================================================
+           ORDER INSTRUCTIONS MODAL (POP-UP)
+           ===================================================================== */}
+      {showGuideModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="guide-modal-title"
+          onClick={() => setShowGuideModal(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            backgroundColor: 'rgba(5, 5, 8, 0.85)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '18px',
+            overscrollBehavior: 'contain',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '100%',
+              maxWidth: '560px',
+              backgroundColor: '#0d0e15',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              borderRadius: '24px',
+              padding: '32px 28px',
+              boxShadow: '0 30px 90px rgba(0, 0, 0, 0.95), 0 0 40px rgba(0, 113, 227, 0.15)',
+              position: 'relative',
+              color: '#ffffff',
+              fontFamily: 'var(--font-sans)',
+              maxHeight: '92vh',
+              overflowY: 'auto',
+            }}
+          >
+            {/* Close button (X) */}
+            <button
+              type="button"
+              onClick={() => setShowGuideModal(false)}
+              aria-label="Kapat"
+              style={{
+                position: 'absolute',
+                top: '20px',
+                right: '20px',
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: '#a1a1aa',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+
+            {/* Badge */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '999px', backgroundColor: 'rgba(227, 0, 0, 0.12)', border: '1px solid rgba(227, 0, 0, 0.3)', color: '#ff6b6b', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '16px' }}>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#e30000', boxShadow: '0 0 8px #e30000' }} />
+              ÖNEMLİ SİPARİŞ YÖNERGESİ
+            </div>
+
+            {/* Title */}
+            <h2 id="guide-modal-title" style={{ fontSize: '22px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em', marginBottom: '12px', lineHeight: 1.25 }}>
+              Paket Siparişi Vermeden Önce Lütfen Okuyun
+            </h2>
+
+            {/* Warning Alert Box */}
+            <div style={{ backgroundColor: 'rgba(227, 0, 0, 0.08)', border: '1px solid rgba(227, 0, 0, 0.22)', borderRadius: '14px', padding: '14px 16px', marginBottom: '20px', fontSize: '13px', lineHeight: 1.55, color: '#fca5a5' }}>
+              <strong>⚠️ Doğrudan İlan Satın Alımı Yapmayınız:</strong> İtemsatış üzerindeki genel ilan fiyatı sembolik taban fiyattır. Kataloğumuzdaki 6.400+ paketin dosya boyutu, lisansı ve teslimat süreci özeldir. Teyitsiz yapılan alımlar teslim edilememektedir.
+            </div>
+
+            {/* Step by Step Guide */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: 'rgba(0, 113, 227, 0.2)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 800, flexShrink: 0 }}>1</div>
+                <div style={{ fontSize: '13px', color: '#d4d4d8', lineHeight: 1.5 }}>
+                  <strong style={{ color: '#ffffff' }}>Paket Adını Kopyalayın:</strong> İstediğiniz paketin altındaki <em style={{ color: '#10b981' }}>"Teslim Al"</em> butonuna tıklayın. Paket adı ve kodu otomatik olarak panonuza kopyalanır.
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: 'rgba(0, 113, 227, 0.2)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 800, flexShrink: 0 }}>2</div>
+                <div style={{ fontSize: '13px', color: '#d4d4d8', lineHeight: 1.5 }}>
+                  <strong style={{ color: '#ffffff' }}>Satıcıyla İletişime Geçin:</strong> Aşağıdaki butona basarak İtemsatış mağazamıza gidin ve <strong style={{ color: '#38bdf8' }}>"Satıcıya Soru Sor / İletişime Geç"</strong> alanından kopyaladığınız paket adını bize mesaj atın.
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: 'rgba(0, 113, 227, 0.2)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 800, flexShrink: 0 }}>3</div>
+                <div style={{ fontSize: '13px', color: '#d4d4d8', lineHeight: 1.5 }}>
+                  <strong style={{ color: '#ffffff' }}>Teyit ve Güvenli Teslimat:</strong> Ekibimiz paketin teknik durumunu kontrol edip onay verdikten sonra İtemsatış güvencesiyle siparişinizi açalım ve hızlıca teslim edelim.
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <a
+                href={ITEMSATIS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  backgroundColor: '#0071e3',
+                  color: '#ffffff',
+                  padding: '13px 20px',
+                  borderRadius: '12px',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  boxShadow: '0 4px 18px rgba(0, 113, 227, 0.4)',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <path d="M16 10a4 4 0 0 1-8 0" />
+                </svg>
+                <span>İtemsatış Mağazasına Git (Linke Git)</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <path d="M7 17L17 7M17 7H8M17 7V16" />
+                </svg>
+              </a>
+
+              <button
+                type="button"
+                onClick={() => setShowGuideModal(false)}
+                style={{
+                  width: '100%',
+                  backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                  color: '#d4d4d8',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  padding: '11px 20px',
+                  borderRadius: '12px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+              >
+                Yönergeleri Anladım, Kataloğu İncele
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Copy toast */}
       {copiedItem && (
         <div className="catalog-toast">
@@ -544,7 +731,7 @@ export default function CatalogPage() {
             <polyline points="20 6 9 17 4 12" />
           </svg>
           <span>
-            <strong>{copiedItem.title}</strong> panoya kopyalandı! İtemsatış mağazamıza aktarılıyorsunuz...
+            <strong>{copiedItem.title}</strong> panoya kopyalandı! İtemsatış mağazasından satıcıya iletebilirsiniz.
           </span>
         </div>
       )}
