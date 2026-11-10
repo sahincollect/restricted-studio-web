@@ -69,7 +69,7 @@ export default function CatalogPage() {
   };
 
   const SAMPLE_INQUIRY =
-    'Merhaba Restricted Studio ekibi, İtemsatış üzerinden paket almak için satıcıya soru soruyorum:\nPaket Adı: [İstediğiniz Paketi Buraya Yazın]\nPaketin stok durumu, güncelliği ve fiyat teyidini yapabilir misiniz?';
+    'Merhaba, İtemsatış üzerinden aşağıdaki paketi almak istiyorum:\\nPaket: [Paket adı]\\nStok, güncellik ve fiyat teyidi alabilir miyim?';
 
   const handleCopyTemplate = () => {
     if (navigator?.clipboard?.writeText) {
@@ -606,7 +606,7 @@ export default function CatalogPage() {
       </footer>
 
       {/* =====================================================================
-           ORDER INSTRUCTIONS MODAL (POP-UP) — ENHANCED YAKLAŞIM 3
+           ORDER GUIDE MODAL
            ===================================================================== */}
       {showGuideModal && (
         <div
@@ -618,9 +618,9 @@ export default function CatalogPage() {
             position: 'fixed',
             inset: 0,
             zIndex: 9999,
-            backgroundColor: 'rgba(5, 5, 8, 0.85)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
+            backgroundColor: 'rgba(5, 5, 8, 0.8)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -632,223 +632,136 @@ export default function CatalogPage() {
             onClick={(e) => e.stopPropagation()}
             style={{
               width: '100%',
-              maxWidth: '620px',
-              backgroundColor: '#0c0d14',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: '24px',
-              padding: '30px 26px',
-              boxShadow: '0 30px 90px rgba(0, 0, 0, 0.95), 0 0 40px rgba(0, 113, 227, 0.15)',
+              maxWidth: '480px',
+              backgroundColor: '#0a0a0c',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderTop: '2px solid #dc2626',
+              borderRadius: '16px',
+              padding: '28px 28px 22px',
+              boxShadow: '0 24px 64px rgba(0, 0, 0, 0.8)',
               position: 'relative',
-              color: '#ffffff',
+              color: '#fafafa',
               fontFamily: 'var(--font-sans)',
               maxHeight: '92vh',
               overflowY: 'auto',
             }}
           >
-            {/* Close button (X) */}
             <button
               type="button"
               onClick={handleCloseGuideModal}
               aria-label="Kapat"
               style={{
                 position: 'absolute',
-                top: '18px',
-                right: '18px',
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                color: '#a1a1aa',
+                top: '16px',
+                right: '16px',
+                width: '28px',
+                height: '28px',
+                borderRadius: '8px',
+                backgroundColor: 'transparent',
+                border: 'none',
+                color: '#71717a',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                transition: 'all 0.2s',
               }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
 
-            {/* Top Badge */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '999px', backgroundColor: 'rgba(227, 0, 0, 0.12)', border: '1px solid rgba(227, 0, 0, 0.3)', color: '#ff6b6b', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '14px' }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#e30000', boxShadow: '0 0 8px #e30000' }} />
-              ÖNEMLİ SİPARİŞ YÖNERGESİ
-            </div>
-
-            {/* Headline */}
-            <h2 id="guide-modal-title" style={{ fontSize: '21px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em', marginBottom: '10px', lineHeight: 1.25 }}>
-              Paket Siparişi Vermeden Önce Lütfen Okuyun
+            <h2 id="guide-modal-title" style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.01em', margin: '0 0 6px' }}>
+              Sipariş Yönergesi
             </h2>
+            <p style={{ fontSize: '13px', color: '#a1a1aa', margin: '0 0 22px', lineHeight: 1.5 }}>
+              Siparişiniz üç adımda tamamlanır.
+            </p>
 
-            {/* Critical Warning Alert Box */}
-            <div style={{ backgroundColor: 'rgba(227, 0, 0, 0.08)', border: '1px solid rgba(227, 0, 0, 0.25)', borderRadius: '14px', padding: '12px 16px', marginBottom: '18px', fontSize: '12.5px', lineHeight: 1.55, color: '#fca5a5' }}>
-              <strong>⚠️ Doğrudan İlan Satın Alımı Yapmayınız:</strong> İtemsatış üzerindeki genel ilan fiyatı sembolik taban fiyattır. Kataloğumuzdaki 6.400+ paketin her biri için dosya boyutu, kurulum ve teknik altyapı farklıdır. Satıcıyla mesaj üzerinden teyit almadan doğrudan satın alınan ilanlar işleme alınamamaktadır.
-            </div>
+            <ol style={{ listStyle: 'none', margin: '0 0 20px', padding: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {[
+                { n: '1', t: 'Paketini Belirle', d: 'Katalogdan paketi seçin ve "Teslim Al" ile adını kopyalayın.' },
+                { n: '2', t: 'İtemsatış\'tan Yaz', d: 'Mağazamızda "Satıcıya Soru Sor" alanından aşağıdaki mesajı gönderin.' },
+                { n: '3', t: 'Anında Teslim Al', d: 'Ekibimiz teyit edince size özel sipariş açılır; dosyanızı hemen alırsınız.' },
+              ].map((s) => (
+                <li key={s.n} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                  <span style={{ flexShrink: 0, width: '24px', height: '24px', borderRadius: '50%', border: '1px solid rgba(220, 38, 38, 0.6)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600 }}>
+                    {s.n}
+                  </span>
+                  <div>
+                    <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '2px' }}>{s.t}</div>
+                    <div style={{ fontSize: '12.5px', color: '#a1a1aa', lineHeight: 1.5 }}>{s.d}</div>
+                  </div>
+                </li>
+              ))}
+            </ol>
 
-            {/* Visual Process Flowchart (3 Steps) */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '10px', marginBottom: '18px' }}>
-              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '12px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ width: '22px', height: '22px', borderRadius: '6px', backgroundColor: 'rgba(0, 113, 227, 0.2)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 800 }}>1</div>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff' }}>Paketi Belirleyin</span>
-                </div>
-                <p style={{ fontSize: '11.5px', color: '#a1a1aa', margin: 0, lineHeight: 1.45 }}>
-                  Katalogdan istediğiniz paketin <em>"Teslim Al"</em> butonuna basın; adı ve ID kodu otomatik kopyalanır.
-                </p>
-              </div>
+            <button
+              type="button"
+              onClick={handleCopyTemplate}
+              aria-label="Mesaj şablonunu kopyala"
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '10px',
+                padding: '12px 14px',
+                marginBottom: '14px',
+                cursor: 'pointer',
+                color: '#d4d4d8',
+              }}
+            >
+              <span style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 600, letterSpacing: '0.04em', color: templateCopied ? '#34d399' : '#ef4444', marginBottom: '6px' }}>
+                <span>MESAJ ŞABLONU</span>
+                <span>{templateCopied ? 'Kopyalandı' : 'Kopyalamak için tıklayın'}</span>
+              </span>
+              <span style={{ display: 'block', fontSize: '12.5px', lineHeight: 1.5, whiteSpace: 'pre-line' }}>
+                {SAMPLE_INQUIRY}
+              </span>
+            </button>
 
-              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '12px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ width: '22px', height: '22px', borderRadius: '6px', backgroundColor: 'rgba(0, 113, 227, 0.2)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 800 }}>2</div>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff' }}>Satıcıya Soru Sorun</span>
-                </div>
-                <p style={{ fontSize: '11.5px', color: '#a1a1aa', margin: 0, lineHeight: 1.45 }}>
-                  Aşağıdaki butondan mağazamıza gidip <strong>"Satıcıya Soru Sor"</strong> alanından kopyaladığınız metni iletin.
-                </p>
-              </div>
+            <p style={{ fontSize: '12px', color: '#a1a1aa', lineHeight: 1.55, margin: '0 0 18px', paddingLeft: '10px', borderLeft: '2px solid rgba(220, 38, 38, 0.7)' }}>
+              <strong style={{ color: '#e4e4e7', fontWeight: 600 }}>Not:</strong> 30 TL'lik temel ilan sembolik fiyattır. Paketin fiyatı ve teslimatı satıcı teyidinden sonra netleşir; teyitsiz satın alımlar işleme alınamaz.
+            </p>
 
-              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '12px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ width: '22px', height: '22px', borderRadius: '6px', backgroundColor: 'rgba(16, 185, 129, 0.2)', color: '#34d399', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 800 }}>3</div>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff' }}>Teyit &amp; Teslimat</span>
-                </div>
-                <p style={{ fontSize: '11.5px', color: '#a1a1aa', margin: 0, lineHeight: 1.45 }}>
-                  Ekibimiz güncelliği teyit edip onay verince adınıza açılan güvenli sipariş üzerinden dosyanızı hemen teslim alın.
-                </p>
-              </div>
-            </div>
+            <a
+              href={ITEMSATIS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'block',
+                textAlign: 'center',
+                backgroundColor: '#dc2626',
+                color: '#ffffff',
+                padding: '12px 20px',
+                borderRadius: '10px',
+                fontSize: '13.5px',
+                fontWeight: 600,
+                textDecoration: 'none',
+              }}
+            >
+              İtemsatış Mağazasına Git
+            </a>
 
-            {/* Interactive Template Box */}
-            <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.35)', border: '1px dashed rgba(0, 113, 227, 0.35)', borderRadius: '14px', padding: '14px 16px', marginBottom: '18px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: '#38bdf8', letterSpacing: '0.05em' }}>
-                  📝 ÖRNEK MESAJ ŞABLONU (İTEMSATIŞ'TA SATICIYA İLETEBİLİRSİNİZ)
-                </span>
-                <button
-                  type="button"
-                  onClick={handleCopyTemplate}
-                  style={{
-                    backgroundColor: templateCopied ? 'rgba(16, 185, 129, 0.2)' : 'rgba(0, 113, 227, 0.15)',
-                    color: templateCopied ? '#34d399' : '#38bdf8',
-                    border: templateCopied ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(0, 113, 227, 0.35)',
-                    borderRadius: '8px',
-                    padding: '5px 12px',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  {templateCopied ? (
-                    <>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      <span>✓ Şablon Kopyalandı!</span>
-                    </>
-                  ) : (
-                    <>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                      </svg>
-                      <span>Şablonu Kopyala</span>
-                    </>
-                  )}
-                </button>
-              </div>
-              <p style={{ fontSize: '12px', color: '#d4d4d8', margin: 0, fontFamily: 'var(--font-mono)', lineHeight: 1.5, backgroundColor: 'rgba(255, 255, 255, 0.02)', padding: '10px 12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.04)' }}>
-                "Merhaba Restricted Studio ekibi, İtemsatış üzerinden paket almak için satıcıya soru soruyorum:<br />
-                <span style={{ color: '#38bdf8' }}>Paket Adı: [İstediğiniz Paketi Buraya Yazın]</span><br />
-                Paketin stok durumu, güncelliği ve fiyat teyidini yapabilir misiniz?"
-              </p>
-            </div>
-
-            {/* Trust & Speed Badges */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', gap: '8px', padding: '10px 12px', backgroundColor: 'rgba(255, 255, 255, 0.02)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', marginBottom: '18px' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#fbbf24', fontWeight: 600 }}>
-                <span>⚡</span>
-                <span>Ortalama Yanıt: 15 Dk</span>
-              </div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#34d399', fontWeight: 600 }}>
-                <span>🛡️</span>
-                <span>%100 Temiz Açık Kaynak</span>
-              </div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#60a5fa', fontWeight: 600 }}>
-                <span>💳</span>
-                <span>İtemsatış 3D Secure</span>
-              </div>
-            </div>
-
-            {/* Action Buttons & Persistence Option */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <a
-                href={ITEMSATIS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '10px',
-                  backgroundColor: '#0071e3',
-                  color: '#ffffff',
-                  padding: '13px 20px',
-                  borderRadius: '12px',
-                  fontSize: '13.5px',
-                  fontWeight: 700,
-                  textDecoration: 'none',
-                  boxShadow: '0 4px 18px rgba(0, 113, 227, 0.4)',
-                  transition: 'all 0.2s',
-                }}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginTop: '14px' }}>
+              <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none', fontSize: '12px', color: '#71717a' }}>
+                <input
+                  type="checkbox"
+                  checked={dontShowToday}
+                  onChange={(e) => setDontShowToday(e.target.checked)}
+                  style={{ accentColor: '#dc2626', width: '14px', height: '14px', cursor: 'pointer' }}
+                />
+                <span>Bugün tekrar gösterme</span>
+              </label>
+              <button
+                type="button"
+                onClick={handleCloseGuideModal}
+                style={{ background: 'none', border: 'none', color: '#d4d4d8', fontSize: '12.5px', fontWeight: 500, cursor: 'pointer', padding: '4px 0' }}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <path d="M16 10a4 4 0 0 1-8 0" />
-                </svg>
-                <span>İtemsatış Mağazasına Git (Satıcıya Soru Sor)</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <path d="M7 17L17 7M17 7H8M17 7V16" />
-                </svg>
-              </a>
-
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', paddingTop: '4px' }}>
-                <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none', fontSize: '12px', color: '#a1a1aa' }}>
-                  <input
-                    type="checkbox"
-                    checked={dontShowToday}
-                    onChange={(e) => setDontShowToday(e.target.checked)}
-                    style={{ accentColor: '#0071e3', width: '15px', height: '15px', cursor: 'pointer' }}
-                  />
-                  <span>Bu yönergeyi bugün bir daha gösterme</span>
-                </label>
-
-                <button
-                  type="button"
-                  onClick={handleCloseGuideModal}
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                    color: '#d4d4d8',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    padding: '9px 18px',
-                    borderRadius: '10px',
-                    fontSize: '12.5px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  Yönergeleri Anladım, Kataloğu İncele
-                </button>
-              </div>
+                Kataloğa Geç →
+              </button>
             </div>
           </div>
         </div>
