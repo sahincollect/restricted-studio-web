@@ -669,24 +669,25 @@ export default function CatalogPage() {
               <strong style={{ color: '#e4e4e7', fontWeight: 600 }}>Not:</strong> 30 TL'lik temel ilan sembolik fiyattır. Paketin fiyatı ve teslimatı satıcı teyidinden sonra netleşir; teyitsiz satın alımlar işleme alınamaz.
             </p>
 
-            <a
-              href={ITEMSATIS_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={handleCloseGuideModal}
               style={{
                 display: 'block',
+                width: '100%',
                 textAlign: 'center',
                 backgroundColor: '#dc2626',
                 color: '#ffffff',
                 padding: '12px 20px',
                 borderRadius: '10px',
+                border: 'none',
                 fontSize: '13.5px',
                 fontWeight: 600,
-                textDecoration: 'none',
+                cursor: 'pointer',
               }}
             >
-              İtemsatış Mağazasına Git
-            </a>
+              Kataloğa Devam Et
+            </button>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginTop: '14px' }}>
               <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none', fontSize: '12px', color: '#71717a' }}>
@@ -698,13 +699,7 @@ export default function CatalogPage() {
                 />
                 <span>Bugün tekrar gösterme</span>
               </label>
-              <button
-                type="button"
-                onClick={handleCloseGuideModal}
-                style={{ background: 'none', border: 'none', color: '#d4d4d8', fontSize: '12.5px', fontWeight: 500, cursor: 'pointer', padding: '4px 0' }}
-              >
-                Kataloğa Geç →
-              </button>
+
             </div>
           </div>
         </div>
