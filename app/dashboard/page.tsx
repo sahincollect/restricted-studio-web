@@ -35,7 +35,46 @@ export default function DashboardPage() {
   const loadUserData = async () => {
     setLoading(true);
     const { data: sessionData } = await supabase.auth.getSession();
-    const session = sessionData?.session;
+    let session = sessionData?.session;
+
+    if (!session || !session.user) {
+      try {
+        let creds: { email: string; password: string } | null = null;
+        const saved = typeof window !== 'undefined' ? localStorage.getItem('rs_anon_creds') : null;
+        if (saved) {
+          try {
+            creds = JSON.parse(saved);
+          } catch {
+            creds = null;
+          }
+        }
+
+        if (creds?.email && creds?.password) {
+          const { data: reAuth } = await supabase.auth.signInWithPassword({
+            email: creds.email,
+            password: creds.password,
+          });
+          if (reAuth?.session) session = reAuth.session;
+        }
+
+        if (!session) {
+          const anonRes = await fetch('/api/auth/anonymous', { method: 'POST' });
+          const anonData = await anonRes.json();
+          if (anonRes.ok && anonData.success) {
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('rs_anon_creds', JSON.stringify({ email: anonData.email, password: anonData.password }));
+            }
+            const { data: newAuth } = await supabase.auth.signInWithPassword({
+              email: anonData.email,
+              password: anonData.password,
+            });
+            if (newAuth?.session) session = newAuth.session;
+          }
+        }
+      } catch {
+        // Fallback to login if offline
+      }
+    }
 
     if (!session || !session.user) {
       router.push('/login');

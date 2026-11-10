@@ -9,9 +9,62 @@ export default function LoginPage() {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [anonLoading, setAnonLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClientSupabase();
+
+  const handleAnonContinue = async () => {
+    setAnonLoading(true);
+    setError(null);
+    try {
+      let creds: { email: string; password: string } | null = null;
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('rs_anon_creds') : null;
+      if (saved) {
+        try {
+          creds = JSON.parse(saved);
+        } catch {
+          creds = null;
+        }
+      }
+
+      if (creds?.email && creds?.password) {
+        const { data: existingAuth, error: existingErr } = await supabase.auth.signInWithPassword({
+          email: creds.email,
+          password: creds.password,
+        });
+        if (!existingErr && existingAuth?.user) {
+          router.push('/dashboard');
+          router.refresh();
+          return;
+        }
+      }
+
+      const res = await fetch('/api/auth/anonymous', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Anonim oturum başlatılamadı.');
+      }
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('rs_anon_creds', JSON.stringify({ email: data.email, password: data.password }));
+      }
+
+      const { error: signInErr } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (signInErr) throw new Error(signInErr.message);
+
+      router.push('/dashboard');
+      router.refresh();
+    } catch (err: any) {
+      setError(err.message || 'Anonim giriş sırasında bir hata oluştu.');
+    } finally {
+      setAnonLoading(false);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,15 +141,48 @@ export default function LoginPage() {
             />
           </div>
 
-          <button type="submit" disabled={loading} style={styles.button}>
+          <button type="submit" disabled={loading || anonLoading} style={styles.button}>
             {loading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
           </button>
         </form>
 
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '18px 0' }}>
+          <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255,255,255,0.08)' }} />
+          <span style={{ fontSize: '11px', fontWeight: 700, color: '#52525b', letterSpacing: '0.08em' }}>VEYA KAYITSIZ</span>
+          <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255,255,255,0.08)' }} />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleAnonContinue}
+          disabled={loading || anonLoading}
+          style={{
+            width: '100%',
+            padding: '13px',
+            borderRadius: '10px',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.14)',
+            color: '#f4f4f5',
+            fontSize: '13.5px',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            transition: 'all 0.2s',
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          <span>{anonLoading ? 'Anonim Oturum Açılıyor...' : 'Anonim Olarak Devam Et'}</span>
+        </button>
+
         <div style={styles.footer}>
-          <span>Hesabınız yok mu?</span>{' '}
+          <span>İsteğe bağlı hesap oluşturmak için:</span>{' '}
           <Link href="/register" style={styles.link}>
-            Hemen Kayıt Olun
+            Kayıt Olun
           </Link>
         </div>
       </div>

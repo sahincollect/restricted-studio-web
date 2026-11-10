@@ -4,19 +4,11 @@ import { createAdminSupabase, resolveLoginIdentifier } from '@/lib/supabase';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    const rawCode = String(body.code || '').trim().toUpperCase();
     const rawIdentifier = String(body.email || body.username || '').trim();
-    const email = resolveLoginIdentifier(rawIdentifier);
     const password = String(body.password || '');
     const hwid = String(body.hwid || '').trim();
     const productName = String(body.product_name || 'R-AI').trim();
-
-    // 1. Parametre kontrolü
-    if (!email || !password) {
-      return NextResponse.json(
-        { success: false, message: 'Kullanıcı adı/e-posta ve şifre zorunludur.' },
-        { status: 400 }
-      );
-    }
 
     if (!hwid) {
       return NextResponse.json(
@@ -26,21 +18,63 @@ export async function POST(request: Request) {
     }
 
     const adminSupabase = createAdminSupabase();
+    let userId = '';
+    let userDisplay = '';
 
-    // 2. Supabase Auth ile kullanıcı girişini doğrula
-    const { data: authData, error: authError } = await adminSupabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    // YÖNTEM A: Aktivasyon Kodu ile Doğrulama (Siteden etkinleştirilmiş olma şartı var)
+    const candidateCode = rawCode || (rawIdentifier.toUpperCase().startsWith('R-AI-') || rawIdentifier.toUpperCase().startsWith('RESTRICTED-') ? rawIdentifier.toUpperCase() : '');
 
-    if (authError || !authData?.user) {
-      return NextResponse.json(
-        { success: false, message: 'E-posta adresi veya şifre hatalı.' },
-        { status: 401 }
-      );
+    if (candidateCode) {
+      const { data: codeData, error: codeErr } = await adminSupabase
+        .from('redeem_codes')
+        .select('*')
+        .eq('code', candidateCode)
+        .maybeSingle();
+
+      if (codeErr || !codeData) {
+        return NextResponse.json(
+          { success: false, message: 'Girdiğiniz aktivasyon kodu geçersiz.' },
+          { status: 404 }
+        );
+      }
+
+      if (!codeData.is_used || !codeData.used_by) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: 'Bu kod henüz web sitesinden etkinleştirilmemiştir! Lütfen önce restrictedstudio.shop adresinden kodu aktif edin.',
+          },
+          { status: 403 }
+        );
+      }
+
+      userId = codeData.used_by;
+      userDisplay = candidateCode;
+    } else {
+      // YÖNTEM B: E-posta / Kullanıcı Adı ve Şifre ile Doğrulama
+      const email = resolveLoginIdentifier(rawIdentifier);
+      if (!email || !password) {
+        return NextResponse.json(
+          { success: false, message: 'Lütfen sitede etkinleştirdiğiniz aktivasyon kodunu veya hesap bilgilerinizi giriniz.' },
+          { status: 400 }
+        );
+      }
+
+      const { data: authData, error: authError } = await adminSupabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError || !authData?.user) {
+        return NextResponse.json(
+          { success: false, message: 'Kullanıcı adı/e-posta veya şifre hatalı.' },
+          { status: 401 }
+        );
+      }
+
+      userId = authData.user.id;
+      userDisplay = authData.user.user_metadata?.username || email.replace('@restrictedstudio.local', '');
     }
-
-    const userId = authData.user.id;
 
     // 3. user_licenses tablosunda aktif lisansı sorgula
     const { data: license, error: licenseError } = await adminSupabase
@@ -52,7 +86,10 @@ export async function POST(request: Request) {
 
     if (licenseError || !license) {
       return NextResponse.json(
-        { success: false, message: `'${productName}' ürünü için hesabınızda lisans kaydı bulunamadı. Lütfen web panelinden aktivasyon kodunuzu giriniz.` },
+        {
+          success: false,
+          message: `'${productName}' ürünü için aktif lisans bulunamadı. Lütfen önce restrictedstudio.shop üzerinden kodunuzu etkinleştiriniz.`,
+        },
         { status: 403 }
       );
     }
@@ -77,7 +114,6 @@ export async function POST(request: Request) {
     const now = new Date();
 
     if (expiresAt <= now) {
-      // Süresi dolmuşsa durumunu expired yap
       await adminSupabase.from('user_licenses').update({ status: 'expired' }).eq('id', license.id);
       return NextResponse.json(
         { success: false, message: 'Lisans süreniz sona ermiştir. Lütfen İtemsatış üzerinden yenileyiniz.' },
@@ -87,7 +123,6 @@ export async function POST(request: Request) {
 
     // 4. HWID (Donanım Cihaz Kilidi) Kontrolü
     if (!license.hwid) {
-      // İlk giriş: HWID henüz kilitlenmemiş, bu cihazı kaydet ve kilitle
       const { error: updateHwidError } = await adminSupabase
         .from('user_licenses')
         .update({ hwid: hwid })
@@ -100,7 +135,6 @@ export async function POST(request: Request) {
         );
       }
     } else if (license.hwid !== hwid) {
-      // Farklı cihazdan giriş denemesi
       return NextResponse.json(
         {
           success: false,
@@ -116,7 +150,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        user: email,
+        user: userDisplay,
         product: productName,
         status: 'active',
         hwid_locked: true,
