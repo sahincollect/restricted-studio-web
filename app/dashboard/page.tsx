@@ -22,6 +22,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [redeemCode, setRedeemCode] = useState('');
   const [redeemLoading, setRedeemLoading] = useState(false);
+  const [downloadLoading, setDownloadLoading] = useState(false);
   const [redeemMessage, setRedeemMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const router = useRouter();
@@ -90,6 +91,25 @@ export default function DashboardPage() {
       setRedeemMessage({ type: 'error', text: err.message || 'Bir hata oluştu.' });
     } finally {
       setRedeemLoading(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    setDownloadLoading(true);
+    setRedeemMessage(null);
+    try {
+      const res = await fetch('/api/download', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'İndirme bağlantısı alınamadı.');
+      }
+      window.location.href = data.url;
+    } catch (err: any) {
+      setRedeemMessage({ type: 'error', text: err.message || 'İndirme başarısız.' });
+    } finally {
+      setDownloadLoading(false);
     }
   };
 
@@ -234,14 +254,14 @@ export default function DashboardPage() {
             </div>
 
             {activeLicense ? (
-              <a href="/Restricted_Studio_Setup.exe" download style={styles.downloadBtnActive}>
+              <button onClick={handleDownload} disabled={downloadLoading} style={{ ...styles.downloadBtnActive, border: 'none', cursor: 'pointer' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="7 10 12 15 17 10" />
                   <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
-                <span>R-AI Kurulum Dosyasını İndir (.exe)</span>
-              </a>
+                <span>{downloadLoading ? 'Bağlantı hazırlanıyor...' : 'R-AI Kurulum Dosyasını İndir (.exe)'}</span>
+              </button>
             ) : (
               <button disabled style={styles.downloadBtnDisabled}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

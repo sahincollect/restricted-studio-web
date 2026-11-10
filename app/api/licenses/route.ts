@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAdminSupabase, isAdminIdentity } from '@/lib/supabase';
+import { createAdminSupabase, isAdminUser } from '@/lib/supabase';
 
 export async function GET(request: Request) {
   try {
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, message: licError.message }, { status: 500 });
     }
 
-    const isAdmin = isAdminIdentity(userData.user.email) || Boolean(userData.user.user_metadata?.is_admin);
+    const isAdmin = isAdminUser(userData.user);
 
     return NextResponse.json({
       success: true,

@@ -7,3 +7,4 @@ dist
 
 *.exe
 public/*.exe
+private-dist

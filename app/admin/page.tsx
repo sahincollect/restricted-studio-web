@@ -50,9 +50,7 @@ export default function AdminPage() {
 
   const checkAdminAndLoad = async () => {
     setLoading(true);
-    const params = new URLSearchParams(window.location.search);
-    const urlKey = params.get('key') || '';
-    if (urlKey) setAdminKey(urlKey);
+    const urlKey = '';
 
     const { data: sessionData } = await supabase.auth.getSession();
     const session = sessionData?.session;
@@ -217,7 +215,7 @@ export default function AdminPage() {
           <div style={{ ...styles.card, maxWidth: '460px', margin: '48px auto' }}>
             <h2 style={{ ...styles.cardTitle, marginBottom: '8px' }}>Yönetici Doğrulaması Gerekli</h2>
             <p style={{ ...styles.cardSubtitle, marginBottom: '20px' }}>
-              Yönetici e-posta adresinizle (`emreador@gmail.com`) giriş yapın veya Admin Gizli Anahtarını (Secret Key) girin.
+              Yönetici hesabınızla giriş yapın veya Admin Gizli Anahtarını (Secret Key) girin.
             </p>
             <form
               onSubmit={(e) => {

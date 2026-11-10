@@ -42,27 +42,17 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(redirectUrl);
     }
 
-    // 2. /admin koruması: URL key varsa geçir, yoksa admin email oturumu ara
-    if (path.startsWith('/admin')) {
-      const adminKey = request.nextUrl.searchParams.get('key');
-      const expectedSecret = process.env.ADMIN_SECRET_KEY || 'RESTRICTED_ADMIN_SECRET_2026_V1';
+    // 2. /admin koruması: Oturum açmış ama yönetici olmayan kullanıcılar /dashboard'a atılır.
+    // (Oturumsuz ziyaretçi sayfa içindeki gizli anahtar formunu görür; tüm veri/işlem API'leri
+    // sunucuda ayrıca yetkilendirilir. URL üzerinden anahtar kabul edilmez.)
+    if (path.startsWith('/admin') && user) {
+      const adminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+      const userEmail = user.email?.toLowerCase() || '';
+      const isAllowedAdmin =
+        (adminEmail !== '' && userEmail === adminEmail) || user.app_metadata?.is_admin === true;
 
-      if (adminKey && adminKey === expectedSecret) {
-        return response;
-      }
-
-      if (user) {
-        const adminEmail = (process.env.ADMIN_EMAIL || 'emreador@gmail.com').toLowerCase();
-        const userEmail = user.email?.toLowerCase() || '';
-        const isAllowedAdmin =
-          userEmail === adminEmail ||
-          userEmail === 'emreador@gmail.com' ||
-          userEmail === 'restricted@restrictedstudio.local' ||
-          Boolean(user.user_metadata?.is_admin);
-
-        if (!isAllowedAdmin) {
-          return NextResponse.redirect(new URL('/dashboard?error=unauthorized', request.url));
-        }
+      if (!isAllowedAdmin) {
+        return NextResponse.redirect(new URL('/dashboard?error=unauthorized', request.url));
       }
     }
 

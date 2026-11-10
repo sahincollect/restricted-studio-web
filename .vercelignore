@@ -6,3 +6,4 @@ node_modules
 dist
 *.exe
 public/*.exe
+private-dist

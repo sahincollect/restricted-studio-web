@@ -78,21 +78,43 @@ export async function POST(request: Request) {
       newExpiry = new Date(now.getTime() + durationDays * 86400000);
     }
 
-    if (existingLicense) {
+    // Banlı lisans kod ile geri açılamaz
+    if (existingLicense?.status === 'banned') {
       await adminSupabase
-        .from('user_licenses')
-        .update({
-          expires_at: newExpiry.toISOString(),
+        .from('redeem_codes')
+        .update({ is_used: false, used_by: null, used_at: null })
+        .eq('id', codeData.id);
+      return NextResponse.json(
+        { success: false, message: 'Bu lisans askıya alınmış. Lütfen destek ile iletişime geçin.' },
+        { status: 403 }
+      );
+    }
+
+    const { error: licenseWriteError } = existingLicense
+      ? await adminSupabase
+          .from('user_licenses')
+          .update({
+            expires_at: newExpiry.toISOString(),
+            status: 'active',
+          })
+          .eq('id', existingLicense.id)
+      : await adminSupabase.from('user_licenses').insert({
+          user_id: user.id,
+          product_name: productName,
           status: 'active',
-        })
-        .eq('id', existingLicense.id);
-    } else {
-      await adminSupabase.from('user_licenses').insert({
-        user_id: user.id,
-        product_name: productName,
-        status: 'active',
-        expires_at: newExpiry.toISOString(),
-      });
+          expires_at: newExpiry.toISOString(),
+        });
+
+    if (licenseWriteError) {
+      // Lisans yazılamadıysa kodu geri aç (müşteri kodu kaybetmesin)
+      await adminSupabase
+        .from('redeem_codes')
+        .update({ is_used: false, used_by: null, used_at: null })
+        .eq('id', codeData.id);
+      return NextResponse.json(
+        { success: false, message: 'Lisans tanımlanamadı, kodunuz iade edildi. Lütfen tekrar deneyin.' },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
