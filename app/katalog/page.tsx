@@ -71,7 +71,7 @@ export default function CatalogPage() {
   }, [filteredItems, visibleCount]);
 
   const handleDemand = (item: CatalogItem) => {
-    const textToCopy = `Merhaba Restricted Studio ekibi, katalogdan şu paketi teslim almak istiyorum:\n[${item.id}] ${item.title}\n(Kaynak: ${item.source})`;
+    const textToCopy = `Merhaba Restricted Studio ekibi, İtemsatış üzerinden şu paketi teslim almak istiyorum:\n[${item.id}] ${item.title}`;
 
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(textToCopy);
@@ -211,7 +211,7 @@ export default function CatalogPage() {
           </h1>
 
           <p className="catalog-subtitle">
-            FiveVault ve özel atölye arşivimizdeki binlerce popüler scripti, MLO mekanı, araç paketini ve kıyafeti tek bir katalogda topladık. Aradığınız paketi arama çubuğundan bulun, yeşil <strong>Teslim Al</strong> butonuna basarak İtemsatış güvencesiyle güvenle sipariş verin.
+            Restricted Studio özel arşivimizdeki binlerce popüler scripti, MLO mekanı, araç paketini ve kıyafeti tek bir katalogda topladık. Aradığınız paketi arama çubuğundan bulun, yeşil <strong>Teslim Al</strong> butonuna basarak İtemsatış güvencesiyle güvenle sipariş verin.
           </p>
 
           <div className="catalog-highlight-note">
@@ -321,7 +321,7 @@ export default function CatalogPage() {
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
-                      {isVerified ? 'Atölyede Doğrulandı' : 'FiveVault Arşivi'}
+                      {isVerified ? 'Doğrulanmış Paket' : 'Stüdyo Arşivi'}
                     </span>
                     <span className="catalog-mini-badge">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -393,7 +393,7 @@ export default function CatalogPage() {
             </svg>
             <h3 className="catalog-empty-title">"{search}" ile eşleşen paket bulunamadı</h3>
             <p className="catalog-empty-text">
-              Aradığınız paket henüz kataloğumuza eklenmemiş olabilir. FiveVault veya CFX üzerindeki paket adını ya da linkini bize Discord üzerinden iletin; aynı gün arşivimizden tarayıp temizleyerek sizin için özel hazırlayalım.
+              Aradığınız paket henüz kataloğumuza eklenmemiş olabilir. Aradığınız paket adını veya FiveM / CFX forum linkini bize Discord üzerinden iletin; aynı gün arşivimizden tarayıp temizleyerek sizin için özel hazırlayalım.
             </p>
             <a
               href={DISCORD_INVITE}
@@ -468,7 +468,7 @@ export default function CatalogPage() {
         <div className="catalog-cta-banner">
           <h2 className="catalog-cta-headline">Aradığınız Paketi Listede Bulamadınız mı?</h2>
           <p className="catalog-cta-lead">
-            FiveVault, CFX Portal veya yurt dışı mağazalarda gördüğünüz herhangi bir paketin adını ya da linkini bize iletin. Geniş arşivimizden temin edip sıfır riskle hazırlayalım.
+            CFX Portal, Tebex veya yurt dışı platformlarda gördüğünüz herhangi bir paketin adını ya da linkini bize iletin. Geniş arşivimizden temin edip sıfır riskle hazırlayalım.
           </p>
           <div className="catalog-cta-btn-row">
             <a
