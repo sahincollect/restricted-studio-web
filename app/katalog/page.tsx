@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import catalogItems from '../../lib/catalog-data.json';
 
@@ -15,8 +15,8 @@ interface CatalogItem {
 
 const CATEGORIES = [
   'Tümü',
-  'MLO & Mekanlar',
   'Script & Sistemler',
+  'MLO & Mekanlar',
   'Araç Paketleri',
   'Kıyafet & EUP',
   'Modlar & Eklentiler',
@@ -25,14 +25,16 @@ const CATEGORIES = [
 
 const DISCORD_INVITE = 'https://discord.gg/eVcN3D5va';
 const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
+const PAGE_SIZE = 60;
 
 export default function CatalogPage() {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tümü');
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [copiedItem, setCopiedItem] = useState<CatalogItem | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Compute category counts
+  // Compute category counts across all 6,400+ items
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = { Tümü: catalogItems.length };
     for (const item of catalogItems) {
@@ -59,8 +61,17 @@ export default function CatalogPage() {
     });
   }, [search, selectedCategory]);
 
+  // Reset pagination when search or category changes
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [search, selectedCategory]);
+
+  const displayedItems = useMemo(() => {
+    return filteredItems.slice(0, visibleCount);
+  }, [filteredItems, visibleCount]);
+
   const handleDemand = (item: CatalogItem) => {
-    const textToCopy = `Merhaba Restricted Studio ekibi, katalogdan şu paketi talep etmek istiyorum:\n[${item.id}] ${item.title}\n(Kaynak: ${item.source})`;
+    const textToCopy = `Merhaba Restricted Studio ekibi, katalogdan şu paketi teslim almak istiyorum:\n[${item.id}] ${item.title}\n(Kaynak: ${item.source})`;
 
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(textToCopy);
@@ -68,14 +79,18 @@ export default function CatalogPage() {
 
     setCopiedItem(item);
 
-    // After a short delay, open Discord in a new tab
+    // Redirect to İtemsatış as requested
     setTimeout(() => {
-      window.open(DISCORD_INVITE, '_blank', 'noopener,noreferrer');
-    }, 700);
+      window.open(ITEMSATIS_URL, '_blank', 'noopener,noreferrer');
+    }, 600);
 
     setTimeout(() => {
       setCopiedItem(null);
     }, 4000);
+  };
+
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => prev + PAGE_SIZE);
   };
 
   return (
@@ -123,21 +138,21 @@ export default function CatalogPage() {
                 Müşteri Portalı &amp; Lisanslarım
               </Link>
               <a
-                href={DISCORD_INVITE}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-discord-solid btn-full"
-                style={{ marginBottom: '8px' }}
-              >
-                İletişime Geçin (Discord)
-              </a>
-              <a
                 href={ITEMSATIS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-itemsatis btn-full"
+                style={{ marginBottom: '8px' }}
               >
                 İtemsatış Mağazası
+              </a>
+              <a
+                href={DISCORD_INVITE}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-discord-solid btn-full"
+              >
+                İletişime Geçin (Discord)
               </a>
             </div>
           </nav>
@@ -187,16 +202,16 @@ export default function CatalogPage() {
         <div className="container catalog-hero-inner">
           <div className="catalog-pill-badge">
             <span className="dot"></span>
-            <span>On-Demand Güvenlik &amp; Teslimat Kataloğu</span>
+            <span>6.400+ Paket · On-Demand Güvenlik &amp; İtemsatış Teslimat Kataloğu</span>
           </div>
 
           <h1 className="catalog-title">
             Geniş FiveM Arşivimiz.<br />
-            <span style={{ color: 'var(--crimson)' }}>İstediğinizi seçin, anında hazırlayalım.</span>
+            <span style={{ color: 'var(--crimson)' }}>İstediğinizi seçin, anında teslim edelim.</span>
           </h1>
 
           <p className="catalog-subtitle">
-            Elimizde bulunan binlerce özel MLO, script, kıyafet ve araç paketini tek tek sisteme yükleyip bekletmek yerine talep odaklı çalışıyoruz. İhtiyacınız olan paketi katalogdan aratın, bize iletin; ekibimiz paketi zararlı yazılım, gizli webhook ve FPS optimizasyon testlerinden geçirerek tertemiz açık kaynak olarak size teslim etsin.
+            FiveVault ve özel atölye arşivimizdeki binlerce popüler scripti, MLO mekanı, araç paketini ve kıyafeti tek bir katalogda topladık. Aradığınız paketi arama çubuğundan bulun, yeşil <strong>Teslim Al</strong> butonuna basarak İtemsatış güvencesiyle güvenle sipariş verin.
           </p>
 
           <div className="catalog-highlight-note">
@@ -204,7 +219,7 @@ export default function CatalogPage() {
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
             <span>
-              <strong>%100 Güvenlik Garantisi:</strong> Talep ettiğiniz tüm FiveVault ve özel arşiv paketleri teslim öncesinde tersine mühendislik araçlarıyla taranır, lisans kilitlerinden ve arka kapılardan tamamen arındırılır.
+              <strong>İtemsatış &amp; Güvenli Teslimat:</strong> Teslim Al butonuna tıkladığınızda paket adı otomatik olarak panonuza kopyalanır ve resmi İtemsatış mağazamıza aktarılırsınız. Paketiniz arka kapılardan ve kilitlerden arındırılmış temiz açık kaynak kod olarak teslim edilir.
             </span>
           </div>
         </div>
@@ -231,7 +246,7 @@ export default function CatalogPage() {
             <input
               type="text"
               className="catalog-search-input"
-              placeholder="Paket adı, içerik veya anahtar kelime ile arayın... (Örn: Roxwood, LSC, Clothing, Carplay, Prodigy)"
+              placeholder="6.400+ paket içinde arayın... (Örn: LB Phone, JG Mechanic, Roxwood, Heist, EUP, Audi)"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -257,7 +272,7 @@ export default function CatalogPage() {
                   onClick={() => setSelectedCategory(cat)}
                 >
                   <span>{cat}</span>
-                  <span className="catalog-cat-count">{count}</span>
+                  <span className="catalog-cat-count">{count.toLocaleString('tr-TR')}</span>
                 </button>
               );
             })}
@@ -270,12 +285,13 @@ export default function CatalogPage() {
            ===================================================================== */}
       <div className="catalog-statusbar">
         <div className="catalog-result-count">
-          Toplam <strong>{filteredItems.length}</strong> paket listeleniyor
-          {selectedCategory !== 'Tümü' && ` (${selectedCategory})`}
+          Toplam <strong>{filteredItems.length.toLocaleString('tr-TR')}</strong> paket bulundu
+          {filteredItems.length > visibleCount && ` (İlk ${visibleCount} gösteriliyor)`}
+          {selectedCategory !== 'Tümü' && ` · ${selectedCategory}`}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }}></span>
-          <span>Talep Üzerine Hazır &amp; Doğrulanabilir</span>
+          <span>İtemsatış ile Hızlı &amp; Güvenli Teslimat</span>
         </div>
       </div>
 
@@ -283,8 +299,8 @@ export default function CatalogPage() {
            CARD GRID
            ===================================================================== */}
       <main className="catalog-grid">
-        {filteredItems.length > 0 ? (
-          filteredItems.map((item) => {
+        {displayedItems.length > 0 ? (
+          displayedItems.map((item) => {
             const isCopied = copiedItem?.id === item.id;
             const isVerified = item.source === 'restricted-verified';
 
@@ -326,24 +342,23 @@ export default function CatalogPage() {
                   <button
                     className={`btn-demand ${isCopied ? 'copied' : ''}`}
                     onClick={() => handleDemand(item)}
-                    title="Paket adını kopyalayıp Discord destek talebine yönlendirir"
+                    title="Paket adını kopyalayıp İtemsatış mağazamıza yönlendirir"
                   >
                     {isCopied ? (
                       <>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
-                        <span>Kopyalandı! Discord Açılıyor...</span>
+                        <span>Kopyalandı! İtemsatış Açılıyor...</span>
                       </>
                     ) : (
                       <>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                          <circle cx="8.5" cy="7" r="4" />
-                          <line x1="20" y1="8" x2="20" y2="14" />
-                          <line x1="23" y1="11" x2="17" y2="11" />
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1">
+                          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                          <line x1="3" y1="6" x2="21" y2="6" />
+                          <path d="M16 10a4 4 0 0 1-8 0" />
                         </svg>
-                        <span>Talep Et &amp; Teslim Al</span>
+                        <span>Teslim Al (İtemsatış)</span>
                       </>
                     )}
                   </button>
@@ -391,6 +406,18 @@ export default function CatalogPage() {
             </a>
           </div>
         )}
+
+        {/* Load More Button */}
+        {filteredItems.length > visibleCount && (
+          <div className="catalog-loadmore-wrap">
+            <button className="catalog-loadmore-btn" onClick={handleLoadMore}>
+              <span>Daha Fazla Paket Yükle (+{PAGE_SIZE})</span>
+              <span style={{ opacity: 0.7, fontSize: '0.8rem' }}>
+                ({visibleCount} / {filteredItems.length.toLocaleString('tr-TR')})
+              </span>
+            </button>
+          </div>
+        )}
       </main>
 
       {/* =====================================================================
@@ -411,15 +438,15 @@ export default function CatalogPage() {
               <span className="catalog-step-number">1</span>
               <h3 className="catalog-step-title">Paketi Belirleyin</h3>
               <p className="catalog-step-desc">
-                Yukarıdaki arama çubuğunu kullanarak veya kategorileri filtreleyerek sunucunuza eklemek istediğiniz MLO, script veya aracı seçin.
+                6.400'den fazla paket arasından arama çubuğunu veya kategorileri kullanarak sunucunuza eklemek istediğiniz MLO, script veya aracı seçin.
               </p>
             </div>
 
             <div className="catalog-step-box">
               <span className="catalog-step-number">2</span>
-              <h3 className="catalog-step-title">Talebinizi İletin</h3>
+              <h3 className="catalog-step-title">İtemsatış'tan Sipariş Verin</h3>
               <p className="catalog-step-desc">
-                <strong>Talep Et</strong> butonuna tıklayın. Paket bilgisi otomatik olarak panonuza kopyalanır ve doğrudan Discord destek kanalımıza yönlendirilirsiniz.
+                Yeşil <strong>Teslim Al</strong> butonuna tıklayın. Paket adı otomatik kopyalanır ve resmi İtemsatış mağazamıza aktarılırsınız.
               </p>
             </div>
 
@@ -427,7 +454,7 @@ export default function CatalogPage() {
               <span className="catalog-step-number">3</span>
               <h3 className="catalog-step-title">Temiz &amp; Açık Kaynak Teslimat</h3>
               <p className="catalog-step-desc">
-                Paketiniz atölyemizde tersine mühendislikle incelenir, gizli link/backdoor kontrolleri tamamlanır ve 3D Secure / İtemsatış güvencesiyle temiz kod olarak teslim edilir.
+                Paketiniz atölyemizde tersine mühendislikle incelenir, gizli link/backdoor kontrolleri tamamlanır ve 3D Secure güvencesiyle temiz kod olarak teslim edilir.
               </p>
             </div>
           </div>
@@ -445,15 +472,6 @@ export default function CatalogPage() {
           </p>
           <div className="catalog-cta-btn-row">
             <a
-              href={DISCORD_INVITE}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-discord-solid"
-              style={{ padding: '12px 28px' }}
-            >
-              Discord Üzerinden Özel Paket İste ↗
-            </a>
-            <a
               href={ITEMSATIS_URL}
               target="_blank"
               rel="noopener noreferrer"
@@ -461,6 +479,15 @@ export default function CatalogPage() {
               style={{ padding: '12px 28px' }}
             >
               Resmi İtemsatış Mağazamız ↗
+            </a>
+            <a
+              href={DISCORD_INVITE}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-discord-solid"
+              style={{ padding: '12px 28px' }}
+            >
+              Discord Destek Talebi Aç ↗
             </a>
           </div>
         </div>
@@ -495,9 +522,9 @@ export default function CatalogPage() {
             <div className="footer-col">
               <h4>Kategoriler</h4>
               <ul>
-                <li><a href="#navbar" onClick={() => setSelectedCategory('MLO & Mekanlar')}>MLO &amp; Mekanlar</a></li>
-                <li><a href="#navbar" onClick={() => setSelectedCategory('Script & Sistemler')}>Script &amp; Sistemler</a></li>
-                <li><a href="#navbar" onClick={() => setSelectedCategory('Araç Paketleri')}>Araç Paketleri</a></li>
+                <li><a href="#navbar" onClick={() => setSelectedCategory('Script & Sistemler')}>Script &amp; Sistemler (3.500+)</a></li>
+                <li><a href="#navbar" onClick={() => setSelectedCategory('MLO & Mekanlar')}>MLO &amp; Mekanlar (1.200+)</a></li>
+                <li><a href="#navbar" onClick={() => setSelectedCategory('Araç Paketleri')}>Araç Paketleri (1.100+)</a></li>
                 <li><a href="#navbar" onClick={() => setSelectedCategory('Kıyafet & EUP')}>Kıyafet &amp; EUP</a></li>
               </ul>
             </div>
@@ -527,7 +554,7 @@ export default function CatalogPage() {
             <polyline points="20 6 9 17 4 12" />
           </svg>
           <span>
-            <strong>{copiedItem.title}</strong> panoya kopyalandı! Discord destek kanalına aktarılıyorsunuz...
+            <strong>{copiedItem.title}</strong> panoya kopyalandı! İtemsatış mağazamıza aktarılıyorsunuz...
           </span>
         </div>
       )}
