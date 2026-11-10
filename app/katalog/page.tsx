@@ -237,53 +237,19 @@ export default function CatalogPage() {
         </div>
       </header>
 
-      {/* =====================================================================
-           HERO SECTION: Amacı Açıklayan Apple Tarzı Başlık
-           ===================================================================== */}
+      {/* HERO: compact header */}
       <section className="catalog-hero">
         <div className="container catalog-hero-inner">
-          <div className="catalog-pill-badge">
-            <span className="dot"></span>
-            <span>6.400+ Paket · On-Demand Güvenlik &amp; İtemsatış Teslimat Kataloğu</span>
-          </div>
-
-          <h1 className="catalog-title">
-            Geniş FiveM Arşivimiz.<br />
-            <span style={{ color: 'var(--crimson)' }}>İstediğinizi seçin, anında teslim edelim.</span>
-          </h1>
-
-          <p className="catalog-subtitle">
-            Restricted Studio özel arşivimizdeki binlerce popüler scripti, MLO mekanı, araç paketini ve kıyafeti tek bir katalogda topladık. Aradığınız paketi arama çubuğundan bulun, yeşil <strong>Teslim Al</strong> butonuna basarak İtemsatış güvencesiyle güvenle sipariş verin.
-          </p>
-
-          <div className="catalog-highlight-note" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: '260px' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0 }}>
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-              <span>
-                <strong>İtemsatış &amp; Güvenli Teslimat:</strong> Teslim Al butonuna tıkladığınızda paket adı panonuza kopyalanır ve mağazamıza aktarılırsınız. İlanları doğrudan satın almayınız; satıcıya soru sorarak sipariş veriniz.
-              </span>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <p className="catalog-eyebrow">Paket Kataloğu</p>
+              <h1 className="catalog-title">FiveM Arşivi</h1>
+              <p className="catalog-subtitle">
+                {catalogItems.length.toLocaleString('tr-TR')} paket. Arayın, seçin, İtemsatış üzerinden teslim alın.
+              </p>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowGuideModal(true)}
-              style={{
-                backgroundColor: 'rgba(0, 113, 227, 0.12)',
-                color: '#0071e3',
-                border: '1px solid rgba(0, 113, 227, 0.3)',
-                padding: '7px 14px',
-                borderRadius: '8px',
-                fontSize: '12px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <span>ℹ️ Sipariş Yönergeleri</span>
+            <button type="button" onClick={() => setShowGuideModal(true)} className="catalog-guide-link">
+              Sipariş Yönergesi
             </button>
           </div>
         </div>
@@ -353,10 +319,7 @@ export default function CatalogPage() {
           {filteredItems.length > visibleCount && ` (İlk ${visibleCount} gösteriliyor)`}
           {selectedCategory !== 'Tümü' && ` · ${selectedCategory}`}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }}></span>
-          <span>İtemsatış ile Hızlı &amp; Güvenli Teslimat</span>
-        </div>
+        <span>İtemsatış ile teslimat</span>
       </div>
 
       {/* =====================================================================
@@ -380,26 +343,6 @@ export default function CatalogPage() {
 
                   <h3 className="catalog-card-title">{item.title}</h3>
 
-                  <div className="catalog-card-badges">
-                    <span className="catalog-mini-badge">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      {isVerified ? 'Doğrulanmış Paket' : 'Stüdyo Arşivi'}
-                    </span>
-                    <span className="catalog-mini-badge">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      Açık Kaynak
-                    </span>
-                    <span className="catalog-mini-badge">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      Temiz Kod
-                    </span>
-                  </div>
                 </div>
 
                 <div className="catalog-card-footer">
