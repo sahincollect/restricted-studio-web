@@ -50,7 +50,8 @@ export default function AdminPage() {
 
   const checkAdminAndLoad = async () => {
     setLoading(true);
-    const urlKey = '';
+    const urlKey = sessionStorage.getItem('rs_admin_key') || '';
+    if (urlKey) setAdminKey(urlKey);
 
     const { data: sessionData } = await supabase.auth.getSession();
     const session = sessionData?.session;
@@ -74,12 +75,14 @@ export default function AdminPage() {
 
       if (res.ok && data.success) {
         setAuthorized(true);
+        if (activeKey) sessionStorage.setItem('rs_admin_key', activeKey);
         setCodes(data.codes || []);
         setLicenses(data.licenses || []);
         setActionMsg(null);
       } else {
         setAuthorized(false);
-        setActionMsg(data.message || 'Yetkisiz erişim.');
+        sessionStorage.removeItem('rs_admin_key');
+        setActionMsg(activeKey ? 'Gizli anahtar hatalı.' : null);
       }
     } catch (err: any) {
       setActionMsg('Bağlantı hatası: ' + err.message);
@@ -205,22 +208,66 @@ export default function AdminPage() {
       </header>
 
       <main style={styles.main}>
-        {actionMsg && (
+        {actionMsg && !loading && (
           <div style={styles.alertBox}>
             <span>{actionMsg}</span>
           </div>
         )}
 
-        {!loading && !authorized ? (
-          <div style={{ ...styles.card, maxWidth: '460px', margin: '48px auto' }}>
-            <h2 style={{ ...styles.cardTitle, marginBottom: '8px' }}>Yönetici Doğrulaması Gerekli</h2>
-            <p style={{ ...styles.cardSubtitle, marginBottom: '20px' }}>
-              Yönetici hesabınızla giriş yapın veya Admin Gizli Anahtarını (Secret Key) girin.
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '120px 0', color: '#71717a', fontSize: '14px' }}>
+            <div
+              style={{
+                width: 34,
+                height: 34,
+                margin: '0 auto 16px',
+                border: '3px solid rgba(255,255,255,0.08)',
+                borderTopColor: '#fe0000',
+                borderRadius: '50%',
+                animation: 'rsSpin 0.8s linear infinite',
+              }}
+            />
+            <style>{`@keyframes rsSpin{to{transform:rotate(360deg)}}`}</style>
+            Yetki doğrulanıyor...
+          </div>
+        ) : !authorized ? (
+          <div
+            style={{
+              ...styles.card,
+              maxWidth: '420px',
+              margin: '72px auto',
+              textAlign: 'center',
+              padding: '36px 32px',
+              boxShadow: '0 24px 70px rgba(0,0,0,0.6), 0 0 0 1px rgba(254,0,0,0.12)',
+            }}
+          >
+            <div
+              style={{
+                width: 52,
+                height: 52,
+                margin: '0 auto 18px',
+                borderRadius: 14,
+                background: 'rgba(254,0,0,0.12)',
+                border: '1px solid rgba(254,0,0,0.35)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fe0000" strokeWidth="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+            <h2 style={{ ...styles.cardTitle, fontSize: '20px', marginBottom: '6px' }}>Yönetici Girişi</h2>
+            <p style={{ ...styles.cardSubtitle, marginBottom: '22px' }}>
+              Gizli anahtarınızı girin veya yönetici hesabınızla giriş yapın.
             </p>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                loadData(token, adminKey);
+                setLoading(true);
+                loadData(token, adminKey.trim());
               }}
               style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
             >
@@ -228,14 +275,15 @@ export default function AdminPage() {
                 type="password"
                 value={adminKey}
                 onChange={(e) => setAdminKey(e.target.value)}
-                placeholder="ADMIN_SECRET_KEY giriniz..."
-                style={styles.input}
+                placeholder="Admin gizli anahtarı"
+                autoFocus
+                style={{ ...styles.input, textAlign: 'center' }}
               />
-              <button type="submit" style={styles.generateBtn}>
+              <button type="submit" disabled={!adminKey.trim()} style={styles.generateBtn}>
                 Doğrula ve Giriş Yap
               </button>
-              <Link href="/login" style={{ ...styles.backBtn, textAlign: 'center', marginTop: '4px' }}>
-                Yönetici Hesabıyla Giriş Yap (/login)
+              <Link href="/login?redirect=/admin" style={{ ...styles.backBtn, textAlign: 'center', marginTop: '4px' }}>
+                Yönetici Hesabıyla Giriş Yap
               </Link>
             </form>
           </div>
