@@ -25,6 +25,7 @@ const CATEGORIES = [
 
 const DISCORD_INVITE = 'https://discord.gg/eVcN3D5va';
 const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
+const ITEMSATIS_LISTING_URL = 'https://www.itemsatis.com/fivem/sunucunuza-ozel-bulunamayan-script-mlo-5451486.html';
 const PAGE_SIZE = 60;
 
 export default function CatalogPage() {
@@ -79,9 +80,9 @@ export default function CatalogPage() {
 
     setCopiedItem(item);
 
-    // Redirect to İtemsatış as requested
+    // Redirect to İtemsatış listing as requested
     setTimeout(() => {
-      window.open(ITEMSATIS_URL, '_blank', 'noopener,noreferrer');
+      window.open(ITEMSATIS_LISTING_URL, '_blank', 'noopener,noreferrer');
     }, 600);
 
     setTimeout(() => {
@@ -472,13 +473,13 @@ export default function CatalogPage() {
           </p>
           <div className="catalog-cta-btn-row">
             <a
-              href={ITEMSATIS_URL}
+              href={ITEMSATIS_LISTING_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-itemsatis"
               style={{ padding: '12px 28px' }}
             >
-              Resmi İtemsatış Mağazamız ↗
+              İtemsatış İlanından Sipariş Ver ↗
             </a>
             <a
               href={DISCORD_INVITE}
