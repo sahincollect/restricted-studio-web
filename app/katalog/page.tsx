@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import catalogItems from '../../lib/catalog-data.json';
 
@@ -27,6 +27,45 @@ const DISCORD_INVITE = '/discord';
 const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
 const ITEMSATIS_LISTING_URL = 'https://www.itemsatis.com/p/saintstudio';
 const PAGE_SIZE = 60;
+
+const DEFAULT_STYLE = {
+  from: '#0b1a33',
+  to: '#12306b',
+  icon: <rect x="4" y="4" width="16" height="16" rx="3" />,
+};
+
+const CATEGORY_STYLE: Record<string, { from: string; to: string; icon: React.ReactNode }> = {
+  'Script & Sistemler': {
+    from: '#0b1a33',
+    to: '#154a9c',
+    icon: (<><polyline points="8 6 3 12 8 18" /><polyline points="16 6 21 12 16 18" /><line x1="14" y1="4" x2="10" y2="20" /></>),
+  },
+  'MLO & Mekanlar': {
+    from: '#0c2a36',
+    to: '#14708f',
+    icon: (<><path d="M3 21V9l9-6 9 6v12" /><path d="M9 21v-7h6v7" /></>),
+  },
+  'Araç Paketleri': {
+    from: '#141b33',
+    to: '#2d4a9a',
+    icon: (<><path d="M5 17h14M3 13l2-6h14l2 6v4H3z" /><circle cx="7.5" cy="17" r="1.5" /><circle cx="16.5" cy="17" r="1.5" /></>),
+  },
+  'Kıyafet & EUP': {
+    from: '#1b1936',
+    to: '#4a3f9c',
+    icon: (<path d="M8 3l-5 4 3 3 2-1v12h8V9l2 1 3-3-5-4a4 4 0 0 1-8 0z" />),
+  },
+  'Modlar & Eklentiler': {
+    from: '#0d2236',
+    to: '#1d63a6',
+    icon: (<><path d="M12 2l9 5v10l-9 5-9-5V7z" /><polyline points="3 7 12 12 21 7" /><line x1="12" y1="12" x2="12" y2="22" /></>),
+  },
+  'Program & Araçlar': {
+    from: '#131a24',
+    to: '#33465f',
+    icon: (<><rect x="3" y="4" width="18" height="13" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></>),
+  },
+};
 
 export default function CatalogPage() {
   const [search, setSearch] = useState('');
@@ -334,11 +373,16 @@ export default function CatalogPage() {
             return (
               <div key={item.id} className="catalog-card">
                 <div>
-                  <div className="catalog-card-top">
-                    <span className="catalog-id-tag">{item.id}</span>
-                    <span className={`catalog-cat-tag ${isVerified ? 'verified' : ''}`}>
-                      {item.category}
-                    </span>
+                  <div
+                    className="catalog-card-visual"
+                    style={{ background: `linear-gradient(135deg, ${(CATEGORY_STYLE[item.category] || DEFAULT_STYLE).from}, ${(CATEGORY_STYLE[item.category] || DEFAULT_STYLE).to})` }}
+                  >
+                    <span className="catalog-visual-id">{item.id}</span>
+                    {isVerified && <span className="catalog-visual-verified">Doğrulanmış</span>}
+                    <svg className="catalog-visual-icon" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+                      {(CATEGORY_STYLE[item.category] || DEFAULT_STYLE).icon}
+                    </svg>
+                    <span className="catalog-visual-cat">{item.category}</span>
                   </div>
 
                   <h3 className="catalog-card-title">{item.title}</h3>
