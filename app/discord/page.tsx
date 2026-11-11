@@ -84,7 +84,7 @@ export default function DiscordPage() {
 
             <div style={styles.featureCard}>
               <div style={styles.featureIcon}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e30000" strokeWidth="2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
               </div>
@@ -179,7 +179,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     transform: 'translateX(-50%)',
     width: '600px',
     height: '400px',
-    background: 'radial-gradient(circle, rgba(227, 0, 0, 0.15) 0%, rgba(88, 101, 242, 0.15) 50%, transparent 70%)',
+    background: 'radial-gradient(circle, rgba(0, 113, 227, 0.15) 0%, rgba(88, 101, 242, 0.15) 50%, transparent 70%)',
     filter: 'blur(80px)',
     pointerEvents: 'none',
   },
@@ -401,7 +401,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '10px',
-    backgroundColor: '#e30000',
+    backgroundColor: '#0071e3',
     color: '#ffffff',
     textDecoration: 'none',
     fontSize: '13px',
@@ -409,7 +409,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: '12px 22px',
     borderRadius: '12px',
     transition: 'all 0.2s ease',
-    boxShadow: '0 4px 18px rgba(227, 0, 0, 0.3)',
+    boxShadow: '0 4px 18px rgba(0, 113, 227, 0.3)',
   },
   tertiaryBtn: {
     display: 'inline-flex',

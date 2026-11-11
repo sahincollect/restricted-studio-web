@@ -578,7 +578,7 @@ export default function CatalogPage() {
               maxWidth: '480px',
               backgroundColor: '#0a0a0c',
               border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderTop: '2px solid #dc2626',
+              borderTop: '2px solid #0071e3',
               borderRadius: '16px',
               padding: '28px 28px 22px',
               boxShadow: '0 24px 64px rgba(0, 0, 0, 0.8)',
@@ -629,7 +629,7 @@ export default function CatalogPage() {
                 { n: '3', t: 'Anında Teslim Al', d: 'Ekibimiz teyit edince size özel sipariş açılır; dosyanızı hemen alırsınız.' },
               ].map((s) => (
                 <li key={s.n} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                  <span style={{ flexShrink: 0, width: '24px', height: '24px', borderRadius: '50%', border: '1px solid rgba(220, 38, 38, 0.6)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600 }}>
+                  <span style={{ flexShrink: 0, width: '24px', height: '24px', borderRadius: '50%', border: '1px solid rgba(0, 113, 227, 0.6)', color: '#4da3ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600 }}>
                     {s.n}
                   </span>
                   <div>
@@ -656,7 +656,7 @@ export default function CatalogPage() {
                 color: '#d4d4d8',
               }}
             >
-              <span style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 600, letterSpacing: '0.04em', color: templateCopied ? '#34d399' : '#ef4444', marginBottom: '6px' }}>
+              <span style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 600, letterSpacing: '0.04em', color: templateCopied ? '#34d399' : '#4da3ff', marginBottom: '6px' }}>
                 <span>MESAJ ŞABLONU</span>
                 <span>{templateCopied ? 'Kopyalandı' : 'Kopyalamak için tıklayın'}</span>
               </span>
@@ -665,7 +665,7 @@ export default function CatalogPage() {
               </span>
             </button>
 
-            <p style={{ fontSize: '12px', color: '#a1a1aa', lineHeight: 1.55, margin: '0 0 18px', paddingLeft: '10px', borderLeft: '2px solid rgba(220, 38, 38, 0.7)' }}>
+            <p style={{ fontSize: '12px', color: '#a1a1aa', lineHeight: 1.55, margin: '0 0 18px', paddingLeft: '10px', borderLeft: '2px solid rgba(0, 113, 227, 0.7)' }}>
               <strong style={{ color: '#e4e4e7', fontWeight: 600 }}>Not:</strong> 30 TL'lik temel ilan sembolik fiyattır. Paketin fiyatı ve teslimatı satıcı teyidinden sonra netleşir; teyitsiz satın alımlar işleme alınamaz.
             </p>
 
@@ -676,7 +676,7 @@ export default function CatalogPage() {
                 display: 'block',
                 width: '100%',
                 textAlign: 'center',
-                backgroundColor: '#dc2626',
+                backgroundColor: '#0071e3',
                 color: '#ffffff',
                 padding: '12px 20px',
                 borderRadius: '10px',
@@ -695,7 +695,7 @@ export default function CatalogPage() {
                   type="checkbox"
                   checked={dontShowToday}
                   onChange={(e) => setDontShowToday(e.target.checked)}
-                  style={{ accentColor: '#dc2626', width: '14px', height: '14px', cursor: 'pointer' }}
+                  style={{ accentColor: '#0071e3', width: '14px', height: '14px', cursor: 'pointer' }}
                 />
                 <span>Bugün tekrar gösterme</span>
               </label>

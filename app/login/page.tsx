@@ -199,7 +199,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: '24px',
     backgroundColor: '#08080b',
     backgroundImage:
-      'radial-gradient(circle at 50% 20%, rgba(254, 0, 0, 0.12) 0%, transparent 50%), repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 20px)',
+      'radial-gradient(circle at 50% 20%, rgba(0, 113, 227, 0.12) 0%, transparent 50%), repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 20px)',
   },
   card: {
     width: '100%',
@@ -208,7 +208,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: '1px solid rgba(255, 255, 255, 0.08)',
     borderRadius: '20px',
     padding: '36px 32px',
-    boxShadow: '0 30px 80px rgba(0, 0, 0, 0.8), 0 0 40px rgba(254, 0, 0, 0.08)',
+    boxShadow: '0 30px 80px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 113, 227, 0.08)',
     backdropFilter: 'blur(20px)',
   },
   header: {
@@ -230,8 +230,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: '7px',
     height: '7px',
     borderRadius: '50%',
-    backgroundColor: '#fe0000',
-    boxShadow: '0 0 10px #fe0000',
+    backgroundColor: '#0071e3',
+    boxShadow: '0 0 10px #0071e3',
   },
   title: {
     fontSize: '24px',
@@ -277,13 +277,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     marginTop: '6px',
     padding: '13px',
     borderRadius: '10px',
-    backgroundColor: '#fe0000',
+    backgroundColor: '#0071e3',
     color: '#ffffff',
     fontSize: '14px',
     fontWeight: 700,
     border: 'none',
     cursor: 'pointer',
-    boxShadow: '0 4px 20px rgba(254, 0, 0, 0.35)',
+    boxShadow: '0 4px 20px rgba(0, 113, 227, 0.35)',
     transition: 'all 0.2s',
   },
   errorBox: {

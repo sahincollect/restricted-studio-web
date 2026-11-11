@@ -254,7 +254,7 @@ export default function AdminPage() {
                 height: 34,
                 margin: '0 auto 16px',
                 border: '3px solid rgba(255,255,255,0.08)',
-                borderTopColor: '#fe0000',
+                borderTopColor: '#0071e3',
                 borderRadius: '50%',
                 animation: 'rsSpin 0.8s linear infinite',
               }}
@@ -269,11 +269,11 @@ export default function AdminPage() {
               maxWidth: '400px',
               margin: '80px auto',
               padding: '36px 32px 28px',
-              borderTop: '2px solid #dc2626',
+              borderTop: '2px solid #0071e3',
               boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
             }}
           >
-            <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', color: '#ef4444', marginBottom: '10px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', color: '#4da3ff', marginBottom: '10px' }}>
               RESTRICTED STUDIO
             </div>
             <h2 style={{ ...styles.cardTitle, fontSize: '22px', fontWeight: 600, marginBottom: '6px' }}>Yönetici Girişi</h2>
@@ -307,7 +307,7 @@ export default function AdminPage() {
                 />
               </div>
               {loginError && (
-                <div role="alert" style={{ fontSize: '12.5px', color: '#fca5a5', borderLeft: '2px solid #dc2626', paddingLeft: '10px' }}>
+                <div role="alert" style={{ fontSize: '12.5px', color: '#fca5a5', borderLeft: '2px solid #ef4444', paddingLeft: '10px' }}>
                   {loginError}
                 </div>
               )}
@@ -325,7 +325,7 @@ export default function AdminPage() {
         <div style={styles.card}>
           <div style={styles.cardHeader}>
             <div style={styles.cardIcon}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fe0000" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2">
                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
               </svg>
@@ -399,7 +399,7 @@ export default function AdminPage() {
         <div style={styles.card}>
           <div style={styles.cardHeader}>
             <div style={styles.cardIcon}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fe0000" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -538,8 +538,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: '8px',
     height: '8px',
     borderRadius: '50%',
-    backgroundColor: '#fe0000',
-    boxShadow: '0 0 10px #fe0000',
+    backgroundColor: '#0071e3',
+    boxShadow: '0 0 10px #0071e3',
   },
   backBtn: {
     padding: '7px 14px',
@@ -576,8 +576,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: '38px',
     height: '38px',
     borderRadius: '10px',
-    backgroundColor: 'rgba(254, 0, 0, 0.12)',
-    border: '1px solid rgba(254, 0, 0, 0.3)',
+    backgroundColor: 'rgba(0, 113, 227, 0.12)',
+    border: '1px solid rgba(0, 113, 227, 0.3)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -631,13 +631,13 @@ const styles: { [key: string]: React.CSSProperties } = {
   primaryBtn: {
     padding: '12px 22px',
     borderRadius: '8px',
-    backgroundColor: '#fe0000',
+    backgroundColor: '#0071e3',
     color: '#ffffff',
     fontSize: '13.5px',
     fontWeight: 700,
     border: 'none',
     cursor: 'pointer',
-    boxShadow: '0 4px 16px rgba(254, 0, 0, 0.35)',
+    boxShadow: '0 4px 16px rgba(0, 113, 227, 0.35)',
   },
   copyBtn: {
     padding: '8px 16px',
@@ -703,9 +703,9 @@ const styles: { [key: string]: React.CSSProperties } = {
   alertBox: {
     padding: '14px 18px',
     borderRadius: '10px',
-    backgroundColor: 'rgba(254, 0, 0, 0.12)',
-    border: '1px solid rgba(254, 0, 0, 0.35)',
-    color: '#ff6b6b',
+    backgroundColor: 'rgba(0, 113, 227, 0.12)',
+    border: '1px solid rgba(0, 113, 227, 0.35)',
+    color: '#4da3ff',
     fontSize: '13.5px',
     fontWeight: 600,
   },

@@ -185,8 +185,8 @@ export default function DashboardPage() {
                   fontSize: '12px',
                   fontWeight: 700,
                   color: '#ffffff',
-                  backgroundColor: 'rgba(254, 0, 0, 0.16)',
-                  border: '1px solid rgba(254, 0, 0, 0.4)',
+                  backgroundColor: 'rgba(0, 113, 227, 0.16)',
+                  border: '1px solid rgba(0, 113, 227, 0.4)',
                   padding: '6px 12px',
                   borderRadius: '6px',
                   textDecoration: 'none',
@@ -217,7 +217,7 @@ export default function DashboardPage() {
         <div style={styles.card}>
           <div style={styles.cardHeader}>
             <div style={styles.cardIcon}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fe0000" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2">
                 <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
               </svg>
             </div>
@@ -258,7 +258,7 @@ export default function DashboardPage() {
         <div style={styles.card}>
           <div style={styles.cardHeader}>
             <div style={styles.cardIcon}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fe0000" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="7 10 12 15 17 10" />
                 <line x1="12" y1="15" x2="12" y2="3" />
@@ -317,7 +317,7 @@ export default function DashboardPage() {
         <div style={styles.card}>
           <div style={styles.cardHeader}>
             <div style={styles.cardIcon}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fe0000" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2">
                 <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
                 <line x1="8" y1="21" x2="16" y2="21" />
                 <line x1="12" y1="17" x2="12" y2="21" />
@@ -438,8 +438,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: '8px',
     height: '8px',
     borderRadius: '50%',
-    backgroundColor: '#fe0000',
-    boxShadow: '0 0 10px #fe0000',
+    backgroundColor: '#0071e3',
+    boxShadow: '0 0 10px #0071e3',
   },
   userSection: {
     display: 'flex',
@@ -503,8 +503,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: '40px',
     height: '40px',
     borderRadius: '10px',
-    backgroundColor: 'rgba(254, 0, 0, 0.12)',
-    border: '1px solid rgba(254, 0, 0, 0.3)',
+    backgroundColor: 'rgba(0, 113, 227, 0.12)',
+    border: '1px solid rgba(0, 113, 227, 0.3)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -541,13 +541,13 @@ const styles: { [key: string]: React.CSSProperties } = {
   redeemBtn: {
     padding: '13px 24px',
     borderRadius: '10px',
-    backgroundColor: '#fe0000',
+    backgroundColor: '#0071e3',
     color: '#ffffff',
     fontSize: '13.5px',
     fontWeight: 700,
     border: 'none',
     cursor: 'pointer',
-    boxShadow: '0 4px 16px rgba(254, 0, 0, 0.35)',
+    boxShadow: '0 4px 16px rgba(0, 113, 227, 0.35)',
     transition: 'all 0.2s',
   },
   messageBox: {
@@ -601,12 +601,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     gap: '10px',
     padding: '13px 22px',
     borderRadius: '10px',
-    backgroundColor: '#fe0000',
+    backgroundColor: '#0071e3',
     color: '#ffffff',
     fontSize: '13.5px',
     fontWeight: 700,
     textDecoration: 'none',
-    boxShadow: '0 4px 20px rgba(254, 0, 0, 0.4)',
+    boxShadow: '0 4px 20px rgba(0, 113, 227, 0.4)',
     transition: 'all 0.2s',
   },
   downloadBtnDisabled: {
