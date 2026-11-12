@@ -28,6 +28,10 @@ const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
 const ITEMSATIS_LISTING_URL = 'https://www.itemsatis.com/p/saintstudio';
 const PAGE_SIZE = 60;
 
+const UNIT_PRICE = 100; // TL per piece
+const DISCOUNT_THRESHOLD = 15; // > 15 pieces triggers 50% discount
+const DISCOUNT_PERCENT = 50;
+
 const DEFAULT_STYLE = {
   from: '#0b1a33',
   to: '#12306b',
@@ -71,11 +75,16 @@ export default function CatalogPage() {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tümü');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const [copiedItem, setCopiedItem] = useState<CatalogItem | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [dontShowToday, setDontShowToday] = useState(false);
   const [templateCopied, setTemplateCopied] = useState(false);
+
+  // Cart State
+  const [cart, setCart] = useState<CatalogItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cartHydrated, setCartHydrated] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Check 24-hour persistence for the order guide modal
   useEffect(() => {
@@ -93,6 +102,34 @@ export default function CatalogPage() {
     setShowGuideModal(true);
   }, []);
 
+  // Cart local storage hydration
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('rs_catalog_cart');
+      if (stored) {
+        const ids: string[] = JSON.parse(stored);
+        if (Array.isArray(ids) && ids.length > 0) {
+          const idSet = new Set(ids);
+          const restored = (catalogItems as CatalogItem[]).filter((item) => idSet.has(item.id));
+          setCart(restored);
+        }
+      }
+    } catch {
+      // ignore storage errors
+    }
+    setCartHydrated(true);
+  }, []);
+
+  // Sync cart to local storage
+  useEffect(() => {
+    if (!cartHydrated) return;
+    try {
+      localStorage.setItem('rs_catalog_cart', JSON.stringify(cart.map((c) => c.id)));
+    } catch {
+      // ignore storage errors
+    }
+  }, [cart, cartHydrated]);
+
   const handleCloseGuideModal = () => {
     if (dontShowToday) {
       try {
@@ -108,7 +145,7 @@ export default function CatalogPage() {
   };
 
   const SAMPLE_INQUIRY =
-    'Merhaba, İtemsatış üzerinden aşağıdaki paketi almak istiyorum:\\nPaket: [Paket adı]\\nStok, güncellik ve fiyat teyidi alabilir miyim?';
+    'Merhaba, İtemsatış üzerinden sipariş vermek istiyorum:\nPaketler:\n[Paket İsimlerini Buraya Yapıştırın]\nStok, güncellik ve fiyat teyidi alabilir miyim?';
 
   const handleCopyTemplate = () => {
     if (navigator?.clipboard?.writeText) {
@@ -156,27 +193,86 @@ export default function CatalogPage() {
     return filteredItems.slice(0, visibleCount);
   }, [filteredItems, visibleCount]);
 
-  const handleDemand = (item: CatalogItem) => {
-    const textToCopy = `Merhaba Restricted Studio ekibi, İtemsatış üzerinden şu paket hakkında bilgi almak ve sipariş vermek istiyorum:\n[${item.id}] ${item.title}\nPaket stok, sürüm ve fiyat durumunu teyit edebilir misiniz?`;
-
-    if (navigator?.clipboard?.writeText) {
-      navigator.clipboard.writeText(textToCopy);
-    }
-
-    setCopiedItem(item);
-
-    // Redirect to İtemsatış store
-    setTimeout(() => {
-      window.open(ITEMSATIS_URL, '_blank', 'noopener,noreferrer');
-    }, 600);
-
-    setTimeout(() => {
-      setCopiedItem(null);
-    }, 4000);
-  };
-
   const handleLoadMore = () => {
     setVisibleCount((prev) => prev + PAGE_SIZE);
+  };
+
+  // Cart logic & pricing
+  const cartIds = useMemo(() => new Set(cart.map((c) => c.id)), [cart]);
+  const isDiscounted = cart.length > DISCOUNT_THRESHOLD;
+  const effectiveUnitPrice = isDiscounted ? UNIT_PRICE * (1 - DISCOUNT_PERCENT / 100) : UNIT_PRICE;
+  const rawTotal = cart.length * UNIT_PRICE;
+  const finalTotal = cart.length * effectiveUnitPrice;
+  const discountSavings = rawTotal - finalTotal;
+  const remainingForDiscount = Math.max(0, DISCOUNT_THRESHOLD + 1 - cart.length);
+
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage((prev) => (prev === msg ? null : prev));
+    }, 3500);
+  };
+
+  const addToCart = (item: CatalogItem) => {
+    setCart((prev) => {
+      if (prev.some((c) => c.id === item.id)) return prev;
+      return [...prev, item];
+    });
+    triggerToast(`"${item.title}" sepete eklendi.`);
+  };
+
+  const removeFromCart = (id: string) => {
+    setCart((prev) => prev.filter((c) => c.id !== id));
+  };
+
+  const toggleCartItem = (item: CatalogItem) => {
+    if (cartIds.has(item.id)) {
+      removeFromCart(item.id);
+      triggerToast(`"${item.title}" sepetten çıkarıldı.`);
+    } else {
+      addToCart(item);
+    }
+  };
+
+  const clearCart = () => {
+    setCart([]);
+    triggerToast('Sepetiniz temizlendi.');
+  };
+
+  // Checkout: Copy ONLY item titles and redirect to Itemsatis
+  const handleCheckout = async () => {
+    if (cart.length === 0) return;
+
+    // Yalnızca paket isimleri kopyalanır
+    const textToCopy = cart.map((c) => c.title).join('\n');
+    let copied = false;
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(textToCopy);
+        copied = true;
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = textToCopy;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        copied = document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+    } catch {
+      copied = false;
+    }
+
+    triggerToast(
+      copied
+        ? `${cart.length} paket ismi kopyalandı! İtemsatış açılıyor...`
+        : 'İtemsatış mağazamıza aktarılıyorsunuz...'
+    );
+
+    setTimeout(() => {
+      window.open(ITEMSATIS_URL, '_blank', 'noopener,noreferrer');
+    }, 700);
   };
 
   return (
@@ -213,6 +309,14 @@ export default function CatalogPage() {
 
             {/* Mobile Actions */}
             <div className="nav-mobile-actions">
+              <button
+                type="button"
+                className="btn btn-full"
+                style={{ background: '#0071e3', color: '#ffffff', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                onClick={() => { setIsCartOpen(true); setMobileMenuOpen(false); }}
+              >
+                🛒 Sepetim ({cart.length} Paket)
+              </button>
               <Link
                 href="/dashboard"
                 className="btn btn-full"
@@ -241,6 +345,45 @@ export default function CatalogPage() {
           </nav>
 
           <div className="nav-cta-group">
+            {/* Header Cart Button */}
+            <button
+              type="button"
+              onClick={() => setIsCartOpen(true)}
+              className="nav-btn-cart"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '7px',
+                backgroundColor: cart.length > 0 ? '#0071e3' : 'rgba(255, 255, 255, 0.05)',
+                color: '#ffffff',
+                border: '1px solid ' + (cart.length > 0 ? '#0071e3' : 'rgba(255, 255, 255, 0.1)'),
+                padding: '7px 14px',
+                borderRadius: '10px',
+                fontSize: '13px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
+              </svg>
+              <span>Sepet</span>
+              {cart.length > 0 && (
+                <span style={{
+                  backgroundColor: '#ffffff',
+                  color: '#0071e3',
+                  borderRadius: '999px',
+                  padding: '1px 7px',
+                  fontSize: '11px',
+                  fontWeight: 800,
+                }}>
+                  {cart.length}
+                </span>
+              )}
+            </button>
+
             <Link href="/dashboard" className="nav-btn-portal" id="navPortalBtn">
               <svg
                 width="13"
@@ -276,7 +419,9 @@ export default function CatalogPage() {
         </div>
       </header>
 
-      {/* HERO: compact header */}
+      {/* =====================================================================
+           HERO: Compact Header & Campaign Bar
+           ===================================================================== */}
       <section className="catalog-hero">
         <div className="container catalog-hero-inner">
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
@@ -284,12 +429,81 @@ export default function CatalogPage() {
               <p className="catalog-eyebrow">Paket Kataloğu</p>
               <h1 className="catalog-title">FiveM Arşivi</h1>
               <p className="catalog-subtitle">
-                {catalogItems.length.toLocaleString('tr-TR')} paket. Arayın, seçin, İtemsatış üzerinden teslim alın.
+                {catalogItems.length.toLocaleString('tr-TR')} paket. Sepete ekleyin, tek tıkla İtemsatış üzerinden teslim alın.
               </p>
             </div>
-            <button type="button" onClick={() => setShowGuideModal(true)} className="catalog-guide-link">
-              Sipariş Yönergesi
-            </button>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => setIsCartOpen(true)}
+                className="catalog-guide-link"
+                style={{
+                  backgroundColor: cart.length > 0 ? 'rgba(0, 113, 227, 0.15)' : 'transparent',
+                  borderColor: cart.length > 0 ? '#0071e3' : undefined,
+                  color: cart.length > 0 ? '#38bdf8' : undefined,
+                }}
+              >
+                🛒 Sepet ({cart.length})
+              </button>
+              <button type="button" onClick={() => setShowGuideModal(true)} className="catalog-guide-link">
+                Sipariş Yönergesi
+              </button>
+            </div>
+          </div>
+
+          {/* Campaign Notice Box */}
+          <div
+            style={{
+              marginTop: '18px',
+              padding: '12px 18px',
+              borderRadius: '12px',
+              backgroundColor: isDiscounted ? 'rgba(16, 185, 129, 0.1)' : 'rgba(0, 113, 227, 0.08)',
+              border: '1px solid ' + (isDiscounted ? 'rgba(16, 185, 129, 0.3)' : 'rgba(0, 113, 227, 0.25)'),
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '12px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '18px' }}>{isDiscounted ? '🎉' : '🏷️'}</span>
+              <div style={{ fontSize: '13px', color: '#e4e4e7', lineHeight: 1.45 }}>
+                <strong style={{ color: isDiscounted ? '#34d399' : '#38bdf8' }}>
+                  Parça Başı 100 TL Kampanyası:
+                </strong>{' '}
+                {isDiscounted ? (
+                  <span>15 adetten fazla ürün seçtiniz, <strong>%50 İndirim</strong> aktif! (Paket başı 50 TL)</span>
+                ) : (
+                  <span>
+                    Tüm paketler parça başı <strong>100 TL</strong>. Sepetinize <strong>15&apos;ten fazla ürün</strong> (16+) eklerseniz tüm sepetinizde anında <strong>%50 İndirim</strong> tanımlanır!
+                    {cart.length > 0 && <span style={{ color: '#38bdf8' }}> ({remainingForDiscount} ürün sonra %50 indirim)</span>}
+                  </span>
+                )}
+              </div>
+            </div>
+            {cart.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setIsCartOpen(true)}
+                style={{
+                  backgroundColor: '#0071e3',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '7px 14px',
+                  fontSize: '12.5px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <span>Sepeti Gör ({finalTotal.toLocaleString('tr-TR')} TL)</span>
+                <span>→</span>
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -358,7 +572,10 @@ export default function CatalogPage() {
           {filteredItems.length > visibleCount && ` (İlk ${visibleCount} gösteriliyor)`}
           {selectedCategory !== 'Tümü' && ` · ${selectedCategory}`}
         </div>
-        <span>İtemsatış ile teslimat</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{ fontSize: '12.5px', color: '#a1a1aa' }}>Parça başı 100 TL • 15+ pakette %50 indirim</span>
+          <span style={{ color: '#0071e3', fontWeight: 600 }}>• İtemsatış ile teslimat</span>
+        </div>
       </div>
 
       {/* =====================================================================
@@ -367,7 +584,7 @@ export default function CatalogPage() {
       <main className="catalog-grid">
         {displayedItems.length > 0 ? (
           displayedItems.map((item) => {
-            const isCopied = copiedItem?.id === item.id;
+            const inCart = cartIds.has(item.id);
             const isVerified = item.source === 'restricted-verified';
 
             return (
@@ -386,30 +603,33 @@ export default function CatalogPage() {
                   </div>
 
                   <h3 className="catalog-card-title">{item.title}</h3>
-
                 </div>
 
                 <div className="catalog-card-footer">
                   <button
-                    className={`btn-demand ${isCopied ? 'copied' : ''}`}
-                    onClick={() => handleDemand(item)}
-                    title="Paket adını kopyalayıp İtemsatış mağazamıza yönlendirir"
+                    className={`btn-demand ${inCart ? 'in-cart' : ''}`}
+                    onClick={() => toggleCartItem(item)}
+                    title={inCart ? 'Sepetten çıkar' : 'Sepete ekle'}
+                    style={{
+                      backgroundColor: inCart ? 'rgba(16, 185, 129, 0.15)' : '#0071e3',
+                      color: inCart ? '#34d399' : '#ffffff',
+                      border: inCart ? '1px solid rgba(16, 185, 129, 0.4)' : 'none',
+                    }}
                   >
-                    {isCopied ? (
+                    {inCart ? (
                       <>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
-                        <span>Kopyalandı! İtemsatış Açılıyor...</span>
+                        <span>Sepette (Çıkar)</span>
                       </>
                     ) : (
                       <>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1">
-                          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                          <line x1="3" y1="6" x2="21" y2="6" />
-                          <path d="M16 10a4 4 0 0 1-8 0" />
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
                         </svg>
-                        <span>Teslim Al (İtemsatış)</span>
+                        <span>Sepete Ekle (100 TL)</span>
                       </>
                     )}
                   </button>
@@ -440,7 +660,7 @@ export default function CatalogPage() {
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
               <line x1="8" y1="11" x2="14" y2="11" />
             </svg>
-            <h3 className="catalog-empty-title">"{search}" ile eşleşen paket bulunamadı</h3>
+            <h3 className="catalog-empty-title">&quot;{search}&quot; ile eşleşen paket bulunamadı</h3>
             <p className="catalog-empty-text">
               Aradığınız paket henüz kataloğumuza eklenmemiş olabilir. Aradığınız paket adını veya FiveM / CFX forum linkini bize Discord üzerinden iletin; aynı gün arşivimizden tarayıp temizleyerek sizin için özel hazırlayalım.
             </p>
@@ -483,17 +703,17 @@ export default function CatalogPage() {
           <div className="catalog-workflow-grid">
             <div className="catalog-step-box">
               <span className="catalog-step-number">1</span>
-              <h3 className="catalog-step-title">Paketi Belirleyin</h3>
+              <h3 className="catalog-step-title">Sepete Ekleyin</h3>
               <p className="catalog-step-desc">
-                6.400'den fazla paket arasından arama çubuğunu veya kategorileri kullanarak sunucunuza eklemek istediğiniz MLO, script veya aracı seçin.
+                6.400&apos;den fazla paket arasından arama yaparak sunucunuza eklemek istediğiniz script veya MLO&apos;ları sepete toplayın.
               </p>
             </div>
 
             <div className="catalog-step-box">
               <span className="catalog-step-number">2</span>
-              <h3 className="catalog-step-title">İtemsatış'tan Sipariş Verin</h3>
+              <h3 className="catalog-step-title">Satın Al &amp; İtemsatış&apos;a İletin</h3>
               <p className="catalog-step-desc">
-                Yeşil <strong>Teslim Al</strong> butonuna tıklayın. Paket adı otomatik kopyalanır ve resmi İtemsatış mağazamıza aktarılırsınız.
+                Sepetten <strong>Satın Al</strong> butonuna bastığınızda seçtiğiniz paket isimleri otomatik kopyalanır ve resmi İtemsatış mağazamıza aktarılırsınız.
               </p>
             </div>
 
@@ -501,7 +721,7 @@ export default function CatalogPage() {
               <span className="catalog-step-number">3</span>
               <h3 className="catalog-step-title">Temiz &amp; Açık Kaynak Teslimat</h3>
               <p className="catalog-step-desc">
-                Paketiniz atölyemizde tersine mühendislikle incelenir, gizli link/backdoor kontrolleri tamamlanır ve 3D Secure güvencesiyle temiz kod olarak teslim edilir.
+                Paketleriniz güvenlik denetimlerinden geçirilir, 3D Secure güvencesiyle temiz kod olarak adınıza teslim edilir.
               </p>
             </div>
           </div>
@@ -593,7 +813,7 @@ export default function CatalogPage() {
       </footer>
 
       {/* =====================================================================
-           ORDER GUIDE MODAL
+           ORDER INSTRUCTIONS MODAL (POP-UP)
            ===================================================================== */}
       {showGuideModal && (
         <div
@@ -663,14 +883,14 @@ export default function CatalogPage() {
               Sipariş Yönergesi
             </h2>
             <p style={{ fontSize: '13px', color: '#a1a1aa', margin: '0 0 22px', lineHeight: 1.5 }}>
-              Siparişiniz üç adımda tamamlanır.
+              Siparişiniz üç basit adımda tamamlanır.
             </p>
 
             <ol style={{ listStyle: 'none', margin: '0 0 20px', padding: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {[
-                { n: '1', t: 'Paketini Belirle', d: 'Katalogdan paketi seçin ve "Teslim Al" ile adını kopyalayın.' },
-                { n: '2', t: 'İtemsatış\'tan Yaz', d: 'Mağazamızda "Satıcıya Soru Sor" alanından aşağıdaki mesajı gönderin.' },
-                { n: '3', t: 'Anında Teslim Al', d: 'Ekibimiz teyit edince size özel sipariş açılır; dosyanızı hemen alırsınız.' },
+                { n: '1', t: 'Paketlerini Belirle', d: 'Katalogdan istediğiniz paketleri "Sepete Ekle" butonuyla sepetinize toplayın.' },
+                { n: '2', t: 'İtemsatış\'tan Yaz', d: 'Sepetten "Satın Al" butonuna bastığınızda seçtiğiniz tüm paket isimleri panonuza kopyalanır. Mağazamızda satıcıya iletin.' },
+                { n: '3', t: 'Anında Teslim Al', d: 'Ekibimiz listeyi teyit edince adınıza güvenli sipariş açılır; dosyalarınızı hemen teslim alırsınız.' },
               ].map((s) => (
                 <li key={s.n} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                   <span style={{ flexShrink: 0, width: '24px', height: '24px', borderRadius: '50%', border: '1px solid rgba(0, 113, 227, 0.6)', color: '#4da3ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600 }}>
@@ -701,7 +921,7 @@ export default function CatalogPage() {
               }}
             >
               <span style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 600, letterSpacing: '0.04em', color: templateCopied ? '#34d399' : '#4da3ff', marginBottom: '6px' }}>
-                <span>MESAJ ŞABLONU</span>
+                <span>ÖRNEK MESAJ ŞABLONU</span>
                 <span>{templateCopied ? 'Kopyalandı' : 'Kopyalamak için tıklayın'}</span>
               </span>
               <span style={{ display: 'block', fontSize: '12.5px', lineHeight: 1.5, whiteSpace: 'pre-line' }}>
@@ -710,7 +930,7 @@ export default function CatalogPage() {
             </button>
 
             <p style={{ fontSize: '12px', color: '#a1a1aa', lineHeight: 1.55, margin: '0 0 18px', paddingLeft: '10px', borderLeft: '2px solid rgba(0, 113, 227, 0.7)' }}>
-              <strong style={{ color: '#e4e4e7', fontWeight: 600 }}>Not:</strong> 30 TL'lik temel ilan sembolik fiyattır. Paketin fiyatı ve teslimatı satıcı teyidinden sonra netleşir; teyitsiz satın alımlar işleme alınamaz.
+              <strong style={{ color: '#e4e4e7', fontWeight: 600 }}>Not:</strong> Paketler parça başı 100 TL&apos;dir. 15&apos;ten fazla ürün eklediğinizde sepette %50 indirim uygulanır. Teyitsiz alımlar işleme alınamaz.
             </p>
 
             <button
@@ -743,21 +963,243 @@ export default function CatalogPage() {
                 />
                 <span>Bugün tekrar gösterme</span>
               </label>
-
             </div>
           </div>
         </div>
       )}
 
-      {/* Copy toast */}
-      {copiedItem && (
+      {/* =====================================================================
+           FLOATING CART BAR (Fixed at bottom when cart has items)
+           ===================================================================== */}
+      {cart.length > 0 && !isCartOpen && (
+        <div className="catalog-floating-cart">
+          <div className="floating-cart-inner">
+            <div className="floating-cart-info" onClick={() => setIsCartOpen(true)}>
+              <div className="cart-badge-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
+                </svg>
+                <span className="cart-count-pill">{cart.length}</span>
+              </div>
+              <div className="cart-text-details">
+                <div className="cart-price-line">
+                  <span className="cart-total-bold">{finalTotal.toLocaleString('tr-TR')} TL</span>
+                  {isDiscounted && <span className="discount-tag">%50 İndirim</span>}
+                </div>
+                <span className="cart-sub-hint">
+                  {isDiscounted
+                    ? 'Kampanya aktif (Paket başı 50 TL)'
+                    : remainingForDiscount === 1
+                    ? 'Sadece 1 paket daha ekle, %50 indirimi kap!'
+                    : `${remainingForDiscount} paket sonra %50 indirim!`}
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="btn-floating-checkout"
+              onClick={() => setIsCartOpen(true)}
+            >
+              <span>Sepeti İncele &amp; Satın Al</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+           CART DRAWER / MODAL
+           ===================================================================== */}
+      {isCartOpen && (
+        <div
+          className="cart-drawer-overlay"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setIsCartOpen(false)}
+        >
+          <div
+            className="cart-drawer"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drawer Header */}
+            <div className="cart-drawer-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div className="cart-header-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2.2">
+                    <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+                    <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="cart-drawer-title">Sepetim</h2>
+                  <span className="cart-drawer-sub">{cart.length} paket seçildi</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="cart-drawer-close"
+                onClick={() => setIsCartOpen(false)}
+                aria-label="Kapat"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Campaign Banner in Drawer */}
+            <div className={`cart-campaign-box ${isDiscounted ? 'active' : ''}`}>
+              {isDiscounted ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '20px' }}>🎉</span>
+                  <div>
+                    <strong style={{ color: '#34d399', fontSize: '13px' }}>%50 İndirim Tanımlandı!</strong>
+                    <div style={{ fontSize: '12px', color: '#a1a1aa' }}>15 adetten fazla ürün eklendiği için paket başı 100 TL yerine 50 TL olarak hesaplanıyor.</div>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '20px' }}>🏷️</span>
+                  <div>
+                    <strong style={{ color: '#38bdf8', fontSize: '13px' }}>15&apos;ten Fazla Ürün Kampanyası</strong>
+                    <div style={{ fontSize: '12px', color: '#a1a1aa' }}>
+                      Sepetinize <strong>{remainingForDiscount} paket daha</strong> eklerseniz tüm sepet %50 indirime girecektir!
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Item List */}
+            <div className="cart-item-list">
+              {cart.length === 0 ? (
+                <div className="cart-empty-state">
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#71717a" strokeWidth="1.5">
+                    <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+                    <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
+                  </svg>
+                  <p style={{ fontSize: '15px', fontWeight: 600, color: '#ffffff', margin: '12px 0 4px' }}>Sepetiniz henüz boş</p>
+                  <span style={{ fontSize: '12.5px', color: '#a1a1aa' }}>Katalogdan istediğiniz paketleri &quot;Sepete Ekle&quot; butonuyla ekleyebilirsiniz.</span>
+                </div>
+              ) : (
+                cart.map((item, idx) => (
+                  <div key={item.id} className="cart-item-row">
+                    <span className="cart-item-index">{idx + 1}</span>
+                    <div className="cart-item-info">
+                      <span className="cart-item-name">{item.title}</span>
+                      <div className="cart-item-tags">
+                        <span className="cart-item-id">{item.id}</span>
+                        <span className="cart-item-category">{item.category}</span>
+                      </div>
+                    </div>
+                    <div className="cart-item-actions">
+                      <span className="cart-item-price">
+                        {isDiscounted ? (
+                          <>
+                            <s style={{ color: '#71717a', fontSize: '11px', marginRight: '4px' }}>100 TL</s>
+                            <strong style={{ color: '#10b981' }}>50 TL</strong>
+                          </>
+                        ) : (
+                          <strong>100 TL</strong>
+                        )}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removeFromCart(item.id)}
+                        className="cart-item-remove-btn"
+                        title="Sepetten Çıkar"
+                        aria-label="Çıkar"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Footer Summary & Checkout */}
+            {cart.length > 0 && (
+              <div className="cart-drawer-footer">
+                <div className="cart-summary-breakdown">
+                  <div className="summary-row">
+                    <span>Seçilen Paket Adedi</span>
+                    <span>{cart.length} Adet</span>
+                  </div>
+                  <div className="summary-row">
+                    <span>Birim Fiyat</span>
+                    <span>
+                      {isDiscounted ? (
+                        <>
+                          <s style={{ color: '#71717a', marginRight: '6px' }}>100 TL</s>
+                          <span style={{ color: '#10b981', fontWeight: 600 }}>50 TL</span>
+                        </>
+                      ) : (
+                        '100 TL'
+                      )}
+                    </span>
+                  </div>
+                  {isDiscounted && (
+                    <div className="summary-row discount">
+                      <span>%50 Kampanya İndirimi</span>
+                      <span style={{ color: '#10b981', fontWeight: 600 }}>-{discountSavings.toLocaleString('tr-TR')} TL</span>
+                    </div>
+                  )}
+                  <div className="summary-row total">
+                    <span>Toplam Tutar</span>
+                    <span className="total-amount">{finalTotal.toLocaleString('tr-TR')} TL</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="cart-checkout-btn"
+                  onClick={handleCheckout}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                  <span>Satın Al (İtemsatış&apos;a İlet)</span>
+                </button>
+
+                <p className="cart-checkout-note">
+                  ℹ️ <strong>Satın Al</strong> butonuna bastığınızda sepetteki <strong>{cart.length}</strong> paketin yalnızca isimleri panonuza kopyalanır ve resmi İtemsatış mağazamıza yönlendirilirsiniz.
+                </p>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px' }}>
+                  <button
+                    type="button"
+                    className="cart-clear-btn"
+                    onClick={clearCart}
+                  >
+                    Sepeti Temizle
+                  </button>
+                  <button
+                    type="button"
+                    className="cart-continue-btn"
+                    onClick={() => setIsCartOpen(false)}
+                  >
+                    Kataloğa Devam Et →
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+           TOAST NOTIFICATION
+           ===================================================================== */}
+      {toastMessage && (
         <div className="catalog-toast">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5">
             <polyline points="20 6 9 17 4 12" />
           </svg>
-          <span>
-            <strong>{copiedItem.title}</strong> panoya kopyalandı! İtemsatış mağazasından satıcıya iletebilirsiniz.
-          </span>
+          <span>{toastMessage}</span>
         </div>
       )}
     </div>
