@@ -2529,15 +2529,17 @@ svg {
 
 .cart-campaign-box {
   margin: 16px 20px 0;
-  padding: 12px 14px;
+  padding: 14px 16px;
   border-radius: 12px;
-  background: rgba(0, 113, 227, 0.08);
-  border: 1px solid rgba(0, 113, 227, 0.25);
+  background: linear-gradient(135deg, rgba(0, 113, 227, 0.22) 0%, rgba(0, 113, 227, 0.38) 100%);
+  border: 1.5px solid rgba(0, 113, 227, 0.55);
+  box-shadow: 0 4px 16px rgba(0, 113, 227, 0.18);
 }
 
 .cart-campaign-box.active {
-  background: rgba(16, 185, 129, 0.08);
-  border-color: rgba(16, 185, 129, 0.25);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.35) 100%);
+  border-color: rgba(16, 185, 129, 0.55);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.18);
 }
 
 .cart-item-list {

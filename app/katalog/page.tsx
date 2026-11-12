@@ -454,30 +454,68 @@ export default function CatalogPage() {
           {/* Campaign Notice Box */}
           <div
             style={{
-              marginTop: '18px',
-              padding: '12px 18px',
-              borderRadius: '12px',
-              backgroundColor: isDiscounted ? 'rgba(16, 185, 129, 0.1)' : 'rgba(0, 113, 227, 0.08)',
-              border: '1px solid ' + (isDiscounted ? 'rgba(16, 185, 129, 0.3)' : 'rgba(0, 113, 227, 0.25)'),
+              marginTop: '20px',
+              padding: '14px 20px',
+              borderRadius: '14px',
+              background: isDiscounted
+                ? 'linear-gradient(135deg, #06261a 0%, #0c4d34 100%)'
+                : 'linear-gradient(135deg, #081d3d 0%, #0e3778 100%)',
+              border: isDiscounted ? '1.5px solid #10b981' : '1.5px solid #0071e3',
+              boxShadow: isDiscounted
+                ? '0 8px 24px rgba(16, 185, 129, 0.25)'
+                : '0 8px 28px rgba(0, 113, 227, 0.35)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               flexWrap: 'wrap',
-              gap: '12px',
+              gap: '14px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '18px' }}>{isDiscounted ? '🎉' : '🏷️'}</span>
-              <div style={{ fontSize: '13px', color: '#e4e4e7', lineHeight: 1.45 }}>
-                <strong style={{ color: isDiscounted ? '#34d399' : '#38bdf8' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '10px',
+                  backgroundColor: isDiscounted ? 'rgba(16, 185, 129, 0.2)' : 'rgba(0, 113, 227, 0.3)',
+                  border: isDiscounted ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(0, 113, 227, 0.6)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '18px',
+                  flexShrink: 0,
+                }}
+              >
+                {isDiscounted ? '🎉' : '🏷️'}
+              </div>
+              <div style={{ fontSize: '13.5px', color: '#ffffff', lineHeight: 1.5 }}>
+                <strong style={{ color: isDiscounted ? '#34d399' : '#60a5fa', fontWeight: 800, marginRight: '6px' }}>
                   Parça Başı 100 TL Kampanyası:
-                </strong>{' '}
+                </strong>
                 {isDiscounted ? (
-                  <span>15 adetten fazla ürün seçtiniz, <strong>%50 İndirim</strong> aktif! (Paket başı 50 TL)</span>
+                  <span>
+                    15 adetten fazla ürün seçtiniz, <strong style={{ color: '#34d399', textDecoration: 'underline' }}>%50 İndirim</strong> aktif! (Paket başı 50 TL)
+                  </span>
                 ) : (
                   <span>
-                    Tüm paketler parça başı <strong>100 TL</strong>. Sepetinize <strong>15&apos;ten fazla ürün</strong> (16+) eklerseniz tüm sepetinizde anında <strong>%50 İndirim</strong> tanımlanır!
-                    {cart.length > 0 && <span style={{ color: '#38bdf8' }}> ({remainingForDiscount} ürün sonra %50 indirim)</span>}
+                    Tüm paketler parça başı <strong style={{ color: '#ffffff' }}>100 TL</strong>. Sepetinize <strong style={{ color: '#93c5fd' }}>15&apos;ten fazla ürün</strong> (16+) eklerseniz tüm sepetinizde anında <strong style={{ color: '#60a5fa' }}>%50 İndirim</strong> tanımlanır!
+                    {cart.length > 0 && (
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          marginLeft: '8px',
+                          padding: '2px 8px',
+                          borderRadius: '6px',
+                          backgroundColor: 'rgba(0, 113, 227, 0.45)',
+                          border: '1px solid #38bdf8',
+                          color: '#ffffff',
+                          fontWeight: 700,
+                          fontSize: '12px',
+                        }}
+                      >
+                        {remainingForDiscount} ürün sonra %50 indirim
+                      </span>
+                    )}
                   </span>
                 )}
               </div>
@@ -489,15 +527,18 @@ export default function CatalogPage() {
                 style={{
                   backgroundColor: '#0071e3',
                   color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '8px',
-                  padding: '7px 14px',
-                  fontSize: '12.5px',
+                  border: '1px solid #60a5fa',
+                  borderRadius: '10px',
+                  padding: '9px 18px',
+                  fontSize: '13px',
                   fontWeight: 700,
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '8px',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s',
                 }}
               >
                 <span>Sepeti Gör ({finalTotal.toLocaleString('tr-TR')} TL)</span>
