@@ -48,3 +48,10 @@ Bu doküman, uygulanan uygulama güvenliği katmanlarının bulut/kenar (Cloudfl
 - `/admin` girişinde parola doğrulaması tek başına yetki vermez; zorunlu 6 haneli TOTP doğrulaması gerektirir.
 - İlk girişte ekranda beliren QR kodu Authenticator uygulamanıza okutun. Çoklu sunucusuz (serverless) örneklerde kesintisiz TOTP devamlılığı için Base32 gizli anahtarını `ADMIN_TOTP_SECRET` ortam değişkeni olarak kaydedebilirsiniz (`SUPABASE_SERVICE_ROLE_KEY` aktifse `public.admin_mfa_secrets` tablosuna AES-256-GCM şifreli olarak da kaydedilir).
 - Kurumsal IP kısıtlaması için `ADMIN_ALLOWED_IPS` (virgülle ayrılmış IPv4/CIDR, örn. `203.0.113.10,10.0.0.0/24`) ve alt alan adı izolasyonu için `ADMIN_SUBDOMAIN` (örn. `admin.restrictedstudio.shop`) ayarlayabilirsiniz.
+
+## 5. Ücretsiz Kurumsal Durum Sayfası (`status.restrictedstudio.shop`)
+- **Uygulama İçi Durum Sayfası:** `/status` sayfası ve `GET /api/health` uç noktası; Web/Edge, Supabase Auth/Google OAuth, Veritabanı geçidi ve Katalog servislerini gerçek zamanlı ölçer (`status.*` alt alan adına gelen istekler `middleware.ts` üzerinden doğrudan `/status` sayfasına yönlendirilir).
+- **Ücretsiz Alt Alan Adı Bağlantısı:**
+  1. **Vercel Dashboard -> Project -> Settings -> Domains:** `status.restrictedstudio.shop` ekleyin.
+  2. **Alan Adı DNS Sağlayıcısı (GoDaddy veya Cloudflare DNS):** Host `status` -> `CNAME` -> `cname.vercel-dns.com` kaydını ekleyin.
+- **Opsiyonel Geçmiş Uptime (90 Günlük Arşiv):** Ücretsiz bir **UptimeRobot** hesabından Read-Only API Key alıp Vercel ortam değişkenlerine `UPTIMEROBOT_API_KEY` olarak eklerseniz, `/status` sayfasında 24s/7g/30g/90g erişilebilirlik yüzdeleri de otomatik görüntülenir.

@@ -10,6 +10,7 @@ import {
   isAdminHostAllowed,
   isAdminIpAllowed,
   isLocalHostRequest,
+  isStatusSubdomainRequest,
   resolveCorsHeaders,
   safeRedirectPath,
   verifyCloudflareOriginSecret,
@@ -48,6 +49,7 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const search = request.nextUrl.search || '';
   const ua = request.headers.get('user-agent') || '';
+  const isStatusSubdomain = isStatusSubdomainRequest(request);
   const isApi = path.startsWith('/api/');
   const isAdminPath = path.startsWith('/admin') || path.startsWith('/api/admin');
   const isPrivateOrAuth =
@@ -108,7 +110,7 @@ export async function middleware(request: NextRequest) {
 
     // 4. Zero-Trust Admin Isolation (dedicated subdomain + CIDR IP Whitelisting)
     if (isAdminPath) {
-      if (!isAdminHostAllowed(request)) {
+      if (isStatusSubdomain || !isAdminHostAllowed(request)) {
         return applyResponseHeaders(
           new NextResponse(
             isApi
@@ -207,6 +209,45 @@ export async function middleware(request: NextRequest) {
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set('x-nonce', nonce);
     requestHeaders.set('Content-Security-Policy', secHeaders['Content-Security-Policy']);
+
+    // Dedicated public status subdomain routing (status.restrictedstudio.shop -> /status)
+    if (isStatusSubdomain) {
+      if (path === '/' || path === '/status') {
+        const rewriteUrl = new URL('/status', request.url);
+        const rewriteRes = NextResponse.rewrite(rewriteUrl, {
+          request: { headers: requestHeaders },
+        });
+        return applyResponseHeaders(rewriteRes, request, secHeaders, false);
+      }
+      if (path === '/api/health') {
+        return applyResponseHeaders(
+          NextResponse.next({ request: { headers: requestHeaders } }),
+          request,
+          secHeaders,
+          true
+        );
+      }
+      if (isApi) {
+        return applyResponseHeaders(
+          NextResponse.json(
+            { success: false, message: 'Bu uç nokta durum alt alan adında kullanılamaz.' },
+            { status: 404 }
+          ),
+          request,
+          secHeaders,
+          true
+        );
+      }
+      if (!isLocalHostRequest(request)) {
+        const mainSiteBase = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.restrictedstudio.shop').replace(/\/+$/, '');
+        return applyResponseHeaders(
+          NextResponse.redirect(`${mainSiteBase}${path}${search}`, 307),
+          request,
+          secHeaders,
+          false
+        );
+      }
+    }
 
     const response = NextResponse.next({
       request: {

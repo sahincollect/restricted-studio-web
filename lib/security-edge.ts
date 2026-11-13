@@ -65,11 +65,11 @@ export function getClientIp(request: Request): string {
 
 export function isLocalHostRequest(request: Request): boolean {
   const host = (request.headers.get('x-forwarded-host') || request.headers.get('host') || '').toLowerCase();
+  const cleanHost = host.split(':')[0];
   return (
-    host.startsWith('localhost:') ||
-    host === 'localhost' ||
-    host.startsWith('127.0.0.1:') ||
-    host === '127.0.0.1'
+    cleanHost === 'localhost' ||
+    cleanHost === '127.0.0.1' ||
+    cleanHost.endsWith('.localhost')
   );
 }
 
@@ -100,6 +100,17 @@ export function isAdminHostAllowed(request: Request): boolean {
     .trim()
     .toLowerCase();
   return actualHost === expected;
+}
+
+/**
+ * Identifies requests arriving on the public status subdomain (e.g. status.restrictedstudio.shop).
+ */
+export function isStatusSubdomainRequest(request: Request): boolean {
+  const actualHost = (request.headers.get('x-forwarded-host') || request.headers.get('host') || '')
+    .split(':')[0]
+    .trim()
+    .toLowerCase();
+  return actualHost === 'status.restrictedstudio.shop' || actualHost.startsWith('status.');
 }
 
 /**

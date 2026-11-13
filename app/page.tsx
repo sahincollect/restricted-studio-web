@@ -291,6 +291,10 @@ export default function HomePage() {
           <span>DİSCORD TOPLULUĞU</span>
           <span>↗</span>
         </Link>
+        <Link href="/status" className="bmn-link-btn">
+          <span>SİSTEM DURUMU</span>
+          <span>↗</span>
+        </Link>
       </div>
 
       {/* ===============================================================
@@ -611,7 +615,18 @@ export default function HomePage() {
                   </div>
 
                   <div className="dcc-footer">
-                    <span>64 / 64 Oyuncu · %99.99 Uptime</span>
+                    <span>64 / 64 Kapasite · Istanbul Engine</span>
+                    <Link
+                      href="/status"
+                      style={{
+                        color: '#F0F0F0',
+                        textDecoration: 'underline',
+                        textUnderlineOffset: '2px',
+                        fontWeight: 700,
+                      }}
+                    >
+                      SİSTEM DURUMU →
+                    </Link>
                   </div>
                 </div>
               </div>

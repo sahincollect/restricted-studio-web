@@ -353,6 +353,9 @@ export default function CatalogPage() {
             <Link href="/discord" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
               Discord
             </Link>
+            <Link href="/status" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
+              Durum
+            </Link>
 
             {/* Mobile Actions */}
             <div className="nav-mobile-actions">
@@ -385,9 +388,18 @@ export default function CatalogPage() {
               <Link
                 href={DISCORD_INVITE}
                 className="btn btn-discord-solid btn-full"
+                style={{ marginBottom: '8px' }}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 İletişime Geçin (Discord)
+              </Link>
+              <Link
+                href="/status"
+                className="btn btn-full"
+                style={{ background: '#0e0e0e', color: '#F0F0F0', border: '1.5px solid rgba(240,240,240,0.3)' }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Sistem Durumu
               </Link>
             </div>
           </nav>

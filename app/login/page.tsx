@@ -362,6 +362,11 @@ function LoginFormContent() {
           <Link href="/register" style={styles.link}>
             Kayıt Olun
           </Link>
+          <div style={{ marginTop: '10px', fontSize: '11.5px', color: 'rgba(240, 240, 240, 0.5)' }}>
+            <Link href="/status" style={{ color: 'rgba(240, 240, 240, 0.65)', textDecoration: 'underline' }}>
+              Sistem Durumu
+            </Link>
+          </div>
         </div>
       </div>
     </div>
