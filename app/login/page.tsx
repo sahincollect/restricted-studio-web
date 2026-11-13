@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { createClientSupabase, resolveLoginIdentifier } from '@/lib/supabase';
+import { createClientSupabase, resolveLoginIdentifier, resolveLegacyLoginIdentifier } from '@/lib/supabase';
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState('');
@@ -73,13 +73,32 @@ export default function LoginPage() {
 
     try {
       const resolvedEmail = resolveLoginIdentifier(identifier);
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
+      let { data, error: authError } = await supabase.auth.signInWithPassword({
         email: resolvedEmail,
         password: password,
       });
 
+      // Eski @restrictedstudio.local hesapları için geriye dönük uyumluluk kontrolü
+      if (authError && !identifier.includes('@')) {
+        const legacyEmail = resolveLegacyLoginIdentifier(identifier);
+        if (legacyEmail) {
+          const legacyAttempt = await supabase.auth.signInWithPassword({
+            email: legacyEmail,
+            password: password,
+          });
+          if (!legacyAttempt.error && legacyAttempt.data?.user) {
+            data = legacyAttempt.data;
+            authError = null;
+          }
+        }
+      }
+
       if (authError) {
-        throw new Error(authError.message === 'Invalid login credentials' ? 'Kullanıcı adı/e-posta veya şifre hatalı.' : authError.message);
+        throw new Error(
+          authError.message === 'Invalid login credentials'
+            ? 'Kullanıcı adı/e-posta veya şifre hatalı.'
+            : authError.message
+        );
       }
 
       if (data?.user) {

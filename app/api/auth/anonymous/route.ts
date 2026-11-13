@@ -6,7 +6,7 @@ export async function POST() {
   try {
     const adminSupabase = createAdminSupabase();
     const anonId = crypto.randomBytes(5).toString('hex').toLowerCase();
-    const email = `anon_${anonId}@restrictedstudio.local`;
+    const email = `anon_${anonId}@restrictedstudio.com`;
     const password = crypto.randomBytes(16).toString('hex');
     const displayTag = `Anonim #${anonId.slice(0, 4).toUpperCase()}`;
 

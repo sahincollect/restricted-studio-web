@@ -72,6 +72,21 @@ export default function RegisterPage() {
     setLoading(true);
     setError(null);
 
+    const cleanInput = identifier.trim();
+    const isEmail = cleanInput.includes('@');
+
+    if (!cleanInput) {
+      setError('Lütfen kullanıcı adı veya e-posta giriniz.');
+      setLoading(false);
+      return;
+    }
+
+    if (!isEmail && cleanInput.length < 3) {
+      setError('Kullanıcı adı en az 3 karakter olmalıdır.');
+      setLoading(false);
+      return;
+    }
+
     if (password.length < 6) {
       setError('Şifre en az 6 karakter olmalıdır.');
       setLoading(false);
@@ -85,24 +100,63 @@ export default function RegisterPage() {
     }
 
     try {
-      const resolvedEmail = resolveLoginIdentifier(identifier);
-      const { data, error: authError } = await supabase.auth.signUp({
-        email: resolvedEmail,
-        password: password,
-        options: {
-          data: {
-            username: identifier.trim(),
-          },
-        },
-      });
+      const resolvedEmail = resolveLoginIdentifier(cleanInput);
 
-      if (authError) {
-        throw new Error(authError.message);
+      // 1. Önce sunucu API üzerinden doğrudan onaylı kayıt oluşturmayı dene
+      let registeredViaApi = false;
+      try {
+        const apiRes = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier: cleanInput, password }),
+        });
+        const apiData = await apiRes.json();
+        if (apiRes.ok && apiData.success) {
+          registeredViaApi = true;
+        } else if (apiData.serviceRoleAvailable) {
+          throw new Error(apiData.message || 'Kayıt oluşturulamadı.');
+        }
+      } catch (apiErr: any) {
+        if (apiErr.message && !apiErr.message.includes('fetch')) {
+          throw apiErr;
+        }
       }
 
-      if (data?.user) {
+      // 2. Sunucuda service role anahtarı yoksa istemci signUp ile devam et
+      if (!registeredViaApi) {
+        const { data, error: authError } = await supabase.auth.signUp({
+          email: resolvedEmail,
+          password: password,
+          options: {
+            data: {
+              username: cleanInput,
+            },
+          },
+        });
+
+        if (authError) {
+          const msg = authError.message || '';
+          if (msg.toLowerCase().includes('rate limit')) {
+            throw new Error('E-posta gönderim limiti aşıldı. Lütfen birkaç dakika sonra tekrar deneyin veya hemen "Anonim Olarak Devam Et" seçeneğini kullanın.');
+          }
+          if (msg.toLowerCase().includes('already registered')) {
+            throw new Error('Bu kullanıcı adı veya e-posta zaten kayıtlı. Lütfen giriş yapın.');
+          }
+          throw new Error(msg);
+        }
+      }
+
+      // 3. Kayıt sonrası otomatik giriş yap
+      const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+        email: resolvedEmail,
+        password: password,
+      });
+
+      if (!signInErr && signInData?.session) {
         router.push('/dashboard');
         router.refresh();
+      } else {
+        router.push('/login?registered=1');
       }
     } catch (err: any) {
       setError(err.message || 'Kayıt işlemi sırasında bir hata oluştu.');
@@ -142,7 +196,7 @@ export default function RegisterPage() {
               required
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="Kullanıcı adı veya ornek@domain.com"
+              placeholder="Örn: saintstudio veya ornek@domain.com"
               style={styles.input}
             />
           </div>

@@ -196,7 +196,7 @@ export default function DashboardPage() {
               </Link>
             )}
             <span style={styles.userEmail}>
-              {user?.user_metadata?.username || user?.email?.replace('@restrictedstudio.local', '')}
+              {user?.user_metadata?.username || user?.email?.replace(/@(restrictedstudio\.com|restrictedstudio\.local|restricted\.studio)$/i, '')}
             </span>
             <button onClick={handleLogout} style={styles.logoutBtn}>
               Çıkış Yap

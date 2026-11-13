@@ -28,12 +28,31 @@ export function createAdminSupabase() {
   });
 }
 
-// 3. Kullanıcı Adı veya E-posta Girişini Supabase Formatına Dönüştürür
+// 3. Kullanıcı Adı Normalizasyonu ve Supabase Kimlik Çözümlemesi
+export function normalizeUsername(identifier: string): string {
+  const trMap: Record<string, string> = {
+    'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u',
+    'Ç': 'c', 'Ğ': 'g', 'İ': 'i', 'Ö': 'o', 'Ş': 's', 'Ü': 'u',
+  };
+  const str = String(identifier || '').trim();
+  const transliterated = str.replace(/[çğıöşüÇĞİÖŞÜ]/g, (m) => trMap[m] || m);
+  return transliterated.toLowerCase().replace(/[^a-z0-9._-]/g, '');
+}
+
 export function resolveLoginIdentifier(identifier: string): string {
   const clean = String(identifier || '').trim().toLowerCase();
   if (!clean) return '';
   if (clean.includes('@')) return clean;
-  const safeUsername = clean.replace(/[^a-z0-9._-]/g, '');
+  const safeUsername = normalizeUsername(clean);
+  // Supabase geçerli bir TLD gerektirir; .local yerine .com kullanılır
+  return `${safeUsername}@restrictedstudio.com`;
+}
+
+// Eski .local hesapları için geriye dönük uyumluluk
+export function resolveLegacyLoginIdentifier(identifier: string): string {
+  const clean = String(identifier || '').trim().toLowerCase();
+  if (!clean || clean.includes('@')) return '';
+  const safeUsername = normalizeUsername(clean);
   return `${safeUsername}@restrictedstudio.local`;
 }
 
