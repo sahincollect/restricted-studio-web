@@ -6,6 +6,7 @@ import { useI18n } from '@/components/I18nProvider';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import type {
   ComponentHealthState,
+  PublicServiceId,
   ServiceProbeResult,
   UptimeMonitorSummary,
 } from '@/app/api/health/route';
@@ -13,38 +14,12 @@ import type {
 interface HealthPayload {
   status: ComponentHealthState;
   checkedAt: string;
-  region: string;
   historicalMonitoring: boolean;
   monitors: UptimeMonitorSummary[];
   services: ServiceProbeResult[];
 }
 
-interface SessionProbeEntry {
-  checkedAt: string;
-  status: ComponentHealthState;
-  avgLatencyMs: number;
-}
-
-const STATE_STYLE: Record<
-  ComponentHealthState,
-  { dotColor: string; borderColor: string; badgeBg: string }
-> = {
-  operational: {
-    dotColor: '#22c55e',
-    borderColor: '#22c55e',
-    badgeBg: 'rgba(34, 197, 94, 0.14)',
-  },
-  degraded: {
-    dotColor: '#eab308',
-    borderColor: '#eab308',
-    badgeBg: 'rgba(234, 179, 8, 0.14)',
-  },
-  outage: {
-    dotColor: '#ef4444',
-    borderColor: '#ef4444',
-    badgeBg: 'rgba(239, 68, 68, 0.18)',
-  },
-};
+const DEFAULT_SERVICE_IDS: readonly PublicServiceId[] = ['web', 'auth', 'database', 'catalog'];
 
 export default function StatusBoard() {
   const { t, formatTime } = useI18n();
@@ -53,7 +28,6 @@ export default function StatusBoard() {
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(60);
-  const [history, setHistory] = useState<SessionProbeEntry[]>([]);
   const [mainOrigin, setMainOrigin] = useState('');
 
   useEffect(() => {
@@ -78,16 +52,6 @@ export default function StatusBoard() {
         setData(payload);
         setFetchError(null);
         setCountdown(60);
-
-        const latencies = payload.services.map((s) => s.latencyMs).filter((n) => n > 0);
-        const avgLatencyMs = latencies.length
-          ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length)
-          : 0;
-
-        setHistory((prev) => [
-          { checkedAt: payload.checkedAt, status: payload.status, avgLatencyMs },
-          ...prev.slice(0, 7),
-        ]);
       } catch {
         setFetchError(t.statusPage.errorFallback);
       } finally {
@@ -116,28 +80,13 @@ export default function StatusBoard() {
   }, [runHealthCheck]);
 
   const activeStatus: ComponentHealthState = data ? data.status : 'operational';
-  const currentStyle = STATE_STYLE[activeStatus];
+  const heroState = loading ? 'loading' : fetchError ? 'outage' : activeStatus;
   const currentLabels = t.statusPage.states[activeStatus];
   const siteLink = (path: string) => (mainOrigin ? `${mainOrigin}${path}` : path);
 
-  const avgLatency =
-    data?.services && data.services.length > 0
-      ? Math.round(
-          data.services.reduce((acc, item) => acc + item.latencyMs, 0) / data.services.length
-        )
-      : null;
-
-  const degradedOrOutage = data?.services.filter((s) => s.status !== 'operational') || [];
-
-  const getLocalizedService = (svc: ServiceProbeResult) => {
-    const meta = t.statusPage.servicesMeta[svc.id];
-    if (!meta) return { name: svc.name, description: svc.description, detail: svc.detail };
-    return {
-      name: meta.name,
-      description: meta.description,
-      detail: svc.status === 'operational' ? meta.detailOk : svc.detail,
-    };
-  };
+  const services = data?.services || [];
+  const operationalCount = services.filter((s) => s.status === 'operational').length;
+  const degradedOrOutage = services.filter((s) => s.status !== 'operational');
 
   return (
     <div className="status-page-shell">
@@ -167,7 +116,7 @@ export default function StatusBoard() {
                 <a href={siteLink('/')} className="status-nav-btn">
                   {t.common.home}
                 </a>
-                <a href={siteLink('/katalog')} className="status-nav-btn">
+                <a href={siteLink('/katalog')} className="status-nav-btn status-nav-hide-sm">
                   {t.common.catalog}
                 </a>
                 <a href={siteLink('/dashboard')} className="status-nav-btn status-nav-primary">
@@ -179,7 +128,7 @@ export default function StatusBoard() {
                 <Link href="/" className="status-nav-btn">
                   {t.common.home}
                 </Link>
-                <Link href="/katalog" className="status-nav-btn">
+                <Link href="/katalog" className="status-nav-btn status-nav-hide-sm">
                   {t.common.catalog}
                 </Link>
                 <Link href="/dashboard" className="status-nav-btn status-nav-primary">
@@ -190,195 +139,172 @@ export default function StatusBoard() {
           </nav>
         </header>
 
-        {/* Global Operational Hero */}
-        <section
-          className="status-hero-card"
-          style={{
-            borderColor: fetchError ? '#ef4444' : currentStyle.borderColor,
-          }}
-        >
-          <div className="status-hero-left">
-            <div className="status-hero-indicator">
-              <span
-                className="status-dot"
-                style={{
-                  backgroundColor: loading
-                    ? '#a1a1aa'
+        <main className="status-main">
+          {/* Sleek Hero Status Card */}
+          <section className="status-hero-card" data-state={heroState}>
+            <div className="status-hero-left">
+              <div className="status-hero-indicator">
+                <span className="status-pulse-dot" data-state={heroState} aria-hidden="true" />
+                <h1 className="status-hero-title">
+                  {loading
+                    ? t.statusPage.loadingHeadline
                     : fetchError
-                    ? '#ef4444'
-                    : currentStyle.dotColor,
-                }}
-              />
-              <h1 className="status-hero-title">
-                {loading
-                  ? t.statusPage.loadingHeadline
-                  : fetchError
-                  ? t.statusPage.errorHeadline
-                  : currentLabels.headline}
-              </h1>
+                    ? t.statusPage.errorHeadline
+                    : currentLabels.headline}
+                </h1>
+              </div>
+              <p className="status-hero-sub">
+                {fetchError
+                  ? fetchError
+                  : data
+                  ? `${t.statusPage.lastCheckedPrefix} ${formatTime(data.checkedAt)} · ${countdown}s`
+                  : t.statusPage.verifyingLive}
+              </p>
             </div>
-            <p className="status-hero-sub">
-              {fetchError
-                ? fetchError
-                : data
-                ? `${t.statusPage.lastCheckedPrefix} ${formatTime(data.checkedAt)} · ${t.statusPage.avgLatencyLabel} ${avgLatency ?? 0} ms · ${t.statusPage.regionLabel} ${data.region}`
-                : t.statusPage.verifyingLive}
-            </p>
-          </div>
 
-          <div className="status-hero-actions">
-            <span className="status-countdown">
-              {t.statusPage.autoRefreshPrefix} {countdown}s
-            </span>
             <button
               type="button"
               onClick={() => runHealthCheck(true)}
               disabled={refreshing}
               className="status-refresh-btn"
+              aria-label={t.statusPage.checkNowBtn}
             >
-              {refreshing ? t.statusPage.checkingBtn : t.statusPage.checkNowBtn}
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={refreshing ? 'status-spin' : undefined}
+                aria-hidden="true"
+              >
+                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                <path d="M21 3v5h-5" />
+              </svg>
+              <span>{refreshing ? t.statusPage.checkingBtn : t.statusPage.checkNowBtn}</span>
             </button>
-          </div>
-        </section>
+          </section>
 
-        {/* Subsystem Breakdown */}
-        <section className="status-section" aria-label={t.statusPage.subsystemsTitle}>
-          <div className="status-section-head">
-            <h2>{t.statusPage.subsystemsTitle}</h2>
-            <span>{t.statusPage.subsystemsSub}</span>
-          </div>
-
-          <div className="status-services-grid">
-            {(data?.services || []).map((svc) => {
-              const style = STATE_STYLE[svc.status];
-              const stateLabel = t.statusPage.states[svc.status].label;
-              const locSvc = getLocalizedService(svc);
-              return (
-                <article key={svc.id} className="status-service-row">
-                  <div className="status-service-info">
-                    <div className="status-service-name-line">
-                      <span className="status-dot-sm" style={{ backgroundColor: style.dotColor }} />
-                      <h3>{locSvc.name}</h3>
-                    </div>
-                    <p className="status-service-desc">{locSvc.description}</p>
-                    <span className="status-service-detail">{locSvc.detail}</span>
-                  </div>
-
-                  <div className="status-service-metrics">
-                    <span className="status-latency">{svc.latencyMs} ms</span>
-                    <span
-                      className="status-badge"
-                      style={{
-                        color: style.dotColor,
-                        borderColor: style.dotColor,
-                        backgroundColor: style.badgeBg,
-                      }}
-                    >
-                      {stateLabel}
-                    </span>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* UptimeRobot Historical Metrics (when UPTIMEROBOT_API_KEY is configured) OR Real Session Log */}
-        {data?.historicalMonitoring && data.monitors.length > 0 ? (
-          <section className="status-section" aria-label={t.statusPage.historicalTitle}>
-            <div className="status-section-head">
-              <h2>{t.statusPage.historicalTitle}</h2>
-              <span>{t.statusPage.historicalSub}</span>
+          {/* Minimalist Service List */}
+          <section className="status-panel" aria-label={t.statusPage.servicesTitle}>
+            <div className="status-panel-head">
+              <h2>{t.statusPage.servicesTitle}</h2>
+              {data && (
+                <span className="status-count-pill">
+                  {operationalCount}/{services.length}
+                </span>
+              )}
             </div>
 
-            <div className="status-monitors-grid">
-              {data.monitors.map((mon) => {
-                const style = STATE_STYLE[mon.status];
-                const stateLabel = t.statusPage.states[mon.status].label;
-                return (
+            <div className="status-list">
+              {loading && services.length === 0
+                ? DEFAULT_SERVICE_IDS.map((id) => (
+                    <div key={id} className="status-row status-row-skeleton">
+                      <span className="status-row-left">
+                        <span className="status-dot-sm" data-state="loading" />
+                        <span className="status-service-name">{t.statusPage.serviceNames[id]}</span>
+                      </span>
+                      <span className="status-skeleton-pill" aria-hidden="true" />
+                    </div>
+                  ))
+                : services.map((svc) => {
+                    const stateLabel = t.statusPage.states[svc.status].label;
+                    const displayName = t.statusPage.serviceNames[svc.id] ?? svc.id;
+                    return (
+                      <div key={svc.id} className="status-row">
+                        <div className="status-row-left">
+                          <span className="status-dot-sm" data-state={svc.status} aria-hidden="true" />
+                          <span className="status-service-name">{displayName}</span>
+                        </div>
+                        <span className="status-state-pill" data-state={svc.status}>
+                          {stateLabel}
+                        </span>
+                      </div>
+                    );
+                  })}
+            </div>
+          </section>
+
+          {/* Quiet Status Summary or Active Incident Alert */}
+          {!loading && !fetchError && degradedOrOutage.length === 0 && (
+            <div className="status-calm-note">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#22c55e"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+              <span>{t.statusPage.noIncidents}</span>
+            </div>
+          )}
+
+          {degradedOrOutage.length > 0 && (
+            <section className="status-incident-alert" aria-label={t.statusPage.incidentDetected}>
+              <div className="status-incident-head">{t.statusPage.incidentDetected}</div>
+              <ul className="status-incident-list">
+                {degradedOrOutage.map((s) => (
+                  <li key={s.id}>
+                    <span>{t.statusPage.serviceNames[s.id] ?? s.id}</span>
+                    <span className="status-state-pill" data-state={s.status}>
+                      {t.statusPage.states[s.status].label}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* UptimeRobot Historical Metrics (only shown when configured) */}
+          {data?.historicalMonitoring && data.monitors.length > 0 && (
+            <section className="status-panel" aria-label={t.statusPage.historicalTitle}>
+              <div className="status-panel-head">
+                <h2>{t.statusPage.historicalTitle}</h2>
+              </div>
+
+              <div className="status-monitors-grid">
+                {data.monitors.map((mon) => (
                   <div key={mon.name} className="status-monitor-card">
                     <div className="status-monitor-head">
                       <span className="status-monitor-name">{mon.name}</span>
-                      <span style={{ color: style.dotColor, fontSize: '11px', fontWeight: 700 }}>
-                        {stateLabel}
+                      <span className="status-state-pill" data-state={mon.status}>
+                        {t.statusPage.states[mon.status].label}
                       </span>
                     </div>
                     <div className="status-ratios">
                       <div>
                         <span>{t.statusPage.ratio24h}</span>
-                        <strong>{mon.uptime24h || '-'}</strong>
+                        <strong>{mon.uptime24h || '—'}</strong>
                       </div>
                       <div>
                         <span>{t.statusPage.ratio7d}</span>
-                        <strong>{mon.uptime7d || '-'}</strong>
+                        <strong>{mon.uptime7d || '—'}</strong>
                       </div>
                       <div>
                         <span>{t.statusPage.ratio30d}</span>
-                        <strong>{mon.uptime30d || '-'}</strong>
+                        <strong>{mon.uptime30d || '—'}</strong>
                       </div>
                       <div>
                         <span>{t.statusPage.ratio90d}</span>
-                        <strong>{mon.uptime90d || '-'}</strong>
+                        <strong>{mon.uptime90d || '—'}</strong>
                       </div>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          </section>
-        ) : (
-          <section className="status-section" aria-label={t.statusPage.liveLogTitle}>
-            <div className="status-section-head">
-              <h2>{t.statusPage.liveLogTitle}</h2>
-              <span>{t.statusPage.liveLogSub}</span>
-            </div>
-
-            <div className="status-log-box">
-              {history.length === 0 ? (
-                <div className="status-log-empty">{t.statusPage.waitingProbe}</div>
-              ) : (
-                history.map((entry) => {
-                  const style = STATE_STYLE[entry.status];
-                  const stateLabel = t.statusPage.states[entry.status].label;
-                  return (
-                    <div key={entry.checkedAt} className="status-log-row">
-                      <span>{formatTime(entry.checkedAt)}</span>
-                      <span style={{ color: style.dotColor, fontWeight: 700 }}>{stateLabel}</span>
-                      <span>
-                        {t.statusPage.avgShort} {entry.avgLatencyMs} ms
-                      </span>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* Incidents Panel */}
-        <section className="status-section" aria-label={t.statusPage.incidentsTitle}>
-          <div className="status-section-head">
-            <h2>{t.statusPage.incidentsTitle}</h2>
-            <span>{t.statusPage.incidentsSub}</span>
-          </div>
-
-          <div className="status-incident-box">
-            {degradedOrOutage.length === 0 ? (
-              <p className="status-incident-ok">{t.statusPage.noIncidents}</p>
-            ) : (
-              <ul className="status-incident-list">
-                {degradedOrOutage.map((s) => {
-                  const locSvc = getLocalizedService(s);
-                  return (
-                    <li key={s.id}>
-                      <strong>{locSvc.name}:</strong> {locSvc.detail} ({s.latencyMs} ms)
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-        </section>
+                ))}
+              </div>
+            </section>
+          )}
+        </main>
 
         <footer className="status-footer">
           <span>{t.statusPage.footerBrand}</span>

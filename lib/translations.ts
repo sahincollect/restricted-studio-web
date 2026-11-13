@@ -269,27 +269,17 @@ export interface TranslationDictionary {
     errorFallback: string;
     invalidResponseError: string;
     lastCheckedPrefix: string;
-    avgLatencyLabel: string;
-    regionLabel: string;
     verifyingLive: string;
-    autoRefreshPrefix: string;
     checkingBtn: string;
     checkNowBtn: string;
-    subsystemsTitle: string;
-    subsystemsSub: string;
-    servicesMeta: Record<string, { name: string; description: string; detailOk: string }>;
+    servicesTitle: string;
+    serviceNames: Record<'web' | 'auth' | 'database' | 'catalog', string>;
     historicalTitle: string;
-    historicalSub: string;
     ratio24h: string;
     ratio7d: string;
     ratio30d: string;
     ratio90d: string;
-    liveLogTitle: string;
-    liveLogSub: string;
-    waitingProbe: string;
-    avgShort: string;
-    incidentsTitle: string;
-    incidentsSub: string;
+    incidentDetected: string;
     noIncidents: string;
     footerBrand: string;
   };
@@ -426,7 +416,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
         'Restricted Studio resmi Discord topluluk ve teknik destek altyapısı çok yakında yayında.',
       statusTitle: 'Sistem Durumu',
       statusDescription:
-        'Restricted Studio altyapısı, kimlik doğrulama, Google OAuth, veritabanı ve katalog servislerinin canlı çalışma durumu.',
+        'Restricted Studio servislerinin canlı erişilebilirlik ve çalışma durumu.',
     },
     common: {
       home: 'Ana Sayfa',
@@ -752,62 +742,36 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       toastCheckoutRedirect: 'İtemsatış mağazamıza aktarılıyorsunuz...',
     },
     statusPage: {
-      pillTag: 'SİSTEM DURUMU',
+      pillTag: 'DURUM',
       navAria: 'Hızlı Geçiş',
       states: {
-        operational: { label: 'ÇALIŞIYOR', headline: 'TÜM SİSTEMLER ÇALIŞIYOR' },
-        degraded: { label: 'YAVAŞLAMA', headline: 'KISMİ PERFORMANS DÜŞÜŞÜ' },
-        outage: { label: 'KESİNTİ', headline: 'SERVİS ERİŞİM SORUNU ALGILANDI' },
+        operational: { label: 'Çalışıyor', headline: 'Tüm Sistemler Çalışıyor' },
+        degraded: { label: 'Kısmi Sorun', headline: 'Bazı Servislerde Yavaşlama' },
+        outage: { label: 'Kesinti', headline: 'Servis Erişim Sorunu' },
       },
-      loadingHeadline: 'SİSTEMLER KONTROL EDİLİYOR...',
-      errorHeadline: 'DURUM SERVİSİNE ERİŞİLEMEDİ',
-      errorFallback: 'Durum verisi alınamadı. Ağ bağlantınızı kontrol edin.',
-      invalidResponseError: 'Geçersiz durum yanıtı alındı.',
+      loadingHeadline: 'Durum kontrol ediliyor...',
+      errorHeadline: 'Durum bilgisi alınamadı',
+      errorFallback: 'Bağlantı kurulamadı. Lütfen tekrar deneyin.',
+      invalidResponseError: 'Geçersiz durum yanıtı.',
       lastCheckedPrefix: 'Son kontrol:',
-      avgLatencyLabel: 'Ortalama yanıt:',
-      regionLabel: 'Bölge:',
-      verifyingLive: 'Canlı servis uçları doğrulanıyor...',
-      autoRefreshPrefix: 'Otomatik yenileme:',
-      checkingBtn: 'Kontrol Ediliyor...',
-      checkNowBtn: 'Şimdi Kontrol Et',
-      subsystemsTitle: 'ALT SİSTEMLER',
-      subsystemsSub: 'Canlı HTTP / API Doğrulaması',
-      servicesMeta: {
-        web: {
-          name: 'Web Platform & Kenar Ağı',
-          description: 'Next.js SSR, güvenlik duvarı ve CDN katmanı',
-          detailOk: 'Edge yönlendirme aktif',
-        },
-        auth: {
-          name: 'Kimlik Doğrulama & Google OAuth',
-          description: 'Müşteri oturumları ve OAuth 2.0 sağlayıcısı',
-          detailOk: 'OAuth uç noktası yanıt veriyor',
-        },
-        database: {
-          name: 'Veritabanı & Lisans Motoru',
-          description: 'PostgreSQL RLS katmanı ve lisans doğrulaması',
-          detailOk: 'Veritabanı bağlantısı sağlıklı',
-        },
-        catalog: {
-          name: 'Katalog İndeksi & API',
-          description: 'Ürün arşivi, arama indeksi ve statik varlıklar',
-          detailOk: 'Katalog indeksi erişilebilir',
-        },
+      verifyingLive: 'Servisler doğrulanıyor...',
+      checkingBtn: 'Yenileniyor',
+      checkNowBtn: 'Yenile',
+      servicesTitle: 'Servisler',
+      serviceNames: {
+        web: 'Web & Müşteri Portalı',
+        auth: 'Hesap & Giriş',
+        database: 'Lisans & Veri',
+        catalog: 'Ürün Kataloğu',
       },
-      historicalTitle: 'GEÇMİŞ ERİŞİLEBİLİRLİK',
-      historicalSub: 'UptimeRobot Canlı Arşivi',
-      ratio24h: '24 SAAT',
-      ratio7d: '7 GÜN',
-      ratio30d: '30 GÜN',
-      ratio90d: '90 GÜN',
-      liveLogTitle: 'CANLI KONTROL GÜNLÜĞÜ',
-      liveLogSub: 'Gerçek Zamanlı Oturum Ölçümleri',
-      waitingProbe: 'İlk canlı doğrulama bekleniyor...',
-      avgShort: 'Ortalama',
-      incidentsTitle: 'OLAY & KESİNTİ BİLDİRİMLERİ',
-      incidentsSub: 'Anlık Durum',
-      noIncidents: 'Tüm servisler normal çalışıyor. Aktif kesinti veya bakım kaydı bulunmuyor.',
-      footerBrand: 'Restricted Studio · Kurumsal Sistem Telemetrisi',
+      historicalTitle: 'Erişilebilirlik Özeti',
+      ratio24h: '24 Saat',
+      ratio7d: '7 Gün',
+      ratio30d: '30 Gün',
+      ratio90d: '90 Gün',
+      incidentDetected: 'Etkilenen servisler',
+      noIncidents: 'Aktif bir kesinti veya planlı bakım bulunmuyor.',
+      footerBrand: 'Restricted Studio',
     },
     auth: {
       loginErrors: {
@@ -953,7 +917,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
         'Official Restricted Studio Discord community and technical support hub is launching soon.',
       statusTitle: 'System Status',
       statusDescription:
-        'Live operational status and latency telemetry for Restricted Studio web, authentication, Google OAuth, database, and catalog services.',
+        'Live operational status and availability of Restricted Studio services.',
     },
     common: {
       home: 'Home',
@@ -1279,62 +1243,36 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       toastCheckoutRedirect: 'Redirecting to our official Itemsatis store...',
     },
     statusPage: {
-      pillTag: 'SYSTEM STATUS',
+      pillTag: 'STATUS',
       navAria: 'Quick Navigation',
       states: {
-        operational: { label: 'OPERATIONAL', headline: 'ALL SYSTEMS OPERATIONAL' },
-        degraded: { label: 'DEGRADED', headline: 'PARTIAL PERFORMANCE DEGRADATION' },
-        outage: { label: 'OUTAGE', headline: 'SERVICE DISRUPTION DETECTED' },
+        operational: { label: 'Operational', headline: 'All Systems Operational' },
+        degraded: { label: 'Degraded', headline: 'Partial Service Degradation' },
+        outage: { label: 'Outage', headline: 'Service Disruption Detected' },
       },
-      loadingHeadline: 'CHECKING INFRASTRUCTURE...',
-      errorHeadline: 'STATUS SERVICE UNREACHABLE',
-      errorFallback: 'Unable to retrieve system status. Please check your connection.',
-      invalidResponseError: 'Invalid status payload received.',
-      lastCheckedPrefix: 'Last checked:',
-      avgLatencyLabel: 'Avg latency:',
-      regionLabel: 'Region:',
-      verifyingLive: 'Verifying live service endpoints...',
-      autoRefreshPrefix: 'Auto-refresh:',
-      checkingBtn: 'Checking...',
-      checkNowBtn: 'Check Now',
-      subsystemsTitle: 'SUBSYSTEMS',
-      subsystemsSub: 'Live HTTP / API Verification',
-      servicesMeta: {
-        web: {
-          name: 'Web Platform & Edge Network',
-          description: 'Next.js SSR, WAF rules, and global CDN edge',
-          detailOk: 'Edge routing operational',
-        },
-        auth: {
-          name: 'Authentication & Google OAuth',
-          description: 'Customer sessions and OAuth 2.0 identity provider',
-          detailOk: 'OAuth endpoint responding',
-        },
-        database: {
-          name: 'Database & License Engine',
-          description: 'PostgreSQL RLS layer and license verification',
-          detailOk: 'Database connection healthy',
-        },
-        catalog: {
-          name: 'Catalog Index & API',
-          description: 'Archive index, fast client search, and static assets',
-          detailOk: 'Catalog index accessible',
-        },
+      loadingHeadline: 'Checking status...',
+      errorHeadline: 'Status unavailable',
+      errorFallback: 'Unable to retrieve system status. Please try again.',
+      invalidResponseError: 'Invalid status response.',
+      lastCheckedPrefix: 'Updated',
+      verifyingLive: 'Verifying services...',
+      checkingBtn: 'Refreshing',
+      checkNowBtn: 'Refresh',
+      servicesTitle: 'Services',
+      serviceNames: {
+        web: 'Web & Client Portal',
+        auth: 'Account & Sign-In',
+        database: 'Licensing & Data',
+        catalog: 'Product Catalog',
       },
-      historicalTitle: 'HISTORICAL UPTIME',
-      historicalSub: 'UptimeRobot Live Archive',
-      ratio24h: '24 HOURS',
-      ratio7d: '7 DAYS',
-      ratio30d: '30 DAYS',
-      ratio90d: '90 DAYS',
-      liveLogTitle: 'LIVE PROBE LOG',
-      liveLogSub: 'Real-Time Session Telemetry',
-      waitingProbe: 'Waiting for first live probe...',
-      avgShort: 'Avg',
-      incidentsTitle: 'INCIDENTS & NOTICES',
-      incidentsSub: 'Current State',
-      noIncidents: 'All services are operating normally. No active incidents or scheduled maintenance.',
-      footerBrand: 'Restricted Studio · Enterprise System Telemetry',
+      historicalTitle: 'Uptime Summary',
+      ratio24h: '24 Hours',
+      ratio7d: '7 Days',
+      ratio30d: '30 Days',
+      ratio90d: '90 Days',
+      incidentDetected: 'Affected services',
+      noIncidents: 'No active incidents or scheduled maintenance.',
+      footerBrand: 'Restricted Studio',
     },
     auth: {
       loginErrors: {
@@ -1480,7 +1418,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
         'Официальное сообщество и служба технической поддержки Restricted Studio в Discord скоро будут запущены.',
       statusTitle: 'Статус систем',
       statusDescription:
-        'Мониторинг доступности и задержки в реальном времени для веб-портала, авторизации, Google OAuth, базы данных и каталога Restricted Studio.',
+        'Актуальный статус доступности и работы сервисов Restricted Studio.',
     },
     common: {
       home: 'Главная',
@@ -1806,62 +1744,36 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       toastCheckoutRedirect: 'Перенаправление в магазин Itemsatis...',
     },
     statusPage: {
-      pillTag: 'СТАТУС СИСТЕМЫ',
+      pillTag: 'СТАТУС',
       navAria: 'Быстрая навигация',
       states: {
-        operational: { label: 'РАБОТАЕТ', headline: 'ВСЕ СИСТЕМЫ РАБОТАЮТ ШТАТНО' },
-        degraded: { label: 'ЗАМЕДЛЕНИЕ', headline: 'ЧАСТИЧНОЕ СНИЖЕНИЕ ПРОИЗВОДИТЕЛЬНОСТИ' },
-        outage: { label: 'СБОЙ', headline: 'ОБНАРУЖЕНА НЕИСПРАВНОСТЬ СЕРВИСА' },
+        operational: { label: 'Работает', headline: 'Все системы работают' },
+        degraded: { label: 'Замедление', headline: 'Частичное снижение стабильности' },
+        outage: { label: 'Сбой', headline: 'Проблема с доступностью' },
       },
-      loadingHeadline: 'ПРОВЕРКА ИНФРАСТРУКТУРЫ...',
-      errorHeadline: 'СЕРВИС СТАТУСА НЕДОСТУПЕН',
-      errorFallback: 'Не удалось получить статус систем. Проверьте подключение к сети.',
-      invalidResponseError: 'Получен некорректный ответ от сервера статуса.',
-      lastCheckedPrefix: 'Последняя проверка:',
-      avgLatencyLabel: 'Средний отклик:',
-      regionLabel: 'Регион:',
-      verifyingLive: 'Проверка активных узлов...',
-      autoRefreshPrefix: 'Автообновление:',
-      checkingBtn: 'Проверка...',
-      checkNowBtn: 'Проверить сейчас',
-      subsystemsTitle: 'ПОДСИСТЕМЫ',
-      subsystemsSub: 'Живая HTTP / API диагностика',
-      servicesMeta: {
-        web: {
-          name: 'Веб-платформа и Edge-сеть',
-          description: 'Next.js SSR, защитные фильтры и глобальный CDN',
-          detailOk: 'Edge-маршрутизация активна',
-        },
-        auth: {
-          name: 'Авторизация и Google OAuth',
-          description: 'Клиентские сессии и провайдер OAuth 2.0',
-          detailOk: 'Узел авторизации отвечает',
-        },
-        database: {
-          name: 'База данных и лицензирование',
-          description: 'Слой PostgreSQL RLS и проверка лицензий',
-          detailOk: 'Соединение с БД стабильно',
-        },
-        catalog: {
-          name: 'Индекс каталога и API',
-          description: 'Архив продуктов, мгновенный поиск и статика',
-          detailOk: 'Индекс каталога доступен',
-        },
+      loadingHeadline: 'Проверка статуса...',
+      errorHeadline: 'Статус недоступен',
+      errorFallback: 'Не удалось обновить статус. Попробуйте ещё раз.',
+      invalidResponseError: 'Некорректный ответ сервера.',
+      lastCheckedPrefix: 'Обновлено:',
+      verifyingLive: 'Проверка сервисов...',
+      checkingBtn: 'Обновление',
+      checkNowBtn: 'Обновить',
+      servicesTitle: 'Сервисы',
+      serviceNames: {
+        web: 'Веб-портал и сайт',
+        auth: 'Аккаунт и вход',
+        database: 'Лицензии и данные',
+        catalog: 'Каталог продуктов',
       },
-      historicalTitle: 'АРХИВ ДОСТУПНОСТИ',
-      historicalSub: 'Данные UptimeRobot',
-      ratio24h: '24 ЧАСА',
-      ratio7d: '7 ДНЕЙ',
-      ratio30d: '30 ДНЕЙ',
-      ratio90d: '90 ДНЕЙ',
-      liveLogTitle: 'ЖУРНАЛ ПРОВЕРОК',
-      liveLogSub: 'Измерения в реальном времени',
-      waitingProbe: 'Ожидание первой проверки...',
-      avgShort: 'Среднее',
-      incidentsTitle: 'ИНЦИДЕНТЫ И УВЕДОМЛЕНИЯ',
-      incidentsSub: 'Текущее состояние',
-      noIncidents: 'Все сервисы работают нормально. Активных сбоев или техработ не зафиксировано.',
-      footerBrand: 'Restricted Studio · Корпоративная телеметрия',
+      historicalTitle: 'Статистика доступности',
+      ratio24h: '24 часа',
+      ratio7d: '7 дней',
+      ratio30d: '30 дней',
+      ratio90d: '90 дней',
+      incidentDetected: 'Затронутые сервисы',
+      noIncidents: 'Активных сбоев или плановых работ не зафиксировано.',
+      footerBrand: 'Restricted Studio',
     },
     auth: {
       loginErrors: {
@@ -2007,7 +1919,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
         'La communauté officielle et l’assistance technique Restricted Studio sur Discord arrivent bientôt.',
       statusTitle: 'État des systèmes',
       statusDescription:
-        'Disponibilité en direct et télémétrie de latence des services web, authentification, Google OAuth, base de données et catalogue Restricted Studio.',
+        'Disponibilité en direct et état de fonctionnement des services Restricted Studio.',
     },
     common: {
       home: 'Accueil',
@@ -2333,62 +2245,36 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       toastCheckoutRedirect: 'Redirection vers notre boutique Itemsatis...',
     },
     statusPage: {
-      pillTag: 'ÉTAT DU SYSTÈME',
+      pillTag: 'STATUT',
       navAria: 'Navigation Rapide',
       states: {
-        operational: { label: 'OPÉRATIONNEL', headline: 'TOUS LES SYSTÈMES SONT OPÉRATIONNELS' },
-        degraded: { label: 'RALENTI', headline: 'BAISSE PARTIELLE DE PERFORMANCE' },
-        outage: { label: 'INCIDENT', headline: 'PERTURBATION DE SERVICE DÉTECTÉE' },
+        operational: { label: 'Opérationnel', headline: 'Tous les systèmes fonctionnent' },
+        degraded: { label: 'Ralenti', headline: 'Dégradation partielle' },
+        outage: { label: 'Incident', headline: 'Interruption de service' },
       },
-      loadingHeadline: 'VÉRIFICATION EN COURS...',
-      errorHeadline: 'SERVICE D’ÉTAT INACCESSIBLE',
-      errorFallback: 'Impossible de récupérer l’état du système. Vérifiez votre connexion.',
-      invalidResponseError: 'Réponse d’état invalide reçue.',
-      lastCheckedPrefix: 'Dernière vérification :',
-      avgLatencyLabel: 'Latence moy. :',
-      regionLabel: 'Région :',
-      verifyingLive: 'Vérification des services en direct...',
-      autoRefreshPrefix: 'Actualisation auto :',
-      checkingBtn: 'Vérification...',
-      checkNowBtn: 'Vérifier maintenant',
-      subsystemsTitle: 'SOUS-SYSTÈMES',
-      subsystemsSub: 'Vérification HTTP / API en direct',
-      servicesMeta: {
-        web: {
-          name: 'Plateforme Web & Réseau Edge',
-          description: 'Next.js SSR, pare-feu applicatif et CDN global',
-          detailOk: 'Routage Edge opérationnel',
-        },
-        auth: {
-          name: 'Authentification & Google OAuth',
-          description: 'Sessions clients et fournisseur OAuth 2.0',
-          detailOk: 'Service OAuth opérationnel',
-        },
-        database: {
-          name: 'Base de Données & Licences',
-          description: 'Couche PostgreSQL RLS et validation des licences',
-          detailOk: 'Connexion base de données saine',
-        },
-        catalog: {
-          name: 'Index du Catalogue & API',
-          description: 'Archive produits, recherche rapide et ressources statiques',
-          detailOk: 'Index catalogue accessible',
-        },
+      loadingHeadline: 'Vérification en cours...',
+      errorHeadline: 'Statut indisponible',
+      errorFallback: 'Impossible de récupérer le statut. Veuillez réessayer.',
+      invalidResponseError: 'Réponse invalide.',
+      lastCheckedPrefix: 'Mis à jour :',
+      verifyingLive: 'Vérification des services...',
+      checkingBtn: 'Actualisation',
+      checkNowBtn: 'Actualiser',
+      servicesTitle: 'Services',
+      serviceNames: {
+        web: 'Portail Web & Client',
+        auth: 'Compte & Connexion',
+        database: 'Licences & Données',
+        catalog: 'Catalogue Produits',
       },
-      historicalTitle: 'DISPONIBILITÉ HISTORIQUE',
-      historicalSub: 'Archive UptimeRobot',
-      ratio24h: '24 HEURES',
-      ratio7d: '7 JOURS',
-      ratio30d: '30 JOURS',
-      ratio90d: '90 JOURS',
-      liveLogTitle: 'JOURNAL EN DIRECT',
-      liveLogSub: 'Télémétrie de session',
-      waitingProbe: 'En attente de la première mesure...',
-      avgShort: 'Moy.',
-      incidentsTitle: 'INCIDENTS & NOTIFICATIONS',
-      incidentsSub: 'État Actuel',
-      noIncidents: 'Tous les services fonctionnent normalement. Aucun incident ni maintenance en cours.',
-      footerBrand: 'Restricted Studio · Télémétrie Système Entreprise',
+      historicalTitle: 'Historique de disponibilité',
+      ratio24h: '24 Heures',
+      ratio7d: '7 Jours',
+      ratio30d: '30 Jours',
+      ratio90d: '90 Jours',
+      incidentDetected: 'Services concernés',
+      noIncidents: 'Aucun incident actif ni maintenance planifiée.',
+      footerBrand: 'Restricted Studio',
     },
     auth: {
       loginErrors: {
