@@ -301,258 +301,175 @@ export default function HomePage() {
         <div className="bento-col-left">
           {/* MAIN OBSIDIAN ARCHITECTURAL HEADLINE CARD */}
           <section className="bento-card bento-card-main">
-            <div className="noir-stipple-chalk" aria-hidden="true" />
             <div className="noir-grain-overlay" aria-hidden="true" />
 
-            <div className="bcm-layout">
-              <div className="bcm-left-col">
-                <div className="bcm-top-wrap">
-                  <div className="bcm-eyebrow">
-                    <span className="bcm-dot" />
-                    <span>RESTRICTED STUDIO // FIVEM ARCHITECTURE</span>
-                  </div>
-
-                  <h1 className="bcm-headline">
-                    ANALİZİ BIRAKIN
-                    <br />
-                    VE SİSTEMİ ÇALIŞTIRIN.
-                    <br />
-                    <span className="bcm-headline-highlight">RESTRICTED İLE.</span>
-                  </h1>
-
-                  <p className="bcm-subhead">
-                    Şüpheli sızıntılar ve karmaşık kurulumlarla vakit kaybetmeyin.{' '}
-                    {catalogStats.total.toLocaleString('tr-TR')}+ doğrulanmış açık kaynak script,
-                    optimize 3D mekanlar ve sıfır gecikmeli SQL mimarisiyle doğrudan üretime geçin.
-                  </p>
-                </div>
-
-                <div className="bcm-actions-row">
-                  <Link href="/katalog" className="bcm-split-btn bcm-split-primary">
-                    <div className="bsb-text-wrap">
-                      <span className="bsb-sub">RESTRICTED STUDIO</span>
-                      <span className="bsb-main">KATALOĞU KEŞFET</span>
-                    </div>
-                    <div className="bsb-icon-wrap">
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.4"
-                      >
-                        <path d="M5 12h14M12 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </Link>
-
-                  <a
-                    href={ITEMSATIS_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bcm-split-btn bcm-split-secondary"
-                  >
-                    <div className="bsb-text-wrap">
-                      <span className="bsb-sub">RESMİ MAĞAZA GÜVENCESİ</span>
-                      <span className="bsb-main">İTEMSATIŞ</span>
-                    </div>
-                    <div className="bsb-icon-wrap">
-                      <ItemsatisLogo
-                        variant="icon"
-                        width={16}
-                        height={16}
-                        style={{ filter: 'grayscale(100%) contrast(1.15)' }}
-                      />
-                    </div>
-                  </a>
-                </div>
+            <div className="bcm-top-wrap">
+              <div className="bcm-eyebrow">
+                <span className="bcm-dot" />
+                <span>RESTRICTED STUDIO · FIVEM ARCHITECTURE</span>
               </div>
 
-              {/* Right Architectural Specification Rail (Cures Right-Side Void Calmly) */}
-              <aside className="bcm-spec-panel" aria-label="Mimari Özellik Özeti">
-                <div className="bsp-header">
-                  <span className="bsp-code">ED.2026 // SPEC-01</span>
-                  <span className="bsp-cross" aria-hidden="true">+</span>
-                </div>
+              <h1 className="bcm-headline">
+                ANALİZİ BIRAKIN.
+                <br />
+                SİSTEMİ ÇALIŞTIRIN.
+                <br />
+                <span className="bcm-headline-accent">RESTRICTED İLE.</span>
+              </h1>
 
-                <div className="bsp-vignette" aria-hidden="true">
-                  <svg viewBox="0 0 180 68" fill="none">
-                    <defs>
-                      <linearGradient id="specBeamFade" x1="0.35" y1="1" x2="0.1" y2="0">
-                        <stop offset="0%" stopColor="#E6E4DF" stopOpacity="0.45" />
-                        <stop offset="45%" stopColor="#8B0000" stopOpacity="0.24" />
-                        <stop offset="100%" stopColor="#080808" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                    <polygon points="88,48 112,48 76,0 44,0" fill="url(#specBeamFade)" />
-                    <path d="M0 54 Q 45 44, 92 52 T 180 48 L 180 68 L 0 68 Z" fill="#080808" />
-                    <polygon points="90,46 102,38 102,58 90,58" fill="#080808" />
-                    <polygon points="102,38 114,46 114,58 102,58" fill="#E6E4DF" opacity="0.88" />
-                    <rect x="106" y="49" width="4" height="9" fill="#080808" />
-                    <line x1="12" y1="54" x2="72" y2="54" stroke="#8B0000" strokeWidth="1" opacity="0.8" />
+              <p className="bcm-subhead">
+                Şüpheli sızıntılar ve karmaşık kurulumlarla vakit kaybetmeyin.{' '}
+                {catalogStats.total.toLocaleString('tr-TR')}+ doğrulanmış açık kaynak script,
+                optimize 3D mekanlar ve sıfır gecikmeli SQL mimarisiyle doğrudan üretime geçin.
+              </p>
+            </div>
+
+            <div className="bcm-bottom-bar">
+              <div className="bcm-actions-row">
+                <Link href="/katalog" className="bcm-btn-primary">
+                  <span>KATALOĞU KEŞFET</span>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
-                </div>
-
-                <div className="bsp-rows">
-                  <div className="bsp-row">
-                    <span className="bsp-k">ARŞİV</span>
-                    <span className="bsp-v">{catalogStats.total.toLocaleString('tr-TR')}+ Paket</span>
-                  </div>
-                  <div className="bsp-row">
-                    <span className="bsp-k">RESMON</span>
-                    <span className="bsp-v">≤ 0.04 ms</span>
-                  </div>
-                  <div className="bsp-row">
-                    <span className="bsp-k">LİSANS</span>
-                    <span className="bsp-v">Escrow Yok · Open</span>
-                  </div>
-                  <div className="bsp-row">
-                    <span className="bsp-k">MOTOR</span>
-                    <span className="bsp-v">QBox · QB · ESX</span>
-                  </div>
-                </div>
-
-                <Link href="/katalog" className="bsp-promo-foot">
-                  <span>16+ SEPETTE %50 İNDİRİM</span>
-                  <span>→</span>
                 </Link>
-              </aside>
+
+                <a
+                  href={ITEMSATIS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bcm-btn-secondary"
+                >
+                  <ItemsatisLogo
+                    variant="icon"
+                    width={15}
+                    height={15}
+                    style={{ filter: 'grayscale(100%) contrast(1.15)' }}
+                  />
+                  <span>İTEMSATIŞ MAĞAZASI</span>
+                </a>
+              </div>
+
+              <div className="bcm-stats-inline" aria-label="Temel Değerler">
+                <div className="bsi-item">
+                  <span className="bsi-val">{catalogStats.total.toLocaleString('tr-TR')}+</span>
+                  <span className="bsi-lbl">PAKET</span>
+                </div>
+                <span className="bsi-sep" aria-hidden="true" />
+                <div className="bsi-item">
+                  <span className="bsi-val">0.04 ms</span>
+                  <span className="bsi-lbl">RESMON</span>
+                </div>
+                <span className="bsi-sep" aria-hidden="true" />
+                <div className="bsi-item">
+                  <span className="bsi-val">%100</span>
+                  <span className="bsi-lbl">AÇIK KAYNAK</span>
+                </div>
+              </div>
             </div>
           </section>
 
-          {/* BOTTOM SUB-BENTO ROW */}
+          {/* BOTTOM SUB-BENTO ROW (Symmetrical Twin Architectural Cards) */}
           <div className="bento-sub-row">
-            {/* SUB-CARD 1: CRIMSON MONOLITH + INVERTED SPOTLIGHT (Direct Image 2 Homage) */}
+            {/* SUB-CARD 1: OPEN-SOURCE ARCHITECTURE */}
             <button
               type="button"
               className="bento-card bento-card-crimson"
               onClick={() => openModal('engineering')}
             >
-              <div className="noir-stipple-obsidian" aria-hidden="true" />
-              <div className="noir-grain-heavy" aria-hidden="true" />
+              <div className="noir-grain-overlay" aria-hidden="true" />
 
               <div className="bento-card-head">
                 <span className="bcc-tag">MÜHENDİSLİK &amp; MİMARİ</span>
                 <span className="bcc-circle-btn" aria-hidden="true">
                   <svg
-                    width="12"
-                    height="12"
+                    width="11"
+                    height="11"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="2.5"
+                    strokeWidth="2.3"
                   >
                     <path d="M7 17L17 7M17 7H8M17 7V16" />
                   </svg>
                 </span>
               </div>
 
-              <div className="bcc-monolith-art" aria-hidden="true">
-                <svg viewBox="0 0 160 96" fill="none">
-                  <defs>
-                    {/* Inverted spotlight: bright near gable roof fading upward into obsidian stipple */}
-                    <linearGradient id="invertedBeamLeft" x1="0.5" y1="1" x2="0.2" y2="0">
-                      <stop offset="0%" stopColor="#F0F0F0" stopOpacity="0.95" />
-                      <stop offset="32%" stopColor="#F0F0F0" stopOpacity="0.32" />
-                      <stop offset="68%" stopColor="#080808" stopOpacity="0.88" />
-                      <stop offset="100%" stopColor="#080808" stopOpacity="0.98" />
-                    </linearGradient>
-                    <pattern id="beamDots" width="3" height="3" patternUnits="userSpaceOnUse">
-                      <circle cx="1" cy="1" r="0.6" fill="#080808" opacity="0.55" />
-                    </pattern>
-                  </defs>
-                  {/* Inverted beam upward-left */}
-                  <polygon points="88,46 116,46 72,0 32,0" fill="url(#invertedBeamLeft)" />
-                  <polygon points="88,46 116,46 72,0 32,0" fill="url(#beamDots)" />
-                  {/* Obsidian Horizon Hills */}
-                  <path
-                    d="M0 78 Q 36 66, 74 75 T 160 72 L 160 96 L 0 96 Z"
-                    fill="#080808"
-                  />
-                  {/* Cast hard shadow under monolith */}
-                  <polygon points="56,82 90,74 90,82" fill="#080808" />
-                  {/* Monolithic Structure (Chalk wall + Black gable/door) */}
-                  <polygon points="88,52 104,42 104,78 88,78" fill="#080808" />
-                  <polygon points="104,42 120,52 120,78 104,78" fill="#F0F0F0" />
-                  <rect x="109" y="64" width="6" height="14" fill="#080808" />
+              <div className="bcc-art-wrap" aria-hidden="true">
+                <svg viewBox="0 0 180 78" fill="none">
+                  <line x1="16" y1="62" x2="164" y2="62" stroke="rgba(232,229,222,0.18)" strokeWidth="1" />
+                  <rect x="44" y="20" width="92" height="42" rx="4" stroke="rgba(232,229,222,0.28)" strokeWidth="1.2" fill="rgba(8,8,8,0.45)" />
+                  <path d="M78 35 L68 41 L78 47" stroke="#E8E5DE" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M102 35 L112 41 L102 47" stroke="#E8E5DE" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <line x1="94" y1="32" x2="86" y2="50" stroke="#C83232" strokeWidth="1.8" strokeLinecap="round" />
                 </svg>
               </div>
 
               <div className="bcc-bottom">
                 <h2 className="bcc-title">ŞİFRESİZ KOD</h2>
-                <p className="bcc-sub">%100 Açık kaynak Lua/JS. Escrow kilitsiz mimari.</p>
+                <p className="bcc-sub">%100 Açık kaynak Lua/JS · Escrow kilitsiz mimari.</p>
               </div>
             </button>
 
-            {/* SUB-CARD 2: OBSIDIAN LIMINAL PATH + SILHOUETTE (Direct Image 2 Homage) */}
+            {/* SUB-CARD 2: DISCORD COMMUNITY */}
             <Link href="/discord" className="bento-card bento-card-noir">
-              <div className="noir-stipple-chalk" aria-hidden="true" />
               <div className="noir-grain-overlay" aria-hidden="true" />
 
               <div className="bento-card-head">
                 <span className="bcn-tag">TOPLULUK &amp; DESTEK</span>
                 <span className="bcn-circle-btn" aria-hidden="true">
                   <svg
-                    width="12"
-                    height="12"
+                    width="11"
+                    height="11"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="2.5"
+                    strokeWidth="2.3"
                   >
                     <path d="M7 17L17 7M17 7H8M17 7V16" />
                   </svg>
                 </span>
               </div>
 
-              <div className="bcn-figure-art" aria-hidden="true">
-                <svg viewBox="0 0 160 96" fill="none">
-                  {/* Winding chalk path into crimson/obsidian void */}
+              <div className="bcn-art-wrap" aria-hidden="true">
+                <svg viewBox="0 0 180 78" fill="none">
+                  <line x1="16" y1="62" x2="164" y2="62" stroke="rgba(232,229,222,0.16)" strokeWidth="1" />
+                  <line x1="16" y1="22" x2="164" y2="22" stroke="rgba(165,0,0,0.45)" strokeWidth="1" />
                   <path
-                    d="M 94 12 C 118 28, 72 48, 100 66 C 118 76, 86 88, 66 96 L 106 96 C 128 84, 140 70, 114 54 C 90 38, 126 24, 102 12 Z"
-                    fill="#F0F0F0"
-                    opacity="0.88"
+                    d="M 104 22 C 120 34, 88 46, 108 58 L 122 62 C 134 52, 114 38, 118 22 Z"
+                    fill="#E8E5DE"
+                    opacity="0.72"
                   />
-                  {/* Horizon line */}
-                  <line x1="0" y1="22" x2="160" y2="22" stroke="#A50000" strokeWidth="1.2" />
-                  {/* Solitary watching figure silhouette */}
-                  <ellipse cx="44" cy="83" rx="14" ry="3.5" fill="#080808" />
-                  <circle cx="48" cy="48" r="4" fill="#F0F0F0" />
+                  <circle cx="64" cy="34" r="3.2" fill="#E8E5DE" opacity="0.88" />
                   <path
-                    d="M42 54 L54 54 L56 68 L52 68 L51 82 L47 82 L47 69 L45 69 L44 82 L41 82 L42 68 L40 68 Z"
-                    fill="#080808"
-                    stroke="#F0F0F0"
-                    strokeWidth="1"
+                    d="M59 40 L69 40 L70 51 L67 51 L66.5 62 L64.5 62 L64.5 52 L63.5 52 L63 62 L61 62 L61 51 L58 51 Z"
+                    fill="#E8E5DE"
+                    opacity="0.75"
                   />
                 </svg>
               </div>
 
               <div className="bcn-bottom">
                 <h2 className="bcn-title">DİSCORD</h2>
-                <p className="bcn-sub">7/24 Birebir destek talebi &amp; teknik danışmanlık.</p>
+                <p className="bcn-sub">7/24 Birebir destek talebi ve kurulum danışmanlığı.</p>
               </div>
             </Link>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: LIMINAL INVERTED-SPOTLIGHT CRIMSON SHOWCASE */}
+        {/* RIGHT COLUMN: SERENE CHIAROSCURO INVERTED-SPOTLIGHT SHOWCASE */}
         <div className="bento-col-right">
           <section className="bento-card bento-card-showcase" aria-label="Sistem Telemetri Monitörü">
-            {/* Image 2 Crimson Sky + Inverted Spotlight Beam + Grain */}
-            <div className="noir-stipple-obsidian" aria-hidden="true" />
             <div className="noir-grain-heavy" aria-hidden="true" />
             <div className="showcase-inverted-beam" aria-hidden="true" />
 
-            <div className="showcase-meta-bar" aria-hidden="true">
-              <span className="smb-tag">RS // CANLI TELEMETRİ MİMARİSİ</span>
-              <span className="smb-status">
-                <span className="smb-dot" />
-                60.0 TPS STABİL
-              </span>
-            </div>
-
-            {/* Liminal Horizon Monolith & Path behind the Console */}
+            {/* Singular Signature Image 2 Horizon Monolith behind Console */}
             <svg
               className="showcase-horizon-art"
               viewBox="0 0 400 180"
@@ -561,44 +478,24 @@ export default function HomePage() {
             >
               <path
                 d="M0 44 Q 65 26, 130 40 T 260 36 T 400 46 L 400 180 L 0 180 Z"
-                fill="#080808"
+                fill="#090909"
               />
-              {/* Tiny distant chalk/obsidian monolith */}
-              <polygon points="312,18 326,8 326,42 312,42" fill="#080808" />
-              <polygon points="326,8 340,18 340,42 326,42" fill="#F0F0F0" />
-              <rect x="331" y="28" width="5" height="14" fill="#080808" />
-              {/* Subtle winding path foreground */}
+              <polygon points="312,18 326,8 326,42 312,42" fill="#090909" />
+              <polygon points="326,8 340,18 340,42 326,42" fill="#E8E5DE" opacity="0.82" />
+              <rect x="331" y="28" width="5" height="14" fill="#090909" />
               <path
-                d="M 180 180 Q 250 135, 215 100 T 308 42"
-                stroke="#F0F0F0"
-                strokeWidth="14"
+                d="M 185 180 Q 245 135, 215 100 T 308 42"
+                stroke="#E8E5DE"
+                strokeWidth="12"
                 strokeLinecap="round"
                 fill="none"
-                opacity="0.22"
+                opacity="0.14"
               />
             </svg>
 
             <div className="showcase-callout-ticks">
-              <svg
-                className="showcase-side-ticks"
-                width="22"
-                height="48"
-                viewBox="0 0 22 48"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path d="M4 6 L19 15" stroke="currentColor" strokeWidth="2.2" strokeLinecap="square" />
-                <path d="M2 24 L18 24" stroke="currentColor" strokeWidth="2.2" strokeLinecap="square" />
-                <path d="M4 42 L19 33" stroke="currentColor" strokeWidth="2.2" strokeLinecap="square" />
-              </svg>
-
-              {/* RISOGRAPH CONSOLE MOCKUP */}
+              {/* Calm Obsidian Telemetry Console Mockup */}
               <div className="device-mockup-chassis">
-                <div className="device-island">
-                  <span className="device-sensor" />
-                  <span className="device-cam" />
-                </div>
-
                 <div className="device-top-bar">
                   <div className="device-user-info">
                     <img src="/assets/rslogo.jpg" alt="Restricted Core" className="device-avatar" />
@@ -610,173 +507,70 @@ export default function HomePage() {
                       </span>
                     </div>
                   </div>
-                  <div className="device-top-icons">
-                    <Link href="/katalog" className="device-icon-pill" aria-label="Katalog">
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.4"
-                      >
-                        <circle cx="11" cy="11" r="8" />
-                        <path d="m21 21-4.3-4.3" />
-                      </svg>
-                    </Link>
-                    <Link href="/dashboard" className="device-icon-pill has-badge" aria-label="Portal">
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.4"
-                      >
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                      </svg>
-                    </Link>
-                  </div>
+                  <span className="device-tps-pill">60.0 TPS</span>
                 </div>
 
                 <div className="device-server-selector">
-                  <div className="dss-left">
-                    <span style={{ fontSize: '12px' }}>◆</span>
-                    <span className="dss-name">Saint Roleplay — Istanbul Engine</span>
-                  </div>
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.6"
-                  >
-                    <path d="m6 9 6 6 6-6" />
-                  </svg>
+                  <span className="dss-name">◆ Saint Roleplay — Istanbul Engine</span>
+                  <span className="dss-tag">ONLINE</span>
                 </div>
 
-                {/* Primary Metric Alert Card */}
-                <div className="device-metric-card-primary">
-                  <div className="dmcp-header">
-                    <div className="dmcp-badge-icon">
-                      <svg
-                        width="13"
-                        height="13"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.4"
-                      >
-                        <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
-                        <line x1="12" y1="9" x2="12" y2="13" />
-                        <circle cx="12" cy="17" r="0.6" />
-                      </svg>
-                    </div>
-                    <div className="dmcp-text">
-                      <span className="dmcp-title">STABİL KAYNAK TÜKETİMİ</span>
-                      <p className="dmcp-desc">
-                        Tüm tick döngüleri <strong>0.04ms</strong> altında optimize edildi. SQL
-                        gecikmesi: <strong>1.1ms</strong>.
-                      </p>
-                    </div>
-                    <Link
-                      href="/katalog"
-                      className="dmcp-action-btn"
-                      aria-label="Katalogdaki Optimize Sistemler"
-                    >
-                      <svg
-                        width="11"
-                        height="11"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.6"
-                      >
-                        <path d="M7 17L17 7M17 7H8M17 7V16" />
-                      </svg>
-                    </Link>
+                {/* Clean 3-Stat Line Row */}
+                <div className="device-metrics-strip">
+                  <div className="dms-col">
+                    <span className="dms-v">0.04 ms</span>
+                    <span className="dms-l">Tick</span>
+                  </div>
+                  <span className="dms-sep" aria-hidden="true" />
+                  <div className="dms-col">
+                    <span className="dms-v">1.1 ms</span>
+                    <span className="dms-l">SQL</span>
+                  </div>
+                  <span className="dms-sep" aria-hidden="true" />
+                  <div className="dms-col">
+                    <span className="dms-v">%0</span>
+                    <span className="dms-l">Escrow</span>
                   </div>
                 </div>
 
-                {/* Widget 2: Sunucu Kapasitesi Crimson Risograph Graph */}
+                {/* Widget: Calm Server Capacity Graph */}
                 <div className="device-capacity-card">
-                  <div className="noir-stipple-obsidian" aria-hidden="true" />
                   <div className="dcc-head">
                     <div>
                       <span className="dcc-title">SUNUCU KAPASİTESİ</span>
-                      <span className="dcc-sub">TPS &amp; Eşzamanlı Oyuncu</span>
+                      <span className="dcc-sub">Eşzamanlı Yük · Bu Hafta</span>
                     </div>
-                    <span className="dcc-filter-pill">Bu Hafta ▾</span>
-                  </div>
-
-                  <div className="dcc-days-row">
-                    {[
-                      { d: 'Pzt', v: '78%' },
-                      { d: 'Sal', v: '82%' },
-                      { d: 'Çar', v: '91%', active: true },
-                      { d: 'Per', v: '88%' },
-                      { d: 'Cum', v: '85%' },
-                      { d: 'Cmt', v: '93%' },
-                      { d: 'Paz', v: '98%' },
-                    ].map((col) => (
-                      <div key={col.d} className={`dcc-day-col ${col.active ? 'active' : ''}`}>
-                        <span className="ddc-label">{col.d}</span>
-                        <span className="ddc-val">{col.v}</span>
-                      </div>
-                    ))}
+                    <span className="dcc-apex-badge">%91 · 60 FPS</span>
                   </div>
 
                   <div className="dcc-chart-container">
                     <svg viewBox="0 0 320 110" preserveAspectRatio="none" className="capacity-curve-svg">
                       <defs>
-                        <pattern id="curveStipple" width="4" height="4" patternUnits="userSpaceOnUse">
-                          <circle cx="1.5" cy="1.5" r="0.85" fill="#F0F0F0" opacity="0.24" />
-                        </pattern>
                         <linearGradient id="crimsonPeakFill" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#A50000" stopOpacity="0.95" />
-                          <stop offset="60%" stopColor="#8B0000" stopOpacity="0.55" />
-                          <stop offset="100%" stopColor="#080808" stopOpacity="0.95" />
+                          <stop offset="0%" stopColor="#9B1111" stopOpacity="0.55" />
+                          <stop offset="100%" stopColor="#080808" stopOpacity="0.05" />
                         </linearGradient>
                       </defs>
                       <path
-                        d="M 0 100 Q 30 92, 50 78 T 100 46 T 140 22 T 180 54 T 220 36 T 270 18 T 320 10 L 320 110 L 0 110 Z"
+                        d="M 0 98 Q 35 88, 60 72 T 115 44 T 155 26 T 205 52 T 255 32 T 320 16 L 320 110 L 0 110 Z"
                         fill="url(#crimsonPeakFill)"
                       />
                       <path
-                        d="M 0 100 Q 30 92, 50 78 T 100 46 T 140 22 T 180 54 T 220 36 T 270 18 T 320 10 L 320 110 L 0 110 Z"
-                        fill="url(#curveStipple)"
-                      />
-                      <path
-                        d="M 0 100 Q 30 92, 50 78 T 100 46 T 140 22 T 180 54 T 220 36 T 270 18 T 320 10"
+                        d="M 0 98 Q 35 88, 60 72 T 115 44 T 155 26 T 205 52 T 255 32 T 320 16"
                         fill="none"
-                        stroke="#F0F0F0"
-                        strokeWidth="2.4"
+                        stroke="#E8E5DE"
+                        strokeWidth="1.8"
+                        opacity="0.88"
                       />
-                      <circle cx="140" cy="22" r="4.5" fill="#F0F0F0" stroke="#A50000" strokeWidth="2.5" />
+                      <circle cx="155" cy="26" r="3.5" fill="#C83232" stroke="#E8E5DE" strokeWidth="1.5" />
                     </svg>
-                    <div className="dcc-apex-pin">91% · 60.0 FPS</div>
                   </div>
 
                   <div className="dcc-footer">
-                    <span>64/64 Oyuncu · %99.99 Uptime · 0 Escrow</span>
+                    <span>64 / 64 Oyuncu · %99.99 Uptime</span>
                   </div>
                 </div>
               </div>
-
-              <svg
-                className="showcase-side-ticks"
-                width="22"
-                height="48"
-                viewBox="0 0 22 48"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path d="M18 6 L3 15" stroke="currentColor" strokeWidth="2.2" strokeLinecap="square" />
-                <path d="M20 24 L4 24" stroke="currentColor" strokeWidth="2.2" strokeLinecap="square" />
-                <path d="M18 42 L3 33" stroke="currentColor" strokeWidth="2.2" strokeLinecap="square" />
-              </svg>
             </div>
           </section>
         </div>
