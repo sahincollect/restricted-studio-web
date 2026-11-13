@@ -2918,6 +2918,63 @@ svg {
   border-radius: 6px;
 }
 
+
+.bg-music-slider-wrap {
+  display: inline-flex;
+  align-items: center;
+  width: 60px;
+  margin: 0 2px;
+}
+
+.bg-music-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.bg-music-range:hover {
+  background: rgba(255, 255, 255, 0.38);
+}
+
+.bg-music-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #38bdf8;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.8);
+  transition: transform 0.15s, background 0.15s;
+}
+
+.bg-music-range::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+  background: #ffffff;
+}
+
+.bg-music-range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: none;
+  border-radius: 50%;
+  background: #38bdf8;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.8);
+}
+
+@media (max-width: 768px) {
+  .bg-music-slider-wrap {
+    width: 44px;
+  }
+}
+
 .bg-music-btn {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -3007,40 +3064,7 @@ svg {
   transform: rotate(-4deg) scale(1.15) translateY(-2px);
 }
 
-/* 2. Top Navbar Fairy Lights Garland (Işıltılı Çelenk Işıkları) */
-.global-nav::after {
-  content: '';
-  position: absolute;
-  bottom: -3.5px;
-  left: 0;
-  right: 0;
-  height: 7px;
-  background-image: radial-gradient(circle, #ef4444 2.2px, transparent 2.8px),
-                    radial-gradient(circle, #fbbf24 2.2px, transparent 2.8px),
-                    radial-gradient(circle, #38bdf8 2.2px, transparent 2.8px),
-                    radial-gradient(circle, #10b981 2.2px, transparent 2.8px);
-  background-size: 80px 7px;
-  background-position: 0 0, 20px 0, 40px 0, 60px 0;
-  filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.65));
-  pointer-events: none;
-  z-index: 1001;
-  animation: navFairyTwinkle 2.8s ease-in-out infinite alternate;
-}
 
-@keyframes navFairyTwinkle {
-  0% {
-    opacity: 0.75;
-    filter: drop-shadow(0 0 3px rgba(239, 68, 68, 0.7));
-  }
-  50% {
-    opacity: 1;
-    filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.85));
-  }
-  100% {
-    opacity: 0.85;
-    filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.75));
-  }
-}
 
 /* 3. Christmas Tree Widget (Yılbaşı Ağacı) */
 .holiday-tree-wrapper {

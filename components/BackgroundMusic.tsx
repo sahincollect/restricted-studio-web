@@ -15,7 +15,7 @@ export default function BackgroundMusic() {
     // Audio element setup
     const audio = new Audio('/assets/restricted-studio.mp3');
     audio.loop = true;
-    audio.volume = 0.5; // İstek doğrultusunda %50 ses seviyesi
+    audio.volume = 0.5; // Varsayılan %50 ses
     audioRef.current = audio;
 
     const handlePlay = () => setIsPlaying(true);
@@ -40,11 +40,10 @@ export default function BackgroundMusic() {
             setIsPlaying(true);
           })
           .catch(() => {
-            // Tarayıcı otomatik çalmayı engellediyse (NotAllowedError),
-            // kullanıcının sayfadaki ilk etkileşiminde (tıklama, kaydırma, tuş) başlat
+            // Tarayıcı otomatik çalmayı engellediyse ilk etkileşimde başlat
             const unlockAudio = () => {
               if (audioRef.current && audioRef.current.paused) {
-                audioRef.current.volume = 0.5;
+                audioRef.current.volume = volume > 0 ? volume : 0.5;
                 audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
               }
               removeUnlockListeners();
@@ -79,7 +78,7 @@ export default function BackgroundMusic() {
   const togglePlay = () => {
     if (!audioRef.current) return;
     if (audioRef.current.paused) {
-      audioRef.current.volume = volume > 0 ? volume : 0.5;
+      audioRef.current.volume = isMuted ? 0 : (volume > 0 ? volume : 0.5);
       audioRef.current.play().catch(() => {});
     } else {
       audioRef.current.pause();
@@ -88,37 +87,70 @@ export default function BackgroundMusic() {
 
   const toggleMute = () => {
     if (!audioRef.current) return;
-    if (audioRef.current.muted || isMuted) {
+    if (audioRef.current.muted || isMuted || volume === 0) {
+      const targetVol = volume > 0 ? volume : 0.5;
       audioRef.current.muted = false;
-      audioRef.current.volume = 0.5;
+      audioRef.current.volume = targetVol;
       setIsMuted(false);
-      setVolume(0.5);
+      setVolume(targetVol);
     } else {
       audioRef.current.muted = true;
       setIsMuted(true);
     }
   };
 
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value);
+    const newVol = Math.max(0, Math.min(1, val / 100));
+    setVolume(newVol);
+    if (audioRef.current) {
+      audioRef.current.volume = newVol;
+      if (newVol > 0) {
+        audioRef.current.muted = false;
+        setIsMuted(false);
+      } else {
+        setIsMuted(true);
+      }
+    }
+  };
+
   if (!mounted) return null;
+
+  const currentPercent = isMuted ? 0 : Math.round(volume * 100);
 
   return (
     <aside
       className="bg-music-pill"
       aria-label="Arka Plan Müziği"
-      title="Restricted Studio Müziği (%50 Ses)"
+      title={`Restricted Studio Müziği (%${currentPercent} Ses)`}
     >
       {/* Equalizer Görsel Efekti */}
-      <div className={`bg-music-eq ${isPlaying && !isMuted ? 'playing' : ''}`} aria-hidden="true">
-        <span className="bg-music-eq-bar" style={{ height: isPlaying && !isMuted ? undefined : '3px' }}></span>
-        <span className="bg-music-eq-bar" style={{ height: isPlaying && !isMuted ? undefined : '7px' }}></span>
-        <span className="bg-music-eq-bar" style={{ height: isPlaying && !isMuted ? undefined : '4px' }}></span>
+      <div className={`bg-music-eq ${isPlaying && !isMuted && volume > 0 ? 'playing' : ''}`} aria-hidden="true">
+        <span className="bg-music-eq-bar" style={{ height: isPlaying && !isMuted && volume > 0 ? undefined : '3px' }}></span>
+        <span className="bg-music-eq-bar" style={{ height: isPlaying && !isMuted && volume > 0 ? undefined : '7px' }}></span>
+        <span className="bg-music-eq-bar" style={{ height: isPlaying && !isMuted && volume > 0 ? undefined : '4px' }}></span>
       </div>
 
       <span className="bg-music-title">Restricted Studio</span>
 
+      {/* Ses Yüzdesi Rozeti */}
       <span className="bg-music-vol-badge" title="Ses Seviyesi">
-        {isMuted ? 'Sessiz' : `%${Math.round(volume * 100)}`}
+        %{currentPercent}
       </span>
+
+      {/* Ses Ayar Kaydırıcısı (Volume Slider) */}
+      <div className="bg-music-slider-wrap" title={`Ses Seviyesini Ayarla: %${currentPercent}`}>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          value={currentPercent}
+          onChange={handleVolumeChange}
+          className="bg-music-range"
+          aria-label="Ses Seviyesi Ayarı"
+        />
+      </div>
 
       {/* Oynat / Duraklat Butonu */}
       <button
@@ -145,10 +177,10 @@ export default function BackgroundMusic() {
         type="button"
         onClick={toggleMute}
         className="bg-music-btn"
-        title={isMuted ? 'Sesi aç' : 'Sesi kapat'}
-        aria-label={isMuted ? 'Sesi aç' : 'Sesi kapat'}
+        title={isMuted || currentPercent === 0 ? 'Sesi aç' : 'Sesi kapat'}
+        aria-label={isMuted || currentPercent === 0 ? 'Sesi aç' : 'Sesi kapat'}
       >
-        {isMuted ? (
+        {isMuted || currentPercent === 0 ? (
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
             <line x1="23" y1="9" x2="17" y2="15" />
