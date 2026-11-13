@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import WinterSnow from '@/components/WinterSnow';
+import ChristmasTree from '@/components/ChristmasTree';
 import BackgroundMusic from '@/components/BackgroundMusic';
 
 export const metadata: Metadata = {
@@ -28,6 +29,7 @@ export default function RootLayout({
       </head>
       <body>
         <WinterSnow />
+        <ChristmasTree />
         <BackgroundMusic />
         {children}
       </body>
