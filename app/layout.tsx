@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'Restricted Studio — FiveM & AI Yazılım Ekosistemi',
   description: 'Restricted Studio; FiveM ekosistemi ve R-AI yapay zeka masaüstü çalışma istasyonu geliştiren yazılım stüdyosudur.',
   icons: {
-    icon: '/assets/Restricted.jpg',
+    icon: '/assets/rslogo.jpg',
   },
 };
 

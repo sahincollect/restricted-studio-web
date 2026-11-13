@@ -17,7 +17,7 @@ export default function DiscordPage() {
       <header style={styles.header}>
         <div style={styles.headerInner}>
           <Link href="/" style={styles.brandLink}>
-            <img src="/assets/Restricted.jpg" alt="Restricted Studio" style={styles.brandLogo} />
+            <img src="/assets/rslogo.jpg" alt="Restricted Studio" style={styles.brandLogo} />
             <span style={styles.brandText}>Restricted Studio</span>
           </Link>
 

@@ -283,7 +283,7 @@ export default function CatalogPage() {
       <header className="global-nav" id="navbar">
         <div className="nav-container">
           <Link href="/" className="nav-brand" aria-label="Restricted Studio Ana Sayfa">
-            <img src="/assets/Restricted.jpg" alt="Restricted Studio" className="nav-brand-logo" />
+            <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="nav-brand-logo" />
             <span className="nav-brand-text">Restricted Studio</span>
           </Link>
 
@@ -807,7 +807,7 @@ export default function CatalogPage() {
           <div className="footer-columns">
             <div className="footer-brand-info">
               <div className="nav-brand">
-                <img src="/assets/Restricted.jpg" alt="Restricted Studio" className="nav-brand-logo" />
+                <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="nav-brand-logo" />
                 <span className="nav-brand-text">Restricted Studio</span>
               </div>
               <p className="footer-tagline">

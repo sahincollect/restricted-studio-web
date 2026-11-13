@@ -121,15 +121,16 @@ svg {
   height: 100%;
   margin: 0 auto;
   padding: 0 24px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
 }
 
 .nav-brand {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  justify-self: start;
 }
 
 .nav-brand-logo {
@@ -151,7 +152,9 @@ svg {
 .nav-menu {
   display: flex;
   align-items: center;
-  gap: 24px;
+  justify-content: center;
+  gap: 28px;
+  justify-self: center;
 }
 
 .nav-item {
@@ -173,7 +176,9 @@ svg {
 .nav-cta-group {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
+  justify-self: end;
 }
 
 .nav-icon-btn {
@@ -1393,6 +1398,8 @@ svg {
   }
 
   .nav-container {
+    display: flex;
+    justify-content: space-between;
     padding: 0 18px;
   }
 
