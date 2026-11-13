@@ -253,8 +253,8 @@ export default function AdminPage() {
                 width: 34,
                 height: 34,
                 margin: '0 auto 16px',
-                border: '3px solid rgba(255,255,255,0.08)',
-                borderTopColor: '#0071e3',
+                border: '3px solid rgba(240,240,240,0.18)',
+                borderTopColor: '#A50000',
                 borderRadius: '50%',
                 animation: 'rsSpin 0.8s linear infinite',
               }}
@@ -269,11 +269,11 @@ export default function AdminPage() {
               maxWidth: '400px',
               margin: '80px auto',
               padding: '36px 32px 28px',
-              borderTop: '2px solid #0071e3',
-              boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
+              borderTop: '3px solid #A50000',
+              boxShadow: '7px 7px 0 #A50000',
             }}
           >
-            <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', color: '#4da3ff', marginBottom: '10px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', color: '#A50000', marginBottom: '10px' }}>
               RESTRICTED STUDIO
             </div>
             <h2 style={{ ...styles.cardTitle, fontSize: '22px', fontWeight: 600, marginBottom: '6px' }}>Yönetici Girişi</h2>
@@ -325,7 +325,7 @@ export default function AdminPage() {
         <div style={styles.card}>
           <div style={styles.cardHeader}>
             <div style={styles.cardIcon}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F0F0F0" strokeWidth="2">
                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
               </svg>
@@ -399,7 +399,7 @@ export default function AdminPage() {
         <div style={styles.card}>
           <div style={styles.cardHeader}>
             <div style={styles.cardIcon}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F0F0F0" strokeWidth="2">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -427,7 +427,7 @@ export default function AdminPage() {
               <tbody>
                 {licenses.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ padding: '24px', textAlign: 'center', color: '#71717a' }}>
+                    <td colSpan={6} style={{ padding: '24px', textAlign: 'center', color: 'rgba(240,240,240,0.65)' }}>
                       Henüz aktif kullanıcı lisansı bulunmuyor.
                     </td>
                   </tr>
@@ -435,31 +435,32 @@ export default function AdminPage() {
                   licenses.map((lic) => (
                     <tr key={lic.id} style={styles.tableRow}>
                       <td style={styles.td}>
-                        <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: '11.5px', color: '#94a3b8' }}>
+                        <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: '11.5px', color: 'rgba(240,240,240,0.7)' }}>
                           {lic.user_id.slice(0, 12)}...
                         </span>
                       </td>
                       <td style={styles.td}>
-                        <span style={{ fontWeight: 700, color: '#fff' }}>{lic.product_name}</span>
+                        <span style={{ fontWeight: 700, color: '#F0F0F0' }}>{lic.product_name}</span>
                       </td>
                       <td style={styles.td}>
                         <span
                           style={{
                             ...styles.badge,
-                            backgroundColor: lic.status === 'active' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                            color: lic.status === 'active' ? '#10b981' : '#f87171',
+                            backgroundColor: lic.status === 'active' ? '#F0F0F0' : '#450000',
+                            color: lic.status === 'active' ? '#080808' : '#F0F0F0',
+                            border: '1px solid #F0F0F0',
                           }}
                         >
                           {lic.status === 'active' ? 'Aktif' : 'Banlı / Askıda'}
                         </span>
                       </td>
                       <td style={styles.td}>
-                        <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: '11px', color: lic.hwid ? '#34d399' : '#f59e0b' }}>
+                        <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: '11px', color: lic.hwid ? '#F0F0F0' : '#A50000' }}>
                           {lic.hwid || 'Cihaz Yok (Serbest)'}
                         </span>
                       </td>
                       <td style={styles.td}>
-                        <span style={{ fontSize: '12px', color: '#94a3b8' }}>{new Date(lic.expires_at).toLocaleDateString('tr-TR')}</span>
+                        <span style={{ fontSize: '12px', color: 'rgba(240,240,240,0.72)' }}>{new Date(lic.expires_at).toLocaleDateString('tr-TR')}</span>
                       </td>
                       <td style={styles.td}>
                         <div style={{ display: 'flex', gap: '8px' }}>
@@ -478,9 +479,9 @@ export default function AdminPage() {
                             onClick={() => handleToggleBan(lic.id, lic.status)}
                             style={{
                               ...styles.actionBtn,
-                              backgroundColor: lic.status === 'active' ? 'rgba(239, 68, 68, 0.12)' : 'rgba(16, 185, 129, 0.12)',
-                              color: lic.status === 'active' ? '#f87171' : '#34d399',
-                              borderColor: lic.status === 'active' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)',
+                              backgroundColor: lic.status === 'active' ? '#A50000' : '#F0F0F0',
+                              color: lic.status === 'active' ? '#F0F0F0' : '#080808',
+                              borderColor: '#F0F0F0',
                             }}
                           >
                             {lic.status === 'active' ? 'Banla' : 'Aktif Et'}
@@ -504,14 +505,17 @@ export default function AdminPage() {
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     minHeight: '100vh',
-    backgroundColor: '#08080b',
-    color: '#ffffff',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    backgroundColor: '#080808',
+    color: '#F0F0F0',
+    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    backgroundImage:
+      'var(--grain-svg), radial-gradient(rgba(240, 240, 240, 0.06) 1px, transparent 1px), linear-gradient(155deg, #080808 0%, #080808 62%, rgba(139, 0, 0, 0.32) 100%)',
+    backgroundSize: '160px 160px, 5px 5px, 100% 100%',
   },
   header: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-    backgroundColor: 'rgba(10, 11, 16, 0.85)',
-    backdropFilter: 'blur(16px)',
+    borderBottom: '1.5px solid rgba(240, 240, 240, 0.28)',
+    backgroundColor: 'rgba(8, 8, 8, 0.94)',
+    backdropFilter: 'blur(12px)',
     position: 'sticky',
     top: 0,
     zIndex: 50,
@@ -528,7 +532,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    color: '#ffffff',
+    color: '#F0F0F0',
     textDecoration: 'none',
     fontWeight: 800,
     fontSize: '13px',
@@ -537,16 +541,16 @@ const styles: { [key: string]: React.CSSProperties } = {
   logoDot: {
     width: '8px',
     height: '8px',
-    borderRadius: '50%',
-    backgroundColor: '#0071e3',
-    boxShadow: '0 0 10px #0071e3',
+    borderRadius: '0px',
+    backgroundColor: '#A50000',
+    border: '1px solid #F0F0F0',
   },
   backBtn: {
     padding: '7px 14px',
-    borderRadius: '8px',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    color: '#e2e8f0',
+    borderRadius: '0px',
+    backgroundColor: '#0e0e0e',
+    border: '1.5px solid rgba(240, 240, 240, 0.38)',
+    color: '#F0F0F0',
     fontSize: '12px',
     fontWeight: 600,
     textDecoration: 'none',
@@ -560,11 +564,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     gap: '24px',
   },
   card: {
-    backgroundColor: 'rgba(14, 15, 22, 0.85)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    borderRadius: '16px',
+    backgroundColor: '#080808',
+    border: '2px solid rgba(240, 240, 240, 0.42)',
+    borderRadius: '0px',
     padding: '26px',
-    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
+    boxShadow: '6px 6px 0 #8B0000',
   },
   cardHeader: {
     display: 'flex',
@@ -575,9 +579,9 @@ const styles: { [key: string]: React.CSSProperties } = {
   cardIcon: {
     width: '38px',
     height: '38px',
-    borderRadius: '10px',
-    backgroundColor: 'rgba(0, 113, 227, 0.12)',
-    border: '1px solid rgba(0, 113, 227, 0.3)',
+    borderRadius: '0px',
+    backgroundColor: '#450000',
+    border: '1.5px solid #F0F0F0',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -585,12 +589,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   cardTitle: {
     fontSize: '17px',
     fontWeight: 700,
-    color: '#ffffff',
+    color: '#F0F0F0',
     marginBottom: '3px',
   },
   cardSubtitle: {
     fontSize: '13px',
-    color: '#71717a',
+    color: 'rgba(240, 240, 240, 0.68)',
   },
   formRow: {
     display: 'flex',
@@ -606,56 +610,56 @@ const styles: { [key: string]: React.CSSProperties } = {
   label: {
     fontSize: '11px',
     fontWeight: 700,
-    color: '#a1a1aa',
-    letterSpacing: '0.05em',
+    color: 'rgba(240, 240, 240, 0.78)',
+    letterSpacing: '0.06em',
   },
   select: {
     padding: '11px 14px',
-    borderRadius: '8px',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
-    color: '#ffffff',
+    borderRadius: '0px',
+    backgroundColor: '#0e0e0e',
+    border: '1.5px solid rgba(240, 240, 240, 0.35)',
+    color: '#F0F0F0',
     fontSize: '13.5px',
     outline: 'none',
   },
   numInput: {
     width: '110px',
     padding: '11px 14px',
-    borderRadius: '8px',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
-    color: '#ffffff',
+    borderRadius: '0px',
+    backgroundColor: '#0e0e0e',
+    border: '1.5px solid rgba(240, 240, 240, 0.35)',
+    color: '#F0F0F0',
     fontSize: '13.5px',
     outline: 'none',
   },
   primaryBtn: {
     padding: '12px 22px',
-    borderRadius: '8px',
-    backgroundColor: '#0071e3',
-    color: '#ffffff',
+    borderRadius: '0px',
+    backgroundColor: '#A50000',
+    color: '#F0F0F0',
     fontSize: '13.5px',
     fontWeight: 700,
-    border: 'none',
+    border: '1.5px solid #F0F0F0',
     cursor: 'pointer',
-    boxShadow: '0 4px 16px rgba(0, 113, 227, 0.35)',
+    boxShadow: '4px 4px 0 #8B0000',
   },
   copyBtn: {
     padding: '8px 16px',
-    borderRadius: '8px',
-    backgroundColor: '#1e293b',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
-    color: '#f8fafc',
+    borderRadius: '0px',
+    backgroundColor: '#F0F0F0',
+    border: '1.5px solid #F0F0F0',
+    color: '#080808',
     fontSize: '12.5px',
-    fontWeight: 600,
+    fontWeight: 700,
     cursor: 'pointer',
   },
   codeTextarea: {
     width: '100%',
     padding: '14px',
-    borderRadius: '10px',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    color: '#e2e8f0',
+    borderRadius: '0px',
+    backgroundColor: '#0e0e0e',
+    border: '1.5px solid rgba(240, 240, 240, 0.3)',
+    color: '#F0F0F0',
     fontFamily: 'ui-monospace, monospace',
     fontSize: '13px',
     lineHeight: '1.6',
@@ -668,45 +672,45 @@ const styles: { [key: string]: React.CSSProperties } = {
     textAlign: 'left',
   },
   tableHeadRow: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+    borderBottom: '1.5px solid rgba(240, 240, 240, 0.35)',
   },
   th: {
     padding: '12px 14px',
     fontSize: '11px',
     fontWeight: 700,
-    color: '#71717a',
+    color: 'rgba(240, 240, 240, 0.68)',
     letterSpacing: '0.06em',
   },
   tableRow: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+    borderBottom: '1px solid rgba(240, 240, 240, 0.14)',
   },
   td: {
     padding: '14px',
     fontSize: '13px',
-    color: '#e2e8f0',
+    color: '#F0F0F0',
   },
   badge: {
     fontSize: '11px',
     fontWeight: 700,
     padding: '3px 8px',
-    borderRadius: '5px',
+    borderRadius: '0px',
   },
   actionBtn: {
     padding: '6px 12px',
-    borderRadius: '6px',
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
-    color: '#e2e8f0',
+    borderRadius: '0px',
+    backgroundColor: '#0e0e0e',
+    border: '1.5px solid rgba(240, 240, 240, 0.35)',
+    color: '#F0F0F0',
     fontSize: '11.5px',
-    fontWeight: 600,
+    fontWeight: 700,
   },
   alertBox: {
     padding: '14px 18px',
-    borderRadius: '10px',
-    backgroundColor: 'rgba(0, 113, 227, 0.12)',
-    border: '1px solid rgba(0, 113, 227, 0.35)',
-    color: '#4da3ff',
+    borderRadius: '0px',
+    backgroundColor: '#450000',
+    border: '1.5px solid #F0F0F0',
+    color: '#F0F0F0',
     fontSize: '13.5px',
-    fontWeight: 600,
+    fontWeight: 700,
   },
 };

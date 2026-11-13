@@ -45,12 +45,12 @@ export default function ItemsatisLogo({
           alignItems: 'center',
           gap: '6px',
           padding: '3px 8px',
-          background: 'rgba(72, 133, 190, 0.15)',
-          border: '1px solid rgba(72, 133, 190, 0.4)',
-          borderRadius: '6px',
+          background: '#0e0e0e',
+          border: '1px solid #A50000',
+          borderRadius: '0px',
           fontSize: '11px',
           fontWeight: 700,
-          color: '#38bdf8',
+          color: '#F0F0F0',
           ...style,
         }}
       >

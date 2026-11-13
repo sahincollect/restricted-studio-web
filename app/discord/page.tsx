@@ -54,7 +54,7 @@ export default function DiscordPage() {
           <div style={styles.iconContainer}>
             <div style={styles.iconAura} />
             <div style={styles.iconCircle}>
-              <svg width="44" height="44" viewBox="0 0 24 24" fill="#5865F2">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="#F0F0F0">
                 <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
               </svg>
             </div>
@@ -72,7 +72,7 @@ export default function DiscordPage() {
           <div style={styles.featuresGrid}>
             <div style={styles.featureCard}>
               <div style={styles.featureIcon}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5865F2" strokeWidth="2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A50000" strokeWidth="2">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                 </svg>
               </div>
@@ -84,7 +84,7 @@ export default function DiscordPage() {
 
             <div style={styles.featureCard}>
               <div style={styles.featureIcon}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F0F0F0" strokeWidth="2">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
               </div>
@@ -96,7 +96,7 @@ export default function DiscordPage() {
 
             <div style={styles.featureCard}>
               <div style={styles.featureIcon}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A50000" strokeWidth="2">
                   <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                 </svg>
               </div>
@@ -164,40 +164,38 @@ const styles: { [key: string]: React.CSSProperties } = {
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: '#08080b',
-    color: '#ffffff',
+    backgroundColor: '#080808',
+    color: '#F0F0F0',
     fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif",
     position: 'relative',
     overflowX: 'hidden',
     backgroundImage:
-      'radial-gradient(circle at 50% 15%, rgba(88, 101, 242, 0.12) 0%, transparent 60%), repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 24px)',
+      'var(--grain-svg), radial-gradient(rgba(240, 240, 240, 0.065) 1px, transparent 1px), linear-gradient(155deg, #080808 0%, #080808 58%, #450000 84%, #8B0000 100%)',
+    backgroundSize: '160px 160px, 5px 5px, 100% 100%',
   },
   glowTop: {
     position: 'absolute',
-    top: '-150px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    width: '600px',
-    height: '400px',
-    background: 'radial-gradient(circle, rgba(0, 113, 227, 0.15) 0%, rgba(88, 101, 242, 0.15) 50%, transparent 70%)',
-    filter: 'blur(80px)',
+    top: 0,
+    left: '14%',
+    width: '44vw',
+    height: '85vh',
+    clipPath: 'polygon(18% 0%, 44% 0%, 88% 100%, 42% 100%)',
+    background:
+      'linear-gradient(to top, rgba(240, 240, 240, 0.08) 0%, rgba(165, 0, 0, 0.16) 35%, rgba(8, 8, 8, 0.9) 85%)',
     pointerEvents: 'none',
   },
   glowBottom: {
     position: 'absolute',
-    bottom: '-100px',
-    right: '10%',
-    width: '450px',
-    height: '350px',
-    background: 'radial-gradient(circle, rgba(88, 101, 242, 0.08) 0%, transparent 70%)',
-    filter: 'blur(90px)',
+    inset: 0,
+    backgroundImage: 'radial-gradient(rgba(8, 8, 8, 0.4) 1px, transparent 1px)',
+    backgroundSize: '4px 4px',
     pointerEvents: 'none',
   },
   header: {
     width: '100%',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-    backdropFilter: 'blur(20px)',
-    backgroundColor: 'rgba(8, 8, 11, 0.8)',
+    borderBottom: '1.5px solid rgba(240, 240, 240, 0.3)',
+    backdropFilter: 'blur(12px)',
+    backgroundColor: 'rgba(8, 8, 8, 0.94)',
     position: 'sticky',
     top: 0,
     zIndex: 50,
@@ -215,19 +213,20 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
     gap: '12px',
     textDecoration: 'none',
-    color: '#ffffff',
+    color: '#F0F0F0',
   },
   brandLogo: {
     width: '32px',
     height: '32px',
-    borderRadius: '8px',
+    borderRadius: '0px',
     objectFit: 'cover',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    border: '1.5px solid #F0F0F0',
+    filter: 'grayscale(100%) contrast(1.25)',
   },
   brandText: {
-    fontSize: '15px',
-    fontWeight: 700,
-    letterSpacing: '-0.01em',
+    fontSize: '14px',
+    fontWeight: 800,
+    letterSpacing: '0.08em',
   },
   headerNav: {
     display: 'flex',
@@ -235,23 +234,23 @@ const styles: { [key: string]: React.CSSProperties } = {
     gap: '20px',
   },
   navLink: {
-    color: '#a1a1aa',
+    color: 'rgba(240, 240, 240, 0.72)',
     textDecoration: 'none',
     fontSize: '13px',
-    fontWeight: 500,
+    fontWeight: 600,
     transition: 'color 0.2s ease',
   },
   navPortalBtn: {
     display: 'inline-flex',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
-    color: '#ffffff',
+    backgroundColor: '#A50000',
+    color: '#F0F0F0',
     textDecoration: 'none',
     fontSize: '12px',
-    fontWeight: 600,
+    fontWeight: 700,
     padding: '7px 14px',
-    borderRadius: '999px',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    borderRadius: '0px',
+    border: '1.5px solid #F0F0F0',
     transition: 'all 0.2s ease',
   },
   main: {
@@ -265,12 +264,11 @@ const styles: { [key: string]: React.CSSProperties } = {
   card: {
     width: '100%',
     maxWidth: '780px',
-    backgroundColor: 'rgba(14, 15, 22, 0.88)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    borderRadius: '24px',
+    backgroundColor: '#080808',
+    border: '2px solid #F0F0F0',
+    borderRadius: '0px',
     padding: '48px 36px',
-    boxShadow: '0 30px 100px rgba(0, 0, 0, 0.7), 0 0 50px rgba(88, 101, 242, 0.06)',
-    backdropFilter: 'blur(30px)',
+    boxShadow: '8px 8px 0 #A50000',
     textAlign: 'center',
   },
   badgeWrapper: {
@@ -283,10 +281,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
     gap: '8px',
     padding: '6px 14px',
-    borderRadius: '999px',
-    backgroundColor: 'rgba(88, 101, 242, 0.12)',
-    border: '1px solid rgba(88, 101, 242, 0.25)',
-    color: '#8ea1e1',
+    borderRadius: '0px',
+    backgroundColor: '#450000',
+    border: '1.5px solid #F0F0F0',
+    color: '#F0F0F0',
     fontSize: '11px',
     fontWeight: 700,
     letterSpacing: '0.08em',
@@ -294,9 +292,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   statusDot: {
     width: '7px',
     height: '7px',
-    borderRadius: '50%',
-    backgroundColor: '#5865F2',
-    boxShadow: '0 0 10px #5865F2',
+    borderRadius: '0px',
+    backgroundColor: '#F0F0F0',
   },
   iconContainer: {
     position: 'relative',
@@ -306,36 +303,31 @@ const styles: { [key: string]: React.CSSProperties } = {
     marginBottom: '24px',
   },
   iconAura: {
-    position: 'absolute',
-    width: '100px',
-    height: '100px',
-    borderRadius: '50%',
-    backgroundColor: 'rgba(88, 101, 242, 0.22)',
-    filter: 'blur(24px)',
+    display: 'none',
   },
   iconCircle: {
     position: 'relative',
     width: '84px',
     height: '84px',
-    borderRadius: '22px',
-    backgroundColor: 'rgba(88, 101, 242, 0.1)',
-    border: '1px solid rgba(88, 101, 242, 0.3)',
+    borderRadius: '0px',
+    backgroundColor: '#8B0000',
+    border: '2px solid #F0F0F0',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+    boxShadow: '5px 5px 0 #080808',
   },
   title: {
     fontSize: '32px',
     fontWeight: 800,
-    color: '#ffffff',
-    letterSpacing: '-0.03em',
+    color: '#F0F0F0',
+    letterSpacing: '-0.02em',
     marginBottom: '14px',
     lineHeight: 1.2,
   },
   description: {
     fontSize: '15px',
-    color: '#94a3b8',
+    color: 'rgba(240, 240, 240, 0.72)',
     lineHeight: 1.65,
     maxWidth: '620px',
     margin: '0 auto 36px',
@@ -348,16 +340,17 @@ const styles: { [key: string]: React.CSSProperties } = {
     textAlign: 'left',
   },
   featureCard: {
-    backgroundColor: 'rgba(20, 22, 32, 0.65)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    borderRadius: '16px',
+    backgroundColor: '#0e0e0e',
+    border: '1.5px solid rgba(240, 240, 240, 0.28)',
+    borderRadius: '0px',
     padding: '20px 18px',
   },
   featureIcon: {
     width: '36px',
     height: '36px',
-    borderRadius: '10px',
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderRadius: '0px',
+    backgroundColor: '#080808',
+    border: '1px solid #F0F0F0',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -366,12 +359,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   featureTitle: {
     fontSize: '13px',
     fontWeight: 700,
-    color: '#ffffff',
+    color: '#F0F0F0',
     marginBottom: '6px',
   },
   featureDesc: {
     fontSize: '12px',
-    color: '#71717a',
+    color: 'rgba(240, 240, 240, 0.65)',
     lineHeight: 1.5,
   },
   actionsContainer: {
@@ -380,64 +373,66 @@ const styles: { [key: string]: React.CSSProperties } = {
     gap: '12px',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: '12px',
-    borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+    paddingTop: '16px',
+    borderTop: '1.5px solid rgba(240, 240, 240, 0.2)',
   },
   primaryBtn: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '10px',
-    backgroundColor: '#0071e3',
-    color: '#ffffff',
+    backgroundColor: '#A50000',
+    color: '#F0F0F0',
+    border: '1.5px solid #F0F0F0',
     textDecoration: 'none',
     fontSize: '13px',
-    fontWeight: 600,
+    fontWeight: 700,
     padding: '12px 22px',
-    borderRadius: '12px',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 4px 18px rgba(0, 113, 227, 0.35)',
+    borderRadius: '0px',
+    transition: 'all 0.15s ease',
+    boxShadow: '4px 4px 0 #8B0000',
   },
   secondaryBtn: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '10px',
-    backgroundColor: '#0071e3',
-    color: '#ffffff',
+    backgroundColor: '#F0F0F0',
+    color: '#080808',
+    border: '1.5px solid #F0F0F0',
     textDecoration: 'none',
     fontSize: '13px',
-    fontWeight: 600,
+    fontWeight: 700,
     padding: '12px 22px',
-    borderRadius: '12px',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 4px 18px rgba(0, 113, 227, 0.3)',
+    borderRadius: '0px',
+    transition: 'all 0.15s ease',
+    boxShadow: '4px 4px 0 #A50000',
   },
   tertiaryBtn: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '8px',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    color: '#d4d4d8',
+    backgroundColor: '#0e0e0e',
+    color: '#F0F0F0',
     textDecoration: 'none',
     fontSize: '13px',
-    fontWeight: 500,
+    fontWeight: 600,
     padding: '12px 20px',
-    borderRadius: '12px',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    transition: 'all 0.2s ease',
+    borderRadius: '0px',
+    border: '1.5px solid rgba(240, 240, 240, 0.42)',
+    transition: 'all 0.15s ease',
   },
   footer: {
     padding: '32px 20px',
     textAlign: 'center',
-    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+    borderTop: '1.5px solid rgba(240, 240, 240, 0.2)',
     zIndex: 1,
   },
   footerText: {
     fontSize: '12px',
-    color: '#71717a',
+    color: 'rgba(240, 240, 240, 0.72)',
     marginBottom: '6px',
   },
   footerSubtext: {
     fontSize: '11px',
-    color: '#52525b',
+    color: 'rgba(240, 240, 240, 0.5)',
   },
 };

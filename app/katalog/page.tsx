@@ -46,40 +46,40 @@ const DISCOUNT_THRESHOLD = 15; // > 15 pieces triggers 50% discount
 const DISCOUNT_PERCENT = 50;
 
 const DEFAULT_STYLE = {
-  from: '#0b1a33',
-  to: '#12306b',
+  from: '#080808',
+  to: '#8B0000',
   icon: <rect x="4" y="4" width="16" height="16" rx="3" />,
 };
 
 const CATEGORY_STYLE: Record<string, { from: string; to: string; icon: React.ReactNode }> = {
   'Script & Sistemler': {
-    from: '#0b1a33',
-    to: '#154a9c',
+    from: '#080808',
+    to: '#A50000',
     icon: (<><polyline points="8 6 3 12 8 18" /><polyline points="16 6 21 12 16 18" /><line x1="14" y1="4" x2="10" y2="20" /></>),
   },
   'MLO & Mekanlar': {
-    from: '#0c2a36',
-    to: '#14708f',
+    from: '#0e0e0e',
+    to: '#8B0000',
     icon: (<><path d="M3 21V9l9-6 9 6v12" /><path d="M9 21v-7h6v7" /></>),
   },
   'Araç Paketleri': {
-    from: '#141b33',
-    to: '#2d4a9a',
+    from: '#450000',
+    to: '#080808',
     icon: (<><path d="M5 17h14M3 13l2-6h14l2 6v4H3z" /><circle cx="7.5" cy="17" r="1.5" /><circle cx="16.5" cy="17" r="1.5" /></>),
   },
   'Kıyafet & EUP': {
-    from: '#1b1936',
-    to: '#4a3f9c',
+    from: '#080808',
+    to: '#8B0000',
     icon: (<path d="M8 3l-5 4 3 3 2-1v12h8V9l2 1 3-3-5-4a4 4 0 0 1-8 0z" />),
   },
   'Modlar & Eklentiler': {
-    from: '#0d2236',
-    to: '#1d63a6',
+    from: '#141414',
+    to: '#A50000',
     icon: (<><path d="M12 2l9 5v10l-9 5-9-5V7z" /><polyline points="3 7 12 12 21 7" /><line x1="12" y1="12" x2="12" y2="22" /></>),
   },
   'Program & Araçlar': {
-    from: '#131a24',
-    to: '#33465f',
+    from: '#080808',
+    to: '#450000',
     icon: (<><rect x="3" y="4" width="18" height="13" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></>),
   },
 };
@@ -328,25 +328,22 @@ export default function CatalogPage() {
           </Link>
 
           <nav className={`nav-menu ${mobileMenuOpen ? 'open' : ''}`} id="navMenu" aria-label="Ana Menü">
-            <Link href="/#hikayemiz" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
-              Biz Kimiz
-            </Link>
-            <Link href="/#cozumler" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
-              Çözümler
+            <Link href="/" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
+              Ana Sayfa
             </Link>
             <Link
               href="/katalog"
               className="nav-item nav-item-active"
-              style={{ color: '#0071e3', fontWeight: 700 }}
+              style={{ color: '#F0F0F0', fontWeight: 700 }}
               onClick={() => setMobileMenuOpen(false)}
             >
               Katalog
             </Link>
-            <Link href="/#standartlar" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
-              Mühendislik
+            <Link href="/discord" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
+              Discord
             </Link>
-            <Link href="/#sss" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
-              SSS
+            <Link href="/dashboard" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
+              Portal
             </Link>
 
             {/* Mobile Actions */}
@@ -354,15 +351,15 @@ export default function CatalogPage() {
               <button
                 type="button"
                 className="btn btn-full"
-                style={{ background: '#0071e3', color: '#ffffff', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                style={{ background: '#A50000', color: '#F0F0F0', border: '1.5px solid #F0F0F0', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                 onClick={() => { setIsCartOpen(true); setMobileMenuOpen(false); }}
               >
-                🛒 Sepetim ({cart.length} Paket)
+                Sepetim ({cart.length} Paket)
               </button>
               <Link
                 href="/dashboard"
                 className="btn btn-full"
-                style={{ background: '#0d0d10', color: '#ffffff', marginBottom: '8px' }}
+                style={{ background: '#080808', color: '#F0F0F0', border: '1.5px solid #F0F0F0', marginBottom: '8px' }}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Müşteri Portalı &amp; Lisanslarım
@@ -397,16 +394,15 @@ export default function CatalogPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '7px',
-                backgroundColor: cart.length > 0 ? '#0071e3' : 'rgba(0, 0, 0, 0.04)',
-                color: cart.length > 0 ? '#ffffff' : '#1d1d1f',
-                border: '1px solid ' + (cart.length > 0 ? '#0071e3' : 'rgba(0, 0, 0, 0.08)'),
+                backgroundColor: cart.length > 0 ? '#A50000' : '#080808',
+                color: '#F0F0F0',
+                border: '1.5px solid #F0F0F0',
                 padding: '0 14px',
-                height: '36px',
-                borderRadius: '9px',
-                fontSize: '13px',
-                fontWeight: 600,
+                height: '34px',
+                fontSize: '12px',
+                fontWeight: 700,
                 cursor: 'pointer',
-                transition: 'all 0.2s',
+                transition: 'all 0.15s',
               }}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -416,10 +412,9 @@ export default function CatalogPage() {
               <span>Sepet</span>
               {cart.length > 0 && (
                 <span style={{
-                  backgroundColor: '#ffffff',
-                  color: '#0071e3',
-                  borderRadius: '999px',
-                  padding: '1px 7px',
+                  backgroundColor: '#F0F0F0',
+                  color: '#080808',
+                  padding: '1px 6px',
                   fontSize: '11px',
                   fontWeight: 800,
                 }}>
@@ -538,7 +533,7 @@ export default function CatalogPage() {
               <div className="sidebar-mobile-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '18px' }}>☰</span>
-                  <strong style={{ fontSize: '15px', color: '#1d1d1f' }}>Katalog Menüsü &amp; Filtreler</strong>
+                  <strong style={{ fontSize: '15px', color: '#F0F0F0' }}>Katalog Menüsü &amp; Filtreler</strong>
                 </div>
                 <button
                   type="button"
@@ -655,7 +650,7 @@ export default function CatalogPage() {
               {/* 4. Live Campaign & Cart Box */}
               <div className={`sb-campaign-card ${isDiscounted ? 'discount-active' : ''}`}>
                 <div className="sbc-badge">
-                  {isDiscounted ? '🎉 %50 İNDİRİM AKTİF' : '🏷️ PARÇA BAŞI 100 TL'}
+                  {isDiscounted ? '★ %50 İNDİRİM AKTİF' : '■ PARÇA BAŞI 100 TL'}
                 </div>
                 <div className="sbc-body">
                   {isDiscounted ? (
@@ -745,10 +740,10 @@ export default function CatalogPage() {
                   onClick={() => setShowGuideModal(true)}
                   className="sb-help-link"
                 >
-                  📖 Sipariş Yönergesi
+                  ■ Sipariş Yönergesi
                 </button>
                 <Link href={DISCORD_INVITE} className="sb-help-link">
-                  💬 Discord Destek
+                  ↗ Discord Destek
                 </Link>
               </div>
 
@@ -1076,7 +1071,7 @@ export default function CatalogPage() {
                   rel="noopener noreferrer"
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', opacity: 0.85 }}
                 >
-                  <span style={{ fontSize: '12px', color: '#94a3b8' }}>Resmi Satış:</span>
+                  <span style={{ fontSize: '12px', color: 'rgba(240, 240, 240, 0.72)' }}>Resmi Satış:</span>
                   <ItemsatisLogo variant="full" width={95} height={20} />
                 </a>
               </div>
@@ -1085,10 +1080,10 @@ export default function CatalogPage() {
             <div className="footer-col">
               <h4>Bölümler</h4>
               <ul>
-                <li><Link href="/#hikayemiz">Biz Kimiz</Link></li>
+                <li><Link href="/">Ana Sayfa</Link></li>
                 <li><Link href="/katalog">Paket Kataloğu</Link></li>
                 <li><Link href="/dashboard">Müşteri Portalı</Link></li>
-                <li><Link href="/#standartlar">Mühendislik Standartları</Link></li>
+                <li><Link href="/discord">Discord Desteği</Link></li>
               </ul>
             </div>
 
@@ -1169,12 +1164,12 @@ export default function CatalogPage() {
                 { n: '3', t: 'İtemsatış\'tan İletin & Teslim Alın', d: 'Açılan mağazada satıcıya mesaj olarak kopyalanan listeyi iletin; 3D Secure güvencesiyle temiz açık kaynak kodlarınız hemen teslim edilsin.' },
               ].map((s) => (
                 <li key={s.n} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                  <span style={{ flexShrink: 0, width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(0, 113, 227, 0.2)', border: '1px solid rgba(0, 113, 227, 0.6)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700 }}>
+                  <span style={{ flexShrink: 0, width: '24px', height: '24px', borderRadius: '0px', background: '#8B0000', border: '1px solid #F0F0F0', color: '#F0F0F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700 }}>
                     {s.n}
                   </span>
                   <div>
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#ffffff', marginBottom: '2px' }}>{s.t}</div>
-                    <div style={{ fontSize: '12.5px', color: '#a1a1aa', lineHeight: 1.5 }}>{s.d}</div>
+                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#F0F0F0', marginBottom: '2px' }}>{s.t}</div>
+                    <div style={{ fontSize: '12.5px', color: 'rgba(240, 240, 240, 0.72)', lineHeight: 1.5 }}>{s.d}</div>
                   </div>
                 </li>
               ))}
@@ -1187,16 +1182,15 @@ export default function CatalogPage() {
               style={{
                 width: '100%',
                 textAlign: 'left',
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '10px',
+                backgroundColor: '#0e0e0e',
+                border: '1px solid rgba(240, 240, 240, 0.25)',
                 padding: '12px 14px',
                 marginBottom: '14px',
                 cursor: 'pointer',
-                color: '#d4d4d8',
+                color: '#F0F0F0',
               }}
             >
-              <span style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 600, letterSpacing: '0.04em', color: templateCopied ? '#34d399' : '#38bdf8', marginBottom: '6px' }}>
+              <span style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em', color: templateCopied ? '#F0F0F0' : '#A50000', marginBottom: '6px' }}>
                 <span>ÖRNEK İTEMSATIŞ MESAJ ŞABLONU</span>
                 <span>{templateCopied ? '✓ Kopyalandı' : 'Kopyalamak için tıklayın'}</span>
               </span>
@@ -1205,8 +1199,8 @@ export default function CatalogPage() {
               </span>
             </button>
 
-            <p style={{ fontSize: '12px', color: '#a1a1aa', lineHeight: 1.55, margin: '0 0 18px', paddingLeft: '10px', borderLeft: '2px solid rgba(0, 113, 227, 0.7)' }}>
-              <strong style={{ color: '#e4e4e7', fontWeight: 600 }}>Kampanya Notu:</strong> Parça başı 100 TL. Sepetinize 15 adetten fazla (16+) ürün eklerseniz sepetiniz anında %50 indirime girer (50 TL / Paket).
+            <p style={{ fontSize: '12px', color: 'rgba(240, 240, 240, 0.72)', lineHeight: 1.55, margin: '0 0 18px', paddingLeft: '10px', borderLeft: '2px solid #A50000' }}>
+              <strong style={{ color: '#F0F0F0', fontWeight: 600 }}>Kampanya Notu:</strong> Parça başı 100 TL. Sepetinize 15 adetten fazla (16+) ürün eklerseniz sepetiniz anında %50 indirime girer (50 TL / Paket).
             </p>
 
             <button
@@ -1216,11 +1210,10 @@ export default function CatalogPage() {
                 display: 'block',
                 width: '100%',
                 textAlign: 'center',
-                backgroundColor: '#0071e3',
-                color: '#ffffff',
+                backgroundColor: '#A50000',
+                color: '#F0F0F0',
                 padding: '12px 20px',
-                borderRadius: '10px',
-                border: 'none',
+                border: '1.5px solid #F0F0F0',
                 fontSize: '13.5px',
                 fontWeight: 700,
                 cursor: 'pointer',
@@ -1230,12 +1223,12 @@ export default function CatalogPage() {
             </button>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginTop: '14px' }}>
-              <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none', fontSize: '12px', color: '#71717a' }}>
+              <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none', fontSize: '12px', color: 'rgba(240, 240, 240, 0.72)' }}>
                 <input
                   type="checkbox"
                   checked={dontShowToday}
                   onChange={(e) => setDontShowToday(e.target.checked)}
-                  style={{ accentColor: '#0071e3', width: '14px', height: '14px', cursor: 'pointer' }}
+                  style={{ accentColor: '#A50000', width: '14px', height: '14px', cursor: 'pointer' }}
                 />
                 <span>Bugün tekrar gösterme</span>
               </label>
@@ -1304,7 +1297,7 @@ export default function CatalogPage() {
             <div className="cart-drawer-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div className="cart-header-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2.2">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A50000" strokeWidth="2.2">
                     <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
                   </svg>
@@ -1328,18 +1321,18 @@ export default function CatalogPage() {
             <div className={`cart-campaign-box ${isDiscounted ? 'active' : ''}`}>
               {isDiscounted ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '20px' }}>🎉</span>
+                  <span style={{ fontSize: '18px', fontWeight: 800 }}>%50</span>
                   <div>
-                    <strong style={{ color: '#34d399', fontSize: '13px' }}>%50 İndirim Tanımlandı!</strong>
-                    <div style={{ fontSize: '12px', color: '#a1a1aa' }}>15 adetten fazla ürün eklendiği için paket başı 100 TL yerine 50 TL olarak hesaplanıyor.</div>
+                    <strong style={{ color: '#F0F0F0', fontSize: '13px' }}>%50 İndirim Tanımlandı!</strong>
+                    <div style={{ fontSize: '12px', color: 'rgba(240, 240, 240, 0.85)' }}>15 adetten fazla ürün eklendiği için paket başı 100 TL yerine 50 TL olarak hesaplanıyor.</div>
                   </div>
                 </div>
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '20px' }}>🏷️</span>
+                  <span style={{ fontSize: '16px', fontWeight: 800, color: '#A50000' }}>◆</span>
                   <div>
-                    <strong style={{ color: '#38bdf8', fontSize: '13px' }}>15&apos;ten Fazla Ürün Kampanyası</strong>
-                    <div style={{ fontSize: '12px', color: '#a1a1aa' }}>
+                    <strong style={{ color: '#F0F0F0', fontSize: '13px' }}>15&apos;ten Fazla Ürün Kampanyası</strong>
+                    <div style={{ fontSize: '12px', color: 'rgba(240, 240, 240, 0.72)' }}>
                       Sepetinize <strong>{remainingForDiscount} paket daha</strong> eklerseniz tüm sepet %50 indirime girecektir!
                     </div>
                   </div>
@@ -1351,12 +1344,12 @@ export default function CatalogPage() {
             <div className="cart-item-list">
               {cart.length === 0 ? (
                 <div className="cart-empty-state">
-                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#71717a" strokeWidth="1.5">
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(240, 240, 240, 0.45)" strokeWidth="1.5">
                     <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
                   </svg>
-                  <p style={{ fontSize: '15px', fontWeight: 600, color: '#ffffff', margin: '12px 0 4px' }}>Sepetiniz henüz boş</p>
-                  <span style={{ fontSize: '12.5px', color: '#a1a1aa' }}>Katalogdan istediğiniz paketleri &quot;Sepete Ekle&quot; butonuyla ekleyebilirsiniz.</span>
+                  <p style={{ fontSize: '15px', fontWeight: 600, color: '#F0F0F0', margin: '12px 0 4px' }}>Sepetiniz henüz boş</p>
+                  <span style={{ fontSize: '12.5px', color: 'rgba(240, 240, 240, 0.72)' }}>Katalogdan istediğiniz paketleri &quot;Sepete Ekle&quot; butonuyla ekleyebilirsiniz.</span>
                 </div>
               ) : (
                 cart.map((item, idx) => (
@@ -1373,8 +1366,8 @@ export default function CatalogPage() {
                       <span className="cart-item-price">
                         {isDiscounted ? (
                           <>
-                            <s style={{ color: '#71717a', fontSize: '11px', marginRight: '4px' }}>100 TL</s>
-                            <strong style={{ color: '#10b981' }}>50 TL</strong>
+                            <s style={{ color: 'rgba(240, 240, 240, 0.48)', fontSize: '11px', marginRight: '4px' }}>100 TL</s>
+                            <strong style={{ color: '#A50000', background: '#F0F0F0', padding: '1px 4px' }}>50 TL</strong>
                           </>
                         ) : (
                           <strong>100 TL</strong>
@@ -1408,8 +1401,8 @@ export default function CatalogPage() {
                     <span>
                       {isDiscounted ? (
                         <>
-                          <s style={{ color: '#71717a', marginRight: '6px' }}>100 TL</s>
-                          <span style={{ color: '#10b981', fontWeight: 600 }}>50 TL</span>
+                          <s style={{ color: 'rgba(240, 240, 240, 0.48)', marginRight: '6px' }}>100 TL</s>
+                          <span style={{ color: '#F0F0F0', background: '#A50000', padding: '1px 5px', fontWeight: 700 }}>50 TL</span>
                         </>
                       ) : (
                         '100 TL'
@@ -1419,7 +1412,7 @@ export default function CatalogPage() {
                   {isDiscounted && (
                     <div className="summary-row discount">
                       <span>%50 Kampanya İndirimi</span>
-                      <span style={{ color: '#10b981', fontWeight: 600 }}>-{discountSavings.toLocaleString('tr-TR')} TL</span>
+                      <span style={{ color: '#A50000', fontWeight: 700 }}>-{discountSavings.toLocaleString('tr-TR')} TL</span>
                     </div>
                   )}
                   <div className="summary-row total">
@@ -1469,7 +1462,7 @@ export default function CatalogPage() {
            ===================================================================== */}
       {toastMessage && (
         <div className="catalog-toast">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A50000" strokeWidth="2.5">
             <polyline points="20 6 9 17 4 12" />
           </svg>
           <span>{toastMessage}</span>

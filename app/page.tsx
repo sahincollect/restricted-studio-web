@@ -1,207 +1,1016 @@
 'use client';
 
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import catalogStats from '../lib/catalog-stats.json';
+import ItemsatisLogo from '../components/ItemsatisLogo';
 
-const RAW_HTML = "<!-- =====================================================================\n     NOIR BENTO HERO (Image 1 Bento Grid + Image 2 Noir-Crimson Art Consciousness)\n     ===================================================================== -->\n  <section class=\"noir-hero-canvas\">\n    <div class=\"noir-canvas-grain\" aria-hidden=\"true\"></div>\n    <div class=\"noir-canvas-glow\" aria-hidden=\"true\"></div>\n\n    <div class=\"noir-canvas-inner\">\n\n      <!-- ===============================================================\n           TOP FLOATING PILL NAVBAR (Image 1 Header Layout)\n           =============================================================== -->\n      <header class=\"bento-pill-nav\" id=\"navbar\">\n        <a href=\"#\" class=\"bpn-brand\" aria-label=\"Restricted Studio Ana Sayfa\">\n          <img src=\"/assets/rslogo.jpg\" alt=\"Restricted Studio\" class=\"bpn-logo\">\n          <span class=\"bpn-title\">RESTRICTED STUDIO</span>\n        </a>\n\n        <nav class=\"bpn-menu\" id=\"navMenu\" aria-label=\"Ana Menü\">\n          <a href=\"#hikayemiz\" class=\"bpn-link\">BİZ KİMİZ</a>\n          <a href=\"#cozumler\" class=\"bpn-link\">ÇÖZÜMLER</a>\n          <a href=\"/katalog\" class=\"bpn-link bpn-link-highlight\">KATALOG</a>\n          <a href=\"#standartlar\" class=\"bpn-link\">MÜHENDİSLİK</a>\n          <a href=\"#sss\" class=\"bpn-link\">SSS</a>\n\n          <!-- Mobile Drawer Actions -->\n          <div class=\"nav-mobile-actions\">\n            <a href=\"/dashboard\" class=\"btn btn-full\" style=\"background:#ffffff;color:#09090b;margin-bottom:8px;font-weight:700;\">Müşteri Portalı &amp; Lisanslarım</a>\n            <a href=\"/katalog\" class=\"btn btn-full\" style=\"background:#dc2626;color:#ffffff;margin-bottom:8px;font-weight:700;\">Paket Kataloğu (6.400+)</a>\n            <a href=\"https://www.itemsatis.com/p/saintstudio\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"btn btn-itemsatis btn-full\" style=\"margin-bottom:8px;\">\n              <img src=\"/assets/itemsatis-icon.png\" alt=\"\" width=\"18\" height=\"18\" style=\"border-radius:4px;vertical-align:middle;margin-right:6px;\">\n              <span>İtemsatış Resmi Mağazası</span>\n            </a>\n            <a href=\"/discord\" class=\"btn btn-discord-solid btn-full\">İletişime Geçin (Discord)</a>\n          </div>\n        </nav>\n\n        <div class=\"bpn-actions\">\n          <!-- Search / Catalog Trigger -->\n          <a href=\"/katalog\" class=\"bpn-icon-btn\" title=\"Katalogda Ara\" aria-label=\"Katalogda Ara\">\n            <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg>\n          </a>\n\n          <!-- Itemsatis Official Icon -->\n          <a href=\"https://www.itemsatis.com/p/saintstudio\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"bpn-icon-btn bpn-icon-itemsatis\" title=\"Resmi İtemsatış Mağazası\" aria-label=\"Resmi İtemsatış Mağazası\">\n            <img src=\"/assets/itemsatis-icon.png\" alt=\"İtemsatış\" width=\"18\" height=\"18\" style=\"border-radius:4px;object-fit:contain;display:block;\">\n          </a>\n\n          <!-- Discord Icon -->\n          <a href=\"/discord\" class=\"bpn-icon-btn bpn-icon-discord\" title=\"Discord Topluluğu\" aria-label=\"Discord\">\n            <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z\"/></svg>\n          </a>\n\n          <!-- Customer Portal Button -->\n          <a href=\"/dashboard\" class=\"bpn-portal-btn\" id=\"navPortalBtn\">\n            <svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" style=\"margin-right:5px;\"><path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/></svg>\n            <span>PORTAL</span>\n          </a>\n\n          <!-- Mobile Toggle -->\n          <button class=\"nav-mobile-toggle\" id=\"mobileToggle\" aria-label=\"Menüyü Aç/Kapat\" aria-expanded=\"false\">\n            <span></span>\n            <span></span>\n          </button>\n        </div>\n      </header>\n\n      <!-- ===============================================================\n           ASYMMETRIC BENTO GRID (Image 1 Layout + Image 2 Art Consciousness)\n           =============================================================== -->\n      <div class=\"bento-grid-container\">\n\n        <!-- LEFT COLUMN (Main Card + Sub Bento Row) -->\n        <div class=\"bento-col-left\">\n\n          <!-- MAIN HEADLINE CARD (Equivalent to STOP ANALYZING Card) -->\n          <div class=\"bento-card bento-card-main\">\n            <div class=\"bcm-grain-layer\" aria-hidden=\"true\"></div>\n\n            <!-- Eyebrow Tag -->\n            <div class=\"bcm-eyebrow\">\n              <span class=\"bcm-dot\"></span>\n              <span>RESTRICTED STUDIO // FIVEM ARCHITECTURE</span>\n            </div>\n\n            <!-- Massive Headline -->\n            <h1 class=\"bcm-headline\">\n              ANALİZİ BIRAKIN<br>\n              VE SİSTEMİ ÇALIŞTIRIN.<br>\n              <span class=\"bcm-headline-highlight\">RESTRICTED İLE.</span>\n            </h1>\n\n            <!-- Subtitle -->\n            <p class=\"bcm-subhead\">\n              Şüpheli sızıntılar ve karmaşık kurulumlarla vakit kaybetmeyin. 6.400+ doğrulanmış açık kaynak script, optimize 3D mekanlar ve sıfır gecikmeli SQL mimarisiyle doğrudan üretime geçin.\n            </p>\n\n            <!-- Split Action Buttons (Exact Match to Image 1) -->\n            <div class=\"bcm-actions-row\">\n              <!-- Primary Split Button (Light High-Contrast) -->\n              <a href=\"/katalog\" class=\"bcm-split-btn bcm-split-primary\">\n                <div class=\"bsb-text-wrap\">\n                  <span class=\"bsb-sub\">RESTRICTED STUDIO</span>\n                  <span class=\"bsb-main\">KATALOĞU KEŞFET</span>\n                </div>\n                <div class=\"bsb-icon-wrap\">\n                  <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg>\n                </div>\n              </a>\n\n              <!-- Secondary Split Button (Dark Obsidian Pill) -->\n              <a href=\"https://www.itemsatis.com/p/saintstudio\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"bcm-split-btn bcm-split-secondary\">\n                <div class=\"bsb-text-wrap\">\n                  <span class=\"bsb-sub\">RESMİ MAĞAZA</span>\n                  <span class=\"bsb-main\">İTEMSATIŞ</span>\n                </div>\n                <div class=\"bsb-icon-wrap\">\n                  <img src=\"/assets/itemsatis-icon.png\" alt=\"\" width=\"16\" height=\"16\" style=\"border-radius:3px;\">\n                </div>\n              </a>\n            </div>\n\n            <!-- Subtle Artistic Stipple Arrow / Accent (Homage to Image 1's doodle) -->\n            <div class=\"bcm-accent-sketch\" aria-hidden=\"true\">\n              <svg width=\"90\" height=\"42\" viewBox=\"0 0 100 45\" fill=\"none\">\n                <path d=\"M10 35 C 35 10, 65 40, 85 15\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-dasharray=\"3 3\"/>\n                <path d=\"M75 12 L 87 14 L 84 25\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n              </svg>\n            </div>\n          </div>\n\n          <!-- SUB BENTO ROW (2 Cards side by side) -->\n          <div class=\"bento-sub-row\">\n\n            <!-- CARD 1: CRIMSON MONOLITH (Direct Image 2 House & Light Beam Homage!) -->\n            <a href=\"#standartlar\" class=\"bento-card bento-card-crimson\">\n              <div class=\"bcm-grain-layer\" aria-hidden=\"true\"></div>\n\n              <!-- Top Row: Tag + Circular Arrow Button -->\n              <div class=\"bento-card-head\">\n                <span class=\"bcc-tag\">MÜHENDİSLİK &amp; MİMARİ</span>\n                <div class=\"bcc-circle-btn\" aria-hidden=\"true\">\n                  <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path d=\"M7 17L17 7M17 7H8M17 7V16\"/></svg>\n                </div>\n              </div>\n\n              <!-- Center Graphic: Image 2's Monolithic House with Vertical Beam of Light -->\n              <div class=\"bcc-monolith-art\" aria-hidden=\"true\">\n                <svg viewBox=\"0 0 120 100\" fill=\"none\" style=\"width:100%;height:100%;\">\n                  <!-- Ground horizon line -->\n                  <line x1=\"0\" y1=\"88\" x2=\"120\" y2=\"88\" stroke=\"rgba(255,255,255,0.25)\" stroke-dasharray=\"2 3\"/>\n                  <!-- Monolith House -->\n                  <path d=\"M68 62 L 68 88 L 96 88 L 96 62 L 82 50 Z\" fill=\"#ffffff\" stroke=\"#ffffff\" stroke-width=\"1.5\"/>\n                  <rect x=\"78\" y=\"72\" width=\"8\" height=\"16\" fill=\"#18181b\"/>\n                  <!-- Dramatic Beam of Light projecting upward -->\n                  <polygon points=\"68,62 38,0 84,0 96,62\" fill=\"url(#beamGradBento)\" opacity=\"0.6\"/>\n                  <defs>\n                    <linearGradient id=\"beamGradBento\" x1=\"0%\" y1=\"100%\" x2=\"0%\" y2=\"0%\">\n                      <stop offset=\"0%\" stop-color=\"#ffffff\" stop-opacity=\"0.9\"/>\n                      <stop offset=\"100%\" stop-color=\"#ffffff\" stop-opacity=\"0.05\"/>\n                    </linearGradient>\n                  </defs>\n                </svg>\n              </div>\n\n              <!-- Bottom Title -->\n              <div class=\"bcc-bottom\">\n                <h3 class=\"bcc-title\">ŞİFRESİZ KOD</h3>\n                <p class=\"bcc-sub\">%100 Açık kaynak Lua/JS. Escrow kilitsiz mimari.</p>\n              </div>\n            </a>\n\n            <!-- CARD 2: NOIR STIPPLE CARD (Solitary Figure on Path Homage to Image 2!) -->\n            <a href=\"/discord\" class=\"bento-card bento-card-noir\">\n              <div class=\"bcm-grain-layer\" aria-hidden=\"true\"></div>\n\n              <!-- Top Row: Tag + Circular Arrow Button -->\n              <div class=\"bento-card-head\">\n                <span class=\"bcn-tag\">TOPLULUK &amp; DESTEK</span>\n                <div class=\"bcn-circle-btn\" aria-hidden=\"true\">\n                  <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path d=\"M7 17L17 7M17 7H8M17 7V16\"/></svg>\n                </div>\n              </div>\n\n              <!-- Center Graphic: Image 2's Solitary Figure & Winding Path -->\n              <div class=\"bcn-figure-art\" aria-hidden=\"true\">\n                <svg viewBox=\"0 0 120 100\" fill=\"none\" style=\"width:100%;height:100%;\">\n                  <!-- Winding Path -->\n                  <path d=\"M 50 100 Q 65 65, 45 40 T 70 0\" stroke=\"rgba(255,255,255,0.45)\" stroke-width=\"12\" stroke-linecap=\"round\" fill=\"none\" opacity=\"0.4\"/>\n                  <!-- Solitary Figure Silhouette -->\n                  <circle cx=\"34\" cy=\"56\" r=\"3.5\" fill=\"#ffffff\"/>\n                  <path d=\"M 31 62 L 37 62 L 38 78 L 36 78 L 35 88 L 33 88 L 32 78 L 30 78 Z\" fill=\"#ffffff\"/>\n                </svg>\n              </div>\n\n              <!-- Bottom Title -->\n              <div class=\"bcn-bottom\">\n                <h3 class=\"bcn-title\">DİSCORD</h3>\n                <p class=\"bcn-sub\">7/24 Birebir destek talebi &amp; teknik danışmanlık.</p>\n              </div>\n            </a>\n\n          </div>\n        </div>\n\n        <!-- RIGHT COLUMN: THE SHOWCASE MONOLITH (Phone Mockup with Live Metrics) -->\n        <div class=\"bento-col-right\">\n          <div class=\"bento-card bento-card-showcase\">\n            <!-- Cinematic Atmosphere & Beam of Light Cutting Across (Image 2 style) -->\n            <div class=\"showcase-light-beam\" aria-hidden=\"true\"></div>\n            <div class=\"showcase-grain\" aria-hidden=\"true\"></div>\n\n            <!-- PHONE / CONSOLE DEVICE MOCKUP (Exact Match to Image 1 Device) -->\n            <div class=\"device-mockup-chassis\">\n\n              <!-- Dynamic Island / Speaker -->\n              <div class=\"device-island\">\n                <span class=\"device-sensor\"></span>\n                <span class=\"device-cam\"></span>\n              </div>\n\n              <!-- In-Device Top Header -->\n              <div class=\"device-top-bar\">\n                <div class=\"device-user-info\">\n                  <img src=\"/assets/rslogo.jpg\" alt=\"\" class=\"device-avatar\">\n                  <div class=\"device-user-text\">\n                    <span class=\"dut-greeting\">Restricted Core</span>\n                    <span class=\"dut-status\">v3.4 · Aktif 🟢</span>\n                  </div>\n                </div>\n                <div class=\"device-top-icons\">\n                  <span class=\"device-icon-pill\">\n                    <svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg>\n                  </span>\n                  <span class=\"device-icon-pill has-badge\">\n                    <svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path d=\"M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9\"/><path d=\"M13.73 21a2 2 0 0 1-3.46 0\"/></svg>\n                  </span>\n                </div>\n              </div>\n\n              <!-- Server Selector Pill -->\n              <div class=\"device-server-selector\">\n                <div class=\"dss-left\">\n                  <span class=\"dss-icon\">⚡</span>\n                  <span class=\"dss-name\">Saint Roleplay — Istanbul Engine</span>\n                </div>\n                <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path d=\"m6 9 6 6 6-6\"/></svg>\n              </div>\n\n              <!-- WIDGET 1: Stabilizing Alert Card (Image 1: \"STABILIZING LABOR COST\") -->\n              <div class=\"device-metric-card-primary\">\n                <div class=\"dmcp-header\">\n                  <div class=\"dmcp-badge-icon\">\n                    <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><polygon points=\"12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2\"/><line x1=\"12\" y1=\"9\" x2=\"12\" y2=\"13\"/><circle cx=\"12\" cy=\"17\" r=\"0.5\"/></svg>\n                  </div>\n                  <div class=\"dmcp-text\">\n                    <span class=\"dmcp-title\">STABİL KAYNAK TÜKETİMİ</span>\n                    <p class=\"dmcp-desc\">Tüm tick döngüleri 0.04ms altında optimize edildi. SQL havuz gecikmesi: 1.1ms.</p>\n                  </div>\n                  <div class=\"dmcp-action-btn\">\n                    <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path d=\"M7 17L17 7M17 7H8M17 7V16\"/></svg>\n                  </div>\n                </div>\n              </div>\n\n              <!-- WIDGET 2: Capacity Wave Graph (Image 1: \"VENUE CAPACITY\" Mountain Curve) -->\n              <div class=\"device-capacity-card\">\n                <div class=\"dcc-head\">\n                  <div>\n                    <span class=\"dcc-title\">SUNUCU KAPASİTESİ</span>\n                    <span class=\"dcc-sub\">TPS &amp; Eşzamanlı Oyuncu</span>\n                  </div>\n                  <div class=\"dcc-filter-pill\">\n                    <span>Bu Hafta</span>\n                    <svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path d=\"m6 9 6 6 6-6\"/></svg>\n                  </div>\n                </div>\n\n                <!-- Days and Percentages Row -->\n                <div class=\"dcc-days-row\">\n                  <div class=\"dcc-day-col\">\n                    <span class=\"ddc-label\">Pzt</span>\n                    <span class=\"ddc-val\">78%</span>\n                  </div>\n                  <div class=\"dcc-day-col\">\n                    <span class=\"ddc-label\">Sal</span>\n                    <span class=\"ddc-val\">82%</span>\n                  </div>\n                  <div class=\"dcc-day-col active\">\n                    <span class=\"ddc-label\">Çar</span>\n                    <span class=\"ddc-val\">91%</span>\n                  </div>\n                  <div class=\"dcc-day-col\">\n                    <span class=\"ddc-label\">Per</span>\n                    <span class=\"ddc-val\">88%</span>\n                  </div>\n                  <div class=\"dcc-day-col\">\n                    <span class=\"ddc-label\">Cum</span>\n                    <span class=\"ddc-val\">85%</span>\n                  </div>\n                  <div class=\"dcc-day-col\">\n                    <span class=\"ddc-label\">Cmt</span>\n                    <span class=\"ddc-val\">93%</span>\n                  </div>\n                  <div class=\"dcc-day-col\">\n                    <span class=\"ddc-label\">Paz</span>\n                    <span class=\"ddc-val\">98%</span>\n                  </div>\n                </div>\n\n                <!-- The Mountain Curve Chart (SVG Curve with Gradient Fill) -->\n                <div class=\"dcc-chart-container\">\n                  <svg viewBox=\"0 0 320 120\" preserveAspectRatio=\"none\" class=\"capacity-curve-svg\">\n                    <defs>\n                      <linearGradient id=\"waveCrimsonGradMock\" x1=\"0%\" y1=\"0%\" x2=\"0%\" y2=\"100%\">\n                        <stop offset=\"0%\" stop-color=\"#dc2626\" stop-opacity=\"0.8\"/>\n                        <stop offset=\"50%\" stop-color=\"#991b1b\" stop-opacity=\"0.4\"/>\n                        <stop offset=\"100%\" stop-color=\"#7f1d1d\" stop-opacity=\"0.05\"/>\n                      </linearGradient>\n                    </defs>\n\n                    <!-- Background Area Fill -->\n                    <path d=\"M 0 110 Q 30 100, 50 85 T 100 50 T 140 25 T 180 60 T 220 40 T 270 20 T 320 10 L 320 120 L 0 120 Z\" fill=\"url(#waveCrimsonGradMock)\"/>\n\n                    <!-- Foreground Glowing Line -->\n                    <path d=\"M 0 110 Q 30 100, 50 85 T 100 50 T 140 25 T 180 60 T 220 40 T 270 20 T 320 10\" fill=\"none\" stroke=\"#ef4444\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n\n                    <!-- Active Apex Dot (Wed 91%) -->\n                    <circle cx=\"140\" cy=\"25\" r=\"4.5\" fill=\"#ffffff\" stroke=\"#dc2626\" stroke-width=\"2.5\"/>\n                  </svg>\n\n                  <!-- Apex Tooltip Badge -->\n                  <div class=\"dcc-apex-pin\">\n                    <span>91% · 60.0 FPS</span>\n                  </div>\n                </div>\n\n                <!-- Footer Summary -->\n                <div class=\"dcc-footer\">\n                  <span>64/64 Oyuncu · %99.99 Uptime · 0 Escrow Kilidi</span>\n                </div>\n              </div>\n\n            </div>\n          </div>\n        </div>\n\n      </div>\n\n    </div>\n  </section>\n\n    <!-- =====================================================================\n         VİZYON VE KURULUŞ AMACI: Apple Editorial Anlatım\n         ===================================================================== -->\n    <section class=\"section section-gray\" id=\"hikayemiz\">\n      <div class=\"container container-narrow\">\n        <p class=\"section-eyebrow\">Kuruluş Amacımız</p>\n        <h2 class=\"editorial-headline\">\n          FiveM Türkiye'de çeşitliliği ve kaliteyi yeniden inşa ediyoruz.\n        </h2>\n\n        <p class=\"editorial-lead\">\n          <strong>Yurt dışında 100€ ile 300€ arasında satılan yazılımlar</strong>, kur farkı nedeniyle Türkiye'deki sunucu girişimlerinin önündeki en büyük engele dönüştü. <span class=\"editorial-muted\">Bütçe ayıramayan yüzlerce sunucu, internette dolaşan aynı eski ve hatalı paketleri kullanmak zorunda kaldı. Sonuç olarak birbirinin kopyası olan, özgünlüğünü yitirmiş ve güvenlik açıklarıyla dolu bir sunucu ortamı oluştu.</span>\n        </p>\n\n        <p class=\"editorial-lead\">\n          <strong>Restricted Studio bu döngüyü kırmak için kuruldu.</strong> <span class=\"editorial-muted\">Amacımız; dünya standartlarındaki yazılım, 3D mekan (MLO) ve veritabanı mühendisliğini Türkiye ekonomisine uygun, ulaşılabilir koşullarla sunarak her sunucu sahibinin kendi özgün dünyasını güvenle kurmasını sağlamaktır.</span>\n        </p>\n\n        <div class=\"pillars-three\">\n          <div class=\"pillar-item\">\n            <div class=\"pillar-line\"></div>\n            <h3 class=\"pillar-title\">Ulaşılabilir Yerel Fiyat</h3>\n            <p class=\"pillar-text\">\n              Döviz kuruna endeksli fahiş fiyatlar yerine, Türkiye'deki sunucu kurucularının bütçesini yormayan adil ve şeffaf fiyatlandırma.\n            </p>\n          </div>\n\n          <div class=\"pillar-item\">\n            <div class=\"pillar-line\"></div>\n            <h3 class=\"pillar-title\">Tek Tipleşmeye Son</h3>\n            <p class=\"pillar-text\">\n              Herkesin kullandığı kopya paketler yerine; arayüzü, dili ve kuralları sunucunuza göre özelleştirilebilen özgün sistemler.\n            </p>\n          </div>\n\n          <div class=\"pillar-item\">\n            <div class=\"pillar-line\"></div>\n            <h3 class=\"pillar-title\">Koşulsuz Kod Güvenliği</h3>\n            <p class=\"pillar-text\">\n              İzinsiz veri aktaran gizli bağlantılardan ve arka kapılardan tamamen arındırılmış, denetlenebilir temiz kaynak kodları.\n            </p>\n          </div>\n        </div>\n      </div>\n    </section>\n\n    <!-- =====================================================================\n         ÜRETİM ALANLARIMIZ: Grafik İkonlu Apple Bento Kartları\n         ===================================================================== -->\n    <section class=\"section\" id=\"cozumler\">\n      <div class=\"container\">\n        <div class=\"section-header\">\n          <p class=\"section-eyebrow\">Uzmanlık Alanlarımız</p>\n          <h2 class=\"section-title\">Sunucunuzun ihtiyaç duyduğu her şey.<br>Tek bir mühendislik çatısı altında.</h2>\n          <p class=\"section-description\">\n            Bu web sitesi kurumsal tanıtım amacıyla hazırlanmıştır. Geliştirdiğimiz tüm ürünleri resmi İtemsatış mağazamız üzerinden güvenle inceleyebilir ve satın alabilirsiniz.\n          </p>\n        </div>\n\n        <div class=\"bento-grid\">\n          <!-- Kart 1: Script -->\n          <article class=\"bento-item bento-large\">\n            <div class=\"bento-top\">\n              <div class=\"bento-icon-box\">\n                <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polyline points=\"16 18 22 12 16 6\"/><polyline points=\"8 6 2 12 8 18\"/></svg>\n              </div>\n              <span class=\"bento-category\">Yazılım Geliştirme</span>\n              <h3 class=\"bento-heading\">Özgün FiveM Scriptleri</h3>\n              <p class=\"bento-copy\">\n                Lua 5.4 ve modern web teknolojileriyle geliştirilen, sunucu işlemcisini yormayan ve oyunculara akıcı bir arayüz deneyimi sunan modüler scriptler.\n              </p>\n            </div>\n            <div class=\"bento-features\">\n              <div class=\"bf-chip\">QB-Core, Qbox ve ESX Uyumu</div>\n              <div class=\"bf-chip\">0.00 ms Boşta Tüketim</div>\n              <div class=\"bf-chip\">Hile Korumalı Sunucu Doğrulaması</div>\n              <div class=\"bf-chip\">Açık Kaynak &amp; Kolay Config</div>\n            </div>\n          </article>\n\n          <!-- Kart 2: MLO -->\n          <article class=\"bento-item\">\n            <div class=\"bento-top\">\n              <div class=\"bento-icon-box\">\n                <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\"/><polyline points=\"3.27 6.96 12 12.01 20.73 6.96\"/><line x1=\"12\" y1=\"22.08\" x2=\"12\" y2=\"12\"/></svg>\n              </div>\n              <span class=\"bento-category\">3D Modelleme</span>\n              <h3 class=\"bento-heading\">MLO ve Mekan Tasarımı</h3>\n              <p class=\"bento-copy\">\n                Kalabalık oyuncu gruplarında dahi FPS düşürmeyen, ışıklandırma ve oda geçişleri (portal/occlusion) özenle optimize edilmiş özel mekanlar.\n              </p>\n            </div>\n            <div class=\"bento-features\">\n              <div class=\"bf-chip\">Yüksek FPS Garantisi</div>\n              <div class=\"bf-chip\">Optimize Poligon &amp; Doku</div>\n              <div class=\"bf-chip\">Özel Logo ve İç Mekan Uyumu</div>\n            </div>\n          </article>\n\n          <!-- Kart 3: Veritabanı -->\n          <article class=\"bento-item\">\n            <div class=\"bento-top\">\n              <div class=\"bento-icon-box\">\n                <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><ellipse cx=\"12\" cy=\"5\" rx=\"9\" ry=\"3\"/><path d=\"M21 12c0 1.66-4 3-9 3s-9-1.34-9-3\"/><path d=\"M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5\"/></svg>\n              </div>\n              <span class=\"bento-category\">Veri Mimarisi</span>\n              <h3 class=\"bento-heading\">SQL Veritabanı Yapılandırması</h3>\n              <p class=\"bento-copy\">\n                Sunucu büyüdükçe ortaya çıkan sorgu gecikmelerini ve veri kayıplarını önleyen, doğru indekslenmiş MariaDB veritabanı mimarisi.\n              </p>\n            </div>\n            <div class=\"bento-features\">\n              <div class=\"bf-chip\">Milisaniye Altı Sorgu Yanıtı</div>\n              <div class=\"bf-chip\">Hataya Dayanıklı Tablo İlişkileri</div>\n              <div class=\"bf-chip\">Tam Türkçe Karakter Uyumu</div>\n            </div>\n          </article>\n\n          <!-- Kart 4: Hazır Paketler -->\n          <article class=\"bento-item bento-large\">\n            <div class=\"bento-top\">\n              <div class=\"bento-icon-box\">\n                <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"2\" y=\"2\" width=\"20\" height=\"8\" rx=\"2\" ry=\"2\"/><rect x=\"2\" y=\"14\" width=\"20\" height=\"8\" rx=\"2\" ry=\"2\"/><line x1=\"6\" y1=\"6\" x2=\"6.01\" y2=\"6\"/><line x1=\"6\" y1=\"18\" x2=\"6.01\" y2=\"18\"/></svg>\n              </div>\n              <span class=\"bento-category\">Anahtar Teslim Sistem</span>\n              <h3 class=\"bento-heading\">Hazır FiveM Sunucu Paketleri</h3>\n              <p class=\"bento-copy\">\n                Sıfırdan sunucu açacak ekipler için; ekonomisi dengelenmiş, meslekleri ve arayüzleri birbiriyle tam uyumlu çalışan, kuruluma hazır tümleşik sunucu paketleri.\n              </p>\n            </div>\n            <div class=\"bento-features\">\n              <div class=\"bf-chip\">Dengeli Şehir Ekonomisi</div>\n              <div class=\"bf-chip\">Çakışmasız Kaynak Dizini</div>\n              <div class=\"bf-chip\">Detaylı Türkçe Kurulum Rehberi</div>\n              <div class=\"bf-chip\">Discord Üzerinden Kurulum Desteği</div>\n            </div>\n          </article>\n        </div>\n      </div>\n    </section>\n\n    <!-- =====================================================================\n         MÜHENDİSLİK VE KOD ŞEFFAFLIĞI: Temiz, Açık Tema İnceleme Alanı\n         ===================================================================== -->\n    <section class=\"section section-gray\" id=\"standartlar\">\n      <div class=\"container\">\n        <div class=\"split-showcase\">\n          <div class=\"split-info\">\n            <p class=\"section-eyebrow\">Mühendislik Yaklaşımımız</p>\n            <h2 class=\"section-title\">Şifreli kutular değil,<br>okunabilir temiz mimari.</h2>\n            <p class=\"section-description\">\n              \"Code is poetry, security is our priority.\" ilkesiyle ürettiğimiz her dosya; izinsiz veri aktarımı (webhook) ve uzaktan erişim (backdoor) risklerine karşı denetlenir ve tamamen açık kaynak olarak teslim edilir.\n            </p>\n\n            <div class=\"feature-steps\">\n              <div class=\"f-step\">\n                <span class=\"f-step-num\">1</span>\n                <div>\n                  <h4>Çoklu Altyapı Köprüsü</h4>\n                  <p>Tek bir kod tabanı üzerinden QB-Core, Qbox ve ESX Legacy altyapılarını otomatik tanıyan modüler yapı.</p>\n                </div>\n              </div>\n              <div class=\"f-step\">\n                <span class=\"f-step-num\">2</span>\n                <div>\n                  <h4>Sunucu Taraflı Güvenlik</h4>\n                  <p>Tüm para, eşya ve yetki kontrolleri istemciye güvenilmeden doğrudan sunucu katmanında doğrulanır.</p>\n                </div>\n              </div>\n              <div class=\"f-step\">\n                <span class=\"f-step-num\">3</span>\n                <div>\n                  <h4>Şeffaf Güvenlik Raporu</h4>\n                  <p>Teslim edilen her arşivde, dış bağlantı ve güvenlik kontrollerini belgeleyen inceleme raporu yer alır.</p>\n                </div>\n              </div>\n            </div>\n          </div>\n\n          <!-- Açık Temalı Xcode / Apple Tarzı Kod Önizleme Kartı -->\n          <div class=\"split-preview\">\n            <div class=\"clean-code-card\">\n              <div class=\"ccc-header\">\n                <div class=\"ccc-tabs\" role=\"tablist\">\n                  <button class=\"ccc-tab active\" data-tab=\"bridge\" role=\"tab\" aria-selected=\"true\">bridge.lua</button>\n                  <button class=\"ccc-tab\" data-tab=\"security\" role=\"tab\" aria-selected=\"false\">security.lua</button>\n                  <button class=\"ccc-tab\" data-tab=\"database\" role=\"tab\" aria-selected=\"false\">schema.sql</button>\n                </div>\n                <span class=\"ccc-badge\">Açık Kaynak</span>\n              </div>\n              <div class=\"ccc-body\">\n                <pre class=\"ccc-pre\"><code id=\"codePreviewBox\"></code></pre>\n              </div>\n              <div class=\"ccc-footer\">\n                <span>Restricted Studio Standart Kod Mimarisi</span>\n                <span class=\"text-crimson\">0.00 ms Idle</span>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </section>\n\n    <!-- =====================================================================\n         FARKIMIZ: Sade ve Mobil Uyumlu Karşılaştırma\n         ===================================================================== -->\n    <section class=\"section\" id=\"karsilastirma\">\n      <div class=\"container container-narrow\">\n        <div class=\"section-header\">\n          <p class=\"section-eyebrow\">Neden Bizi Tercih Etmelisiniz?</p>\n          <h2 class=\"section-title\">Farkı yaratan standartlarımız.</h2>\n        </div>\n\n        <div class=\"compare-table-clean\">\n          <div class=\"ctc-row ctc-head\">\n            <div class=\"ctc-col-label\">Kriter</div>\n            <div class=\"ctc-col-other\">Yurt Dışı / Hazır Kopya Paketler</div>\n            <div class=\"ctc-col-us\">Restricted Studio</div>\n          </div>\n\n          <div class=\"ctc-row\">\n            <div class=\"ctc-col-label\">Maliyet</div>\n            <div class=\"ctc-col-other\" data-mobile-label=\"Diğer Paketler\">100€ – 300€ döviz bazlı yüksek fiyatlar</div>\n            <div class=\"ctc-col-us\" data-mobile-label=\"Restricted Studio\">Türkiye bütçesine uygun, adil TL fiyatlandırma</div>\n          </div>\n\n          <div class=\"ctc-row\">\n            <div class=\"ctc-col-label\">Kaynak Kod</div>\n            <div class=\"ctc-col-other\" data-mobile-label=\"Diğer Paketler\">Kilitli (Escrow), düzenlemeye kapalı</div>\n            <div class=\"ctc-col-us\" data-mobile-label=\"Restricted Studio\">%100 Açık Kaynak, tamamen özelleştirilebilir</div>\n          </div>\n\n          <div class=\"ctc-row\">\n            <div class=\"ctc-col-label\">Performans</div>\n            <div class=\"ctc-col-other\" data-mobile-label=\"Diğer Paketler\">Yüksek işlemci yükü ve FPS kayıpları</div>\n            <div class=\"ctc-col-us\" data-mobile-label=\"Restricted Studio\">0.00 ms boşta tüketim, optimize MLO ve SQL</div>\n          </div>\n\n          <div class=\"ctc-row\">\n            <div class=\"ctc-col-label\">Güvenlik</div>\n            <div class=\"ctc-col-other\" data-mobile-label=\"Diğer Paketler\">Denetlenemeyen şifreli dosyalar</div>\n            <div class=\"ctc-col-us\" data-mobile-label=\"Restricted Studio\">Şeffaf, dış bağlantılardan arındırılmış temiz kod</div>\n          </div>\n\n          <div class=\"ctc-row\">\n            <div class=\"ctc-col-label\">Satış ve Destek</div>\n            <div class=\"ctc-col-other\" data-mobile-label=\"Diğer Paketler\">Muhatapsız forumlar, belirsiz süreç</div>\n            <div class=\"ctc-col-us\" data-mobile-label=\"Restricted Studio\">İtemsatış 3D Secure güvencesi ve Türkçe Discord desteği</div>\n          </div>\n        </div>\n      </div>\n    </section>\n\n    <!-- =====================================================================\n         SIKÇA SORULAN SORULAR: Minimalist Apple Akordiyon\n         ===================================================================== -->\n    <section class=\"section section-gray\" id=\"sss\">\n      <div class=\"container container-narrow\">\n        <div class=\"section-header\">\n          <p class=\"section-eyebrow\">Sıkça Sorulan Sorular</p>\n          <h2 class=\"section-title\">Merak edilen tüm detaylar.</h2>\n        </div>\n\n        <div class=\"apple-faq-list\" id=\"faqList\">\n          <div class=\"afaq-item active\">\n            <button class=\"afaq-trigger\" aria-expanded=\"true\">\n              <span>Ürünleri nasıl inceleyebilir ve satın alabilirim?</span>\n              <span class=\"afaq-chevron\"></span>\n            </button>\n            <div class=\"afaq-content\">\n              <p>\n                Tüm ürünlerimiz, fiyatlarımız ve detaylı açıklamalarımız resmi <strong>İtemsatış</strong> mağazamızda yer almaktadır. Sayfadaki İtemsatış butonları üzerinden mağazamıza ulaşabilir, 3D Secure güvencesiyle satın alım yapabilirsiniz.\n              </p>\n            </div>\n          </div>\n\n          <div class=\"afaq-item\">\n            <button class=\"afaq-trigger\" aria-expanded=\"false\">\n              <span>Teslim edilen dosyalarda şifreleme veya lisans kilidi var mı?</span>\n              <span class=\"afaq-chevron\"></span>\n            </button>\n            <div class=\"afaq-content\">\n              <p>\n                Hayır. Sunucu sahiplerinin tasarımları ve kodları kendi sunucularına göre özgürce uyarlayabilmesi için tüm teslimatlarımızı açık kaynak (open-source) olarak gerçekleştiriyoruz.\n              </p>\n            </div>\n          </div>\n\n          <div class=\"afaq-item\">\n            <button class=\"afaq-trigger\" aria-expanded=\"false\">\n              <span>Hangi FiveM altyapıları (Framework) destekleniyor?</span>\n              <span class=\"afaq-chevron\"></span>\n            </button>\n            <div class=\"afaq-content\">\n              <p>\n                Geliştirdiğimiz scriptler ve sunucu paketleri hem <strong>QB-Core</strong> ve <strong>Qbox</strong> hem de <strong>ESX Legacy</strong> altyapılarıyla tam uyumlu çalışmaktadır.\n              </p>\n            </div>\n          </div>\n\n          <div class=\"afaq-item\">\n            <button class=\"afaq-trigger\" aria-expanded=\"false\">\n              <span>Satın alım sonrası kurulum desteği sağlıyor musunuz?</span>\n              <span class=\"afaq-chevron\"></span>\n            </button>\n            <div class=\"afaq-content\">\n              <p>\n                Evet. Her ürünün içerisinde adım adım Türkçe kurulum rehberi yer alır. Ayrıca Discord sunucumuza katılarak teknik ekibimizden birebir kurulum ve entegrasyon desteği alabilirsiniz.\n              </p>\n            </div>\n          </div>\n        </div>\n      </div>\n    </section>\n\n    <!-- =====================================================================\n         RESMİ KANALLAR: İtemsatış Mağazası & Discord Topluluğu\n         ===================================================================== -->\n    <section class=\"section\" id=\"iletisim\">\n      <div class=\"container\">\n        <div class=\"section-header\">\n          <p class=\"section-eyebrow\">Resmi Kanallarımız</p>\n          <h2 class=\"section-title\">Güvenle satın alın.<br>Doğrudan destek alın.</h2>\n          <p class=\"section-description\">\n            Ürünlerimizi incelemek veya ekibimizle iletişime geçmek için resmi mağaza ve topluluk bağlantılarımızı kullanın.\n          </p>\n        </div>\n\n        <div class=\"official-channels-grid\">\n          <!-- İtemsatış Kartı -->\n          <div class=\"oc-card oc-itemsatis\">\n            <div class=\"oc-content\">\n              <div style=\"display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;\">\n                <span class=\"oc-badge oc-badge-blue\">Resmi Satış Mağazası</span>\n                <img src=\"/assets/itemsatis-logo.png\" alt=\"İtemsatış\" height=\"22\" style=\"object-fit:contain;\">\n              </div>\n              <h3 class=\"oc-title\">İtemsatış Mağazamız</h3>\n              <p class=\"oc-desc\">\n                Script, MLO, veritabanı ve hazır sunucu paketlerimizi İtemsatış güvencesiyle, 3D Secure korumalı ödeme ve hızlı teslimat avantajıyla edinin.\n              </p>\n              <ul class=\"oc-perks\">\n                <li>3D Secure güvenli ödeme altyapısı</li>\n                <li>Sipariş sonrası hızlı dosya teslimatı</li>\n                <li>Doğrulanmış kurumsal mağaza profili</li>\n              </ul>\n            </div>\n            <a href=\"https://www.itemsatis.com/p/saintstudio\" data-link=\"itemsatis\" class=\"btn btn-itemsatis btn-full\">\n              <img src=\"/assets/itemsatis-icon.png\" alt=\"\" width=\"18\" height=\"18\" style=\"border-radius:4px;margin-right:6px;\">\n              <span>İtemsatış Mağazasına Git</span>\n              <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M7 17L17 7M17 7H8M17 7V16\"/></svg>\n            </a>\n          </div>\n\n          <!-- Discord Kartı -->\n          <div class=\"oc-card oc-discord\">\n            <div class=\"oc-content\">\n              <span class=\"oc-badge oc-badge-discord\">Topluluk ve Destek</span>\n              <h3 class=\"oc-title\">Discord Sunucumuz</h3>\n              <p class=\"oc-desc\">\n                Satın alım öncesi sorularınız, özel proje talepleriniz, güncellemeler ve satış sonrası birebir teknik destek için Discord sunucumuza katılın.\n              </p>\n              <ul class=\"oc-perks\">\n                <li>Birebir geliştirici destek talebi (Ticket)</li>\n                <li>Ürün önizlemeleri ve güncelleme notları</li>\n                <li>Sunucu kurucuları için teknik danışmanlık</li>\n              </ul>\n            </div>\n            <a href=\"/discord\" data-link=\"discord\" class=\"btn btn-discord-solid btn-full\">\n              <span>Discord Topluluğuna Katıl</span>\n              <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M7 17L17 7M17 7H8M17 7V16\"/></svg>\n            </a>\n          </div>\n        </div>\n      </div>\n    </section>\n\n  </main>\n\n  <!-- Apple Tarzı Minimalist Açık Gri Footer -->\n  <footer class=\"site-footer\">\n    <div class=\"container\">\n      <div class=\"footer-columns\">\n        <div class=\"footer-brand-info\">\n          <div class=\"nav-brand\">\n            <img src=\"assets/rslogo.jpg\" alt=\"Restricted Studio\" class=\"nav-brand-logo\">\n            <span class=\"nav-brand-text\">Restricted Studio</span>\n          </div>\n          <p class=\"footer-tagline\">\n            FiveM Türkiye ekosistemi için sade, güvenli ve yüksek performanslı yazılım ve altyapı çözümleri.\n          </p>\n        </div>\n\n        <div class=\"footer-col\">\n          <h4>Bölümler</h4>\n          <ul>\n            <li><a href=\"#hikayemiz\">Vizyonumuz</a></li>\n            <li><a href=\"#cozumler\">Üretim Alanları</a></li>\n            <li><a href=\"#standartlar\">Mühendislik</a></li>\n            <li><a href=\"#karsilastirma\">Farkımız</a></li>\n            <li><a href=\"#sss\">Sıkça Sorulan Sorular</a></li>\n          </ul>\n        </div>\n\n        <div class=\"footer-col\">\n          <h4>Çözümler</h4>\n          <ul>\n            <li><a href=\"#cozumler\">Özgün FiveM Scriptleri</a></li>\n            <li><a href=\"#cozumler\">3D MLO &amp; Harita Tasarımı</a></li>\n            <li><a href=\"#cozumler\">SQL Veritabanı Mimarisi</a></li>\n            <li><a href=\"#cozumler\">Hazır Sunucu Paketleri</a></li>\n          </ul>\n        </div>\n\n        <div class=\"footer-col\">\n          <h4>Resmi Kanallar</h4>\n          <ul>\n            <li><a href=\"https://www.itemsatis.com/p/saintstudio\" data-link=\"itemsatis\">İtemsatış Mağazası ↗</a></li>\n            <li><a href=\"/discord\" data-link=\"discord\">Discord Topluluğu ↗</a></li>\n          </ul>\n        </div>\n      </div>\n\n      <div class=\"footer-legal\">\n        <p>Telif Hakkı © 2026 Restricted Studio. Tüm hakları saklıdır.</p>\n        <p class=\"footer-note\">\n          Restricted Studio; Rockstar Games, Take-Two Interactive veya CitizenFX Collective ile bağlantılı değildir. Tüm satış işlemleri <a href=\"https://www.itemsatis.com/p/saintstudio\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color:inherit;text-decoration:underline;display:inline-flex;align-items:center;gap:4px;\"><img src=\"/assets/itemsatis-icon.png\" alt=\"\" width=\"14\" height=\"14\" style=\"border-radius:2px;vertical-align:middle;\">İtemsatış</a> güvencesiyle yürütülmektedir.\n        </p>\n      </div>\n    </div>\n  </footer>";
+type ModalId = 'about' | 'solutions' | 'engineering' | 'faq' | null;
+type CodeTabKey = 'bridge' | 'security' | 'database';
 
-// Katalog istatistikleri (build sırasında katalog verisinden hesaplanır)
-const STAT_COLORS = ['#0071e3', '#2997ff', '#5ac8fa', '#0a4fa8', '#7aa7d9', '#a9c6e8'];
+const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
 
-function buildCatalogStatsHtml(): string {
-  // lib/catalog-stats.json: katalog verisi değiştiğinde 'npm run stats' ile yeniden üretilir.
-  const total = catalogStats.total;
-  const counts: Record<string, number> = catalogStats.counts;
-  const rows = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  const max = rows.length ? rows[0][1] : 1;
-  const fmt = (n: number) => n.toLocaleString('tr-TR');
+const CODE_SNIPPETS: Record<CodeTabKey, { label: string; code: string }> = {
+  bridge: {
+    label: 'bridge.lua',
+    code: `-- QB-Core, Qbox ve ESX Otomatik Algılama Köprüsü
+local Bridge = {}
 
-  const R = 52;
-  const C = 2 * Math.PI * R;
-  let offset = 0;
-  const segments = rows
-    .map(([, n], i) => {
-      const len = (n / total) * C;
-      const seg = `<circle cx="70" cy="70" r="${R}" fill="none" stroke="${STAT_COLORS[i % STAT_COLORS.length]}" stroke-width="16" stroke-dasharray="${len.toFixed(2)} ${(C - len).toFixed(2)}" stroke-dashoffset="${(-offset).toFixed(2)}" transform="rotate(-90 70 70)"/>`;
-      offset += len;
-      return seg;
-    })
-    .join('');
+function Bridge.GetFramework()
+    if GetResourceState("qbx_core") == "started" then
+        return "qbox"
+    elseif GetResourceState("qb-core") == "started" then
+        return "qbcore"
+    elseif GetResourceState("es_extended") == "started" then
+        return "esx"
+    end
+end
 
-  const bars = rows
-    .map(([cat, n], i) => {
-      const color = STAT_COLORS[i % STAT_COLORS.length];
-      const pct = ((n / total) * 100).toFixed(1).replace('.', ',');
-      return `<div class="cs-row"><div class="cs-row-head"><span class="cs-name"><i style="background:${color}"></i>${cat.replace(/&/g, '&amp;')}</span><span class="cs-val">${fmt(n)} <em>%${pct}</em></span></div><div class="cs-track"><div class="cs-fill" style="width:${((n / max) * 100).toFixed(1)}%;background:${color}"></div></div></div>`;
-    })
-    .join('');
+return Bridge`,
+  },
+  security: {
+    label: 'security.lua',
+    code: `-- Sunucu Taraflı Mesafe ve Güvenlik Doğrulaması
+local function VerifyPlayerAction(source, targetCoords)
+    local ped = GetPlayerPed(source)
+    if not DoesEntityExist(ped) then return false end
 
-  return `<div class="catalog-stats" aria-label="Katalog istatistikleri"><div class="cs-total"><svg viewBox="0 0 140 140" width="150" height="150" role="img" aria-label="Kategori dağılımı"><circle cx="70" cy="70" r="${R}" fill="none" stroke="rgba(128,128,140,0.15)" stroke-width="16"/>${segments}</svg><div class="cs-total-label"><strong>${fmt(total)}</strong><span>Toplam Paket</span></div></div><div class="cs-bars"><p class="cs-title">Kategorilere Göre Paket Dağılımı</p>${bars}<a class="cs-link" href="/katalog">Kataloğu İncele →</a></div></div>`;
-}
+    local dist = #(GetEntityCoords(ped) - targetCoords)
+    if dist > 3.5 then
+        return false
+    end
+
+    return true
+end`,
+  },
+  database: {
+    label: 'schema.sql',
+    code: `-- İndekslenmiş MariaDB Veri Tablosu Yapısı
+CREATE TABLE IF NOT EXISTS \`restricted_records\` (
+    \`id\` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    \`citizenid\` VARCHAR(50) NOT NULL,
+    \`data\` LONGTEXT NOT NULL,
+    INDEX \`idx_citizen\` (\`citizenid\`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`,
+  },
+};
+
+const FAQ_ITEMS = [
+  {
+    q: 'Ürünleri nasıl inceleyebilir ve satın alabilirim?',
+    a: 'Tüm ürünlerimiz, fiyatlarımız ve detaylı açıklamalarımız resmi İtemsatış mağazamızda yer almaktadır. Katalog üzerinden paketleri sepetinize ekleyip İtemsatış butonları aracılığıyla 3D Secure güvencesiyle satın alım yapabilirsiniz.',
+  },
+  {
+    q: 'Teslim edilen dosyalarda şifreleme veya lisans kilidi var mı?',
+    a: 'Hayır. Sunucu sahiplerinin tasarımları ve kodları kendi sunucularına göre özgürce uyarlayabilmesi için tüm teslimatlarımızı %100 açık kaynak (open-source, escrow kilitsiz) olarak gerçekleştiriyoruz.',
+  },
+  {
+    q: 'Hangi FiveM altyapıları (Framework) destekleniyor?',
+    a: 'Geliştirdiğimiz scriptler ve sunucu paketleri hem QB-Core ve Qbox hem de ESX Legacy altyapılarıyla tam uyumlu çalışmaktadır.',
+  },
+  {
+    q: 'Satın alım sonrası kurulum desteği sağlıyor musunuz?',
+    a: 'Evet. Her ürünün içerisinde adım adım Türkçe kurulum rehberi yer alır. Ayrıca Discord topluluğumuz üzerinden teknik ekibimizden birebir kurulum ve entegrasyon desteği alabilirsiniz.',
+  },
+];
+
 export default function HomePage() {
+  const [activeModal, setActiveModal] = useState<ModalId>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [codeTab, setCodeTab] = useState<CodeTabKey>('bridge');
+  const [openFaqIdx, setOpenFaqIdx] = useState<number>(0);
+
+  // Strictly lock root html/body scroll while on the entrance screen across all browsers
   useEffect(() => {
-    // 1. External Links
-    const STUDIO_LINKS = {
-      itemsatis: 'https://www.itemsatis.com/p/saintstudio',
-      discord: '/discord',
+    const html = document.documentElement;
+    const body = document.body;
+    html.classList.add('is-viewport-locked');
+    body.classList.add('is-viewport-locked');
+    window.scrollTo(0, 0);
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setActiveModal(null);
+        setMobileMenuOpen(false);
+      }
     };
+    window.addEventListener('keydown', onKeyDown);
 
-    document.querySelectorAll('[data-link="itemsatis"]').forEach((el) => {
-      el.setAttribute('href', STUDIO_LINKS.itemsatis);
-      el.setAttribute('target', '_blank');
-      el.setAttribute('rel', 'noopener noreferrer');
-    });
-
-    document.querySelectorAll('[data-link="discord"]').forEach((el) => {
-      el.setAttribute('href', STUDIO_LINKS.discord);
-      el.removeAttribute('target');
-      el.removeAttribute('rel');
-    });
-
-    // 2. Mobile Nav
-    const toggle = document.getElementById('mobileToggle');
-    const menu = document.getElementById('navMenu');
-
-    if (toggle && menu) {
-      const handleToggle = () => {
-        const isOpen = menu.classList.toggle('open');
-        toggle.classList.toggle('active', isOpen);
-        toggle.setAttribute('aria-expanded', String(isOpen));
-      };
-      toggle.addEventListener('click', handleToggle);
-
-      menu.querySelectorAll('a').forEach((link) => {
-        link.addEventListener('click', () => {
-          menu.classList.remove('open');
-          toggle.classList.remove('active');
-          toggle.setAttribute('aria-expanded', 'false');
-        });
-      });
-    }
-
-    // 3. Studio Console Tabs
-    const consoleTabs = document.querySelectorAll('.sct-btn');
-    const tabViews = {
-      catalog: document.getElementById('consoleTabCatalog'),
-      code: document.getElementById('consoleTabCode'),
-      security: document.getElementById('consoleTabSecurity'),
+    return () => {
+      html.classList.remove('is-viewport-locked');
+      body.classList.remove('is-viewport-locked');
+      window.removeEventListener('keydown', onKeyDown);
     };
-
-    consoleTabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const target = tab.getAttribute('data-tab');
-        if (!target) return;
-
-        consoleTabs.forEach((t) => {
-          t.classList.remove('active');
-          t.setAttribute('aria-selected', 'false');
-        });
-        tab.classList.add('active');
-        tab.setAttribute('aria-selected', 'true');
-
-        Object.entries(tabViews).forEach(([key, view]) => {
-          if (view) {
-            if (key === target) {
-              view.style.display = 'block';
-              view.classList.add('active');
-            } else {
-              view.style.display = 'none';
-              view.classList.remove('active');
-            }
-          }
-        });
-      });
-    });
-
-    // 4. Code Preview (Standart Kod Mimarisi Sekmeleri)
-    const codeTabs = document.querySelectorAll('.ccc-tab');
-    const codeBox = document.getElementById('codePreviewBox');
-
-    const SNIPPETS: Record<string, string> = {
-      bridge: `<span class="c-comment">-- QB-Core, Qbox ve ESX Otomatik Algılama Köprüsü</span>
-<span class="c-kw">local</span> Bridge = {}
-
-<span class="c-kw">function</span> Bridge.<span class="c-fn">GetFramework</span>()
-    <span class="c-kw">if</span> <span class="c-fn">GetResourceState</span>("qbx_core") == "started" <span class="c-kw">then</span>
-        <span class="c-kw">return</span> "qbox"
-    <span class="c-kw">elseif</span> <span class="c-fn">GetResourceState</span>("qb-core") == "started" <span class="c-kw">then</span>
-        <span class="c-kw">return</span> "qbcore"
-    <span class="c-kw">elseif</span> <span class="c-fn">GetResourceState</span>("es_extended") == "started" <span class="c-kw">then</span>
-        <span class="c-kw">return</span> "esx"
-    <span class="c-kw">end</span>
-<span class="c-kw">end</span>
-
-<span class="c-kw">return</span> Bridge`,
-
-      security: `<span class="c-comment">-- Sunucu Taraflı Mesafe ve Güvenlik Doğrulaması</span>
-<span class="c-kw">local function</span> <span class="c-fn">VerifyPlayerAction</span>(source, targetCoords)
-    <span class="c-kw">local</span> ped = <span class="c-fn">GetPlayerPed</span>(source)
-    <span class="c-kw">if not</span> <span class="c-fn">DoesEntityExist</span>(ped) <span class="c-kw">then return false end</span>
-
-    <span class="c-kw">local</span> dist = #(<span class="c-fn">GetEntityCoords</span>(ped) - targetCoords)
-    <span class="c-kw">if</span> dist > 3.5 <span class="c-kw">then</span>
-        <span class="c-kw">return false</span>
-    <span class="c-kw">end</span>
-
-    <span class="c-kw">return true</span>
-<span class="c-kw">end</span>`,
-
-      database:
-        '<span class="c-comment">-- İndekslenmiş MariaDB Veri Tablosu Yapısı</span>\n' +
-        '<span class="c-kw">CREATE TABLE IF NOT EXISTS</span> <span class="c-str">&#96;restricted_records&#96;</span> (\n' +
-        '    <span class="c-str">&#96;id&#96;</span> <span class="c-kw">INT UNSIGNED AUTO_INCREMENT PRIMARY KEY</span>,\n' +
-        '    <span class="c-str">&#96;citizenid&#96;</span> <span class="c-kw">VARCHAR</span>(50) <span class="c-kw">NOT NULL</span>,\n' +
-        '    <span class="c-str">&#96;data&#96;</span> <span class="c-kw">LONGTEXT NOT NULL</span>,\n' +
-        '    <span class="c-kw">INDEX</span> <span class="c-str">&#96;idx_citizen&#96;</span> (<span class="c-str">&#96;citizenid&#96;</span>)\n' +
-        ') <span class="c-kw">ENGINE</span>=InnoDB <span class="c-kw">DEFAULT CHARSET</span>=utf8mb4;',
-    };
-
-    if (codeBox && !codeBox.innerHTML.trim()) {
-      codeBox.innerHTML = SNIPPETS.bridge;
-    }
-
-    codeTabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const key = tab.getAttribute('data-tab');
-        if (!key || !SNIPPETS[key] || !codeBox) return;
-
-        codeTabs.forEach((t) => {
-          t.classList.remove('active');
-          t.setAttribute('aria-selected', 'false');
-        });
-        tab.classList.add('active');
-        tab.setAttribute('aria-selected', 'true');
-
-        codeBox.innerHTML = SNIPPETS[key];
-      });
-    });
-
-    // 5. FAQ Accordion (Sıkça Sorulan Sorular)
-    const faqItems = document.querySelectorAll('.afaq-item');
-    faqItems.forEach((item) => {
-      const trigger = item.querySelector('.afaq-trigger');
-      if (!trigger) return;
-
-      trigger.addEventListener('click', () => {
-        const isOpen = item.classList.contains('active');
-
-        // Diğer açık olanları kapat
-        faqItems.forEach((other) => {
-          other.classList.remove('active');
-          const btn = other.querySelector('.afaq-trigger');
-          if (btn) btn.setAttribute('aria-expanded', 'false');
-        });
-
-        // Tıklanan kapalıysa aç
-        if (!isOpen) {
-          item.classList.add('active');
-          trigger.setAttribute('aria-expanded', 'true');
-        }
-      });
-    });
-
   }, []);
 
-  const html = RAW_HTML.replace('<div class="hero-visual-stage">', buildCatalogStatsHtml() + '<div class="hero-visual-stage">');
-  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+  const statRows = Object.entries(catalogStats.counts as Record<string, number>).sort(
+    (a, b) => b[1] - a[1]
+  );
+
+  const openModal = (id: Exclude<ModalId, null>) => {
+    setMobileMenuOpen(false);
+    setActiveModal(id);
+  };
+
+  return (
+    <div className="noir-entrance-shell">
+      {/* ===============================================================
+           TOP FLOATING PILL NAVBAR (Image 1 Sharp Header Frame)
+           =============================================================== */}
+      <header className="bento-pill-nav" id="navbar">
+        <Link href="/" className="bpn-brand" aria-label="Restricted Studio Ana Sayfa">
+          <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="bpn-logo" />
+          <span className="bpn-title">RESTRICTED STUDIO</span>
+        </Link>
+
+        <nav className="bpn-menu" aria-label="Ana Menü">
+          <button
+            type="button"
+            className={`bpn-link ${activeModal === 'about' ? 'is-active' : ''}`}
+            onClick={() => openModal('about')}
+          >
+            BİZ KİMİZ
+          </button>
+          <button
+            type="button"
+            className={`bpn-link ${activeModal === 'solutions' ? 'is-active' : ''}`}
+            onClick={() => openModal('solutions')}
+          >
+            ÇÖZÜMLER
+          </button>
+          <Link href="/katalog" className="bpn-link bpn-link-highlight">
+            KATALOG
+          </Link>
+          <button
+            type="button"
+            className={`bpn-link ${activeModal === 'engineering' ? 'is-active' : ''}`}
+            onClick={() => openModal('engineering')}
+          >
+            MÜHENDİSLİK
+          </button>
+          <button
+            type="button"
+            className={`bpn-link ${activeModal === 'faq' ? 'is-active' : ''}`}
+            onClick={() => openModal('faq')}
+          >
+            SSS
+          </button>
+        </nav>
+
+        <div className="bpn-actions">
+          <Link
+            href="/katalog"
+            className="bpn-icon-btn"
+            title="Katalogda Ara"
+            aria-label="Katalogda Ara"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+          </Link>
+
+          <a
+            href={ITEMSATIS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bpn-icon-btn bpn-icon-itemsatis"
+            title="Resmi İtemsatış Mağazası"
+            aria-label="Resmi İtemsatış Mağazası"
+          >
+            <img
+              src="/assets/itemsatis-icon.png"
+              alt="İtemsatış"
+              width="16"
+              height="16"
+              style={{ objectFit: 'contain', display: 'block' }}
+            />
+          </a>
+
+          <Link
+            href="/discord"
+            className="bpn-icon-btn"
+            title="Discord Topluluğu"
+            aria-label="Discord"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+            </svg>
+          </Link>
+
+          <div className="bpn-portal-pill">
+            <Link href="/login" className="bpn-pill-sub">
+              GİRİŞ
+            </Link>
+            <Link href="/dashboard" className="bpn-pill-main">
+              <span>PORTAL</span>
+            </Link>
+          </div>
+
+          <button
+            type="button"
+            className={`nav-mobile-toggle ${mobileMenuOpen ? 'active' : ''}`}
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            aria-label="Menüyü Aç/Kapat"
+            aria-expanded={mobileMenuOpen}
+          >
+            <span />
+            <span />
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Drawer inside Fixed Shell (zero body scroll) */}
+      <div className={`bpn-mobile-drawer ${mobileMenuOpen ? 'open' : ''}`}>
+        <button type="button" className="bmn-link-btn" onClick={() => openModal('about')}>
+          <span>BİZ KİMİZ</span>
+          <span>↗</span>
+        </button>
+        <button type="button" className="bmn-link-btn" onClick={() => openModal('solutions')}>
+          <span>ÇÖZÜMLER &amp; İSTATİSTİKLER</span>
+          <span>↗</span>
+        </button>
+        <Link href="/katalog" className="bmn-link-btn" style={{ background: '#A50000' }}>
+          <span>PAKET KATALOĞU (6.400+)</span>
+          <span>→</span>
+        </Link>
+        <button type="button" className="bmn-link-btn" onClick={() => openModal('engineering')}>
+          <span>MÜHENDİSLİK &amp; AÇIK KAYNAK</span>
+          <span>↗</span>
+        </button>
+        <button type="button" className="bmn-link-btn" onClick={() => openModal('faq')}>
+          <span>SIKÇA SORULAN SORULAR</span>
+          <span>↗</span>
+        </button>
+        <Link href="/dashboard" className="bmn-link-btn" style={{ background: '#F0F0F0', color: '#080808' }}>
+          <span>MÜŞTERİ PORTALI &amp; LİSANS</span>
+          <span>→</span>
+        </Link>
+        <a
+          href={ITEMSATIS_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bmn-link-btn"
+        >
+          <span>İTEMSATIŞ RESMİ MAĞAZA</span>
+          <span>↗</span>
+        </a>
+        <Link href="/discord" className="bmn-link-btn">
+          <span>DİSCORD TOPLULUĞU</span>
+          <span>↗</span>
+        </Link>
+      </div>
+
+      {/* ===============================================================
+           VIEWPORT-LOCKED ASYMMETRIC BENTO GRID (Zero Vertical/Horizontal Scroll)
+           =============================================================== */}
+      <main className="bento-grid-container">
+        {/* LEFT COLUMN */}
+        <div className="bento-col-left">
+          {/* MAIN OBSIDIAN STIPPLED HEADLINE CARD */}
+          <section className="bento-card bento-card-main">
+            <div className="noir-stipple-chalk" aria-hidden="true" />
+            <div className="noir-grain-overlay" aria-hidden="true" />
+
+            <div className="bcm-top-wrap">
+              <div className="bcm-eyebrow">
+                <span className="bcm-dot" />
+                <span>RESTRICTED STUDIO // FIVEM ARCHITECTURE</span>
+              </div>
+
+              <h1 className="bcm-headline">
+                ANALİZİ BIRAKIN
+                <br />
+                VE SİSTEMİ ÇALIŞTIRIN.
+                <br />
+                <span className="bcm-headline-highlight">RESTRICTED İLE.</span>
+              </h1>
+
+              <p className="bcm-subhead">
+                Şüpheli sızıntılar ve karmaşık kurulumlarla vakit kaybetmeyin.{' '}
+                {catalogStats.total.toLocaleString('tr-TR')}+ doğrulanmış açık kaynak script,
+                optimize 3D mekanlar ve sıfır gecikmeli SQL mimarisiyle doğrudan üretime geçin.
+              </p>
+            </div>
+
+            <div className="bcm-actions-row">
+              <Link href="/katalog" className="bcm-split-btn bcm-split-primary">
+                <div className="bsb-text-wrap">
+                  <span className="bsb-sub">RESTRICTED STUDIO</span>
+                  <span className="bsb-main">KATALOĞU KEŞFET</span>
+                </div>
+                <div className="bsb-icon-wrap">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.6"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </Link>
+
+              <a
+                href={ITEMSATIS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bcm-split-btn bcm-split-secondary"
+              >
+                <div className="bsb-text-wrap">
+                  <span className="bsb-sub">RESMİ MAĞAZA</span>
+                  <span className="bsb-main">İTEMSATIŞ</span>
+                </div>
+                <div className="bsb-icon-wrap">
+                  <ItemsatisLogo
+                    variant="icon"
+                    width={16}
+                    height={16}
+                    style={{ filter: 'grayscale(100%) contrast(1.25)' }}
+                  />
+                </div>
+              </a>
+            </div>
+
+            {/* Risograph Technical Sketch Arrow */}
+            <div className="bcm-accent-sketch" aria-hidden="true">
+              <svg width="96" height="44" viewBox="0 0 100 46" fill="none">
+                <path
+                  d="M8 38 C 36 10, 64 40, 88 14"
+                  stroke="#A50000"
+                  strokeWidth="2.2"
+                  strokeDasharray="3 3"
+                />
+                <path
+                  d="M78 11 L 90 13 L 86 24"
+                  stroke="#F0F0F0"
+                  strokeWidth="2"
+                  strokeLinecap="square"
+                />
+              </svg>
+            </div>
+          </section>
+
+          {/* BOTTOM SUB-BENTO ROW */}
+          <div className="bento-sub-row">
+            {/* SUB-CARD 1: CRIMSON MONOLITH + INVERTED SPOTLIGHT (Direct Image 2 Homage) */}
+            <button
+              type="button"
+              className="bento-card bento-card-crimson"
+              onClick={() => openModal('engineering')}
+            >
+              <div className="noir-stipple-obsidian" aria-hidden="true" />
+              <div className="noir-grain-heavy" aria-hidden="true" />
+
+              <div className="bento-card-head">
+                <span className="bcc-tag">MÜHENDİSLİK &amp; MİMARİ</span>
+                <span className="bcc-circle-btn" aria-hidden="true">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                  >
+                    <path d="M7 17L17 7M17 7H8M17 7V16" />
+                  </svg>
+                </span>
+              </div>
+
+              <div className="bcc-monolith-art" aria-hidden="true">
+                <svg viewBox="0 0 160 96" fill="none">
+                  <defs>
+                    {/* Inverted spotlight: bright near gable roof fading upward into obsidian stipple */}
+                    <linearGradient id="invertedBeamLeft" x1="0.5" y1="1" x2="0.2" y2="0">
+                      <stop offset="0%" stopColor="#F0F0F0" stopOpacity="0.95" />
+                      <stop offset="32%" stopColor="#F0F0F0" stopOpacity="0.32" />
+                      <stop offset="68%" stopColor="#080808" stopOpacity="0.88" />
+                      <stop offset="100%" stopColor="#080808" stopOpacity="0.98" />
+                    </linearGradient>
+                    <pattern id="beamDots" width="3" height="3" patternUnits="userSpaceOnUse">
+                      <circle cx="1" cy="1" r="0.6" fill="#080808" opacity="0.55" />
+                    </pattern>
+                  </defs>
+                  {/* Inverted beam upward-left */}
+                  <polygon points="88,46 116,46 72,0 32,0" fill="url(#invertedBeamLeft)" />
+                  <polygon points="88,46 116,46 72,0 32,0" fill="url(#beamDots)" />
+                  {/* Obsidian Horizon Hills */}
+                  <path
+                    d="M0 78 Q 36 66, 74 75 T 160 72 L 160 96 L 0 96 Z"
+                    fill="#080808"
+                  />
+                  {/* Cast hard shadow under monolith */}
+                  <polygon points="56,82 90,74 90,82" fill="#080808" />
+                  {/* Monolithic Structure (Chalk wall + Black gable/door) */}
+                  <polygon points="88,52 104,42 104,78 88,78" fill="#080808" />
+                  <polygon points="104,42 120,52 120,78 104,78" fill="#F0F0F0" />
+                  <rect x="109" y="64" width="6" height="14" fill="#080808" />
+                </svg>
+              </div>
+
+              <div className="bcc-bottom">
+                <h2 className="bcc-title">ŞİFRESİZ KOD</h2>
+                <p className="bcc-sub">%100 Açık kaynak Lua/JS. Escrow kilitsiz mimari.</p>
+              </div>
+            </button>
+
+            {/* SUB-CARD 2: OBSIDIAN LIMINAL PATH + SILHOUETTE (Direct Image 2 Homage) */}
+            <Link href="/discord" className="bento-card bento-card-noir">
+              <div className="noir-stipple-chalk" aria-hidden="true" />
+              <div className="noir-grain-overlay" aria-hidden="true" />
+
+              <div className="bento-card-head">
+                <span className="bcn-tag">TOPLULUK &amp; DESTEK</span>
+                <span className="bcn-circle-btn" aria-hidden="true">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                  >
+                    <path d="M7 17L17 7M17 7H8M17 7V16" />
+                  </svg>
+                </span>
+              </div>
+
+              <div className="bcn-figure-art" aria-hidden="true">
+                <svg viewBox="0 0 160 96" fill="none">
+                  {/* Winding chalk path into crimson/obsidian void */}
+                  <path
+                    d="M 94 12 C 118 28, 72 48, 100 66 C 118 76, 86 88, 66 96 L 106 96 C 128 84, 140 70, 114 54 C 90 38, 126 24, 102 12 Z"
+                    fill="#F0F0F0"
+                    opacity="0.88"
+                  />
+                  {/* Horizon line */}
+                  <line x1="0" y1="22" x2="160" y2="22" stroke="#A50000" strokeWidth="1.2" />
+                  {/* Solitary watching figure silhouette */}
+                  <ellipse cx="44" cy="83" rx="14" ry="3.5" fill="#080808" />
+                  <circle cx="48" cy="48" r="4" fill="#F0F0F0" />
+                  <path
+                    d="M42 54 L54 54 L56 68 L52 68 L51 82 L47 82 L47 69 L45 69 L44 82 L41 82 L42 68 L40 68 Z"
+                    fill="#080808"
+                    stroke="#F0F0F0"
+                    strokeWidth="1"
+                  />
+                </svg>
+              </div>
+
+              <div className="bcn-bottom">
+                <h2 className="bcn-title">DİSCORD</h2>
+                <p className="bcn-sub">7/24 Birebir destek talebi &amp; teknik danışmanlık.</p>
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: LIMINAL INVERTED-SPOTLIGHT CRIMSON SHOWCASE */}
+        <div className="bento-col-right">
+          <section className="bento-card bento-card-showcase" aria-label="Sistem Telemetri Monitörü">
+            {/* Image 2 Crimson Sky + Inverted Spotlight Beam + Stipple Texture */}
+            <div className="noir-stipple-obsidian" aria-hidden="true" />
+            <div className="noir-grain-heavy" aria-hidden="true" />
+            <div className="showcase-inverted-beam" aria-hidden="true" />
+
+            {/* Liminal Horizon Monolith & Path behind the Console */}
+            <svg
+              className="showcase-horizon-art"
+              viewBox="0 0 400 180"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M0 44 Q 65 26, 130 40 T 260 36 T 400 46 L 400 180 L 0 180 Z"
+                fill="#080808"
+              />
+              {/* Tiny distant chalk/obsidian monolith */}
+              <polygon points="312,18 326,8 326,42 312,42" fill="#080808" />
+              <polygon points="326,8 340,18 340,42 326,42" fill="#F0F0F0" />
+              <rect x="331" y="28" width="5" height="14" fill="#080808" />
+              {/* Subtle winding path foreground */}
+              <path
+                d="M 180 180 Q 250 135, 215 100 T 308 42"
+                stroke="#F0F0F0"
+                strokeWidth="14"
+                strokeLinecap="round"
+                fill="none"
+                opacity="0.22"
+              />
+            </svg>
+
+            <div className="showcase-callout-ticks">
+              <svg
+                className="showcase-side-ticks"
+                width="22"
+                height="48"
+                viewBox="0 0 22 48"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path d="M4 6 L19 15" stroke="currentColor" strokeWidth="2.2" strokeLinecap="square" />
+                <path d="M2 24 L18 24" stroke="currentColor" strokeWidth="2.2" strokeLinecap="square" />
+                <path d="M4 42 L19 33" stroke="currentColor" strokeWidth="2.2" strokeLinecap="square" />
+              </svg>
+
+              {/* RISOGRAPH CONSOLE MOCKUP */}
+              <div className="device-mockup-chassis">
+                <div className="device-island">
+                  <span className="device-sensor" />
+                  <span className="device-cam" />
+                </div>
+
+                <div className="device-top-bar">
+                  <div className="device-user-info">
+                    <img src="/assets/rslogo.jpg" alt="Restricted Core" className="device-avatar" />
+                    <div className="device-user-text">
+                      <span className="dut-greeting">Restricted Core</span>
+                      <span className="dut-status">
+                        <span className="dut-dot" />
+                        v3.4 · Aktif
+                      </span>
+                    </div>
+                  </div>
+                  <div className="device-top-icons">
+                    <Link href="/katalog" className="device-icon-pill" aria-label="Katalog">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.4"
+                      >
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.3-4.3" />
+                      </svg>
+                    </Link>
+                    <Link href="/dashboard" className="device-icon-pill has-badge" aria-label="Portal">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.4"
+                      >
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="device-server-selector">
+                  <div className="dss-left">
+                    <span style={{ fontSize: '12px' }}>◆</span>
+                    <span className="dss-name">Saint Roleplay — Istanbul Engine</span>
+                  </div>
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.6"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </div>
+
+                {/* Primary Metric Alert Card */}
+                <div className="device-metric-card-primary">
+                  <div className="dmcp-header">
+                    <div className="dmcp-badge-icon">
+                      <svg
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.4"
+                      >
+                        <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <circle cx="12" cy="17" r="0.6" />
+                      </svg>
+                    </div>
+                    <div className="dmcp-text">
+                      <span className="dmcp-title">STABİL KAYNAK TÜKETİMİ</span>
+                      <p className="dmcp-desc">
+                        Tüm tick döngüleri <strong>0.04ms</strong> altında optimize edildi. SQL
+                        gecikmesi: <strong>1.1ms</strong>.
+                      </p>
+                    </div>
+                    <Link
+                      href="/katalog"
+                      className="dmcp-action-btn"
+                      aria-label="Katalogdaki Optimize Sistemler"
+                    >
+                      <svg
+                        width="11"
+                        height="11"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.6"
+                      >
+                        <path d="M7 17L17 7M17 7H8M17 7V16" />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Widget 2: Sunucu Kapasitesi Crimson Risograph Graph */}
+                <div className="device-capacity-card">
+                  <div className="noir-stipple-obsidian" aria-hidden="true" />
+                  <div className="dcc-head">
+                    <div>
+                      <span className="dcc-title">SUNUCU KAPASİTESİ</span>
+                      <span className="dcc-sub">TPS &amp; Eşzamanlı Oyuncu</span>
+                    </div>
+                    <span className="dcc-filter-pill">Bu Hafta ▾</span>
+                  </div>
+
+                  <div className="dcc-days-row">
+                    {[
+                      { d: 'Pzt', v: '78%' },
+                      { d: 'Sal', v: '82%' },
+                      { d: 'Çar', v: '91%', active: true },
+                      { d: 'Per', v: '88%' },
+                      { d: 'Cum', v: '85%' },
+                      { d: 'Cmt', v: '93%' },
+                      { d: 'Paz', v: '98%' },
+                    ].map((col) => (
+                      <div key={col.d} className={`dcc-day-col ${col.active ? 'active' : ''}`}>
+                        <span className="ddc-label">{col.d}</span>
+                        <span className="ddc-val">{col.v}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="dcc-chart-container">
+                    <svg viewBox="0 0 320 110" preserveAspectRatio="none" className="capacity-curve-svg">
+                      <defs>
+                        <pattern id="curveStipple" width="4" height="4" patternUnits="userSpaceOnUse">
+                          <circle cx="1.5" cy="1.5" r="0.85" fill="#F0F0F0" opacity="0.24" />
+                        </pattern>
+                        <linearGradient id="crimsonPeakFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#A50000" stopOpacity="0.95" />
+                          <stop offset="60%" stopColor="#8B0000" stopOpacity="0.55" />
+                          <stop offset="100%" stopColor="#080808" stopOpacity="0.95" />
+                        </linearGradient>
+                      </defs>
+                      <path
+                        d="M 0 100 Q 30 92, 50 78 T 100 46 T 140 22 T 180 54 T 220 36 T 270 18 T 320 10 L 320 110 L 0 110 Z"
+                        fill="url(#crimsonPeakFill)"
+                      />
+                      <path
+                        d="M 0 100 Q 30 92, 50 78 T 100 46 T 140 22 T 180 54 T 220 36 T 270 18 T 320 10 L 320 110 L 0 110 Z"
+                        fill="url(#curveStipple)"
+                      />
+                      <path
+                        d="M 0 100 Q 30 92, 50 78 T 100 46 T 140 22 T 180 54 T 220 36 T 270 18 T 320 10"
+                        fill="none"
+                        stroke="#F0F0F0"
+                        strokeWidth="2.4"
+                      />
+                      <circle cx="140" cy="22" r="4.5" fill="#F0F0F0" stroke="#A50000" strokeWidth="2.5" />
+                    </svg>
+                    <div className="dcc-apex-pin">91% · 60.0 FPS</div>
+                  </div>
+
+                  <div className="dcc-footer">
+                    <span>64/64 Oyuncu · %99.99 Uptime · 0 Escrow</span>
+                  </div>
+                </div>
+              </div>
+
+              <svg
+                className="showcase-side-ticks"
+                width="22"
+                height="48"
+                viewBox="0 0 22 48"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path d="M18 6 L3 15" stroke="currentColor" strokeWidth="2.2" strokeLinecap="square" />
+                <path d="M20 24 L4 24" stroke="currentColor" strokeWidth="2.2" strokeLinecap="square" />
+                <path d="M18 42 L3 33" stroke="currentColor" strokeWidth="2.2" strokeLinecap="square" />
+              </svg>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      {/* ===============================================================
+           IN-VIEWPORT NOIR MODALS (Zero Page Scroll Preserved!)
+           =============================================================== */}
+      {activeModal && (
+        <div
+          className="noir-modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setActiveModal(null)}
+        >
+          <div className="noir-modal-panel" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="noir-modal-head">
+              <div>
+                <p className="noir-modal-eyebrow">
+                  {activeModal === 'about' && '01 // BİZ KİMİZ & STANDARTLARIMIZ'}
+                  {activeModal === 'solutions' && '02 // ÜRETİM ALANLARI & ARŞİV DAĞILIMI'}
+                  {activeModal === 'engineering' && '03 // MÜHENDİSLİK & ŞİFRESİZ MİMARİ'}
+                  {activeModal === 'faq' && '04 // SIKÇA SORULAN SORULAR'}
+                </p>
+                <h2 className="noir-modal-title">
+                  {activeModal === 'about' && 'FiveM Türkiye’de kaliteyi yeniden inşa ediyoruz.'}
+                  {activeModal === 'solutions' && 'Tek çatı altında modüler sunucu altyapısı.'}
+                  {activeModal === 'engineering' && 'Şifreli kutular değil, okunabilir temiz kod.'}
+                  {activeModal === 'faq' && 'Merak edilen tüm teknik ve satış detayları.'}
+                </h2>
+              </div>
+              <button
+                type="button"
+                className="noir-modal-close"
+                onClick={() => setActiveModal(null)}
+                aria-label="Kapat"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body: ABOUT */}
+            {activeModal === 'about' && (
+              <div>
+                <p style={{ fontSize: '13.5px', lineHeight: 1.6, color: 'rgba(240,240,240,0.85)', marginBottom: '12px' }}>
+                  <strong>Yurt dışında 100€ ile 300€ arasında satılan yazılımlar</strong>, kur farkı
+                  nedeniyle Türkiye’deki sunucu girişimlerinin önündeki en büyük engele dönüştü.
+                  Restricted Studio; dünya standartlarındaki Lua/JS, 3D mekan (MLO) ve MariaDB
+                  mühendisliğini Türkiye ekonomisine uygun, ulaşılabilir ve %100 açık kaynak koşullarla
+                  sunmak için kuruldu.
+                </p>
+
+                <div className="noir-modal-grid-3">
+                  <div className="noir-info-box">
+                    <h4>Ulaşılabilir Yerel Fiyat</h4>
+                    <p>
+                      Döviz kuruna endeksli fahiş etiketler yerine TL bazlı şeffaf fiyatlandırma.
+                      16+ paket sepetlerinde anında %50 kampanya indirimi.
+                    </p>
+                  </div>
+                  <div className="noir-info-box">
+                    <h4>Tek Tipleşmeye Son</h4>
+                    <p>
+                      Arayüzü, dili ve kuralları tamamen sunucunuza göre özelleştirilebilen
+                      modüler sistemler.
+                    </p>
+                  </div>
+                  <div className="noir-info-box">
+                    <h4>Koşulsuz Kod Güvenliği</h4>
+                    <p>
+                      Gizli dış bağlantılardan ve arka kapılardan (backdoor/webhook) tamamen
+                      arındırılmış temiz kaynak kodları.
+                    </p>
+                  </div>
+                </div>
+
+                <table className="noir-compare-table">
+                  <thead>
+                    <tr>
+                      <th>Kriter</th>
+                      <th>Hazır Kopya / Yurt Dışı</th>
+                      <th>Restricted Studio</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Kaynak Kod</td>
+                      <td>Escrow kilitli, müdahaleye kapalı</td>
+                      <td>%100 Açık kaynak, düzenlenebilir</td>
+                    </tr>
+                    <tr>
+                      <td>Performans</td>
+                      <td>Yüksek işlemci yükü &amp; FPS kaybı</td>
+                      <td>0.00 ms boşta tüketim, optimize SQL</td>
+                    </tr>
+                    <tr>
+                      <td>Güvenlik</td>
+                      <td>Denetlenemeyen şifreli dosyalar</td>
+                      <td>Şeffaf güvenlik taramalı temiz kod</td>
+                    </tr>
+                    <tr>
+                      <td>Satış &amp; Güvence</td>
+                      <td>Belirsiz forum ticareti</td>
+                      <td>İtemsatış 3D Secure &amp; Türkçe Discord</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Modal Body: SOLUTIONS */}
+            {activeModal === 'solutions' && (
+              <div>
+                <div className="noir-modal-grid-2">
+                  <div className="noir-info-box">
+                    <h4>Özgün FiveM Scriptleri</h4>
+                    <p>
+                      Lua 5.4 ve modern arayüzlerle geliştirilen, sunucu işlemcisini yormayan
+                      modüler sistemler.
+                    </p>
+                    <div className="noir-chip-row">
+                      <span className="noir-chip">QB-Core / Qbox / ESX</span>
+                      <span className="noir-chip">0.00 ms Idle</span>
+                    </div>
+                  </div>
+                  <div className="noir-info-box">
+                    <h4>3D MLO &amp; Mekan Tasarımı</h4>
+                    <p>
+                      Kalabalık oyuncularda dahi FPS düşürmeyen portal/occlusion optimize iç
+                      mekanlar.
+                    </p>
+                    <div className="noir-chip-row">
+                      <span className="noir-chip">Optimize Poligon</span>
+                      <span className="noir-chip">Özel İç Mekan</span>
+                    </div>
+                  </div>
+                  <div className="noir-info-box">
+                    <h4>SQL Veritabanı Mimarisi</h4>
+                    <p>
+                      Doğru indekslenmiş MariaDB tablolarıyla milisaniye altı sorgu yanıtı ve
+                      Türkçe karakter uyumu.
+                    </p>
+                    <div className="noir-chip-row">
+                      <span className="noir-chip">1.1 ms Gecikme</span>
+                      <span className="noir-chip">InnoDB UTF8MB4</span>
+                    </div>
+                  </div>
+                  <div className="noir-info-box">
+                    <h4>Hazır Sunucu Paketleri</h4>
+                    <p>
+                      Ekonomisi dengelenmiş, çakışmasız ve kurulum rehberli anahtar teslim sunucu
+                      paketleri.
+                    </p>
+                    <div className="noir-chip-row">
+                      <span className="noir-chip">Tam Entegrasyon</span>
+                      <span className="noir-chip">Discord Destek</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    marginTop: '16px',
+                    padding: '14px',
+                    border: '1.5px solid rgba(240,240,240,0.28)',
+                    background: '#0e0e0e',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '10px',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '11px',
+                    }}
+                  >
+                    <span>ARŞİV DAĞILIMI ({catalogStats.total.toLocaleString('tr-TR')} PAKET)</span>
+                    <Link href="/katalog" style={{ color: '#A50000', textDecoration: 'underline' }}>
+                      Kataloğu Aç →
+                    </Link>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {statRows.map(([cat, count]) => {
+                      const pct = Math.round((count / catalogStats.total) * 100);
+                      return (
+                        <div key={cat}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              fontSize: '12px',
+                              marginBottom: '3px',
+                            }}
+                          >
+                            <span>{cat}</span>
+                            <span style={{ fontFamily: 'var(--font-mono)' }}>
+                              {count.toLocaleString('tr-TR')} (%{pct})
+                            </span>
+                          </div>
+                          <div style={{ height: '6px', background: '#080808', border: '1px solid rgba(240,240,240,0.2)' }}>
+                            <div
+                              style={{
+                                height: '100%',
+                                width: `${pct}%`,
+                                background: '#A50000',
+                              }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Modal Body: ENGINEERING */}
+            {activeModal === 'engineering' && (
+              <div>
+                <div className="noir-modal-grid-3" style={{ marginTop: 0, marginBottom: '16px' }}>
+                  <div className="noir-info-box">
+                    <h4>1. Çoklu Altyapı Köprüsü</h4>
+                    <p>Tek kod tabanı üzerinden QB-Core, Qbox ve ESX Legacy otomatik tanıma.</p>
+                  </div>
+                  <div className="noir-info-box">
+                    <h4>2. Sunucu Taraflı Güvenlik</h4>
+                    <p>Tüm para, envanter ve mesafe kontrolleri doğrudan sunucuda doğrulanır.</p>
+                  </div>
+                  <div className="noir-info-box">
+                    <h4>3. Şeffaf Güvenlik Raporu</h4>
+                    <p>Her arşiv teslimat öncesi harici webhook ve backdoor taramasından geçer.</p>
+                  </div>
+                </div>
+
+                <div className="noir-code-tabs">
+                  {(Object.keys(CODE_SNIPPETS) as CodeTabKey[]).map((key) => (
+                    <button
+                      key={key}
+                      type="button"
+                      className={`noir-code-tab ${codeTab === key ? 'active' : ''}`}
+                      onClick={() => setCodeTab(key)}
+                    >
+                      {CODE_SNIPPETS[key].label}
+                    </button>
+                  ))}
+                </div>
+
+                <pre className="noir-code-pre">
+                  <code>{CODE_SNIPPETS[codeTab].code}</code>
+                </pre>
+              </div>
+            )}
+
+            {/* Modal Body: FAQ */}
+            {activeModal === 'faq' && (
+              <div>
+                {FAQ_ITEMS.map((item, idx) => {
+                  const isOpen = openFaqIdx === idx;
+                  return (
+                    <div key={item.q} className={`noir-faq-item ${isOpen ? 'active' : ''}`}>
+                      <button
+                        type="button"
+                        className="noir-faq-trigger"
+                        onClick={() => setOpenFaqIdx(isOpen ? -1 : idx)}
+                        aria-expanded={isOpen}
+                      >
+                        <span>{item.q}</span>
+                        <span>{isOpen ? '−' : '+'}</span>
+                      </button>
+                      {isOpen && <div className="noir-faq-body">{item.a}</div>}
+                    </div>
+                  );
+                })}
+
+                <div
+                  style={{
+                    marginTop: '16px',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '10px',
+                  }}
+                >
+                  <Link href="/katalog" className="btn btn-itemsatis" style={{ flex: '1 1 200px' }}>
+                    Paket Kataloğuna Git →
+                  </Link>
+                  <a
+                    href={ITEMSATIS_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-discord-solid"
+                    style={{ flex: '1 1 200px' }}
+                  >
+                    İtemsatış Mağazası ↗
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

@@ -217,7 +217,7 @@ export default function DashboardPage() {
         <div style={styles.card}>
           <div style={styles.cardHeader}>
             <div style={styles.cardIcon}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F0F0F0" strokeWidth="2">
                 <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
               </svg>
             </div>
@@ -231,9 +231,9 @@ export default function DashboardPage() {
             <div
               style={{
                 ...styles.messageBox,
-                backgroundColor: redeemMessage.type === 'success' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-                borderColor: redeemMessage.type === 'success' ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.35)',
-                color: redeemMessage.type === 'success' ? '#34d399' : '#f87171',
+                backgroundColor: redeemMessage.type === 'success' ? '#0e0e0e' : '#450000',
+                borderColor: redeemMessage.type === 'success' ? '#F0F0F0' : '#A50000',
+                color: '#F0F0F0',
               }}
             >
               <span>{redeemMessage.text}</span>
@@ -258,7 +258,7 @@ export default function DashboardPage() {
         <div style={styles.card}>
           <div style={styles.cardHeader}>
             <div style={styles.cardIcon}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F0F0F0" strokeWidth="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="7 10 12 15 17 10" />
                 <line x1="12" y1="15" x2="12" y2="3" />
@@ -276,9 +276,9 @@ export default function DashboardPage() {
                 <span
                   style={{
                     ...styles.statusBadge,
-                    backgroundColor: activeLicense ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                    color: activeLicense ? '#10b981' : '#ef4444',
-                    border: activeLicense ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
+                    backgroundColor: activeLicense ? '#F0F0F0' : '#450000',
+                    color: activeLicense ? '#080808' : '#F0F0F0',
+                    border: '1px solid #F0F0F0',
                   }}
                 >
                   {activeLicense ? 'LİSANS AKTİF & ONAYLI' : 'AKTİF LİSANS BULUNAMADI'}
@@ -317,7 +317,7 @@ export default function DashboardPage() {
         <div style={styles.card}>
           <div style={styles.cardHeader}>
             <div style={styles.cardIcon}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0071e3" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F0F0F0" strokeWidth="2">
                 <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
                 <line x1="8" y1="21" x2="16" y2="21" />
                 <line x1="12" y1="17" x2="12" y2="21" />
@@ -334,7 +334,7 @@ export default function DashboardPage() {
           ) : licenses.length === 0 ? (
             <div style={styles.emptyBox}>
               <p>Henüz hesabınıza tanımlı aktif bir lisans bulunmuyor.</p>
-              <span style={{ fontSize: '12px', color: '#71717a' }}>İtemsatış kodunuzu yukarıdaki kutucuğa girerek hemen başlatabilirsiniz.</span>
+              <span style={{ fontSize: '12px', color: 'rgba(240, 240, 240, 0.6)' }}>İtemsatış kodunuzu yukarıdaki kutucuğa girerek hemen başlatabilirsiniz.</span>
             </div>
           ) : (
             <div style={styles.tableWrapper}>
@@ -361,15 +361,16 @@ export default function DashboardPage() {
                           <span
                             style={{
                               ...styles.badge,
-                              backgroundColor: !isExpired && lic.status === 'active' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                              color: !isExpired && lic.status === 'active' ? '#10b981' : '#f87171',
+                              backgroundColor: !isExpired && lic.status === 'active' ? '#F0F0F0' : '#450000',
+                              color: !isExpired && lic.status === 'active' ? '#080808' : '#F0F0F0',
+                              border: '1px solid #F0F0F0',
                             }}
                           >
                             {!isExpired && lic.status === 'active' ? 'Aktif' : isExpired ? 'Süresi Doldu' : 'Askıya Alındı'}
                           </span>
                         </td>
                         <td style={styles.td}>
-                          <span style={{ fontWeight: 700, color: daysLeft > 5 ? '#e2e8f0' : '#f87171' }}>
+                          <span style={{ fontWeight: 700, color: daysLeft > 5 ? '#F0F0F0' : '#A50000' }}>
                             {daysLeft > 0 ? `${daysLeft} Gün` : '0 Gün'}
                           </span>
                         </td>
@@ -404,14 +405,17 @@ export default function DashboardPage() {
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     minHeight: '100vh',
-    backgroundColor: '#08080b',
-    color: '#ffffff',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    backgroundColor: '#080808',
+    color: '#F0F0F0',
+    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    backgroundImage:
+      'var(--grain-svg), radial-gradient(rgba(240, 240, 240, 0.06) 1px, transparent 1px), linear-gradient(155deg, #080808 0%, #080808 62%, rgba(139, 0, 0, 0.32) 100%)',
+    backgroundSize: '160px 160px, 5px 5px, 100% 100%',
   },
   header: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-    backgroundColor: 'rgba(10, 11, 16, 0.85)',
-    backdropFilter: 'blur(16px)',
+    borderBottom: '1.5px solid rgba(240, 240, 240, 0.28)',
+    backgroundColor: 'rgba(8, 8, 8, 0.94)',
+    backdropFilter: 'blur(12px)',
     position: 'sticky',
     top: 0,
     zIndex: 50,
@@ -428,7 +432,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    color: '#ffffff',
+    color: '#F0F0F0',
     textDecoration: 'none',
     fontWeight: 800,
     fontSize: '14px',
@@ -437,9 +441,9 @@ const styles: { [key: string]: React.CSSProperties } = {
   logoDot: {
     width: '8px',
     height: '8px',
-    borderRadius: '50%',
-    backgroundColor: '#0071e3',
-    boxShadow: '0 0 10px #0071e3',
+    borderRadius: '0px',
+    backgroundColor: '#A50000',
+    border: '1px solid #F0F0F0',
   },
   userSection: {
     display: 'flex',
@@ -448,19 +452,19 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   userEmail: {
     fontSize: '13px',
-    color: '#94a3b8',
+    color: 'rgba(240, 240, 240, 0.72)',
     fontWeight: 500,
   },
   logoutBtn: {
     padding: '7px 14px',
-    borderRadius: '8px',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    color: '#f87171',
+    borderRadius: '0px',
+    backgroundColor: '#0e0e0e',
+    border: '1.5px solid #A50000',
+    color: '#F0F0F0',
     fontSize: '12.5px',
-    fontWeight: 600,
+    fontWeight: 700,
     cursor: 'pointer',
-    transition: 'all 0.2s',
+    transition: 'all 0.15s',
   },
   main: {
     maxWidth: '1100px',
@@ -481,17 +485,18 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: 800,
     letterSpacing: '-0.02em',
     marginBottom: '6px',
+    color: '#F0F0F0',
   },
   pageSubtitle: {
     fontSize: '14px',
-    color: '#71717a',
+    color: 'rgba(240, 240, 240, 0.68)',
   },
   card: {
-    backgroundColor: 'rgba(14, 15, 22, 0.85)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    borderRadius: '16px',
+    backgroundColor: '#080808',
+    border: '2px solid rgba(240, 240, 240, 0.42)',
+    borderRadius: '0px',
     padding: '28px',
-    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
+    boxShadow: '6px 6px 0 #8B0000',
   },
   cardHeader: {
     display: 'flex',
@@ -502,9 +507,9 @@ const styles: { [key: string]: React.CSSProperties } = {
   cardIcon: {
     width: '40px',
     height: '40px',
-    borderRadius: '10px',
-    backgroundColor: 'rgba(0, 113, 227, 0.12)',
-    border: '1px solid rgba(0, 113, 227, 0.3)',
+    borderRadius: '0px',
+    backgroundColor: '#450000',
+    border: '1.5px solid #F0F0F0',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -513,12 +518,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   cardTitle: {
     fontSize: '17px',
     fontWeight: 700,
-    color: '#ffffff',
+    color: '#F0F0F0',
     marginBottom: '3px',
   },
   cardSubtitle: {
     fontSize: '13px',
-    color: '#71717a',
+    color: 'rgba(240, 240, 240, 0.68)',
   },
   redeemForm: {
     display: 'flex',
@@ -529,10 +534,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     flex: 1,
     minWidth: '260px',
     padding: '13px 16px',
-    borderRadius: '10px',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
-    color: '#ffffff',
+    borderRadius: '0px',
+    backgroundColor: '#0e0e0e',
+    border: '1.5px solid rgba(240, 240, 240, 0.35)',
+    color: '#F0F0F0',
     fontSize: '14px',
     fontFamily: 'ui-monospace, monospace',
     letterSpacing: '0.08em',
@@ -540,22 +545,22 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   redeemBtn: {
     padding: '13px 24px',
-    borderRadius: '10px',
-    backgroundColor: '#0071e3',
-    color: '#ffffff',
+    borderRadius: '0px',
+    backgroundColor: '#A50000',
+    color: '#F0F0F0',
     fontSize: '13.5px',
     fontWeight: 700,
-    border: 'none',
+    border: '1.5px solid #F0F0F0',
     cursor: 'pointer',
-    boxShadow: '0 4px 16px rgba(0, 113, 227, 0.35)',
-    transition: 'all 0.2s',
+    boxShadow: '4px 4px 0 #8B0000',
+    transition: 'all 0.15s',
   },
   messageBox: {
     padding: '12px 16px',
-    borderRadius: '10px',
+    borderRadius: '0px',
     fontSize: '13.5px',
     marginBottom: '16px',
-    border: '1px solid',
+    border: '1.5px solid #F0F0F0',
   },
   downloadSection: {
     display: 'flex',
@@ -564,9 +569,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexWrap: 'wrap',
     gap: '20px',
     padding: '20px',
-    backgroundColor: 'rgba(0, 0, 0, 0.35)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    borderRadius: '12px',
+    backgroundColor: '#0e0e0e',
+    border: '1.5px solid rgba(240, 240, 240, 0.25)',
+    borderRadius: '0px',
   },
   downloadInfo: {
     flex: 1,
@@ -582,17 +587,17 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: '11px',
     fontWeight: 800,
     padding: '3px 8px',
-    borderRadius: '6px',
+    borderRadius: '0px',
     letterSpacing: '0.05em',
   },
   fileMeta: {
     fontSize: '12.5px',
-    color: '#94a3b8',
+    color: 'rgba(240, 240, 240, 0.72)',
     fontFamily: 'ui-monospace, monospace',
   },
   downloadNotice: {
     fontSize: '13px',
-    color: '#71717a',
+    color: 'rgba(240, 240, 240, 0.68)',
     lineHeight: '1.45',
   },
   downloadBtnActive: {
@@ -600,24 +605,25 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
     gap: '10px',
     padding: '13px 22px',
-    borderRadius: '10px',
-    backgroundColor: '#0071e3',
-    color: '#ffffff',
+    borderRadius: '0px',
+    backgroundColor: '#A50000',
+    color: '#F0F0F0',
+    border: '1.5px solid #F0F0F0',
     fontSize: '13.5px',
     fontWeight: 700,
     textDecoration: 'none',
-    boxShadow: '0 4px 20px rgba(0, 113, 227, 0.4)',
-    transition: 'all 0.2s',
+    boxShadow: '4px 4px 0 #F0F0F0',
+    transition: 'all 0.15s',
   },
   downloadBtnDisabled: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '10px',
     padding: '13px 22px',
-    borderRadius: '10px',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    color: '#71717a',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '0px',
+    backgroundColor: '#0e0e0e',
+    color: 'rgba(240, 240, 240, 0.48)',
+    border: '1.5px solid rgba(240, 240, 240, 0.22)',
     fontSize: '13.5px',
     fontWeight: 600,
     cursor: 'not-allowed',
@@ -631,64 +637,65 @@ const styles: { [key: string]: React.CSSProperties } = {
     textAlign: 'left',
   },
   tableHeadRow: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+    borderBottom: '1.5px solid rgba(240, 240, 240, 0.35)',
   },
   th: {
     padding: '12px 14px',
     fontSize: '11px',
     fontWeight: 700,
-    color: '#71717a',
+    color: 'rgba(240, 240, 240, 0.68)',
     letterSpacing: '0.06em',
   },
   tableRow: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+    borderBottom: '1px solid rgba(240, 240, 240, 0.14)',
   },
   td: {
     padding: '14px',
     fontSize: '13px',
-    color: '#e2e8f0',
+    color: '#F0F0F0',
   },
   prodTag: {
     fontFamily: 'ui-monospace, monospace',
     fontWeight: 700,
-    color: '#ffffff',
+    color: '#F0F0F0',
   },
   badge: {
     fontSize: '11px',
     fontWeight: 700,
     padding: '3px 8px',
-    borderRadius: '5px',
+    borderRadius: '0px',
   },
   hwidActive: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '6px',
     fontSize: '12px',
-    color: '#10b981',
-    fontWeight: 600,
+    color: '#F0F0F0',
+    fontWeight: 700,
   },
   hwidPending: {
     fontSize: '12px',
-    color: '#f59e0b',
+    color: '#A50000',
+    fontWeight: 700,
   },
   dateText: {
     fontSize: '12px',
-    color: '#94a3b8',
+    color: 'rgba(240, 240, 240, 0.7)',
     fontFamily: 'ui-monospace, monospace',
   },
   loadingBox: {
     textAlign: 'center',
     padding: '30px',
-    color: '#71717a',
+    color: 'rgba(240, 240, 240, 0.68)',
     fontSize: '13.5px',
   },
   emptyBox: {
     textAlign: 'center',
     padding: '40px 20px',
-    backgroundColor: 'rgba(0, 0, 0, 0.25)',
-    borderRadius: '10px',
-    border: '1px dashed rgba(255, 255, 255, 0.08)',
-    color: '#94a3b8',
+    backgroundColor: '#0e0e0e',
+    borderRadius: '0px',
+    border: '1.5px dashed rgba(240, 240, 240, 0.35)',
+    color: 'rgba(240, 240, 240, 0.72)',
     display: 'flex',
     flexDirection: 'column',
     gap: '6px',

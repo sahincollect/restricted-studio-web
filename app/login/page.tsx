@@ -166,9 +166,9 @@ export default function LoginPage() {
         </form>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '18px 0' }}>
-          <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255,255,255,0.08)' }} />
-          <span style={{ fontSize: '11px', fontWeight: 700, color: '#52525b', letterSpacing: '0.08em' }}>VEYA KAYITSIZ</span>
-          <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255,255,255,0.08)' }} />
+          <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(240,240,240,0.22)' }} />
+          <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(240,240,240,0.56)', letterSpacing: '0.08em' }}>VEYA KAYITSIZ</span>
+          <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(240,240,240,0.22)' }} />
         </div>
 
         <button
@@ -178,10 +178,10 @@ export default function LoginPage() {
           style={{
             width: '100%',
             padding: '13px',
-            borderRadius: '10px',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.14)',
-            color: '#f4f4f5',
+            borderRadius: '0px',
+            backgroundColor: '#0e0e0e',
+            border: '1.5px solid rgba(240, 240, 240, 0.42)',
+            color: '#F0F0F0',
             fontSize: '13.5px',
             fontWeight: 700,
             cursor: 'pointer',
@@ -189,10 +189,10 @@ export default function LoginPage() {
             alignItems: 'center',
             justifyContent: 'center',
             gap: '8px',
-            transition: 'all 0.2s',
+            transition: 'all 0.15s',
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A50000" strokeWidth="2.2">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
           </svg>
           <span>{anonLoading ? 'Anonim Oturum Açılıyor...' : 'Anonim Olarak Devam Et'}</span>
@@ -216,19 +216,19 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '24px',
-    backgroundColor: '#08080b',
+    backgroundColor: '#080808',
     backgroundImage:
-      'radial-gradient(circle at 50% 20%, rgba(0, 113, 227, 0.12) 0%, transparent 50%), repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 20px)',
+      'var(--grain-svg), radial-gradient(rgba(240, 240, 240, 0.08) 1px, transparent 1px), linear-gradient(155deg, #080808 0%, #080808 58%, #450000 84%, #8B0000 100%)',
+    backgroundSize: '160px 160px, 5px 5px, 100% 100%',
   },
   card: {
     width: '100%',
     maxWidth: '420px',
-    backgroundColor: 'rgba(14, 15, 22, 0.92)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    borderRadius: '20px',
+    backgroundColor: '#080808',
+    border: '2px solid #F0F0F0',
+    borderRadius: '0px',
     padding: '36px 32px',
-    boxShadow: '0 30px 80px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 113, 227, 0.08)',
-    backdropFilter: 'blur(20px)',
+    boxShadow: '7px 7px 0 #A50000',
   },
   header: {
     textAlign: 'center',
@@ -241,27 +241,27 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: '12px',
     fontWeight: 800,
     letterSpacing: '0.12em',
-    color: '#94a3b8',
+    color: 'rgba(240, 240, 240, 0.8)',
     textDecoration: 'none',
     marginBottom: '16px',
   },
   brandDot: {
-    width: '7px',
-    height: '7px',
-    borderRadius: '50%',
-    backgroundColor: '#0071e3',
-    boxShadow: '0 0 10px #0071e3',
+    width: '8px',
+    height: '8px',
+    borderRadius: '0px',
+    backgroundColor: '#A50000',
+    border: '1px solid #F0F0F0',
   },
   title: {
-    fontSize: '24px',
+    fontSize: '26px',
     fontWeight: 800,
-    color: '#ffffff',
+    color: '#F0F0F0',
     letterSpacing: '-0.02em',
     marginBottom: '8px',
   },
   subtitle: {
     fontSize: '13px',
-    color: '#71717a',
+    color: 'rgba(240, 240, 240, 0.68)',
     lineHeight: '1.5',
   },
   form: {
@@ -277,16 +277,16 @@ const styles: { [key: string]: React.CSSProperties } = {
   label: {
     fontSize: '11px',
     fontWeight: 700,
-    color: '#a1a1aa',
-    letterSpacing: '0.05em',
+    color: 'rgba(240, 240, 240, 0.78)',
+    letterSpacing: '0.06em',
   },
   input: {
     width: '100%',
     padding: '12px 14px',
-    borderRadius: '10px',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    color: '#ffffff',
+    borderRadius: '0px',
+    backgroundColor: '#0e0e0e',
+    border: '1.5px solid rgba(240, 240, 240, 0.3)',
+    color: '#F0F0F0',
     fontSize: '14px',
     outline: 'none',
     boxSizing: 'border-box',
@@ -295,25 +295,25 @@ const styles: { [key: string]: React.CSSProperties } = {
   button: {
     marginTop: '6px',
     padding: '13px',
-    borderRadius: '10px',
-    backgroundColor: '#0071e3',
-    color: '#ffffff',
+    borderRadius: '0px',
+    backgroundColor: '#A50000',
+    color: '#F0F0F0',
     fontSize: '14px',
     fontWeight: 700,
-    border: 'none',
+    border: '1.5px solid #F0F0F0',
     cursor: 'pointer',
-    boxShadow: '0 4px 20px rgba(0, 113, 227, 0.35)',
-    transition: 'all 0.2s',
+    boxShadow: '4px 4px 0 #8B0000',
+    transition: 'all 0.15s',
   },
   errorBox: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    border: '1px solid rgba(239, 68, 68, 0.3)',
-    color: '#f87171',
+    backgroundColor: '#450000',
+    border: '1.5px solid #F0F0F0',
+    color: '#F0F0F0',
     padding: '10px 14px',
-    borderRadius: '8px',
+    borderRadius: '0px',
     fontSize: '13px',
     marginBottom: '18px',
   },
@@ -321,11 +321,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     textAlign: 'center',
     marginTop: '24px',
     fontSize: '13px',
-    color: '#71717a',
+    color: 'rgba(240, 240, 240, 0.65)',
   },
   link: {
-    color: '#ff4d4d',
-    textDecoration: 'none',
-    fontWeight: 600,
+    color: '#F0F0F0',
+    textDecoration: 'underline',
+    fontWeight: 700,
   },
 };
