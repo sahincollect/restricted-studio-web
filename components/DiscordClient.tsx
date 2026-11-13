@@ -21,7 +21,7 @@ export default function DiscordClient() {
             <Link href="/" style={styles.brandLink}>
               <img src="/assets/rslogo.jpg" alt="Restricted Studio" style={styles.brandLogo} />
               <span className="brand-logo-shimmer" style={{ ...styles.brandText, color: undefined }}>
-                Restricted Studio
+                RESTRICTED STUDIO
               </span>
             </Link>
             <span

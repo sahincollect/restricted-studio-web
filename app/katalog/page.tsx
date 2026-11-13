@@ -327,7 +327,7 @@ export default function CatalogPage() {
           <div className="nav-brand-wrap">
             <Link href="/" className="nav-brand" aria-label={`Restricted Studio ${t.common.home}`}>
               <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="nav-brand-logo" />
-              <span className="nav-brand-text">Restricted Studio</span>
+              <span className="nav-brand-text">RESTRICTED STUDIO</span>
             </Link>
             <a
               href={ITEMSATIS_URL}
@@ -1098,7 +1098,7 @@ export default function CatalogPage() {
             <div className="footer-brand-info">
               <div className="nav-brand">
                 <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="nav-brand-logo" />
-                <span className="nav-brand-text">Restricted Studio</span>
+                <span className="nav-brand-text">RESTRICTED STUDIO</span>
               </div>
               <p className="footer-tagline">{t.catalog.footerTagline}</p>
               <div style={{ marginTop: '16px' }}>
