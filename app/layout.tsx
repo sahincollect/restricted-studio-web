@@ -1,23 +1,63 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import './globals.css';
 import WinterSnow from '@/components/WinterSnow';
 
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://restrictedstudio.shop').replace(/\/+$/, '');
+
 export const metadata: Metadata = {
-  title: 'Restricted Studio — Kurumsal FiveM Altyapı & Yazılım Ekosistemi',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: 'Restricted Studio — Kurumsal FiveM Altyapı & Yazılım Ekosistemi',
+    template: '%s | Restricted Studio',
+  },
   description:
     'Restricted Studio; FiveM sunucuları için yüksek performanslı açık kaynak scriptler, 3D MLO mekanlar, optimize SQL veri mimarisi ve hazır altyapı çözümleri sunan profesyonel yazılım stüdyosudur.',
   icons: {
     icon: '/assets/rslogo.jpg',
+    apple: '/assets/rslogo.jpg',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'tr_TR',
+    url: siteUrl,
+    siteName: 'Restricted Studio',
+    title: 'Restricted Studio — Kurumsal FiveM Altyapı & Yazılım Ekosistemi',
+    description:
+      'Açık kaynak FiveM scriptler, optimize SQL mimarisi, 3D MLO haritalar ve lisans yönetimi.',
+    images: [
+      {
+        url: '/assets/rslogo.jpg',
+        width: 512,
+        height: 512,
+        alt: 'Restricted Studio',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Restricted Studio — Kurumsal FiveM Altyapı & Yazılım Ekosistemi',
+    description:
+      'FiveM sunucuları için yüksek performanslı açık kaynak scriptler ve optimize altyapı çözümleri.',
+    images: ['/assets/rslogo.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Forces per-request dynamic rendering so Next.js 15 propagates the middleware CSP nonce onto hydration scripts.
+  const requestHeaders = await headers();
+  const nonce = requestHeaders.get('x-nonce') || undefined;
+
   return (
-    <html lang="tr">
+    <html lang="tr" data-csp-nonce={nonce ? 'active' : 'off'}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

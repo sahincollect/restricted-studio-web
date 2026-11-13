@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { createClientSupabase } from '@/lib/supabase';
 
 interface UserLicense {
   id: string;
@@ -14,9 +13,14 @@ interface UserLicense {
   created_at: string;
 }
 
+interface DashboardUser {
+  id: string;
+  email?: string;
+  name?: string;
+}
+
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null);
-  const [token, setToken] = useState<string>('');
+  const [user, setUser] = useState<DashboardUser | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [licenses, setLicenses] = useState<UserLicense[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +30,6 @@ export default function DashboardPage() {
   const [redeemMessage, setRedeemMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const router = useRouter();
-  const supabase = createClientSupabase();
 
   useEffect(() => {
     loadUserData();
@@ -34,69 +37,28 @@ export default function DashboardPage() {
 
   const loadUserData = async () => {
     setLoading(true);
-    const { data: sessionData } = await supabase.auth.getSession();
-    let session = sessionData?.session;
-
-    if (!session || !session.user) {
-      try {
-        let creds: { email: string; password: string } | null = null;
-        const saved = typeof window !== 'undefined' ? localStorage.getItem('rs_anon_creds') : null;
-        if (saved) {
-          try {
-            creds = JSON.parse(saved);
-          } catch {
-            creds = null;
-          }
-        }
-
-        if (creds?.email && creds?.password) {
-          const { data: reAuth } = await supabase.auth.signInWithPassword({
-            email: creds.email,
-            password: creds.password,
-          });
-          if (reAuth?.session) session = reAuth.session;
-        }
-
-        if (!session) {
-          const anonRes = await fetch('/api/auth/anonymous', { method: 'POST' });
-          const anonData = await anonRes.json();
-          if (anonRes.ok && anonData.success) {
-            if (typeof window !== 'undefined') {
-              localStorage.setItem('rs_anon_creds', JSON.stringify({ email: anonData.email, password: anonData.password }));
-            }
-            const { data: newAuth } = await supabase.auth.signInWithPassword({
-              email: anonData.email,
-              password: anonData.password,
-            });
-            if (newAuth?.session) session = newAuth.session;
-          }
-        }
-      } catch {
-        // Fallback to login if offline
-      }
-    }
-
-    if (!session || !session.user) {
-      router.push('/login');
-      return;
-    }
-
-    setUser(session.user);
-    setToken(session.access_token);
-
     try {
       const res = await fetch('/api/licenses', {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        credentials: 'same-origin',
+        cache: 'no-store',
       });
+      if (res.status === 401) {
+        router.push('/login?redirect=/dashboard');
+        return;
+      }
       const data = await res.json();
-      if (data.success) {
+      if (res.ok && data.success) {
+        setUser(data.user || null);
         setLicenses(data.licenses || []);
         setIsAdmin(Boolean(data.isAdmin));
+      } else {
+        setRedeemMessage({ type: 'error', text: data.message || 'Oturum bilgileri alınamadı.' });
       }
     } catch {
-      // Fallback
+      setRedeemMessage({ type: 'error', text: 'Sunucu bağlantısı kurulamadı. Lütfen yeniden deneyin.' });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleRedeem = async (e: React.FormEvent) => {
@@ -109,22 +71,23 @@ export default function DashboardPage() {
     try {
       const res = await fetch('/api/redeem', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ code: redeemCode.trim() }),
       });
 
-      const data = await res.json();
+      if (res.status === 401) {
+        router.push('/login?redirect=/dashboard');
+        return;
+      }
 
+      const data = await res.json();
       if (!res.ok || !data.success) {
         throw new Error(data.message || 'Kod aktive edilemedi.');
       }
 
       setRedeemMessage({ type: 'success', text: data.message });
       setRedeemCode('');
-      // Lisansları yeniden yükle
       await loadUserData();
     } catch (err: any) {
       setRedeemMessage({ type: 'error', text: err.message || 'Bir hata oluştu.' });
@@ -138,8 +101,12 @@ export default function DashboardPage() {
     setRedeemMessage(null);
     try {
       const res = await fetch('/api/download', {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'same-origin',
       });
+      if (res.status === 401) {
+        router.push('/login?redirect=/dashboard');
+        return;
+      }
       const data = await res.json();
       if (!res.ok || !data.success) {
         throw new Error(data.message || 'İndirme bağlantısı alınamadı.');
@@ -153,7 +120,10 @@ export default function DashboardPage() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await fetch('/api/auth/logout', {
+      method: 'POST',
+      credentials: 'same-origin',
+    }).catch(() => undefined);
     router.push('/login');
     router.refresh();
   };
@@ -211,7 +181,7 @@ export default function DashboardPage() {
               </Link>
             )}
             <span style={styles.userEmail}>
-              {user?.user_metadata?.username || user?.email?.replace(/@(restrictedstudio\.com|restrictedstudio\.local|restricted\.studio)$/i, '')}
+              {user?.name || user?.email?.replace(/@(kullanici\.restrictedstudio\.shop|anon\.restrictedstudio\.shop|restrictedstudio\.com|restrictedstudio\.local|restricted\.studio)$/i, '')}
             </span>
             <button onClick={handleLogout} style={styles.logoutBtn}>
               Çıkış Yap

@@ -3716,3 +3716,13 @@ textarea {
   position: relative;
   z-index: 2;
 }
+
+@keyframes rsSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rs-spin {
+  animation: rsSpin 0.8s linear infinite;
+}

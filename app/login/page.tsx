@@ -1,66 +1,77 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { createClientSupabase, resolveLoginIdentifier, resolveLegacyLoginIdentifier } from '@/lib/supabase';
+import { useRouter, useSearchParams } from 'next/navigation';
+import TurnstileWidget from '@/components/TurnstileWidget';
 
-export default function LoginPage() {
+const ERROR_MESSAGES: Record<string, string> = {
+  oauth_denied: 'Google oturum açma isteği iptal edildi.',
+  oauth_failed: 'Google ile giriş doğrulaması tamamlanamadı. Lütfen tekrar deneyin.',
+  rate_limited: 'Çok fazla deneme algılandı. Lütfen birkaç dakika sonra tekrar deneyin.',
+};
+
+function sanitizeLocalRedirect(raw: string | null): string {
+  if (!raw) return '/dashboard';
+  const trimmed = raw.trim();
+  if (!trimmed.startsWith('/') || trimmed.startsWith('//') || trimmed.startsWith('/\\')) {
+    return '/dashboard';
+  }
+  return trimmed;
+}
+
+function LoginFormContent() {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [honeypot, setHoneypot] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileReset, setTurnstileReset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [anonLoading, setAnonLoading] = useState(false);
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
   const router = useRouter();
-  const supabase = createClientSupabase();
+  const searchParams = useSearchParams();
+  const redirectTarget = sanitizeLocalRedirect(searchParams.get('redirect'));
+
+  useEffect(() => {
+    const errParam = searchParams.get('error');
+    if (errParam && ERROR_MESSAGES[errParam]) {
+      setError(ERROR_MESSAGES[errParam]);
+    }
+    if (searchParams.get('registered') === '1') {
+      setInfoMessage('Hesabınız oluşturuldu. Güvenli giriş yapabilirsiniz.');
+    }
+  }, [searchParams]);
 
   const handleAnonContinue = async () => {
     setAnonLoading(true);
     setError(null);
+    setInfoMessage(null);
     try {
-      let creds: { email: string; password: string } | null = null;
-      const saved = typeof window !== 'undefined' ? localStorage.getItem('rs_anon_creds') : null;
-      if (saved) {
-        try {
-          creds = JSON.parse(saved);
-        } catch {
-          creds = null;
-        }
-      }
-
-      if (creds?.email && creds?.password) {
-        const { data: existingAuth, error: existingErr } = await supabase.auth.signInWithPassword({
-          email: creds.email,
-          password: creds.password,
-        });
-        if (!existingErr && existingAuth?.user) {
-          router.push('/dashboard');
-          router.refresh();
-          return;
-        }
-      }
-
-      const res = await fetch('/api/auth/anonymous', { method: 'POST' });
+      const res = await fetch('/api/auth/anonymous', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          turnstileToken,
+          website_url: honeypot,
+        }),
+      });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Anonim oturum başlatılamadı.');
+        setTurnstileReset((v) => v + 1);
+        throw new Error(data.message || 'Misafir oturumu başlatılamadı.');
       }
 
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('rs_anon_creds', JSON.stringify({ email: data.email, password: data.password }));
-      }
-
-      const { error: signInErr } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      });
-
-      if (signInErr) throw new Error(signInErr.message);
-
-      router.push('/dashboard');
+      router.push(redirectTarget);
       router.refresh();
     } catch (err: any) {
-      setError(err.message || 'Anonim giriş sırasında bir hata oluştu.');
+      setError(err.message || 'Misafir girişi sırasında bir hata oluştu.');
     } finally {
       setAnonLoading(false);
     }
@@ -70,45 +81,63 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setInfoMessage(null);
 
     try {
-      const resolvedEmail = resolveLoginIdentifier(identifier);
-      let { data, error: authError } = await supabase.auth.signInWithPassword({
-        email: resolvedEmail,
-        password: password,
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          identifier: identifier.trim(),
+          password,
+          turnstileToken,
+          website_url: honeypot,
+        }),
       });
-
-      // Eski @restrictedstudio.local hesapları için geriye dönük uyumluluk kontrolü
-      if (authError && !identifier.includes('@')) {
-        const legacyEmail = resolveLegacyLoginIdentifier(identifier);
-        if (legacyEmail) {
-          const legacyAttempt = await supabase.auth.signInWithPassword({
-            email: legacyEmail,
-            password: password,
-          });
-          if (!legacyAttempt.error && legacyAttempt.data?.user) {
-            data = legacyAttempt.data;
-            authError = null;
-          }
-        }
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setTurnstileReset((v) => v + 1);
+        throw new Error(data.message || 'Geçersiz kimlik bilgileri.');
       }
 
-      if (authError) {
-        throw new Error(
-          authError.message === 'Invalid login credentials'
-            ? 'Kullanıcı adı/e-posta veya şifre hatalı.'
-            : authError.message
-        );
-      }
-
-      if (data?.user) {
-        router.push('/dashboard');
-        router.refresh();
-      }
+      router.push(redirectTarget);
+      router.refresh();
     } catch (err: any) {
       setError(err.message || 'Giriş yapılırken bir hata oluştu.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotLoading(true);
+    setError(null);
+    setInfoMessage(null);
+
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          email: forgotEmail.trim(),
+          turnstileToken,
+          website_url: honeypot,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setTurnstileReset((v) => v + 1);
+        throw new Error(data.message || 'Talep işlenemedi.');
+      }
+      setInfoMessage(data.message);
+      setForgotEmail('');
+    } catch (err: any) {
+      setError(err.message || 'Şifre sıfırlama talebi gönderilemedi.');
+    } finally {
+      setForgotLoading(false);
     }
   };
 
@@ -120,13 +149,30 @@ export default function LoginPage() {
             <span style={styles.brandDot}></span>
             <span className="brand-logo-shimmer">RESTRICTED STUDIO</span>
           </Link>
-          <h1 style={styles.title}>Müşteri Girişi</h1>
-          <p style={styles.subtitle}>R-AI lisans yönetimi ve dosya indirmeleri için hesabınıza giriş yapın.</p>
+          <h1 style={styles.title}>{forgotMode ? 'Şifre Sıfırlama' : 'Müşteri Girişi'}</h1>
+          <p style={styles.subtitle}>
+            {forgotMode
+              ? 'E-posta adresinize tek kullanımlık sıfırlama bağlantısı gönderin.'
+              : 'R-AI lisans yönetimi ve dosya indirmeleri için hesabınıza güvenli giriş yapın.'}
+          </p>
         </div>
+
+        {infoMessage && (
+          <div
+            style={{
+              ...styles.errorBox,
+              backgroundColor: '#0e0e0e',
+              borderColor: '#F0F0F0',
+              color: '#F0F0F0',
+            }}
+          >
+            <span>{infoMessage}</span>
+          </div>
+        )}
 
         {error && (
           <div style={styles.errorBox}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -135,68 +181,181 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form onSubmit={handleLogin} style={styles.form}>
-          <div style={styles.field}>
-            <label style={styles.label}>KULLANICI ADI VEYA E-POSTA</label>
-            <input
-              type="text"
-              required
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="Restricted veya ornek@domain.com"
-              style={styles.input}
-            />
-          </div>
+        {/* Hidden honeypot field for automated bot traps */}
+        <input
+          type="text"
+          name="website_url"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }}
+        />
 
-          <div style={styles.field}>
-            <label style={styles.label}>ŞİFRE</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              style={styles.input}
-            />
-          </div>
+        {forgotMode ? (
+          <form onSubmit={handleForgotSubmit} style={styles.form}>
+            <div style={styles.field}>
+              <label style={styles.label}>KAYITLI E-POSTA ADRESİ</label>
+              <input
+                type="email"
+                required
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                placeholder="ornek@domain.com"
+                style={styles.input}
+              />
+            </div>
 
-          <button type="submit" disabled={loading || anonLoading} style={styles.button}>
-            {loading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
-          </button>
-        </form>
+            <TurnstileWidget onToken={setTurnstileToken} resetSignal={turnstileReset} />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '18px 0' }}>
-          <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(240,240,240,0.22)' }} />
-          <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(240,240,240,0.56)', letterSpacing: '0.08em' }}>VEYA KAYITSIZ</span>
-          <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(240,240,240,0.22)' }} />
-        </div>
+            <button type="submit" disabled={forgotLoading} style={styles.button}>
+              {forgotLoading ? 'Gönderiliyor...' : 'Sıfırlama Bağlantısı Gönder'}
+            </button>
 
-        <button
-          type="button"
-          onClick={handleAnonContinue}
-          disabled={loading || anonLoading}
-          style={{
-            width: '100%',
-            padding: '13px',
-            borderRadius: '0px',
-            backgroundColor: '#0e0e0e',
-            border: '1.5px solid rgba(240, 240, 240, 0.42)',
-            color: '#F0F0F0',
-            fontSize: '13.5px',
-            fontWeight: 700,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            transition: 'all 0.15s',
-          }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A50000" strokeWidth="2.2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          </svg>
-          <span>{anonLoading ? 'Anonim Oturum Açılıyor...' : 'Anonim Olarak Devam Et'}</span>
-        </button>
+            <button
+              type="button"
+              onClick={() => {
+                setForgotMode(false);
+                setError(null);
+              }}
+              style={{
+                padding: '10px',
+                backgroundColor: 'transparent',
+                border: '1px solid rgba(240,240,240,0.28)',
+                color: 'rgba(240,240,240,0.8)',
+                fontSize: '12px',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Giriş Ekranına Dön
+            </button>
+          </form>
+        ) : (
+          <>
+            <form onSubmit={handleLogin} style={styles.form}>
+              <div style={styles.field}>
+                <label style={styles.label}>KULLANICI ADI VEYA E-POSTA</label>
+                <input
+                  type="text"
+                  required
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  placeholder="Restricted veya ornek@domain.com"
+                  autoComplete="username"
+                  style={styles.input}
+                />
+              </div>
+
+              <div style={styles.field}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label style={styles.label}>ŞİFRE</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotMode(true);
+                      setError(null);
+                      setInfoMessage(null);
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'rgba(240,240,240,0.68)',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                    }}
+                  >
+                    Şifremi Unuttum
+                  </button>
+                </div>
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  style={styles.input}
+                />
+              </div>
+
+              <TurnstileWidget onToken={setTurnstileToken} resetSignal={turnstileReset} />
+
+              <button type="submit" disabled={loading || anonLoading} style={styles.button}>
+                {loading ? 'Doğrulanıyor...' : 'Giriş Yap'}
+              </button>
+            </form>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '18px 0' }}>
+              <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(240,240,240,0.22)' }} />
+              <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(240,240,240,0.56)', letterSpacing: '0.08em' }}>
+                VEYA TEK TIKLA
+              </span>
+              <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(240,240,240,0.22)' }} />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <a
+                href={`/api/auth/google?next=${encodeURIComponent(redirectTarget)}`}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '0px',
+                  backgroundColor: '#F0F0F0',
+                  border: '1.5px solid #F0F0F0',
+                  color: '#080808',
+                  fontSize: '13.5px',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  textDecoration: 'none',
+                  boxShadow: '3px 3px 0 #8B0000',
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="#080808"
+                    d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81Z"
+                  />
+                </svg>
+                <span>Google ile Devam Et</span>
+              </a>
+
+              <button
+                type="button"
+                onClick={handleAnonContinue}
+                disabled={loading || anonLoading}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '0px',
+                  backgroundColor: '#0e0e0e',
+                  border: '1.5px solid rgba(240, 240, 240, 0.42)',
+                  color: '#F0F0F0',
+                  fontSize: '13.5px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  transition: 'all 0.15s',
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A50000" strokeWidth="2.2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <span>{anonLoading ? 'Güvenli Oturum Açılıyor...' : 'Anonim Olarak Devam Et'}</span>
+              </button>
+            </div>
+          </>
+        )}
 
         <div style={styles.footer}>
           <span>İsteğe bağlı hesap oluşturmak için:</span>{' '}
@@ -206,6 +365,14 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div style={styles.container} />}>
+      <LoginFormContent />
+    </Suspense>
   );
 }
 
