@@ -1,12 +1,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import WinterSnow from '@/components/WinterSnow';
-import ChristmasTree from '@/components/ChristmasTree';
-import BackgroundMusic from '@/components/BackgroundMusic';
 
 export const metadata: Metadata = {
-  title: 'Restricted Studio — FiveM & AI Yazılım Ekosistemi',
-  description: 'Restricted Studio; FiveM ekosistemi ve R-AI yapay zeka masaüstü çalışma istasyonu geliştiren yazılım stüdyosudur.',
+  title: 'Restricted Studio — Kurumsal FiveM Altyapı & Yazılım Ekosistemi',
+  description: 'Restricted Studio; FiveM sunucuları için yüksek performanslı açık kaynak scriptler, 3D MLO mekanlar, optimize SQL veri mimarisi ve hazır altyapı çözümleri sunan profesyonel yazılım stüdyosudur.',
   icons: {
     icon: '/assets/rslogo.jpg',
   },
@@ -28,9 +25,6 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <WinterSnow />
-        <ChristmasTree />
-        <BackgroundMusic />
         {children}
       </body>
     </html>
