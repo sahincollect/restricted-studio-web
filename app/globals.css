@@ -1225,6 +1225,18 @@ svg {
 
 .afaq-item.active .afaq-content {
   display: block;
+  animation: afaqFadeIn 0.22s ease-out;
+}
+
+@keyframes afaqFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ==========================================================================

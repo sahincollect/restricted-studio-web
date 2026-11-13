@@ -144,39 +144,89 @@ export default function HomePage() {
       });
     });
 
-    // 4. Code Preview
-    const tabButtons = document.querySelectorAll('.preview-tab');
-    const codeBlocks = document.querySelectorAll('.code-block');
+    // 4. Code Preview (Standart Kod Mimarisi Sekmeleri)
+    const codeTabs = document.querySelectorAll('.ccc-tab');
+    const codeBox = document.getElementById('codePreviewBox');
 
-    tabButtons.forEach((tab) => {
+    const SNIPPETS: Record<string, string> = {
+      bridge: `<span class="c-comment">-- QB-Core, Qbox ve ESX Otomatik Algılama Köprüsü</span>
+<span class="c-kw">local</span> Bridge = {}
+
+<span class="c-kw">function</span> Bridge.<span class="c-fn">GetFramework</span>()
+    <span class="c-kw">if</span> <span class="c-fn">GetResourceState</span>("qbx_core") == "started" <span class="c-kw">then</span>
+        <span class="c-kw">return</span> "qbox"
+    <span class="c-kw">elseif</span> <span class="c-fn">GetResourceState</span>("qb-core") == "started" <span class="c-kw">then</span>
+        <span class="c-kw">return</span> "qbcore"
+    <span class="c-kw">elseif</span> <span class="c-fn">GetResourceState</span>("es_extended") == "started" <span class="c-kw">then</span>
+        <span class="c-kw">return</span> "esx"
+    <span class="c-kw">end</span>
+<span class="c-kw">end</span>
+
+<span class="c-kw">return</span> Bridge`,
+
+      security: `<span class="c-comment">-- Sunucu Taraflı Mesafe ve Güvenlik Doğrulaması</span>
+<span class="c-kw">local function</span> <span class="c-fn">VerifyPlayerAction</span>(source, targetCoords)
+    <span class="c-kw">local</span> ped = <span class="c-fn">GetPlayerPed</span>(source)
+    <span class="c-kw">if not</span> <span class="c-fn">DoesEntityExist</span>(ped) <span class="c-kw">then return false end</span>
+
+    <span class="c-kw">local</span> dist = #(<span class="c-fn">GetEntityCoords</span>(ped) - targetCoords)
+    <span class="c-kw">if</span> dist > 3.5 <span class="c-kw">then</span>
+        <span class="c-kw">return false</span>
+    <span class="c-kw">end</span>
+
+    <span class="c-kw">return true</span>
+<span class="c-kw">end</span>`,
+
+      database:
+        '<span class="c-comment">-- İndekslenmiş MariaDB Veri Tablosu Yapısı</span>\n' +
+        '<span class="c-kw">CREATE TABLE IF NOT EXISTS</span> <span class="c-str">&#96;restricted_records&#96;</span> (\n' +
+        '    <span class="c-str">&#96;id&#96;</span> <span class="c-kw">INT UNSIGNED AUTO_INCREMENT PRIMARY KEY</span>,\n' +
+        '    <span class="c-str">&#96;citizenid&#96;</span> <span class="c-kw">VARCHAR</span>(50) <span class="c-kw">NOT NULL</span>,\n' +
+        '    <span class="c-str">&#96;data&#96;</span> <span class="c-kw">LONGTEXT NOT NULL</span>,\n' +
+        '    <span class="c-kw">INDEX</span> <span class="c-str">&#96;idx_citizen&#96;</span> (<span class="c-str">&#96;citizenid&#96;</span>)\n' +
+        ') <span class="c-kw">ENGINE</span>=InnoDB <span class="c-kw">DEFAULT CHARSET</span>=utf8mb4;',
+    };
+
+    if (codeBox && !codeBox.innerHTML.trim()) {
+      codeBox.innerHTML = SNIPPETS.bridge;
+    }
+
+    codeTabs.forEach((tab) => {
       tab.addEventListener('click', () => {
-        const target = tab.getAttribute('data-tab');
-        tabButtons.forEach((t) => t.classList.remove('active'));
-        codeBlocks.forEach((block) => block.classList.remove('active'));
+        const key = tab.getAttribute('data-tab');
+        if (!key || !SNIPPETS[key] || !codeBox) return;
 
+        codeTabs.forEach((t) => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
         tab.classList.add('active');
-        const activeBlock = document.querySelector(`.code-block[data-content="${target}"]`);
-        if (activeBlock) activeBlock.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+
+        codeBox.innerHTML = SNIPPETS[key];
       });
     });
 
-    // 5. FAQ Accordion
-    const faqQuestions = document.querySelectorAll('.faq-question');
-    faqQuestions.forEach((q) => {
-      q.addEventListener('click', () => {
-        const item = q.parentElement;
-        const answer = item?.querySelector('.faq-answer');
-        const isOpen = item?.classList.contains('open');
+    // 5. FAQ Accordion (Sıkça Sorulan Sorular)
+    const faqItems = document.querySelectorAll('.afaq-item');
+    faqItems.forEach((item) => {
+      const trigger = item.querySelector('.afaq-trigger');
+      if (!trigger) return;
 
-        document.querySelectorAll('.faq-item').forEach((fi) => {
-          fi.classList.remove('open');
-          const ans = fi.querySelector('.faq-answer') as HTMLElement | null;
-          if (ans) ans.style.maxHeight = '';
+      trigger.addEventListener('click', () => {
+        const isOpen = item.classList.contains('active');
+
+        // Diğer açık olanları kapat
+        faqItems.forEach((other) => {
+          other.classList.remove('active');
+          const btn = other.querySelector('.afaq-trigger');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
         });
 
-        if (!isOpen && item && answer) {
-          item.classList.add('open');
-          (answer as HTMLElement).style.maxHeight = answer.scrollHeight + 'px';
+        // Tıklanan kapalıysa aç
+        if (!isOpen) {
+          item.classList.add('active');
+          trigger.setAttribute('aria-expanded', 'true');
         }
       });
     });
