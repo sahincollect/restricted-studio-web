@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useI18n } from '@/components/I18nProvider';
 
 export default function GlobalError({
   reset,
@@ -8,6 +9,8 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useI18n();
+
   return (
     <main
       style={{
@@ -43,13 +46,13 @@ export default function GlobalError({
             marginBottom: '12px',
           }}
         >
-          SİSTEM DURUMU // 500
+          {t.errorsPage.errorCode}
         </div>
         <h1 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '10px' }}>
-          Beklenmeyen Bir Hata Oluştu
+          {t.errorsPage.errorTitle}
         </h1>
         <p style={{ fontSize: '13.5px', color: 'rgba(240, 240, 240, 0.72)', lineHeight: 1.6, marginBottom: '24px' }}>
-          İşlem güvenlik katmanı tarafından durduruldu. Sayfayı yenileyebilir veya ana ekrana dönebilirsiniz.
+          {t.errorsPage.errorDesc}
         </p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button
@@ -65,7 +68,7 @@ export default function GlobalError({
               cursor: 'pointer',
             }}
           >
-            Tekrar Dene
+            {t.errorsPage.retryBtn}
           </button>
           <Link
             href="/"
@@ -78,7 +81,7 @@ export default function GlobalError({
               fontWeight: 700,
             }}
           >
-            Ana Sayfaya Dön
+            {t.common.backToHome}
           </Link>
         </div>
       </div>

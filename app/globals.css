@@ -23,7 +23,7 @@
   --chalk-line: rgba(240, 240, 240, 0.13);
   --chalk-line-strong: rgba(240, 240, 240, 0.24);
 
-  --font-display: 'Barlow Condensed', 'Inter', system-ui, sans-serif;
+  --font-display: 'Barlow Condensed', 'Roboto Condensed', 'Inter', system-ui, sans-serif;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
@@ -4119,5 +4119,54 @@ textarea {
   .status-service-metrics {
     width: 100%;
     justify-content: space-between;
+  }
+}
+
+/* =====================================================================
+   LANGUAGE SWITCHER (COMPACT NOIR MONOLITH BAR)
+   ===================================================================== */
+.rs-lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  border: 1.5px solid rgba(240, 240, 240, 0.32);
+  background: #080808;
+  padding: 2px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.rs-lang-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: rgba(240, 240, 240, 0.62);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  padding: 5px 7px;
+  cursor: pointer;
+  transition: background-color 0.14s ease, color 0.14s ease;
+}
+
+.rs-lang-switcher.is-compact .rs-lang-btn {
+  font-size: 9.5px;
+  padding: 4px 5.5px;
+}
+
+.rs-lang-btn:hover {
+  color: #F0F0F0;
+  background: rgba(240, 240, 240, 0.08);
+}
+
+.rs-lang-btn.is-active {
+  background: #A50000;
+  color: #F0F0F0;
+}
+
+@media (max-width: 960px) {
+  .bpn-lang-desktop {
+    display: none;
   }
 }

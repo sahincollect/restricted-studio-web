@@ -4,8 +4,11 @@ import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import TurnstileWidget from '@/components/TurnstileWidget';
+import { useI18n } from '@/components/I18nProvider';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 function RegisterFormContent() {
+  const { t } = useI18n();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -35,13 +38,13 @@ function RegisterFormContent() {
       const data = await res.json();
       if (!res.ok || !data.success) {
         setTurnstileReset((v) => v + 1);
-        throw new Error(data.message || 'Misafir oturumu başlatılamadı.');
+        throw new Error(data.message || t.auth.anonStartError);
       }
 
       router.push('/dashboard');
       router.refresh();
     } catch (err: any) {
-      setError(err.message || 'Anonim giriş sırasında bir hata oluştu.');
+      setError(err.message || t.auth.anonGenericError);
     } finally {
       setAnonLoading(false);
     }
@@ -57,25 +60,25 @@ function RegisterFormContent() {
     const isEmail = cleanInput.includes('@');
 
     if (!cleanInput) {
-      setError('Lütfen kullanıcı adı veya e-posta giriniz.');
+      setError(t.auth.errEnterIdentifier);
       setLoading(false);
       return;
     }
 
     if (!isEmail && cleanInput.length < 3) {
-      setError('Kullanıcı adı en az 3 karakter olmalıdır.');
+      setError(t.auth.errUsernameLength);
       setLoading(false);
       return;
     }
 
     if (password.length < 8) {
-      setError('Şifre en az 8 karakter olmalıdır.');
+      setError(t.auth.errPasswordLength);
       setLoading(false);
       return;
     }
 
     if (password !== passwordConfirm) {
-      setError('Girdiğiniz şifreler birbiriyle eşleşmiyor.');
+      setError(t.auth.errPasswordMismatch);
       setLoading(false);
       return;
     }
@@ -96,7 +99,7 @@ function RegisterFormContent() {
 
       if (!apiRes.ok || !apiData.success) {
         setTurnstileReset((v) => v + 1);
-        throw new Error(apiData.message || 'Kayıt işlemi tamamlanamadı.');
+        throw new Error(apiData.message || t.auth.errRegisterFailed);
       }
 
       if (apiData.authenticated) {
@@ -108,7 +111,7 @@ function RegisterFormContent() {
         setPasswordConfirm('');
       }
     } catch (err: any) {
-      setError(err.message || 'Kayıt işlemi sırasında bir hata oluştu.');
+      setError(err.message || t.auth.errRegisterGeneric);
     } finally {
       setLoading(false);
     }
@@ -117,13 +120,16 @@ function RegisterFormContent() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
+          <LanguageSwitcher compact />
+        </div>
         <div style={styles.header}>
           <Link href="/" style={styles.brandLink}>
             <span style={styles.brandDot}></span>
             <span className="brand-logo-shimmer">RESTRICTED STUDIO</span>
           </Link>
-          <h1 style={styles.title}>Hesap Oluştur</h1>
-          <p style={styles.subtitle}>İtemsatış kodlarınızı aktive etmek ve R-AI kullanmak için kaydolun.</p>
+          <h1 style={styles.title}>{t.auth.registerTitle}</h1>
+          <p style={styles.subtitle}>{t.auth.registerSubtitle}</p>
         </div>
 
         {infoMessage && (
@@ -164,33 +170,33 @@ function RegisterFormContent() {
 
         <form onSubmit={handleRegister} style={styles.form}>
           <div style={styles.field}>
-            <label style={styles.label}>KULLANICI ADI VEYA E-POSTA</label>
+            <label style={styles.label}>{t.auth.identifierLabel}</label>
             <input
               type="text"
               required
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="Örn: saintstudio veya ornek@domain.com"
+              placeholder={t.auth.registerIdentifierPlaceholder}
               autoComplete="username"
               style={styles.input}
             />
           </div>
 
           <div style={styles.field}>
-            <label style={styles.label}>ŞİFRE</label>
+            <label style={styles.label}>{t.auth.passwordLabel}</label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="En az 8 karakter (Büyük/küçük harf + rakam)"
+              placeholder={t.auth.registerPasswordPlaceholder}
               autoComplete="new-password"
               style={styles.input}
             />
           </div>
 
           <div style={styles.field}>
-            <label style={styles.label}>ŞİFRE TEKRAR</label>
+            <label style={styles.label}>{t.auth.passwordConfirmLabel}</label>
             <input
               type="password"
               required
@@ -205,14 +211,14 @@ function RegisterFormContent() {
           <TurnstileWidget onToken={setTurnstileToken} resetSignal={turnstileReset} />
 
           <button type="submit" disabled={loading || anonLoading} style={styles.button}>
-            {loading ? 'Doğrulanıyor...' : 'Güvenli Kayıt Ol'}
+            {loading ? t.auth.verifyingBtn : t.auth.registerSubmitBtn}
           </button>
         </form>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '18px 0' }}>
           <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(240,240,240,0.22)' }} />
           <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(240,240,240,0.56)', letterSpacing: '0.08em' }}>
-            VEYA TEK TIKLA
+            {t.auth.orDivider}
           </span>
           <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(240,240,240,0.22)' }} />
         </div>
@@ -244,7 +250,7 @@ function RegisterFormContent() {
                 d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81Z"
               />
             </svg>
-            <span>Google ile Devam Et</span>
+            <span>{t.auth.googleContinueBtn}</span>
           </a>
 
           <button
@@ -271,14 +277,14 @@ function RegisterFormContent() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A50000" strokeWidth="2.2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <span>{anonLoading ? 'Güvenli Oturum Açılıyor...' : 'Anonim Olarak Devam Et'}</span>
+            <span>{anonLoading ? t.auth.anonOpeningBtn : t.auth.anonContinueBtn}</span>
           </button>
         </div>
 
         <div style={styles.footer}>
-          <span>Zaten hesabınız var mı?</span>{' '}
+          <span>{t.auth.alreadyHaveAccount}</span>{' '}
           <Link href="/login" style={styles.link}>
-            Giriş Yapın
+            {t.auth.loginHereLink}
           </Link>
         </div>
       </div>

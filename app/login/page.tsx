@@ -4,12 +4,8 @@ import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import TurnstileWidget from '@/components/TurnstileWidget';
-
-const ERROR_MESSAGES: Record<string, string> = {
-  oauth_denied: 'Google oturum açma isteği iptal edildi.',
-  oauth_failed: 'Google ile giriş doğrulaması tamamlanamadı. Lütfen tekrar deneyin.',
-  rate_limited: 'Çok fazla deneme algılandı. Lütfen birkaç dakika sonra tekrar deneyin.',
-};
+import { useI18n } from '@/components/I18nProvider';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 function sanitizeLocalRedirect(raw: string | null): string {
   if (!raw) return '/dashboard';
@@ -21,6 +17,7 @@ function sanitizeLocalRedirect(raw: string | null): string {
 }
 
 function LoginFormContent() {
+  const { t } = useI18n();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [honeypot, setHoneypot] = useState('');
@@ -39,14 +36,14 @@ function LoginFormContent() {
   const redirectTarget = sanitizeLocalRedirect(searchParams.get('redirect'));
 
   useEffect(() => {
-    const errParam = searchParams.get('error');
-    if (errParam && ERROR_MESSAGES[errParam]) {
-      setError(ERROR_MESSAGES[errParam]);
+    const errParam = searchParams.get('error') as keyof typeof t.auth.loginErrors | null;
+    if (errParam && t.auth.loginErrors[errParam]) {
+      setError(t.auth.loginErrors[errParam]);
     }
     if (searchParams.get('registered') === '1') {
-      setInfoMessage('Hesabınız oluşturuldu. Güvenli giriş yapabilirsiniz.');
+      setInfoMessage(t.auth.registeredInfo);
     }
-  }, [searchParams]);
+  }, [searchParams, t.auth.loginErrors, t.auth.registeredInfo]);
 
   const handleAnonContinue = async () => {
     setAnonLoading(true);
@@ -65,13 +62,13 @@ function LoginFormContent() {
       const data = await res.json();
       if (!res.ok || !data.success) {
         setTurnstileReset((v) => v + 1);
-        throw new Error(data.message || 'Misafir oturumu başlatılamadı.');
+        throw new Error(data.message || t.auth.anonStartError);
       }
 
       router.push(redirectTarget);
       router.refresh();
     } catch (err: any) {
-      setError(err.message || 'Misafir girişi sırasında bir hata oluştu.');
+      setError(err.message || t.auth.anonGenericError);
     } finally {
       setAnonLoading(false);
     }
@@ -98,13 +95,17 @@ function LoginFormContent() {
       const data = await res.json();
       if (!res.ok || !data.success) {
         setTurnstileReset((v) => v + 1);
-        throw new Error(data.message || 'Geçersiz kimlik bilgileri.');
+        const msg =
+          res.status === 401 && (!data.message || data.message === 'Geçersiz kimlik bilgileri.')
+            ? t.auth.invalidCredentials
+            : data.message || t.auth.invalidCredentials;
+        throw new Error(msg);
       }
 
       router.push(redirectTarget);
       router.refresh();
     } catch (err: any) {
-      setError(err.message || 'Giriş yapılırken bir hata oluştu.');
+      setError(err.message || t.auth.loginGenericError);
     } finally {
       setLoading(false);
     }
@@ -130,12 +131,12 @@ function LoginFormContent() {
       const data = await res.json();
       if (!res.ok) {
         setTurnstileReset((v) => v + 1);
-        throw new Error(data.message || 'Talep işlenemedi.');
+        throw new Error(data.message || t.auth.forgotProcessError);
       }
       setInfoMessage(data.message);
       setForgotEmail('');
     } catch (err: any) {
-      setError(err.message || 'Şifre sıfırlama talebi gönderilemedi.');
+      setError(err.message || t.auth.forgotSendError);
     } finally {
       setForgotLoading(false);
     }
@@ -144,16 +145,17 @@ function LoginFormContent() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
+          <LanguageSwitcher compact />
+        </div>
         <div style={styles.header}>
           <Link href="/" style={styles.brandLink}>
             <span style={styles.brandDot}></span>
             <span className="brand-logo-shimmer">RESTRICTED STUDIO</span>
           </Link>
-          <h1 style={styles.title}>{forgotMode ? 'Şifre Sıfırlama' : 'Müşteri Girişi'}</h1>
+          <h1 style={styles.title}>{forgotMode ? t.auth.forgotTitle : t.auth.loginTitle}</h1>
           <p style={styles.subtitle}>
-            {forgotMode
-              ? 'E-posta adresinize tek kullanımlık sıfırlama bağlantısı gönderin.'
-              : 'R-AI lisans yönetimi ve dosya indirmeleri için hesabınıza güvenli giriş yapın.'}
+            {forgotMode ? t.auth.forgotSubtitle : t.auth.loginSubtitle}
           </p>
         </div>
 
@@ -196,13 +198,13 @@ function LoginFormContent() {
         {forgotMode ? (
           <form onSubmit={handleForgotSubmit} style={styles.form}>
             <div style={styles.field}>
-              <label style={styles.label}>KAYITLI E-POSTA ADRESİ</label>
+              <label style={styles.label}>{t.auth.registeredEmailLabel}</label>
               <input
                 type="email"
                 required
                 value={forgotEmail}
                 onChange={(e) => setForgotEmail(e.target.value)}
-                placeholder="ornek@domain.com"
+                placeholder={t.auth.emailPlaceholder}
                 style={styles.input}
               />
             </div>
@@ -210,7 +212,7 @@ function LoginFormContent() {
             <TurnstileWidget onToken={setTurnstileToken} resetSignal={turnstileReset} />
 
             <button type="submit" disabled={forgotLoading} style={styles.button}>
-              {forgotLoading ? 'Gönderiliyor...' : 'Sıfırlama Bağlantısı Gönder'}
+              {forgotLoading ? t.auth.sendingBtn : t.auth.sendResetBtn}
             </button>
 
             <button
@@ -229,20 +231,20 @@ function LoginFormContent() {
                 cursor: 'pointer',
               }}
             >
-              Giriş Ekranına Dön
+              {t.auth.backToLoginBtn}
             </button>
           </form>
         ) : (
           <>
             <form onSubmit={handleLogin} style={styles.form}>
               <div style={styles.field}>
-                <label style={styles.label}>KULLANICI ADI VEYA E-POSTA</label>
+                <label style={styles.label}>{t.auth.identifierLabel}</label>
                 <input
                   type="text"
                   required
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="Restricted veya ornek@domain.com"
+                  placeholder={t.auth.identifierPlaceholder}
                   autoComplete="username"
                   style={styles.input}
                 />
@@ -250,7 +252,7 @@ function LoginFormContent() {
 
               <div style={styles.field}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label style={styles.label}>ŞİFRE</label>
+                  <label style={styles.label}>{t.auth.passwordLabel}</label>
                   <button
                     type="button"
                     onClick={() => {
@@ -268,7 +270,7 @@ function LoginFormContent() {
                       textDecoration: 'underline',
                     }}
                   >
-                    Şifremi Unuttum
+                    {t.auth.forgotPasswordLink}
                   </button>
                 </div>
                 <input
@@ -285,14 +287,14 @@ function LoginFormContent() {
               <TurnstileWidget onToken={setTurnstileToken} resetSignal={turnstileReset} />
 
               <button type="submit" disabled={loading || anonLoading} style={styles.button}>
-                {loading ? 'Doğrulanıyor...' : 'Giriş Yap'}
+                {loading ? t.auth.verifyingBtn : t.auth.loginBtn}
               </button>
             </form>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '18px 0' }}>
               <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(240,240,240,0.22)' }} />
               <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(240,240,240,0.56)', letterSpacing: '0.08em' }}>
-                VEYA TEK TIKLA
+                {t.auth.orDivider}
               </span>
               <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(240,240,240,0.22)' }} />
             </div>
@@ -324,7 +326,7 @@ function LoginFormContent() {
                     d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81Z"
                   />
                 </svg>
-                <span>Google ile Devam Et</span>
+                <span>{t.auth.googleContinueBtn}</span>
               </a>
 
               <button
@@ -351,20 +353,20 @@ function LoginFormContent() {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A50000" strokeWidth="2.2">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
-                <span>{anonLoading ? 'Güvenli Oturum Açılıyor...' : 'Anonim Olarak Devam Et'}</span>
+                <span>{anonLoading ? t.auth.anonOpeningBtn : t.auth.anonContinueBtn}</span>
               </button>
             </div>
           </>
         )}
 
         <div style={styles.footer}>
-          <span>İsteğe bağlı hesap oluşturmak için:</span>{' '}
+          <span>{t.auth.noAccountText}</span>{' '}
           <Link href="/register" style={styles.link}>
-            Kayıt Olun
+            {t.auth.registerLink}
           </Link>
           <div style={{ marginTop: '10px', fontSize: '11.5px', color: 'rgba(240, 240, 240, 0.5)' }}>
             <Link href="/status" style={{ color: 'rgba(240, 240, 240, 0.65)', textDecoration: 'underline' }}>
-              Sistem Durumu
+              {t.auth.systemStatusLink}
             </Link>
           </div>
         </div>

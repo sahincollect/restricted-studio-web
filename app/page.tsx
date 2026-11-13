@@ -4,16 +4,25 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import catalogStats from '../lib/catalog-stats.json';
 import ItemsatisLogo from '../components/ItemsatisLogo';
+import { useI18n } from '../components/I18nProvider';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 type ModalId = 'about' | 'solutions' | 'engineering' | 'faq' | null;
 type CodeTabKey = 'bridge' | 'security' | 'database';
 
 const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
 
-const CODE_SNIPPETS: Record<CodeTabKey, { label: string; code: string }> = {
-  bridge: {
-    label: 'bridge.lua',
-    code: `-- QB-Core, Qbox ve ESX Otomatik Algılama Köprüsü
+export default function HomePage() {
+  const { t, formatNumber, formatPercent } = useI18n();
+  const [activeModal, setActiveModal] = useState<ModalId>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [codeTab, setCodeTab] = useState<CodeTabKey>('bridge');
+  const [openFaqIdx, setOpenFaqIdx] = useState<number>(0);
+
+  const codeSnippets: Record<CodeTabKey, { label: string; code: string }> = {
+    bridge: {
+      label: 'bridge.lua',
+      code: `-- ${t.home.modals.codeComments.bridge}
 local Bridge = {}
 
 function Bridge.GetFramework()
@@ -27,10 +36,10 @@ function Bridge.GetFramework()
 end
 
 return Bridge`,
-  },
-  security: {
-    label: 'security.lua',
-    code: `-- Sunucu Taraflı Mesafe ve Güvenlik Doğrulaması
+    },
+    security: {
+      label: 'security.lua',
+      code: `-- ${t.home.modals.codeComments.security}
 local function VerifyPlayerAction(source, targetCoords)
     local ped = GetPlayerPed(source)
     if not DoesEntityExist(ped) then return false end
@@ -42,43 +51,18 @@ local function VerifyPlayerAction(source, targetCoords)
 
     return true
 end`,
-  },
-  database: {
-    label: 'schema.sql',
-    code: `-- İndekslenmiş MariaDB Veri Tablosu Yapısı
+    },
+    database: {
+      label: 'schema.sql',
+      code: `-- ${t.home.modals.codeComments.database}
 CREATE TABLE IF NOT EXISTS \`restricted_records\` (
     \`id\` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     \`citizenid\` VARCHAR(50) NOT NULL,
     \`data\` LONGTEXT NOT NULL,
     INDEX \`idx_citizen\` (\`citizenid\`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`,
-  },
-};
-
-const FAQ_ITEMS = [
-  {
-    q: 'Ürünleri nasıl inceleyebilir ve satın alabilirim?',
-    a: 'Tüm ürünlerimiz, fiyatlarımız ve detaylı açıklamalarımız resmi İtemsatış mağazamızda yer almaktadır. Katalog üzerinden paketleri sepetinize ekleyip İtemsatış butonları aracılığıyla 3D Secure güvencesiyle satın alım yapabilirsiniz.',
-  },
-  {
-    q: 'Teslim edilen dosyalarda şifreleme veya lisans kilidi var mı?',
-    a: 'Hayır. Sunucu sahiplerinin tasarımları ve kodları kendi sunucularına göre özgürce uyarlayabilmesi için tüm teslimatlarımızı %100 açık kaynak (open-source, escrow kilitsiz) olarak gerçekleştiriyoruz.',
-  },
-  {
-    q: 'Hangi FiveM altyapıları (Framework) destekleniyor?',
-    a: 'Geliştirdiğimiz scriptler ve sunucu paketleri hem QB-Core ve Qbox hem de ESX Legacy altyapılarıyla tam uyumlu çalışmaktadır.',
-  },
-  {
-    q: 'Satın alım sonrası kurulum desteği sağlıyor musunuz?',
-    a: 'Evet. Her ürünün içerisinde adım adım Türkçe kurulum rehberi yer alır. Ayrıca Discord topluluğumuz üzerinden teknik ekibimizden birebir kurulum ve entegrasyon desteği alabilirsiniz.',
-  },
-];
-
-export default function HomePage() {
-  const [activeModal, setActiveModal] = useState<ModalId>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [codeTab, setCodeTab] = useState<CodeTabKey>('bridge');
-  const [openFaqIdx, setOpenFaqIdx] = useState<number>(0);
+    },
+  };
 
   // Strictly lock root html/body scroll while on the entrance screen across all browsers
   useEffect(() => {
@@ -119,13 +103,13 @@ export default function HomePage() {
            =============================================================== */}
       <header className="bento-pill-nav" id="navbar">
         <div className="bpn-brand-group">
-          <Link href="/" className="bpn-brand" aria-label="Restricted Studio Ana Sayfa">
+          <Link href="/" className="bpn-brand" aria-label={`Restricted Studio ${t.common.home}`}>
             <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="bpn-logo" />
             <div className="bpn-brand-text">
               <span className="bpn-title">RESTRICTED STUDIO</span>
               <span className="bpn-trust-mobile">
                 <img src="/assets/itemsatis-icon.png" alt="" width={10} height={10} />
-                İTEMSATIŞ GÜVENCESİYLE
+                {t.common.itemsatisTrust}
               </span>
             </div>
           </Link>
@@ -137,59 +121,61 @@ export default function HomePage() {
             target="_blank"
             rel="noopener noreferrer"
             className="bpn-trust-badge"
-            title="İtemsatış Resmi Mağaza Güvencesi"
+            title={t.common.itemsatisOfficialStore}
           >
             <img
               src="/assets/itemsatis-icon.png"
-              alt="İtemsatış"
+              alt={t.common.itemsatisShort}
               width={13}
               height={13}
               className="bpn-trust-icon"
             />
-            <span>İTEMSATIŞ GÜVENCESİYLE</span>
+            <span>{t.common.itemsatisTrust}</span>
           </a>
         </div>
 
-        <nav className="bpn-menu" aria-label="Ana Menü">
+        <nav className="bpn-menu" aria-label={t.common.home}>
           <button
             type="button"
             className={`bpn-link ${activeModal === 'about' ? 'is-active' : ''}`}
             onClick={() => openModal('about')}
           >
-            BİZ KİMİZ
+            {t.home.nav.about}
           </button>
           <button
             type="button"
             className={`bpn-link ${activeModal === 'solutions' ? 'is-active' : ''}`}
             onClick={() => openModal('solutions')}
           >
-            ÇÖZÜMLER
+            {t.home.nav.solutions}
           </button>
           <Link href="/katalog" className="bpn-link bpn-link-highlight">
-            KATALOG
+            {t.home.nav.catalog}
           </Link>
           <button
             type="button"
             className={`bpn-link ${activeModal === 'engineering' ? 'is-active' : ''}`}
             onClick={() => openModal('engineering')}
           >
-            MÜHENDİSLİK
+            {t.home.nav.engineering}
           </button>
           <button
             type="button"
             className={`bpn-link ${activeModal === 'faq' ? 'is-active' : ''}`}
             onClick={() => openModal('faq')}
           >
-            SSS
+            {t.home.nav.faq}
           </button>
         </nav>
 
         <div className="bpn-actions">
+          <LanguageSwitcher compact className="bpn-lang-desktop" />
+
           <Link
             href="/katalog"
             className="bpn-icon-btn"
-            title="Katalogda Ara"
-            aria-label="Katalogda Ara"
+            title={t.home.nav.searchTitle}
+            aria-label={t.home.nav.searchTitle}
           >
             <svg
               width="14"
@@ -209,23 +195,23 @@ export default function HomePage() {
             target="_blank"
             rel="noopener noreferrer"
             className="bpn-itemsatis-btn"
-            title="Resmi İtemsatış Mağazası"
-            aria-label="Resmi İtemsatış Mağazası"
+            title={t.common.itemsatisStore}
+            aria-label={t.common.itemsatisStore}
           >
             <img
               src="/assets/itemsatis-icon.png"
-              alt="İtemsatış"
+              alt={t.common.itemsatisShort}
               width={15}
               height={15}
               className="bpn-itemsatis-img"
             />
-            <span className="bpn-itemsatis-label">İTEMSATIŞ</span>
+            <span className="bpn-itemsatis-label">{t.common.itemsatisShort.toUpperCase()}</span>
           </a>
 
           <Link
             href="/discord"
             className="bpn-icon-btn"
-            title="Discord Topluluğu"
+            title={t.home.nav.discordTitle}
             aria-label="Discord"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -235,7 +221,7 @@ export default function HomePage() {
 
           <Link href="/dashboard" className="bpn-portal-btn">
             <span className="bpn-portal-dot" aria-hidden="true" />
-            <span>MÜŞTERİ PORTALI</span>
+            <span>{t.home.nav.portal}</span>
             <span aria-hidden="true">→</span>
           </Link>
 
@@ -243,7 +229,7 @@ export default function HomePage() {
             type="button"
             className={`nav-mobile-toggle ${mobileMenuOpen ? 'active' : ''}`}
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            aria-label="Menüyü Aç/Kapat"
+            aria-label={t.common.openMenu}
             aria-expanded={mobileMenuOpen}
           >
             <span />
@@ -254,28 +240,34 @@ export default function HomePage() {
 
       {/* Mobile Drawer inside Fixed Shell (zero body scroll) */}
       <div className={`bpn-mobile-drawer ${mobileMenuOpen ? 'open' : ''}`}>
+        <div style={{ padding: '4px 0 8px', borderBottom: '1px solid rgba(240,240,240,0.16)', marginBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'rgba(240,240,240,0.65)', letterSpacing: '0.08em' }}>
+            {t.common.langLabel.toUpperCase()}
+          </span>
+          <LanguageSwitcher compact />
+        </div>
         <button type="button" className="bmn-link-btn" onClick={() => openModal('about')}>
-          <span>BİZ KİMİZ</span>
+          <span>{t.home.drawer.about}</span>
           <span>↗</span>
         </button>
         <button type="button" className="bmn-link-btn" onClick={() => openModal('solutions')}>
-          <span>ÇÖZÜMLER &amp; İSTATİSTİKLER</span>
+          <span>{t.home.drawer.solutions}</span>
           <span>↗</span>
         </button>
         <Link href="/katalog" className="bmn-link-btn" style={{ background: '#A50000' }}>
-          <span>PAKET KATALOĞU (6.400+)</span>
+          <span>{t.home.drawer.catalog}</span>
           <span>→</span>
         </Link>
         <button type="button" className="bmn-link-btn" onClick={() => openModal('engineering')}>
-          <span>MÜHENDİSLİK &amp; AÇIK KAYNAK</span>
+          <span>{t.home.drawer.engineering}</span>
           <span>↗</span>
         </button>
         <button type="button" className="bmn-link-btn" onClick={() => openModal('faq')}>
-          <span>SIKÇA SORULAN SORULAR</span>
+          <span>{t.home.drawer.faq}</span>
           <span>↗</span>
         </button>
         <Link href="/dashboard" className="bmn-link-btn" style={{ background: '#F0F0F0', color: '#080808' }}>
-          <span>MÜŞTERİ PORTALI &amp; LİSANS</span>
+          <span>{t.home.drawer.portal}</span>
           <span>→</span>
         </Link>
         <a
@@ -284,15 +276,15 @@ export default function HomePage() {
           rel="noopener noreferrer"
           className="bmn-link-btn"
         >
-          <span>İTEMSATIŞ RESMİ MAĞAZA</span>
+          <span>{t.home.drawer.itemsatis}</span>
           <span>↗</span>
         </a>
         <Link href="/discord" className="bmn-link-btn">
-          <span>DİSCORD TOPLULUĞU</span>
+          <span>{t.home.drawer.discord}</span>
           <span>↗</span>
         </Link>
         <Link href="/status" className="bmn-link-btn">
-          <span>SİSTEM DURUMU</span>
+          <span>{t.home.drawer.status}</span>
           <span>↗</span>
         </Link>
       </div>
@@ -331,28 +323,28 @@ export default function HomePage() {
                   <line x1="3.34" y1="7" x2="20.66" y2="17" />
                   <line x1="20.66" y1="7" x2="3.34" y2="17" />
                 </svg>
-                <span>RESTRICTED STUDIO · YILBAŞI SÜRÜMÜ 2026</span>
+                <span>{t.home.hero.eyebrow}</span>
               </div>
 
               <h1 className="bcm-headline">
-                KARARLI ALTYAPI.
+                {t.home.hero.headline1}
                 <br />
-                ŞEFFAF MÜHENDİSLİK.
+                {t.home.hero.headline2}
                 <br />
-                <span className="bcm-headline-accent">YÜKSEK PERFORMANS.</span>
+                <span className="bcm-headline-accent">{t.home.hero.headline3}</span>
               </h1>
 
               <p className="bcm-subhead">
-                Şüpheli sızıntılar ve karmaşık kurulumlarla vakit kaybetmeyin.{' '}
-                {catalogStats.total.toLocaleString('tr-TR')}+ doğrulanmış açık kaynak script,
-                optimize 3D mekanlar ve sıfır gecikmeli SQL mimarisiyle doğrudan üretime geçin.
+                {t.home.hero.subheadBeforeCount}{' '}
+                {formatNumber(catalogStats.total)}
+                {t.home.hero.subheadAfterCount}
               </p>
             </div>
 
             <div className="bcm-bottom-bar">
               <div className="bcm-actions-row">
                 <Link href="/katalog" className="bcm-btn-primary">
-                  <span>KATALOĞU KEŞFET</span>
+                  <span>{t.home.hero.exploreCatalog}</span>
                   <svg
                     width="14"
                     height="14"
@@ -377,24 +369,24 @@ export default function HomePage() {
                     height={15}
                     style={{ filter: 'grayscale(100%) contrast(1.15)' }}
                   />
-                  <span>İTEMSATIŞ MAĞAZASI</span>
+                  <span>{t.common.itemsatisStore.toUpperCase()}</span>
                 </a>
               </div>
 
-              <div className="bcm-stats-inline" aria-label="Temel Değerler">
+              <div className="bcm-stats-inline" aria-label={t.home.hero.statValuesAria}>
                 <div className="bsi-item">
-                  <span className="bsi-val">{catalogStats.total.toLocaleString('tr-TR')}+</span>
-                  <span className="bsi-lbl">PAKET</span>
+                  <span className="bsi-val">{formatNumber(catalogStats.total)}+</span>
+                  <span className="bsi-lbl">{t.home.hero.statPackages}</span>
                 </div>
                 <span className="bsi-sep" aria-hidden="true" />
                 <div className="bsi-item">
                   <span className="bsi-val">0.04 ms</span>
-                  <span className="bsi-lbl">RESMON</span>
+                  <span className="bsi-lbl">{t.home.hero.statResmon}</span>
                 </div>
                 <span className="bsi-sep" aria-hidden="true" />
                 <div className="bsi-item">
-                  <span className="bsi-val">%100</span>
-                  <span className="bsi-lbl">AÇIK KAYNAK</span>
+                  <span className="bsi-val">{formatPercent(100)}</span>
+                  <span className="bsi-lbl">{t.home.hero.statOpenSource}</span>
                 </div>
               </div>
             </div>
@@ -411,7 +403,7 @@ export default function HomePage() {
               <div className="noir-grain-overlay" aria-hidden="true" />
 
               <div className="bento-card-head">
-                <span className="bcc-tag">MÜHENDİSLİK &amp; MİMARİ</span>
+                <span className="bcc-tag">{t.home.cards.engTag}</span>
                 <span className="bcc-circle-btn" aria-hidden="true">
                   <svg
                     width="11"
@@ -435,8 +427,8 @@ export default function HomePage() {
               </div>
 
               <div className="bcc-bottom">
-                <h2 className="bcc-title">ŞİFRESİZ KOD</h2>
-                <p className="bcc-sub">%100 Açık kaynak Lua/JS · Escrow kilitsiz mimari.</p>
+                <h2 className="bcc-title">{t.home.cards.engTitle}</h2>
+                <p className="bcc-sub">{t.home.cards.engSub}</p>
               </div>
             </button>
 
@@ -445,7 +437,7 @@ export default function HomePage() {
               <div className="noir-grain-overlay" aria-hidden="true" />
 
               <div className="bento-card-head">
-                <span className="bcn-tag">TOPLULUK &amp; DESTEK</span>
+                <span className="bcn-tag">{t.home.cards.discordTag}</span>
                 <span className="bcn-circle-btn" aria-hidden="true">
                   <svg
                     width="11"
@@ -469,8 +461,8 @@ export default function HomePage() {
               </div>
 
               <div className="bcn-bottom">
-                <h2 className="bcn-title">DİSCORD</h2>
-                <p className="bcn-sub">7/24 Birebir destek talebi ve kurulum danışmanlığı.</p>
+                <h2 className="bcn-title">{t.home.cards.discordTitle}</h2>
+                <p className="bcn-sub">{t.home.cards.discordSub}</p>
               </div>
             </Link>
           </div>
@@ -478,7 +470,7 @@ export default function HomePage() {
 
         {/* RIGHT COLUMN: SERENE CHIAROSCURO INVERTED-SPOTLIGHT SHOWCASE */}
         <div className="bento-col-right">
-          <section className="bento-card bento-card-showcase" aria-label="Sistem Telemetri Monitörü">
+          <section className="bento-card bento-card-showcase" aria-label={t.home.telemetry.ariaLabel}>
             <div className="noir-grain-heavy" aria-hidden="true" />
             <div className="showcase-inverted-beam" aria-hidden="true" />
 
@@ -551,7 +543,7 @@ export default function HomePage() {
                       <span className="dut-greeting">Restricted Core</span>
                       <span className="dut-status">
                         <span className="dut-dot" />
-                        v3.4 · Aktif
+                        {t.home.telemetry.statusVersion}
                       </span>
                     </div>
                   </div>
@@ -560,24 +552,24 @@ export default function HomePage() {
 
                 <div className="device-server-selector">
                   <span className="dss-name">◆ Saint Roleplay — Istanbul Engine</span>
-                  <span className="dss-tag">ONLINE</span>
+                  <span className="dss-tag">{t.home.telemetry.online}</span>
                 </div>
 
                 {/* Clean 3-Stat Line Row */}
                 <div className="device-metrics-strip">
                   <div className="dms-col">
                     <span className="dms-v">0.04 ms</span>
-                    <span className="dms-l">Tick</span>
+                    <span className="dms-l">{t.home.telemetry.tick}</span>
                   </div>
                   <span className="dms-sep" aria-hidden="true" />
                   <div className="dms-col">
                     <span className="dms-v">1.1 ms</span>
-                    <span className="dms-l">SQL</span>
+                    <span className="dms-l">{t.home.telemetry.sql}</span>
                   </div>
                   <span className="dms-sep" aria-hidden="true" />
                   <div className="dms-col">
-                    <span className="dms-v">%0</span>
-                    <span className="dms-l">Escrow</span>
+                    <span className="dms-v">{formatPercent(0)}</span>
+                    <span className="dms-l">{t.home.telemetry.escrow}</span>
                   </div>
                 </div>
 
@@ -585,10 +577,10 @@ export default function HomePage() {
                 <div className="device-capacity-card">
                   <div className="dcc-head">
                     <div>
-                      <span className="dcc-title">SUNUCU KAPASİTESİ</span>
-                      <span className="dcc-sub">Eşzamanlı Yük · Bu Hafta</span>
+                      <span className="dcc-title">{t.home.telemetry.capacityTitle}</span>
+                      <span className="dcc-sub">{t.home.telemetry.capacitySub}</span>
                     </div>
-                    <span className="dcc-apex-badge">%91 · 60 FPS</span>
+                    <span className="dcc-apex-badge">{formatPercent(91)} · 60 FPS</span>
                   </div>
 
                   <div className="dcc-chart-container">
@@ -615,7 +607,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="dcc-footer">
-                    <span>64 / 64 Kapasite · Istanbul Engine</span>
+                    <span>{t.home.telemetry.capacityFooter}</span>
                     <Link
                       href="/status"
                       style={{
@@ -625,7 +617,7 @@ export default function HomePage() {
                         fontWeight: 700,
                       }}
                     >
-                      SİSTEM DURUMU →
+                      {t.home.telemetry.statusLink}
                     </Link>
                   </div>
                 </div>
@@ -650,23 +642,23 @@ export default function HomePage() {
             <div className="noir-modal-head">
               <div>
                 <p className="noir-modal-eyebrow">
-                  {activeModal === 'about' && '01 // BİZ KİMİZ & STANDARTLARIMIZ'}
-                  {activeModal === 'solutions' && '02 // ÜRETİM ALANLARI & ARŞİV DAĞILIMI'}
-                  {activeModal === 'engineering' && '03 // MÜHENDİSLİK & ŞİFRESİZ MİMARİ'}
-                  {activeModal === 'faq' && '04 // SIKÇA SORULAN SORULAR'}
+                  {activeModal === 'about' && t.home.modals.aboutEyebrow}
+                  {activeModal === 'solutions' && t.home.modals.solutionsEyebrow}
+                  {activeModal === 'engineering' && t.home.modals.engineeringEyebrow}
+                  {activeModal === 'faq' && t.home.modals.faqEyebrow}
                 </p>
                 <h2 className="noir-modal-title">
-                  {activeModal === 'about' && 'FiveM Türkiye’de kaliteyi yeniden inşa ediyoruz.'}
-                  {activeModal === 'solutions' && 'Tek çatı altında modüler sunucu altyapısı.'}
-                  {activeModal === 'engineering' && 'Şifreli kutular değil, okunabilir temiz kod.'}
-                  {activeModal === 'faq' && 'Merak edilen tüm teknik ve satış detayları.'}
+                  {activeModal === 'about' && t.home.modals.aboutTitle}
+                  {activeModal === 'solutions' && t.home.modals.solutionsTitle}
+                  {activeModal === 'engineering' && t.home.modals.engineeringTitle}
+                  {activeModal === 'faq' && t.home.modals.faqTitle}
                 </h2>
               </div>
               <button
                 type="button"
                 className="noir-modal-close"
                 onClick={() => setActiveModal(null)}
-                aria-label="Kapat"
+                aria-label={t.common.close}
               >
                 ✕
               </button>
@@ -676,66 +668,35 @@ export default function HomePage() {
             {activeModal === 'about' && (
               <div>
                 <p style={{ fontSize: '13.5px', lineHeight: 1.6, color: 'rgba(240,240,240,0.85)', marginBottom: '12px' }}>
-                  <strong>Yurt dışında 100€ ile 300€ arasında satılan yazılımlar</strong>, kur farkı
-                  nedeniyle Türkiye’deki sunucu girişimlerinin önündeki en büyük engele dönüştü.
-                  Restricted Studio; dünya standartlarındaki Lua/JS, 3D mekan (MLO) ve MariaDB
-                  mühendisliğini Türkiye ekonomisine uygun, ulaşılabilir ve %100 açık kaynak koşullarla
-                  sunmak için kuruldu.
+                  <strong>{t.home.modals.aboutLeadBold}</strong>
+                  {t.home.modals.aboutLeadRest}
                 </p>
 
                 <div className="noir-modal-grid-3">
-                  <div className="noir-info-box">
-                    <h4>Ulaşılabilir Yerel Fiyat</h4>
-                    <p>
-                      Döviz kuruna endeksli fahiş etiketler yerine TL bazlı şeffaf fiyatlandırma.
-                      16+ paket sepetlerinde anında %50 kampanya indirimi.
-                    </p>
-                  </div>
-                  <div className="noir-info-box">
-                    <h4>Tek Tipleşmeye Son</h4>
-                    <p>
-                      Arayüzü, dili ve kuralları tamamen sunucunuza göre özelleştirilebilen
-                      modüler sistemler.
-                    </p>
-                  </div>
-                  <div className="noir-info-box">
-                    <h4>Koşulsuz Kod Güvenliği</h4>
-                    <p>
-                      Gizli dış bağlantılardan ve arka kapılardan (backdoor/webhook) tamamen
-                      arındırılmış temiz kaynak kodları.
-                    </p>
-                  </div>
+                  {t.home.modals.aboutCards.map((card) => (
+                    <div key={card.title} className="noir-info-box">
+                      <h4>{card.title}</h4>
+                      <p>{card.body}</p>
+                    </div>
+                  ))}
                 </div>
 
                 <table className="noir-compare-table">
                   <thead>
                     <tr>
-                      <th>Kriter</th>
-                      <th>Hazır Kopya / Yurt Dışı</th>
-                      <th>Restricted Studio</th>
+                      {t.home.modals.compareHeaders.map((hdr) => (
+                        <th key={hdr}>{hdr}</th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>Kaynak Kod</td>
-                      <td>Escrow kilitli, müdahaleye kapalı</td>
-                      <td>%100 Açık kaynak, düzenlenebilir</td>
-                    </tr>
-                    <tr>
-                      <td>Performans</td>
-                      <td>Yüksek işlemci yükü &amp; FPS kaybı</td>
-                      <td>0.00 ms boşta tüketim, optimize SQL</td>
-                    </tr>
-                    <tr>
-                      <td>Güvenlik</td>
-                      <td>Denetlenemeyen şifreli dosyalar</td>
-                      <td>Şeffaf güvenlik taramalı temiz kod</td>
-                    </tr>
-                    <tr>
-                      <td>Satış &amp; Güvence</td>
-                      <td>Belirsiz forum ticareti</td>
-                      <td>İtemsatış 3D Secure &amp; Türkçe Discord</td>
-                    </tr>
+                    {t.home.modals.compareRows.map(([c1, c2, c3]) => (
+                      <tr key={c1}>
+                        <td>{c1}</td>
+                        <td>{c2}</td>
+                        <td>{c3}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -745,50 +706,16 @@ export default function HomePage() {
             {activeModal === 'solutions' && (
               <div>
                 <div className="noir-modal-grid-2">
-                  <div className="noir-info-box">
-                    <h4>Özgün FiveM Scriptleri</h4>
-                    <p>
-                      Lua 5.4 ve modern arayüzlerle geliştirilen, sunucu işlemcisini yormayan
-                      modüler sistemler.
-                    </p>
-                    <div className="noir-chip-row">
-                      <span className="noir-chip">QB-Core / Qbox / ESX</span>
-                      <span className="noir-chip">0.00 ms Idle</span>
+                  {t.home.modals.solutionsCards.map((card) => (
+                    <div key={card.title} className="noir-info-box">
+                      <h4>{card.title}</h4>
+                      <p>{card.body}</p>
+                      <div className="noir-chip-row">
+                        <span className="noir-chip">{card.chips[0]}</span>
+                        <span className="noir-chip">{card.chips[1]}</span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="noir-info-box">
-                    <h4>3D MLO &amp; Mekan Tasarımı</h4>
-                    <p>
-                      Kalabalık oyuncularda dahi FPS düşürmeyen portal/occlusion optimize iç
-                      mekanlar.
-                    </p>
-                    <div className="noir-chip-row">
-                      <span className="noir-chip">Optimize Poligon</span>
-                      <span className="noir-chip">Özel İç Mekan</span>
-                    </div>
-                  </div>
-                  <div className="noir-info-box">
-                    <h4>SQL Veritabanı Mimarisi</h4>
-                    <p>
-                      Doğru indekslenmiş MariaDB tablolarıyla milisaniye altı sorgu yanıtı ve
-                      Türkçe karakter uyumu.
-                    </p>
-                    <div className="noir-chip-row">
-                      <span className="noir-chip">1.1 ms Gecikme</span>
-                      <span className="noir-chip">InnoDB UTF8MB4</span>
-                    </div>
-                  </div>
-                  <div className="noir-info-box">
-                    <h4>Hazır Sunucu Paketleri</h4>
-                    <p>
-                      Ekonomisi dengelenmiş, çakışmasız ve kurulum rehberli anahtar teslim sunucu
-                      paketleri.
-                    </p>
-                    <div className="noir-chip-row">
-                      <span className="noir-chip">Tam Entegrasyon</span>
-                      <span className="noir-chip">Discord Destek</span>
-                    </div>
-                  </div>
+                  ))}
                 </div>
 
                 <div
@@ -809,9 +736,12 @@ export default function HomePage() {
                       fontSize: '11px',
                     }}
                   >
-                    <span>ARŞİV DAĞILIMI ({catalogStats.total.toLocaleString('tr-TR')} PAKET)</span>
+                    <span>
+                      {t.home.modals.archiveDistribution} ({formatNumber(catalogStats.total)}{' '}
+                      {t.home.modals.archivePackagesUnit})
+                    </span>
                     <Link href="/katalog" style={{ color: '#A50000', textDecoration: 'underline' }}>
-                      Kataloğu Aç →
+                      {t.home.modals.openCatalogLink}
                     </Link>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -827,9 +757,9 @@ export default function HomePage() {
                               marginBottom: '3px',
                             }}
                           >
-                            <span>{cat}</span>
+                            <span>{t.catalog.categoryLabels[cat] || cat}</span>
                             <span style={{ fontFamily: 'var(--font-mono)' }}>
-                              {count.toLocaleString('tr-TR')} (%{pct})
+                              {formatNumber(count)} ({formatPercent(pct)})
                             </span>
                           </div>
                           <div style={{ height: '6px', background: '#080808', border: '1px solid rgba(240,240,240,0.2)' }}>
@@ -853,35 +783,29 @@ export default function HomePage() {
             {activeModal === 'engineering' && (
               <div>
                 <div className="noir-modal-grid-3" style={{ marginTop: 0, marginBottom: '16px' }}>
-                  <div className="noir-info-box">
-                    <h4>1. Çoklu Altyapı Köprüsü</h4>
-                    <p>Tek kod tabanı üzerinden QB-Core, Qbox ve ESX Legacy otomatik tanıma.</p>
-                  </div>
-                  <div className="noir-info-box">
-                    <h4>2. Sunucu Taraflı Güvenlik</h4>
-                    <p>Tüm para, envanter ve mesafe kontrolleri doğrudan sunucuda doğrulanır.</p>
-                  </div>
-                  <div className="noir-info-box">
-                    <h4>3. Şeffaf Güvenlik Raporu</h4>
-                    <p>Her arşiv teslimat öncesi harici webhook ve backdoor taramasından geçer.</p>
-                  </div>
+                  {t.home.modals.engineeringCards.map((card) => (
+                    <div key={card.title} className="noir-info-box">
+                      <h4>{card.title}</h4>
+                      <p>{card.body}</p>
+                    </div>
+                  ))}
                 </div>
 
                 <div className="noir-code-tabs">
-                  {(Object.keys(CODE_SNIPPETS) as CodeTabKey[]).map((key) => (
+                  {(Object.keys(codeSnippets) as CodeTabKey[]).map((key) => (
                     <button
                       key={key}
                       type="button"
                       className={`noir-code-tab ${codeTab === key ? 'active' : ''}`}
                       onClick={() => setCodeTab(key)}
                     >
-                      {CODE_SNIPPETS[key].label}
+                      {codeSnippets[key].label}
                     </button>
                   ))}
                 </div>
 
                 <pre className="noir-code-pre">
-                  <code>{CODE_SNIPPETS[codeTab].code}</code>
+                  <code>{codeSnippets[codeTab].code}</code>
                 </pre>
               </div>
             )}
@@ -889,7 +813,7 @@ export default function HomePage() {
             {/* Modal Body: FAQ */}
             {activeModal === 'faq' && (
               <div>
-                {FAQ_ITEMS.map((item, idx) => {
+                {t.home.modals.faqItems.map((item, idx) => {
                   const isOpen = openFaqIdx === idx;
                   return (
                     <div key={item.q} className={`noir-faq-item ${isOpen ? 'active' : ''}`}>
@@ -916,7 +840,7 @@ export default function HomePage() {
                   }}
                 >
                   <Link href="/katalog" className="btn btn-itemsatis" style={{ flex: '1 1 200px' }}>
-                    Paket Kataloğuna Git →
+                    {t.home.modals.goToCatalog}
                   </Link>
                   <a
                     href={ITEMSATIS_URL}
@@ -925,7 +849,7 @@ export default function HomePage() {
                     className="btn btn-discord-solid"
                     style={{ flex: '1 1 200px' }}
                   >
-                    İtemsatış Mağazası ↗
+                    {t.home.modals.itemsatisLink}
                   </a>
                 </div>
               </div>

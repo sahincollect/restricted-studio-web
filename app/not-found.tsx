@@ -1,6 +1,11 @@
+'use client';
+
 import Link from 'next/link';
+import { useI18n } from '@/components/I18nProvider';
 
 export default function NotFound() {
+  const { t } = useI18n();
+
   return (
     <main
       style={{
@@ -37,11 +42,13 @@ export default function NotFound() {
             marginBottom: '12px',
           }}
         >
-          HATA KODU // 404
+          {t.errorsPage.notFoundCode}
         </div>
-        <h1 style={{ fontSize: '28px', fontWeight: 800, marginBottom: '10px' }}>Sayfa Bulunamadı</h1>
+        <h1 style={{ fontSize: '28px', fontWeight: 800, marginBottom: '10px' }}>
+          {t.errorsPage.notFoundTitle}
+        </h1>
         <p style={{ fontSize: '13.5px', color: 'rgba(240, 240, 240, 0.72)', lineHeight: 1.6, marginBottom: '24px' }}>
-          Aradığınız rota mevcut değil, taşınmış olabilir veya güvenlik politikası kapsamında gizlenmiştir.
+          {t.errorsPage.notFoundDesc}
         </p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link
@@ -56,7 +63,7 @@ export default function NotFound() {
               boxShadow: '3px 3px 0 #8B0000',
             }}
           >
-            Ana Sayfaya Dön
+            {t.common.backToHome}
           </Link>
           <Link
             href="/katalog"
@@ -69,7 +76,7 @@ export default function NotFound() {
               fontWeight: 700,
             }}
           >
-            Kataloğu İncele
+            {t.errorsPage.exploreCatalog}
           </Link>
         </div>
       </div>

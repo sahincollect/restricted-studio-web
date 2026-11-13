@@ -4,6 +4,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import catalogItems from '../../lib/catalog-data.json';
 import ItemsatisLogo from '@/components/ItemsatisLogo';
+import { useI18n } from '@/components/I18nProvider';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface CatalogItem {
   id: string;
@@ -85,6 +87,7 @@ const CATEGORY_STYLE: Record<string, { from: string; to: string; icon: React.Rea
 };
 
 export default function CatalogPage() {
+  const { locale, t, formatNumber, formatPercent } = useI18n();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tümü');
   const [sortMode, setSortMode] = useState<'default' | 'name-asc' | 'name-desc'>('default');
@@ -171,8 +174,7 @@ export default function CatalogPage() {
     setShowGuideModal(false);
   };
 
-  const SAMPLE_INQUIRY =
-    'Merhaba, İtemsatış üzerinden sipariş vermek istiyorum:\nPaketler:\n[Paket İsimlerini Buraya Yapıştırın]\nStok, güncellik ve fiyat teyidi alabilir miyim?';
+  const SAMPLE_INQUIRY = t.catalog.sampleInquiry;
 
   const handleCopyTemplate = () => {
     if (navigator?.clipboard?.writeText) {
@@ -217,13 +219,13 @@ export default function CatalogPage() {
     const items = entries.map((e) => e.item);
 
     if (sortMode === 'name-asc') {
-      items.sort((a, b) => a.title.localeCompare(b.title, 'tr'));
+      items.sort((a, b) => a.title.localeCompare(b.title, locale));
     } else if (sortMode === 'name-desc') {
-      items.sort((a, b) => b.title.localeCompare(a.title, 'tr'));
+      items.sort((a, b) => b.title.localeCompare(a.title, locale));
     }
 
     return items;
-  }, [search, selectedCategory, sortMode, searchIndex]);
+  }, [search, selectedCategory, sortMode, searchIndex, locale]);
 
   // Reset pagination when search or category changes
   useEffect(() => {
@@ -259,7 +261,7 @@ export default function CatalogPage() {
       if (prev.some((c) => c.id === item.id)) return prev;
       return [...prev, item];
     });
-    triggerToast(`"${item.title}" sepete eklendi.`);
+    triggerToast(t.catalog.toastAdded(item.title));
   };
 
   const removeFromCart = (id: string) => {
@@ -269,7 +271,7 @@ export default function CatalogPage() {
   const toggleCartItem = (item: CatalogItem) => {
     if (cartIds.has(item.id)) {
       removeFromCart(item.id);
-      triggerToast(`"${item.title}" sepetten çıkarıldı.`);
+      triggerToast(t.catalog.toastRemoved(item.title));
     } else {
       addToCart(item);
     }
@@ -277,7 +279,7 @@ export default function CatalogPage() {
 
   const clearCart = () => {
     setCart([]);
-    triggerToast('Sepetiniz temizlendi.');
+    triggerToast(t.catalog.toastCleared);
   };
 
   // Checkout: Copy ONLY item titles and redirect to Itemsatis
@@ -306,8 +308,8 @@ export default function CatalogPage() {
 
     triggerToast(
       copied
-        ? `${cart.length} paket ismi kopyalandı! İtemsatış açılıyor...`
-        : 'İtemsatış mağazamıza aktarılıyorsunuz...'
+        ? t.catalog.toastCheckoutCopied(cart.length)
+        : t.catalog.toastCheckoutRedirect
     );
 
     setTimeout(() => {
@@ -323,7 +325,7 @@ export default function CatalogPage() {
       <header className="global-nav" id="navbar">
         <div className="nav-container">
           <div className="nav-brand-wrap">
-            <Link href="/" className="nav-brand" aria-label="Restricted Studio Ana Sayfa">
+            <Link href="/" className="nav-brand" aria-label={`Restricted Studio ${t.common.home}`}>
               <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="nav-brand-logo" />
               <span className="nav-brand-text">Restricted Studio</span>
             </Link>
@@ -332,40 +334,46 @@ export default function CatalogPage() {
               target="_blank"
               rel="noopener noreferrer"
               className="nav-brand-trust"
-              title="İtemsatış Resmi Mağaza Güvencesi"
+              title={t.common.itemsatisOfficialStore}
             >
               <ItemsatisLogo variant="icon" width={12} height={12} />
-              <span>İtemsatış Güvencesiyle</span>
+              <span>{t.common.itemsatisTrust}</span>
             </a>
           </div>
 
-          <nav className={`nav-menu ${mobileMenuOpen ? 'open' : ''}`} id="navMenu" aria-label="Ana Menü">
+          <nav className={`nav-menu ${mobileMenuOpen ? 'open' : ''}`} id="navMenu" aria-label={t.common.home}>
             <Link href="/" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
-              Ana Sayfa
+              {t.common.home}
             </Link>
             <Link
               href="/katalog"
               className="nav-item nav-item-active nav-katalog-shimmer"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Katalog
+              {t.common.catalog}
             </Link>
             <Link href="/discord" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
-              Discord
+              {t.common.discord}
             </Link>
             <Link href="/status" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
-              Durum
+              {t.common.status}
             </Link>
 
             {/* Mobile Actions */}
             <div className="nav-mobile-actions">
+              <div style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'rgba(240,240,240,0.65)' }}>
+                  {t.common.langLabel.toUpperCase()}
+                </span>
+                <LanguageSwitcher compact />
+              </div>
               <button
                 type="button"
                 className="btn btn-full"
                 style={{ background: '#A50000', color: '#F0F0F0', border: '1.5px solid #F0F0F0', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                 onClick={() => { setIsCartOpen(true); setMobileMenuOpen(false); }}
               >
-                Sepetim ({cart.length} Paket)
+                {t.catalog.mobileMyCart(cart.length)}
               </button>
               <Link
                 href="/dashboard"
@@ -373,7 +381,7 @@ export default function CatalogPage() {
                 style={{ background: '#080808', color: '#F0F0F0', border: '1.5px solid #F0F0F0', marginBottom: '8px' }}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Müşteri Portalı &amp; Lisanslarım
+                {t.catalog.mobilePortal}
               </Link>
               <a
                 href={ITEMSATIS_URL}
@@ -383,7 +391,7 @@ export default function CatalogPage() {
                 style={{ marginBottom: '8px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
               >
                 <ItemsatisLogo variant="icon" width={18} height={18} />
-                <span>İtemsatış Mağazası</span>
+                <span>{t.catalog.mobileItemsatis}</span>
               </a>
               <Link
                 href={DISCORD_INVITE}
@@ -391,7 +399,7 @@ export default function CatalogPage() {
                 style={{ marginBottom: '8px' }}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                İletişime Geçin (Discord)
+                {t.catalog.mobileDiscord}
               </Link>
               <Link
                 href="/status"
@@ -399,12 +407,14 @@ export default function CatalogPage() {
                 style={{ background: '#0e0e0e', color: '#F0F0F0', border: '1.5px solid rgba(240,240,240,0.3)' }}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Sistem Durumu
+                {t.catalog.mobileStatus}
               </Link>
             </div>
           </nav>
 
           <div className="nav-cta-group">
+            <LanguageSwitcher compact className="bpn-lang-desktop" />
+
             {/* Header Cart Button */}
             <button
               type="button"
@@ -429,7 +439,7 @@ export default function CatalogPage() {
                 <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
                 <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
               </svg>
-              <span>Sepet</span>
+              <span>{t.catalog.cartShort}</span>
               {cart.length > 0 && (
                 <span style={{
                   backgroundColor: '#F0F0F0',
@@ -449,11 +459,11 @@ export default function CatalogPage() {
               target="_blank"
               rel="noopener noreferrer"
               className="nav-btn-itemsatis"
-              title="Resmi İtemsatış Mağazası"
-              aria-label="Resmi İtemsatış Mağazası"
+              title={t.common.itemsatisStore}
+              aria-label={t.common.itemsatisStore}
             >
               <ItemsatisLogo variant="icon" width={15} height={15} />
-              <span>İtemsatış</span>
+              <span>{t.common.itemsatisShort}</span>
             </a>
 
             {/* Discord Header Icon Link */}
@@ -462,8 +472,8 @@ export default function CatalogPage() {
               target="_blank"
               rel="noopener noreferrer"
               className="nav-icon-btn nav-icon-discord"
-              title="Discord Topluluğu"
-              aria-label="Discord Topluluğu"
+              title={t.home.nav.discordTitle}
+              aria-label={t.home.nav.discordTitle}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
@@ -475,13 +485,13 @@ export default function CatalogPage() {
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
-              <span>Müşteri Portalı</span>
+              <span>{t.common.clientPortal}</span>
             </Link>
 
             <button
               className={`nav-mobile-toggle ${mobileMenuOpen ? 'active' : ''}`}
               id="mobileToggle"
-              aria-label="Menüyü Aç/Kapat"
+              aria-label={t.common.openMenu}
               aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
@@ -514,27 +524,28 @@ export default function CatalogPage() {
                 <line x1="3.34" y1="7" x2="20.66" y2="17" />
                 <line x1="20.66" y1="7" x2="3.34" y2="17" />
               </svg>
-              <span>Yılbaşı Sezonu · Kurumsal FiveM Arşivi</span>
+              <span>{t.catalog.eyebrow}</span>
             </div>
-            <h1 className="chs-title">FiveM Yazılım &amp; Altyapı Arşivi</h1>
+            <h1 className="chs-title">{t.catalog.title}</h1>
             <p className="chs-desc">
-              Doğrulanmış <strong>{catalogItems.length.toLocaleString('tr-TR')}+</strong> paket. Parça başı 100 TL, 15+ seçimde anında <strong>%50 İndirim</strong>.
+              {t.catalog.descBeforeCount} <strong>{formatNumber(catalogItems.length)}+</strong>{' '}
+              {t.catalog.descMiddle} <strong>{t.catalog.descDiscount}</strong>.
             </p>
           </div>
 
           <div className="chs-right">
             <div className="chs-badges-row">
               <div className="chs-badge-item">
-                <span className="chs-badge-num">6.400+</span>
-                <span className="chs-badge-lbl">Açık Kaynak Kod</span>
+                <span className="chs-badge-num">{formatNumber(6400)}+</span>
+                <span className="chs-badge-lbl">{t.catalog.badgeOpenSource}</span>
               </div>
               <div className="chs-badge-item">
                 <span className="chs-badge-num">100 TL</span>
-                <span className="chs-badge-lbl">Sabit Parça Fiyatı</span>
+                <span className="chs-badge-lbl">{t.catalog.badgeUnitPrice}</span>
               </div>
               <div className="chs-badge-item">
-                <span className="chs-badge-num">%50</span>
-                <span className="chs-badge-lbl">15+ Sepet İndirimi</span>
+                <span className="chs-badge-num">{formatPercent(50)}</span>
+                <span className="chs-badge-lbl">{t.catalog.badgeDiscount}</span>
               </div>
             </div>
 
@@ -544,7 +555,7 @@ export default function CatalogPage() {
                 onClick={() => setShowGuideModal(true)}
                 className="chs-guide-btn"
               >
-                <span>Sipariş Rehberi</span>
+                <span>{t.catalog.orderGuideBtn}</span>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
               </button>
             </div>
@@ -568,13 +579,13 @@ export default function CatalogPage() {
               <div className="sidebar-mobile-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '18px' }}>☰</span>
-                  <strong style={{ fontSize: '15px', color: '#F0F0F0' }}>Katalog Menüsü &amp; Filtreler</strong>
+                  <strong style={{ fontSize: '15px', color: '#F0F0F0' }}>{t.catalog.sidebarTitle}</strong>
                 </div>
                 <button
                   type="button"
                   onClick={() => setMobileFiltersOpen(false)}
                   className="sidebar-close-btn"
-                  aria-label="Kapat"
+                  aria-label={t.common.close}
                 >
                   ✕
                 </button>
@@ -582,7 +593,7 @@ export default function CatalogPage() {
 
               {/* 1. Quick Search Box */}
               <div className="sb-section sb-search-section">
-                <label className="sb-section-title" htmlFor="catalogSearchInput">Paket Ara</label>
+                <label className="sb-section-title" htmlFor="catalogSearchInput">{t.catalog.searchTitle}</label>
                 <div className="sb-search-wrap">
                   <svg
                     className="sb-search-icon"
@@ -600,7 +611,7 @@ export default function CatalogPage() {
                     id="catalogSearchInput"
                     type="text"
                     className="sb-search-input"
-                    placeholder="Paket adı, sistem, MLO..."
+                    placeholder={t.catalog.searchPlaceholder}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
@@ -609,7 +620,7 @@ export default function CatalogPage() {
                       type="button"
                       className="sb-search-clear"
                       onClick={() => setSearch('')}
-                      aria-label="Temizle"
+                      aria-label={t.catalog.searchClearAria}
                     >
                       ✕
                     </button>
@@ -620,13 +631,14 @@ export default function CatalogPage() {
               {/* 2. Vertical Category Navigation Menu */}
               <div className="sb-section">
                 <div className="sb-section-head">
-                  <span className="sb-section-title">Kategoriler</span>
-                  <span className="sb-count-total">{catalogItems.length.toLocaleString('tr-TR')}</span>
+                  <span className="sb-section-title">{t.catalog.categoriesTitle}</span>
+                  <span className="sb-count-total">{formatNumber(catalogItems.length)}</span>
                 </div>
-                <nav className="sb-cat-nav" aria-label="Katalog Kategorileri">
+                <nav className="sb-cat-nav" aria-label={t.catalog.categoriesTitle}>
                   {CATEGORIES.map((cat) => {
                     const count = categoryCounts[cat] || 0;
                     const isActive = selectedCategory === cat;
+                    const catLabel = t.catalog.categoryLabels[cat] || cat;
                     return (
                       <button
                         key={cat}
@@ -646,8 +658,8 @@ export default function CatalogPage() {
                             </svg>
                           )}
                         </span>
-                        <span className="sb-cat-label">{cat}</span>
-                        <span className="sb-cat-pill">{count.toLocaleString('tr-TR')}</span>
+                        <span className="sb-cat-label">{catLabel}</span>
+                        <span className="sb-cat-pill">{formatNumber(count)}</span>
                       </button>
                     );
                   })}
@@ -656,28 +668,28 @@ export default function CatalogPage() {
 
               {/* 3. Sorting Options */}
               <div className="sb-section">
-                <span className="sb-section-title">Sıralama</span>
+                <span className="sb-section-title">{t.catalog.sortTitle}</span>
                 <div className="sb-sort-list">
                   <button
                     type="button"
                     className={`sb-sort-pill ${sortMode === 'default' ? 'active' : ''}`}
                     onClick={() => setSortMode('default')}
                   >
-                    <span>Önerilen</span>
+                    <span>{t.catalog.sortDefault}</span>
                   </button>
                   <button
                     type="button"
                     className={`sb-sort-pill ${sortMode === 'name-asc' ? 'active' : ''}`}
                     onClick={() => setSortMode('name-asc')}
                   >
-                    <span>İsim (A → Z)</span>
+                    <span>{t.catalog.sortAsc}</span>
                   </button>
                   <button
                     type="button"
                     className={`sb-sort-pill ${sortMode === 'name-desc' ? 'active' : ''}`}
                     onClick={() => setSortMode('name-desc')}
                   >
-                    <span>İsim (Z → A)</span>
+                    <span>{t.catalog.sortDesc}</span>
                   </button>
                 </div>
               </div>
@@ -685,17 +697,13 @@ export default function CatalogPage() {
               {/* 4. Live Campaign & Cart Box */}
               <div className={`sb-campaign-card ${isDiscounted ? 'discount-active' : ''}`}>
                 <div className="sbc-badge">
-                  {isDiscounted ? '★ %50 İNDİRİM AKTİF' : '■ PARÇA BAŞI 100 TL'}
+                  {isDiscounted ? t.catalog.campaignActiveBadge : t.catalog.campaignDefaultBadge}
                 </div>
                 <div className="sbc-body">
                   {isDiscounted ? (
-                    <p className="sbc-text">
-                      Sepetinizde <strong>{cart.length} paket</strong> var. %50 indirimle paket başı <strong>50 TL</strong> hesaplanıyor!
-                    </p>
+                    <p className="sbc-text">{t.catalog.campaignActiveText(cart.length)}</p>
                   ) : (
-                    <p className="sbc-text">
-                      Sepetinize <strong>15 adetten fazla</strong> (16+) ürün eklediğinizde tüm sepetinize anında <strong>%50 İndirim</strong> uygulanır.
-                    </p>
+                    <p className="sbc-text">{t.catalog.campaignDefaultText}</p>
                   )}
 
                   {/* Progress to discount */}
@@ -709,8 +717,8 @@ export default function CatalogPage() {
                       </div>
                       <span className="sbc-progress-hint">
                         {cart.length === 0
-                          ? '16 paket ekle, %50 indirimi yakala!'
-                          : `${remainingForDiscount} paket sonra %50 indirimdesiniz!`}
+                          ? t.catalog.progressStart
+                          : t.catalog.progressRemaining(remainingForDiscount)}
                       </span>
                     </div>
                   )}
@@ -721,7 +729,7 @@ export default function CatalogPage() {
                       onClick={() => setIsCartOpen(true)}
                       className="sbc-open-cart-btn"
                     >
-                      <span>Sepeti İncele ({finalTotal.toLocaleString('tr-TR')} TL)</span>
+                      <span>{t.catalog.openCartWithTotal(formatNumber(finalTotal))}</span>
                       <span>→</span>
                     </button>
                   )}
@@ -730,7 +738,7 @@ export default function CatalogPage() {
 
               {/* 5. Popular Search Tags Cloud */}
               <div className="sb-section">
-                <span className="sb-section-title">Hızlı Aramalar</span>
+                <span className="sb-section-title">{t.catalog.quickSearchTitle}</span>
                 <div className="sb-tags-cloud">
                   {POPULAR_TAGS.map((tag) => (
                     <button
@@ -751,12 +759,10 @@ export default function CatalogPage() {
               {/* 6. Official Itemsatis Verified Store Box */}
               <div className="sb-itemsatis-card">
                 <div className="sbi-header">
-                  <span className="sbi-verified-badge">✓ Doğrulanmış Mağaza</span>
+                  <span className="sbi-verified-badge">{t.catalog.verifiedStoreBadge}</span>
                   <ItemsatisLogo variant="full" width={90} height={20} />
                 </div>
-                <p className="sbi-desc">
-                  Tüm alışverişleriniz resmi İtemsatış mağazamız üzerinden 3D Secure güvencesiyle tamamlanır.
-                </p>
+                <p className="sbi-desc">{t.catalog.verifiedStoreDesc}</p>
                 <a
                   href={ITEMSATIS_URL}
                   target="_blank"
@@ -764,7 +770,7 @@ export default function CatalogPage() {
                   className="sbi-btn"
                 >
                   <ItemsatisLogo variant="icon" width={16} height={16} />
-                  <span>Mağaza Profilini İncele ↗</span>
+                  <span>{t.catalog.inspectStoreLink}</span>
                 </a>
               </div>
 
@@ -775,10 +781,10 @@ export default function CatalogPage() {
                   onClick={() => setShowGuideModal(true)}
                   className="sb-help-link"
                 >
-                  ■ Sipariş Yönergesi
+                  {t.catalog.orderInstructionsLink}
                 </button>
                 <Link href={DISCORD_INVITE} className="sb-help-link">
-                  ↗ Discord Destek
+                  {t.catalog.discordSupportLink}
                 </Link>
               </div>
 
@@ -803,9 +809,9 @@ export default function CatalogPage() {
             <div className="catalog-main-topbar">
               <div className="cmt-left">
                 <h2 className="cmt-category-title">
-                  {selectedCategory}
+                  {t.catalog.categoryLabels[selectedCategory] || selectedCategory}
                   <span className="cmt-count-badge">
-                    {filteredItems.length.toLocaleString('tr-TR')} Paket
+                    {t.catalog.packageCountLabel(formatNumber(filteredItems.length))}
                   </span>
                 </h2>
 
@@ -814,11 +820,11 @@ export default function CatalogPage() {
                   <div className="cmt-active-filters">
                     {selectedCategory !== 'Tümü' && (
                       <span className="cmt-chip">
-                        {selectedCategory}
+                        {t.catalog.categoryLabels[selectedCategory] || selectedCategory}
                         <button
                           type="button"
                           onClick={() => setSelectedCategory('Tümü')}
-                          aria-label="Kategoriyi kaldır"
+                          aria-label={t.catalog.removeCategoryAria}
                         >
                           ✕
                         </button>
@@ -830,7 +836,7 @@ export default function CatalogPage() {
                         <button
                           type="button"
                           onClick={() => setSearch('')}
-                          aria-label="Aramayı kaldır"
+                          aria-label={t.catalog.removeSearchAria}
                         >
                           ✕
                         </button>
@@ -844,7 +850,7 @@ export default function CatalogPage() {
                         setSearch('');
                       }}
                     >
-                      Filtreleri Sıfırla
+                      {t.catalog.resetFilters}
                     </button>
                   </div>
                 )}
@@ -868,21 +874,21 @@ export default function CatalogPage() {
                     <line x1="9" y1="8" x2="15" y2="8"/>
                     <line x1="17" y1="16" x2="23" y2="16"/>
                   </svg>
-                  <span>Menü &amp; Filtreler</span>
+                  <span>{t.catalog.mobileMenuBtn}</span>
                 </button>
 
                 {/* Quick Sort Select */}
                 <div className="cmt-sort-wrap">
-                  <label htmlFor="cmtSortSelect" className="cmt-sort-label">Sırala:</label>
+                  <label htmlFor="cmtSortSelect" className="cmt-sort-label">{t.catalog.sortLabel}</label>
                   <select
                     id="cmtSortSelect"
                     className="cmt-sort-select"
                     value={sortMode}
                     onChange={(e) => setSortMode(e.target.value as any)}
                   >
-                    <option value="default">Önerilen</option>
-                    <option value="name-asc">İsim (A → Z)</option>
-                    <option value="name-desc">İsim (Z → A)</option>
+                    <option value="default">{t.catalog.sortDefault}</option>
+                    <option value="name-asc">{t.catalog.sortAsc}</option>
+                    <option value="name-desc">{t.catalog.sortDesc}</option>
                   </select>
                 </div>
 
@@ -896,7 +902,7 @@ export default function CatalogPage() {
                     <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
                   </svg>
-                  <span>Sepetim</span>
+                  <span>{t.catalog.myCartBtn}</span>
                   <span className="cmt-cart-count">{cart.length}</span>
                 </button>
               </div>
@@ -913,7 +919,7 @@ export default function CatalogPage() {
                     className={`cm-cat-chip ${isActive ? 'active' : ''}`}
                     onClick={() => setSelectedCategory(cat)}
                   >
-                    <span>{cat}</span>
+                    <span>{t.catalog.categoryLabels[cat] || cat}</span>
                     <span className="cm-cat-badge">{categoryCounts[cat] || 0}</span>
                   </button>
                 );
@@ -940,7 +946,7 @@ export default function CatalogPage() {
                           }}
                         >
                           <span className="cc-visual-id">{item.id}</span>
-                          {isVerified && <span className="cc-visual-verified">Doğrulanmış</span>}
+                          {isVerified && <span className="cc-visual-verified">{t.catalog.verifiedItemBadge}</span>}
                           <svg
                             className="cc-visual-icon"
                             width="40"
@@ -954,7 +960,7 @@ export default function CatalogPage() {
                           >
                             {(CATEGORY_STYLE[item.category] || DEFAULT_STYLE).icon}
                           </svg>
-                          <span className="cc-visual-cat">{item.category}</span>
+                          <span className="cc-visual-cat">{t.catalog.categoryLabels[item.category] || item.category}</span>
                         </div>
 
                         {/* Product Title */}
@@ -966,7 +972,7 @@ export default function CatalogPage() {
                       {/* Card Bottom Row: Price & Buttons */}
                       <div className="cc-card-bottom">
                         <div className="cc-price-row">
-                          <span className="cc-price-lbl">Fiyat:</span>
+                          <span className="cc-price-lbl">{t.catalog.priceLabel}</span>
                           <div className="cc-price-val">
                             {isDiscounted ? (
                               <>
@@ -984,14 +990,14 @@ export default function CatalogPage() {
                             type="button"
                             className={`cc-btn-add ${inCart ? 'is-in-cart' : ''}`}
                             onClick={() => toggleCartItem(item)}
-                            title={inCart ? 'Sepetten çıkar' : 'Sepete ekle'}
+                            title={inCart ? t.catalog.removeFromCartTitle : t.catalog.addToCartTitle}
                           >
                             {inCart ? (
                               <>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                   <polyline points="20 6 9 17 4 12" />
                                 </svg>
-                                <span>Sepette (Çıkar)</span>
+                                <span>{t.catalog.inCartBtn}</span>
                               </>
                             ) : (
                               <>
@@ -999,7 +1005,7 @@ export default function CatalogPage() {
                                   <line x1="12" y1="5" x2="12" y2="19" />
                                   <line x1="5" y1="12" x2="19" y2="12" />
                                 </svg>
-                                <span>Sepete Ekle</span>
+                                <span>{t.catalog.addToCartBtn}</span>
                               </>
                             )}
                           </button>
@@ -1007,8 +1013,8 @@ export default function CatalogPage() {
                           <Link
                             href={DISCORD_INVITE}
                             className="cc-btn-discord"
-                            title="Discord üzerinden bu paket hakkında soru sor"
-                            aria-label="Discord'da sor"
+                            title={t.catalog.askDiscordTitle}
+                            aria-label={t.catalog.askDiscordAria}
                           >
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
                               <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
@@ -1028,17 +1034,15 @@ export default function CatalogPage() {
                     <line x1="8" y1="11" x2="14" y2="11" />
                   </svg>
                   <h3 className="catalog-empty-title">
-                    {search ? `"${search}" ile eşleşen paket bulunamadı` : 'Bu kategoride paket bulunamadı'}
+                    {search ? t.catalog.emptySearchTitle(search) : t.catalog.emptyCategoryTitle}
                   </h3>
-                  <p className="catalog-empty-text">
-                    Aradığınız paket henüz kataloğumuza eklenmemiş olabilir. FiveM veya CFX linkini bize Discord üzerinden iletin; aynı gün arşivimizden tarayıp temizleyerek sizin için hazırlayalım.
-                  </p>
+                  <p className="catalog-empty-text">{t.catalog.emptyDesc}</p>
                   <Link
                     href={DISCORD_INVITE}
                     className="btn btn-discord-solid"
                     style={{ display: 'inline-flex', padding: '12px 24px', borderRadius: '10px' }}
                   >
-                    Özel Paket Talebi Aç (Discord) ↗
+                    {t.catalog.requestCustomBtn}
                   </Link>
                 </div>
               )}
@@ -1048,9 +1052,9 @@ export default function CatalogPage() {
             {filteredItems.length > visibleCount && (
               <div className="catalog-loadmore-wrap">
                 <button type="button" className="catalog-loadmore-btn" onClick={handleLoadMore}>
-                  <span>Daha Fazla Paket Yükle (+{PAGE_SIZE})</span>
+                  <span>{t.catalog.loadMoreBtn(PAGE_SIZE)}</span>
                   <span className="loadmore-counter">
-                    ({visibleCount} / {filteredItems.length.toLocaleString('tr-TR')})
+                    ({formatNumber(visibleCount)} / {formatNumber(filteredItems.length)})
                   </span>
                 </button>
               </div>
@@ -1061,22 +1065,22 @@ export default function CatalogPage() {
               <div className="cts-item">
                 <span className="cts-icon">✓</span>
                 <div>
-                  <strong>%100 Açık Kaynak Kod</strong>
-                  <p>Escrow kilidi olmadan dilediğiniz gibi düzenleyin.</p>
+                  <strong>{t.catalog.trustOpenSourceTitle}</strong>
+                  <p>{t.catalog.trustOpenSourceDesc}</p>
                 </div>
               </div>
               <div className="cts-item">
                 <span className="cts-icon">✓</span>
                 <div>
-                  <strong>İtemsatış 3D Secure</strong>
-                  <p>Resmi mağazamız üzerinden güvenli ödeme koruması.</p>
+                  <strong>{t.catalog.trustSecureTitle}</strong>
+                  <p>{t.catalog.trustSecureDesc}</p>
                 </div>
               </div>
               <div className="cts-item">
                 <span className="cts-icon">✓</span>
                 <div>
-                  <strong>0.00 ms Boşta Tüketim</strong>
-                  <p>Gereksiz döngülerden arındırılmış yüksek FPS performansı.</p>
+                  <strong>{t.catalog.trustPerfTitle}</strong>
+                  <p>{t.catalog.trustPerfDesc}</p>
                 </div>
               </div>
             </div>
@@ -1096,9 +1100,7 @@ export default function CatalogPage() {
                 <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="nav-brand-logo" />
                 <span className="nav-brand-text">Restricted Studio</span>
               </div>
-              <p className="footer-tagline">
-                FiveM Türkiye ekosistemi için sade, güvenli ve yüksek performanslı yazılım ve altyapı çözümleri.
-              </p>
+              <p className="footer-tagline">{t.catalog.footerTagline}</p>
               <div style={{ marginTop: '16px' }}>
                 <a
                   href={ITEMSATIS_URL}
@@ -1106,51 +1108,49 @@ export default function CatalogPage() {
                   rel="noopener noreferrer"
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', opacity: 0.85 }}
                 >
-                  <span style={{ fontSize: '12px', color: 'rgba(240, 240, 240, 0.72)' }}>Resmi Satış:</span>
+                  <span style={{ fontSize: '12px', color: 'rgba(240, 240, 240, 0.72)' }}>{t.catalog.officialSalesLabel}</span>
                   <ItemsatisLogo variant="full" width={95} height={20} />
                 </a>
               </div>
             </div>
 
             <div className="footer-col">
-              <h4>Bölümler</h4>
+              <h4>{t.catalog.footerSections}</h4>
               <ul>
-                <li><Link href="/">Ana Sayfa</Link></li>
-                <li><Link href="/katalog">Paket Kataloğu</Link></li>
-                <li><Link href="/dashboard">Müşteri Portalı</Link></li>
-                <li><Link href="/discord">Discord Desteği</Link></li>
+                <li><Link href="/">{t.common.home}</Link></li>
+                <li><Link href="/katalog">{t.catalog.footerCatalogLink}</Link></li>
+                <li><Link href="/dashboard">{t.common.clientPortal}</Link></li>
+                <li><Link href="/discord">{t.catalog.footerDiscordSupport}</Link></li>
               </ul>
             </div>
 
             <div className="footer-col">
-              <h4>Kategoriler</h4>
+              <h4>{t.catalog.footerCategories}</h4>
               <ul>
-                <li><button type="button" onClick={() => setSelectedCategory('Script & Sistemler')} style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, cursor: 'pointer', font: 'inherit' }}>Script &amp; Sistemler (3.500+)</button></li>
-                <li><button type="button" onClick={() => setSelectedCategory('MLO & Mekanlar')} style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, cursor: 'pointer', font: 'inherit' }}>MLO &amp; Mekanlar (1.200+)</button></li>
-                <li><button type="button" onClick={() => setSelectedCategory('Araç Paketleri')} style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, cursor: 'pointer', font: 'inherit' }}>Araç Paketleri (1.100+)</button></li>
-                <li><button type="button" onClick={() => setSelectedCategory('Kıyafet & EUP')} style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, cursor: 'pointer', font: 'inherit' }}>Kıyafet &amp; EUP</button></li>
+                <li><button type="button" onClick={() => setSelectedCategory('Script & Sistemler')} style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, cursor: 'pointer', font: 'inherit' }}>{t.catalog.categoryLabels['Script & Sistemler']} ({formatNumber(3500)}+)</button></li>
+                <li><button type="button" onClick={() => setSelectedCategory('MLO & Mekanlar')} style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, cursor: 'pointer', font: 'inherit' }}>{t.catalog.categoryLabels['MLO & Mekanlar']} ({formatNumber(1200)}+)</button></li>
+                <li><button type="button" onClick={() => setSelectedCategory('Araç Paketleri')} style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, cursor: 'pointer', font: 'inherit' }}>{t.catalog.categoryLabels['Araç Paketleri']} ({formatNumber(1100)}+)</button></li>
+                <li><button type="button" onClick={() => setSelectedCategory('Kıyafet & EUP')} style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, cursor: 'pointer', font: 'inherit' }}>{t.catalog.categoryLabels['Kıyafet & EUP']}</button></li>
               </ul>
             </div>
 
             <div className="footer-col">
-              <h4>Resmi Kanallar</h4>
+              <h4>{t.catalog.footerOfficialChannels}</h4>
               <ul>
                 <li>
                   <a href={ITEMSATIS_URL} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                     <ItemsatisLogo variant="icon" width={14} height={14} />
-                    <span>İtemsatış Mağazası ↗</span>
+                    <span>{t.home.modals.itemsatisLink}</span>
                   </a>
                 </li>
-                <li><Link href={DISCORD_INVITE}>Discord Topluluğu ↗</Link></li>
+                <li><Link href={DISCORD_INVITE}>{t.home.nav.discordTitle} ↗</Link></li>
               </ul>
             </div>
           </div>
 
           <div className="footer-legal">
-            <p>Telif Hakkı © 2026 Restricted Studio. Tüm hakları saklıdır.</p>
-            <p className="footer-note">
-              Restricted Studio; Rockstar Games, Take-Two Interactive veya CitizenFX Collective ile bağlantılı değildir. Tüm katalog içeriği talep üzerine güvenlik denetimi yapılarak sağlanmaktadır.
-            </p>
+            <p>{t.catalog.footerCopyright}</p>
+            <p className="footer-note">{t.catalog.footerDisclaimer}</p>
           </div>
         </div>
       </footer>
@@ -1173,7 +1173,7 @@ export default function CatalogPage() {
             <button
               type="button"
               onClick={handleCloseGuideModal}
-              aria-label="Kapat"
+              aria-label={t.common.close}
               className="guide-modal-close"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1185,19 +1185,15 @@ export default function CatalogPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <ItemsatisLogo variant="icon" width={24} height={24} />
               <h2 id="guide-modal-title" style={{ fontSize: '19px', fontWeight: 700, margin: 0 }}>
-                İtemsatış ile Sipariş Yönergesi
+                {t.catalog.guideModalTitle}
               </h2>
             </div>
             <p style={{ fontSize: '13px', color: '#a1a1aa', margin: '0 0 20px', lineHeight: 1.5 }}>
-              Resmi İtemsatış mağazamız üzerinden 3 basit adımda güvenle siparişinizi verin:
+              {t.catalog.guideModalSubtitle}
             </p>
 
             <ol style={{ listStyle: 'none', margin: '0 0 20px', padding: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {[
-                { n: '1', t: 'Paketlerinizi Sepete Ekleyin', d: 'Katalogdaki 6.400+ paket arasından sunucunuza gerekenleri "Sepete Ekle" butonuyla toplayın.' },
-                { n: '2', t: 'Satın Al Butonuna Basın', d: 'Sepetten "Satın Al" dediğinizde paket isimleri panonuza kopyalanır ve resmi İtemsatış mağazamıza yönlendirilirsiniz.' },
-                { n: '3', t: 'İtemsatış\'tan İletin & Teslim Alın', d: 'Açılan mağazada satıcıya mesaj olarak kopyalanan listeyi iletin; 3D Secure güvencesiyle temiz açık kaynak kodlarınız hemen teslim edilsin.' },
-              ].map((s) => (
+              {t.catalog.guideSteps.map((s) => (
                 <li key={s.n} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                   <span style={{ flexShrink: 0, width: '24px', height: '24px', borderRadius: '0px', background: '#8B0000', border: '1px solid #F0F0F0', color: '#F0F0F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700 }}>
                     {s.n}
@@ -1213,7 +1209,7 @@ export default function CatalogPage() {
             <button
               type="button"
               onClick={handleCopyTemplate}
-              aria-label="Mesaj şablonunu kopyala"
+              aria-label={t.catalog.templateCopyAria}
               style={{
                 width: '100%',
                 textAlign: 'left',
@@ -1226,8 +1222,8 @@ export default function CatalogPage() {
               }}
             >
               <span style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em', color: templateCopied ? '#F0F0F0' : '#A50000', marginBottom: '6px' }}>
-                <span>ÖRNEK İTEMSATIŞ MESAJ ŞABLONU</span>
-                <span>{templateCopied ? '✓ Kopyalandı' : 'Kopyalamak için tıklayın'}</span>
+                <span>{t.catalog.templateHeader}</span>
+                <span>{templateCopied ? t.catalog.templateCopied : t.catalog.templateCopyHint}</span>
               </span>
               <span style={{ display: 'block', fontSize: '12.5px', lineHeight: 1.5, whiteSpace: 'pre-line' }}>
                 {SAMPLE_INQUIRY}
@@ -1235,7 +1231,8 @@ export default function CatalogPage() {
             </button>
 
             <p style={{ fontSize: '12px', color: 'rgba(240, 240, 240, 0.72)', lineHeight: 1.55, margin: '0 0 18px', paddingLeft: '10px', borderLeft: '2px solid #A50000' }}>
-              <strong style={{ color: '#F0F0F0', fontWeight: 600 }}>Kampanya Notu:</strong> Parça başı 100 TL. Sepetinize 15 adetten fazla (16+) ürün eklerseniz sepetiniz anında %50 indirime girer (50 TL / Paket).
+              <strong style={{ color: '#F0F0F0', fontWeight: 600 }}>{t.catalog.guideCampaignNoteLabel}</strong>{' '}
+              {t.catalog.guideCampaignNoteBody}
             </p>
 
             <button
@@ -1254,7 +1251,7 @@ export default function CatalogPage() {
                 cursor: 'pointer',
               }}
             >
-              Kataloğu Keşfetmeye Başla
+              {t.catalog.guideStartExploring}
             </button>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginTop: '14px' }}>
@@ -1265,7 +1262,7 @@ export default function CatalogPage() {
                   onChange={(e) => setDontShowToday(e.target.checked)}
                   style={{ accentColor: '#A50000', width: '14px', height: '14px', cursor: 'pointer' }}
                 />
-                <span>Bugün tekrar gösterme</span>
+                <span>{t.catalog.guideDontShowToday}</span>
               </label>
             </div>
           </div>
@@ -1288,15 +1285,15 @@ export default function CatalogPage() {
               </div>
               <div className="cart-text-details">
                 <div className="cart-price-line">
-                  <span className="cart-total-bold">{finalTotal.toLocaleString('tr-TR')} TL</span>
-                  {isDiscounted && <span className="discount-tag">%50 İndirim</span>}
+                  <span className="cart-total-bold">{formatNumber(finalTotal)} TL</span>
+                  {isDiscounted && <span className="discount-tag">{t.catalog.floatingDiscountTag}</span>}
                 </div>
                 <span className="cart-sub-hint">
                   {isDiscounted
-                    ? 'Kampanya aktif (Paket başı 50 TL)'
+                    ? t.catalog.floatingHintActive
                     : remainingForDiscount === 1
-                    ? 'Sadece 1 paket daha ekle, %50 indirimi kap!'
-                    : `${remainingForDiscount} paket sonra %50 indirim!`}
+                    ? t.catalog.floatingHintOneLeft
+                    : t.catalog.floatingHintRemaining(remainingForDiscount)}
                 </span>
               </div>
             </div>
@@ -1306,7 +1303,7 @@ export default function CatalogPage() {
               className="btn-floating-checkout"
               onClick={() => setIsCartOpen(true)}
             >
-              <span>Sepeti İncele &amp; Satın Al</span>
+              <span>{t.catalog.floatingCheckoutBtn}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
@@ -1338,15 +1335,15 @@ export default function CatalogPage() {
                   </svg>
                 </div>
                 <div>
-                  <h2 className="cart-drawer-title">Sepetim</h2>
-                  <span className="cart-drawer-sub">{cart.length} paket seçildi</span>
+                  <h2 className="cart-drawer-title">{t.catalog.drawerTitle}</h2>
+                  <span className="cart-drawer-sub">{t.catalog.drawerSub(cart.length)}</span>
                 </div>
               </div>
               <button
                 type="button"
                 className="cart-drawer-close"
                 onClick={() => setIsCartOpen(false)}
-                aria-label="Kapat"
+                aria-label={t.common.close}
               >
                 ✕
               </button>
@@ -1356,19 +1353,19 @@ export default function CatalogPage() {
             <div className={`cart-campaign-box ${isDiscounted ? 'active' : ''}`}>
               {isDiscounted ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '18px', fontWeight: 800 }}>%50</span>
+                  <span style={{ fontSize: '18px', fontWeight: 800 }}>{formatPercent(50)}</span>
                   <div>
-                    <strong style={{ color: '#F0F0F0', fontSize: '13px' }}>%50 İndirim Tanımlandı!</strong>
-                    <div style={{ fontSize: '12px', color: 'rgba(240, 240, 240, 0.85)' }}>15 adetten fazla ürün eklendiği için paket başı 100 TL yerine 50 TL olarak hesaplanıyor.</div>
+                    <strong style={{ color: '#F0F0F0', fontSize: '13px' }}>{t.catalog.drawerDiscountTitle}</strong>
+                    <div style={{ fontSize: '12px', color: 'rgba(240, 240, 240, 0.85)' }}>{t.catalog.drawerDiscountDesc}</div>
                   </div>
                 </div>
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ fontSize: '16px', fontWeight: 800, color: '#A50000' }}>◆</span>
                   <div>
-                    <strong style={{ color: '#F0F0F0', fontSize: '13px' }}>15&apos;ten Fazla Ürün Kampanyası</strong>
+                    <strong style={{ color: '#F0F0F0', fontSize: '13px' }}>{t.catalog.drawerCampaignTitle}</strong>
                     <div style={{ fontSize: '12px', color: 'rgba(240, 240, 240, 0.72)' }}>
-                      Sepetinize <strong>{remainingForDiscount} paket daha</strong> eklerseniz tüm sepet %50 indirime girecektir!
+                      {t.catalog.drawerCampaignDesc(remainingForDiscount)}
                     </div>
                   </div>
                 </div>
@@ -1383,8 +1380,8 @@ export default function CatalogPage() {
                     <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
                   </svg>
-                  <p style={{ fontSize: '15px', fontWeight: 600, color: '#F0F0F0', margin: '12px 0 4px' }}>Sepetiniz henüz boş</p>
-                  <span style={{ fontSize: '12.5px', color: 'rgba(240, 240, 240, 0.72)' }}>Katalogdan istediğiniz paketleri &quot;Sepete Ekle&quot; butonuyla ekleyebilirsiniz.</span>
+                  <p style={{ fontSize: '15px', fontWeight: 600, color: '#F0F0F0', margin: '12px 0 4px' }}>{t.catalog.drawerEmptyTitle}</p>
+                  <span style={{ fontSize: '12.5px', color: 'rgba(240, 240, 240, 0.72)' }}>{t.catalog.drawerEmptyDesc}</span>
                 </div>
               ) : (
                 cart.map((item, idx) => (
@@ -1394,7 +1391,7 @@ export default function CatalogPage() {
                       <span className="cart-item-name">{item.title}</span>
                       <div className="cart-item-tags">
                         <span className="cart-item-id">{item.id}</span>
-                        <span className="cart-item-category">{item.category}</span>
+                        <span className="cart-item-category">{t.catalog.categoryLabels[item.category] || item.category}</span>
                       </div>
                     </div>
                     <div className="cart-item-actions">
@@ -1412,8 +1409,8 @@ export default function CatalogPage() {
                         type="button"
                         onClick={() => removeFromCart(item.id)}
                         className="cart-item-remove-btn"
-                        title="Sepetten Çıkar"
-                        aria-label="Çıkar"
+                        title={t.catalog.drawerRemoveTitle}
+                        aria-label={t.catalog.drawerRemoveAria}
                       >
                         ✕
                       </button>
@@ -1428,11 +1425,11 @@ export default function CatalogPage() {
               <div className="cart-drawer-footer">
                 <div className="cart-summary-breakdown">
                   <div className="summary-row">
-                    <span>Seçilen Paket Adedi</span>
-                    <span>{cart.length} Adet</span>
+                    <span>{t.catalog.summaryCountLabel}</span>
+                    <span>{t.catalog.summaryCountVal(cart.length)}</span>
                   </div>
                   <div className="summary-row">
-                    <span>Birim Fiyat</span>
+                    <span>{t.catalog.summaryUnitLabel}</span>
                     <span>
                       {isDiscounted ? (
                         <>
@@ -1446,13 +1443,13 @@ export default function CatalogPage() {
                   </div>
                   {isDiscounted && (
                     <div className="summary-row discount">
-                      <span>%50 Kampanya İndirimi</span>
-                      <span style={{ color: '#A50000', fontWeight: 700 }}>-{discountSavings.toLocaleString('tr-TR')} TL</span>
+                      <span>{t.catalog.summaryDiscountLabel}</span>
+                      <span style={{ color: '#A50000', fontWeight: 700 }}>-{formatNumber(discountSavings)} TL</span>
                     </div>
                   )}
                   <div className="summary-row total">
-                    <span>Toplam Tutar</span>
-                    <span className="total-amount">{finalTotal.toLocaleString('tr-TR')} TL</span>
+                    <span>{t.catalog.summaryTotalLabel}</span>
+                    <span className="total-amount">{formatNumber(finalTotal)} TL</span>
                   </div>
                 </div>
 
@@ -1463,11 +1460,11 @@ export default function CatalogPage() {
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
                 >
                   <ItemsatisLogo variant="icon" width={20} height={20} />
-                  <span>Satın Al (İtemsatış&apos;a İlet)</span>
+                  <span>{t.catalog.checkoutBtn}</span>
                 </button>
 
                 <p className="cart-checkout-note">
-                  ℹ️ <strong>Satın Al</strong> butonuna bastığınızda sepetteki <strong>{cart.length}</strong> paketin yalnızca isimleri panonuza kopyalanır ve resmi İtemsatış mağazamıza aktarılırsınız.
+                  ℹ️ {t.catalog.checkoutNoteBefore} <strong>{cart.length}</strong> {t.catalog.checkoutNoteMiddle}
                 </p>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px' }}>
@@ -1476,14 +1473,14 @@ export default function CatalogPage() {
                     className="cart-clear-btn"
                     onClick={clearCart}
                   >
-                    Sepeti Temizle
+                    {t.catalog.clearCartBtn}
                   </button>
                   <button
                     type="button"
                     className="cart-continue-btn"
                     onClick={() => setIsCartOpen(false)}
                   >
-                    Kataloğa Devam Et →
+                    {t.catalog.continueCatalogBtn}
                   </button>
                 </div>
               </div>

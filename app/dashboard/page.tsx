@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useI18n } from '@/components/I18nProvider';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface UserLicense {
   id: string;
@@ -20,6 +22,7 @@ interface DashboardUser {
 }
 
 export default function DashboardPage() {
+  const { t, formatDate } = useI18n();
   const [user, setUser] = useState<DashboardUser | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [licenses, setLicenses] = useState<UserLicense[]>([]);
@@ -83,14 +86,14 @@ export default function DashboardPage() {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Kod aktive edilemedi.');
+        throw new Error(data.message || t.dashboard.redeemError);
       }
 
       setRedeemMessage({ type: 'success', text: data.message });
       setRedeemCode('');
       await loadUserData();
     } catch (err: any) {
-      setRedeemMessage({ type: 'error', text: err.message || 'Bir hata oluştu.' });
+      setRedeemMessage({ type: 'error', text: err.message || t.dashboard.genericError });
     } finally {
       setRedeemLoading(false);
     }
@@ -109,11 +112,11 @@ export default function DashboardPage() {
       }
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.message || 'İndirme bağlantısı alınamadı.');
+        throw new Error(data.message || t.dashboard.downloadError);
       }
       window.location.href = data.url;
     } catch (err: any) {
-      setRedeemMessage({ type: 'error', text: err.message || 'İndirme başarısız.' });
+      setRedeemMessage({ type: 'error', text: err.message || t.dashboard.downloadFailed });
     } finally {
       setDownloadLoading(false);
     }
@@ -159,10 +162,11 @@ export default function DashboardPage() {
                 paddingLeft: '12px',
               }}
             >
-              İTEMSATIŞ GÜVENCESİYLE
+              {t.common.itemsatisTrust}
             </span>
           </div>
-          <div style={styles.userSection}>
+          <div style={{ ...styles.userSection, flexWrap: 'wrap' }}>
+            <LanguageSwitcher compact />
             {isAdmin && (
               <Link
                 href="/admin"
@@ -177,14 +181,14 @@ export default function DashboardPage() {
                   textDecoration: 'none',
                 }}
               >
-                Yönetici Paneli
+                {t.dashboard.adminPanelBtn}
               </Link>
             )}
             <span style={styles.userEmail}>
               {user?.name || user?.email?.replace(/@(kullanici\.restrictedstudio\.shop|anon\.restrictedstudio\.shop|restrictedstudio\.com|restrictedstudio\.local|restricted\.studio)$/i, '')}
             </span>
             <button onClick={handleLogout} style={styles.logoutBtn}>
-              Çıkış Yap
+              {t.dashboard.logoutBtn}
             </button>
           </div>
         </div>
@@ -193,8 +197,8 @@ export default function DashboardPage() {
       <main style={styles.main}>
         <div style={styles.welcomeBanner}>
           <div>
-            <h1 style={styles.pageTitle}>Müşteri Kontrol Paneli</h1>
-            <p style={styles.pageSubtitle}>İtemsatış kodlarınızı aktive edin, lisanslarınızı görüntüleyin ve R-AI kurulum dosyasını indirin.</p>
+            <h1 style={styles.pageTitle}>{t.dashboard.pageTitle}</h1>
+            <p style={styles.pageSubtitle}>{t.dashboard.pageSubtitle}</p>
           </div>
         </div>
 
@@ -207,8 +211,8 @@ export default function DashboardPage() {
               </svg>
             </div>
             <div>
-              <h2 style={styles.cardTitle}>Aktivasyon Kodu Kullan (Redeem)</h2>
-              <p style={styles.cardSubtitle}>İtemsatış siparişinizden aldığınız kodu buraya girerek lisansınızı hesabınıza tanımlayın.</p>
+              <h2 style={styles.cardTitle}>{t.dashboard.redeemTitle}</h2>
+              <p style={styles.cardSubtitle}>{t.dashboard.redeemSubtitle}</p>
             </div>
           </div>
 
@@ -230,11 +234,11 @@ export default function DashboardPage() {
               type="text"
               value={redeemCode}
               onChange={(e) => setRedeemCode(e.target.value.toUpperCase())}
-              placeholder="Örn: R-AI-XXXX-XXXX-XXXX"
+              placeholder={t.dashboard.redeemPlaceholder}
               style={styles.redeemInput}
             />
             <button type="submit" disabled={redeemLoading || !redeemCode.trim()} style={styles.redeemBtn}>
-              {redeemLoading ? 'Doğrulanıyor...' : 'Kodu Aktif Et'}
+              {redeemLoading ? t.dashboard.redeemLoadingBtn : t.dashboard.redeemSubmitBtn}
             </button>
           </form>
         </div>
@@ -250,8 +254,8 @@ export default function DashboardPage() {
               </svg>
             </div>
             <div>
-              <h2 style={styles.cardTitle}>R-AI Masaüstü Çalışma İstasyonu</h2>
-              <p style={styles.cardSubtitle}>Kurumsal yapay zeka masaüstü (.exe) yazılımını doğrudan indirin.</p>
+              <h2 style={styles.cardTitle}>{t.dashboard.stationTitle}</h2>
+              <p style={styles.cardSubtitle}>{t.dashboard.stationSubtitle}</p>
             </div>
           </div>
 
@@ -266,14 +270,12 @@ export default function DashboardPage() {
                     border: '1px solid #F0F0F0',
                   }}
                 >
-                  {activeLicense ? 'LİSANS AKTİF & ONAYLI' : 'AKTİF LİSANS BULUNAMADI'}
+                  {activeLicense ? t.dashboard.licenseActiveBadge : t.dashboard.licenseMissingBadge}
                 </span>
-                <span style={styles.fileMeta}>Restricted_Studio_Setup.exe • Windows 10/11 x64</span>
+                <span style={styles.fileMeta}>{t.dashboard.fileMeta}</span>
               </div>
               <p style={styles.downloadNotice}>
-                {activeLicense
-                  ? 'Aktif lisansınız onaylandı. Aşağıdaki butona tıklayarak kurulum dosyasını indirebilirsiniz.'
-                  : 'Kurulum dosyasını indirebilmek için önce geçerli bir aktivasyon kodu girerek lisans tanımlamalısınız.'}
+                {activeLicense ? t.dashboard.downloadActiveNotice : t.dashboard.downloadLockedNotice}
               </p>
             </div>
 
@@ -284,7 +286,7 @@ export default function DashboardPage() {
                   <polyline points="7 10 12 15 17 10" />
                   <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
-                <span>{downloadLoading ? 'Bağlantı hazırlanıyor...' : 'R-AI Kurulum Dosyasını İndir (.exe)'}</span>
+                <span>{downloadLoading ? t.dashboard.downloadPreparingBtn : t.dashboard.downloadBtn}</span>
               </button>
             ) : (
               <button disabled style={styles.downloadBtnDisabled}>
@@ -292,7 +294,7 @@ export default function DashboardPage() {
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                   <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
-                <span>İndirme Kilitli (Lisans Gereklidir)</span>
+                <span>{t.dashboard.downloadLockedBtn}</span>
               </button>
             )}
           </div>
@@ -309,28 +311,28 @@ export default function DashboardPage() {
               </svg>
             </div>
             <div>
-              <h2 style={styles.cardTitle}>Lisanslarım ve Cihaz Durumları</h2>
-              <p style={styles.cardSubtitle}>Hesabınıza tanımlı ürünler, kalan süreler ve HWID donanım kilitleri.</p>
+              <h2 style={styles.cardTitle}>{t.dashboard.licensesTitle}</h2>
+              <p style={styles.cardSubtitle}>{t.dashboard.licensesSubtitle}</p>
             </div>
           </div>
 
           {loading ? (
-            <div style={styles.loadingBox}>Lisans bilgileri yükleniyor...</div>
+            <div style={styles.loadingBox}>{t.dashboard.loadingLicenses}</div>
           ) : licenses.length === 0 ? (
             <div style={styles.emptyBox}>
-              <p>Henüz hesabınıza tanımlı aktif bir lisans bulunmuyor.</p>
-              <span style={{ fontSize: '12px', color: 'rgba(240, 240, 240, 0.6)' }}>İtemsatış kodunuzu yukarıdaki kutucuğa girerek hemen başlatabilirsiniz.</span>
+              <p>{t.dashboard.emptyLicensesTitle}</p>
+              <span style={{ fontSize: '12px', color: 'rgba(240, 240, 240, 0.6)' }}>{t.dashboard.emptyLicensesHint}</span>
             </div>
           ) : (
             <div style={styles.tableWrapper}>
               <table style={styles.table}>
                 <thead>
                   <tr style={styles.tableHeadRow}>
-                    <th style={styles.th}>ÜRÜN</th>
-                    <th style={styles.th}>DURUM</th>
-                    <th style={styles.th}>KALAN SÜRE</th>
-                    <th style={styles.th}>DONANIM KİLİDİ (HWID)</th>
-                    <th style={styles.th}>BİTİŞ TARİHİ</th>
+                    <th style={styles.th}>{t.dashboard.thProduct}</th>
+                    <th style={styles.th}>{t.dashboard.thStatus}</th>
+                    <th style={styles.th}>{t.dashboard.thRemaining}</th>
+                    <th style={styles.th}>{t.dashboard.thHwid}</th>
+                    <th style={styles.th}>{t.dashboard.thExpires}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -351,12 +353,16 @@ export default function DashboardPage() {
                               border: '1px solid #F0F0F0',
                             }}
                           >
-                            {!isExpired && lic.status === 'active' ? 'Aktif' : isExpired ? 'Süresi Doldu' : 'Askıya Alındı'}
+                            {!isExpired && lic.status === 'active'
+                              ? t.dashboard.statusActive
+                              : isExpired
+                                ? t.dashboard.statusExpired
+                                : t.dashboard.statusSuspended}
                           </span>
                         </td>
                         <td style={styles.td}>
                           <span style={{ fontWeight: 700, color: daysLeft > 5 ? '#F0F0F0' : '#A50000' }}>
-                            {daysLeft > 0 ? `${daysLeft} Gün` : '0 Gün'}
+                            {daysLeft > 0 ? `${daysLeft} ${t.dashboard.daysSuffix}` : `0 ${t.dashboard.daysSuffix}`}
                           </span>
                         </td>
                         <td style={styles.td}>
@@ -365,14 +371,14 @@ export default function DashboardPage() {
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                 <polyline points="20 6 9 17 4 12" />
                               </svg>
-                              Kilitli ({lic.hwid.slice(0, 10)}...)
+                              {t.dashboard.hwidLockedPrefix} ({lic.hwid.slice(0, 10)}...)
                             </span>
                           ) : (
-                            <span style={styles.hwidPending}>İlk Cihaz Bekleniyor</span>
+                            <span style={styles.hwidPending}>{t.dashboard.hwidPending}</span>
                           )}
                         </td>
                         <td style={styles.td}>
-                          <span style={styles.dateText}>{new Date(lic.expires_at).toLocaleDateString('tr-TR')}</span>
+                          <span style={styles.dateText}>{formatDate(lic.expires_at)}</span>
                         </td>
                       </tr>
                     );
