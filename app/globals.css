@@ -2766,3 +2766,50 @@ svg {
     max-width: 100%;
   }
 }
+
+/* ==========================================================================
+   WINTER SEASON DECORATIONS (Apple & Obsidian Aesthetic)
+   ========================================================================== */
+
+/* 1. Global Navigation Winter Frost Trim */
+.global-nav {
+  border-bottom: 1px solid rgba(160, 215, 255, 0.28) !important;
+  box-shadow: 0 4px 20px rgba(0, 113, 227, 0.08), 0 1px 0 0 rgba(220, 240, 255, 0.2) !important;
+}
+
+/* 2. Frosted Pill Accents */
+.hero-badge-pill,
+.catalog-pill-badge {
+  border-color: rgba(140, 210, 255, 0.35) !important;
+  box-shadow: 0 2px 14px rgba(0, 113, 227, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+/* 3. Ice Crystal Accent on Catalog Cards */
+.catalog-card-visual::before {
+  content: '❄';
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 13px;
+  color: rgba(220, 240, 255, 0.35);
+  pointer-events: none;
+  z-index: 2;
+  text-shadow: 0 0 8px rgba(140, 210, 255, 0.7);
+  transition: all var(--transition);
+}
+
+.catalog-card:hover .catalog-card-visual::before {
+  color: rgba(255, 255, 255, 0.85);
+  transform: rotate(20deg) scale(1.2);
+  text-shadow: 0 0 12px rgba(140, 210, 255, 0.95);
+}
+
+/* 4. Winter Season Pill Responsive Behavior */
+@media (max-width: 768px) {
+  .winter-season-pill {
+    bottom: 16px !important;
+    left: 14px !important;
+    font-size: 11px !important;
+    padding: 4px 10px !important;
+  }
+}

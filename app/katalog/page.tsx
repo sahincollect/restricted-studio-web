@@ -426,7 +426,7 @@ export default function CatalogPage() {
         <div className="container catalog-hero-inner">
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
             <div>
-              <p className="catalog-eyebrow">Paket Kataloğu</p>
+              <p className="catalog-eyebrow">❄️ Kış Sezonu Kataloğu</p>
               <h1 className="catalog-title">FiveM Arşivi</h1>
               <p className="catalog-subtitle">
                 {catalogItems.length.toLocaleString('tr-TR')} paket. Sepete ekleyin, tek tıkla İtemsatış üzerinden teslim alın.
