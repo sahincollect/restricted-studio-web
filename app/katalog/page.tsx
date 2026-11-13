@@ -345,8 +345,7 @@ export default function CatalogPage() {
             </Link>
             <Link
               href="/katalog"
-              className="nav-item nav-item-active"
-              style={{ color: '#F0F0F0', fontWeight: 700 }}
+              className="nav-item nav-item-active nav-katalog-shimmer"
               onClick={() => setMobileMenuOpen(false)}
             >
               Katalog

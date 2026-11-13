@@ -335,8 +335,60 @@ textarea {
   transform: scaleX(1);
 }
 
-.bpn-link-highlight {
-  color: #e06c6c;
+@keyframes noirKatalogSweep {
+  0% {
+    background-position: 100% 50%;
+    filter: drop-shadow(0 0 5px rgba(217, 72, 72, 0.24));
+  }
+  50% {
+    background-position: 0% 50%;
+    filter: drop-shadow(0 0 11px rgba(245, 242, 236, 0.42));
+  }
+  100% {
+    background-position: 100% 50%;
+    filter: drop-shadow(0 0 5px rgba(217, 72, 72, 0.24));
+  }
+}
+
+.bpn-link-highlight,
+.nav-katalog-shimmer,
+.nav-item.nav-katalog-shimmer,
+.nav-item.nav-item-active.nav-katalog-shimmer {
+  display: inline-block;
+  font-weight: 800;
+  background-image: linear-gradient(
+    110deg,
+    #c63434 0%,
+    #c63434 30%,
+    #e57272 39%,
+    #fffaf2 47%,
+    #ffffff 50%,
+    #fffaf2 53%,
+    #e57272 61%,
+    #c63434 70%,
+    #c63434 100%
+  );
+  background-size: 240% 100%;
+  background-position: 100% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: noirKatalogSweep 2.6s ease-in-out infinite;
+}
+
+.bpn-link-highlight:hover,
+.nav-katalog-shimmer:hover {
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 10px rgba(242, 239, 232, 0.36));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bpn-link-highlight,
+  .nav-katalog-shimmer {
+    animation: none;
+    background-position: 50% 50%;
+  }
 }
 
 .bpn-actions {

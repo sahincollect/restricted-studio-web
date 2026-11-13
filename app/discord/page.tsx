@@ -40,7 +40,7 @@ export default function DiscordPage() {
             <Link href="/" style={styles.navLink}>
               Ana Sayfa
             </Link>
-            <Link href="/katalog" style={styles.navLink}>
+            <Link href="/katalog" className="nav-katalog-shimmer" style={{ ...styles.navLink, color: undefined, fontWeight: 700 }}>
               Katalog
             </Link>
             <Link href="/dashboard" style={styles.navPortalBtn}>
