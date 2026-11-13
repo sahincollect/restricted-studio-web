@@ -130,6 +130,18 @@ export default function CatalogPage() {
     }
   }, [cart, cartHydrated]);
 
+  // Adjust body class when cart has items on mobile
+  useEffect(() => {
+    if (cart.length > 0) {
+      document.body.classList.add('has-catalog-cart');
+    } else {
+      document.body.classList.remove('has-catalog-cart');
+    }
+    return () => {
+      document.body.classList.remove('has-catalog-cart');
+    };
+  }, [cart.length]);
+
   const handleCloseGuideModal = () => {
     if (dontShowToday) {
       try {
@@ -276,7 +288,7 @@ export default function CatalogPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div className={`catalog-page-wrapper ${cart.length > 0 ? 'has-active-cart' : ''}`} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* =====================================================================
            MINIMALIST FROSTED GLASS NAV
            ===================================================================== */}
@@ -424,7 +436,7 @@ export default function CatalogPage() {
            ===================================================================== */}
       <section className="catalog-hero">
         <div className="container catalog-hero-inner">
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+          <div className="catalog-hero-header-row">
             <div>
               <p className="catalog-eyebrow">❄️ Kış Sezonu Kataloğu</p>
               <h1 className="catalog-title">FiveM Arşivi</h1>
@@ -432,7 +444,7 @@ export default function CatalogPage() {
                 {catalogItems.length.toLocaleString('tr-TR')} paket. Sepete ekleyin, tek tıkla İtemsatış üzerinden teslim alın.
               </p>
             </div>
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div className="catalog-hero-actions">
               <button
                 type="button"
                 onClick={() => setIsCartOpen(true)}
@@ -452,44 +464,13 @@ export default function CatalogPage() {
           </div>
 
           {/* Campaign Notice Box */}
-          <div
-            style={{
-              marginTop: '20px',
-              padding: '14px 20px',
-              borderRadius: '14px',
-              background: isDiscounted
-                ? 'linear-gradient(135deg, #06261a 0%, #0c4d34 100%)'
-                : 'linear-gradient(135deg, #081d3d 0%, #0e3778 100%)',
-              border: isDiscounted ? '1.5px solid #10b981' : '1.5px solid #0071e3',
-              boxShadow: isDiscounted
-                ? '0 8px 24px rgba(16, 185, 129, 0.25)'
-                : '0 8px 28px rgba(0, 113, 227, 0.35)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '14px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div
-                style={{
-                  width: '38px',
-                  height: '38px',
-                  borderRadius: '10px',
-                  backgroundColor: isDiscounted ? 'rgba(16, 185, 129, 0.2)' : 'rgba(0, 113, 227, 0.3)',
-                  border: isDiscounted ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(0, 113, 227, 0.6)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '18px',
-                  flexShrink: 0,
-                }}
-              >
+          <div className={`catalog-campaign-box ${isDiscounted ? 'active' : ''}`}>
+            <div className="catalog-campaign-main">
+              <div className="catalog-campaign-icon">
                 {isDiscounted ? '🎉' : '🏷️'}
               </div>
-              <div style={{ fontSize: '13.5px', color: '#ffffff', lineHeight: 1.5 }}>
-                <strong style={{ color: isDiscounted ? '#34d399' : '#60a5fa', fontWeight: 800, marginRight: '6px' }}>
+              <div className="catalog-campaign-text">
+                <strong className="campaign-strong-title">
                   Parça Başı 100 TL Kampanyası:
                 </strong>
                 {isDiscounted ? (
@@ -500,19 +481,7 @@ export default function CatalogPage() {
                   <span>
                     Tüm paketler parça başı <strong style={{ color: '#ffffff' }}>100 TL</strong>. Sepetinize <strong style={{ color: '#93c5fd' }}>15&apos;ten fazla ürün</strong> (16+) eklerseniz tüm sepetinizde anında <strong style={{ color: '#60a5fa' }}>%50 İndirim</strong> tanımlanır!
                     {cart.length > 0 && (
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          marginLeft: '8px',
-                          padding: '2px 8px',
-                          borderRadius: '6px',
-                          backgroundColor: 'rgba(0, 113, 227, 0.45)',
-                          border: '1px solid #38bdf8',
-                          color: '#ffffff',
-                          fontWeight: 700,
-                          fontSize: '12px',
-                        }}
-                      >
+                      <span className="catalog-campaign-badge">
                         {remainingForDiscount} ürün sonra %50 indirim
                       </span>
                     )}
@@ -524,22 +493,7 @@ export default function CatalogPage() {
               <button
                 type="button"
                 onClick={() => setIsCartOpen(true)}
-                style={{
-                  backgroundColor: '#0071e3',
-                  color: '#ffffff',
-                  border: '1px solid #60a5fa',
-                  borderRadius: '10px',
-                  padding: '9px 18px',
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.2s',
-                }}
+                className="catalog-campaign-btn"
               >
                 <span>Sepeti Gör ({finalTotal.toLocaleString('tr-TR')} TL)</span>
                 <span>→</span>
@@ -570,7 +524,7 @@ export default function CatalogPage() {
             <input
               type="text"
               className="catalog-search-input"
-              placeholder="6.400+ paket içinde arayın... (Örn: LB Phone, JG Mechanic, Roxwood, Heist, EUP, Audi)"
+              placeholder="6.400+ paket içinde arayın... (Örn: LB Phone, Roxwood, EUP, Audi)"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -613,9 +567,9 @@ export default function CatalogPage() {
           {filteredItems.length > visibleCount && ` (İlk ${visibleCount} gösteriliyor)`}
           {selectedCategory !== 'Tümü' && ` · ${selectedCategory}`}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ fontSize: '12.5px', color: '#a1a1aa' }}>Parça başı 100 TL • 15+ pakette %50 indirim</span>
-          <span style={{ color: '#0071e3', fontWeight: 600 }}>• İtemsatış ile teslimat</span>
+        <div className="catalog-statusbar-meta">
+          <span>Parça başı 100 TL • 15+ pakette %50 indirim</span>
+          <span className="statusbar-meta-tag">• İtemsatış ile teslimat</span>
         </div>
       </div>
 
@@ -862,57 +816,17 @@ export default function CatalogPage() {
           aria-modal="true"
           aria-labelledby="guide-modal-title"
           onClick={handleCloseGuideModal}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            backgroundColor: 'rgba(5, 5, 8, 0.8)',
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '16px',
-            overscrollBehavior: 'contain',
-          }}
+          className="guide-modal-overlay"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{
-              width: '100%',
-              maxWidth: '480px',
-              backgroundColor: '#0a0a0c',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderTop: '2px solid #0071e3',
-              borderRadius: '16px',
-              padding: '28px 28px 22px',
-              boxShadow: '0 24px 64px rgba(0, 0, 0, 0.8)',
-              position: 'relative',
-              color: '#fafafa',
-              fontFamily: 'var(--font-sans)',
-              maxHeight: '92vh',
-              overflowY: 'auto',
-            }}
+            className="guide-modal-dialog"
           >
             <button
               type="button"
               onClick={handleCloseGuideModal}
               aria-label="Kapat"
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                width: '28px',
-                height: '28px',
-                borderRadius: '8px',
-                backgroundColor: 'transparent',
-                border: 'none',
-                color: '#71717a',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-              }}
+              className="guide-modal-close"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18" />
