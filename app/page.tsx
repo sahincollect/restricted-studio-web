@@ -324,11 +324,11 @@ export default function HomePage() {
               </div>
 
               <h1 className="bcm-headline">
-                ANALİZİ BIRAKIN.
+                KARARLI ALTYAPI.
                 <br />
-                SİSTEMİ ÇALIŞTIRIN.
+                ŞEFFAF MÜHENDİSLİK.
                 <br />
-                <span className="bcm-headline-accent">RESTRICTED İLE.</span>
+                <span className="bcm-headline-accent">YÜKSEK PERFORMANS.</span>
               </h1>
 
               <p className="bcm-subhead">
