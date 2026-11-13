@@ -1,51 +1,34 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface Snowflake {
   x: number;
   y: number;
   r: number;
-  speed: number;
+  speedY: number;
   angle: number;
   angleSpeed: number;
+  driftAmp: number;
   opacity: number;
+  crystal: boolean;
+  rotation: number;
+  rotationSpeed: number;
 }
 
+/**
+ * Minimalist Triadic Noir snowfall overlay across all routes.
+ * Renders soft archival-chalk (#E6E3DC) particles mixed with subtle
+ * 6-point geometric frost hairlines without UI clutter or pointer interference.
+ */
 export default function WinterSnow() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [snowEnabled, setSnowEnabled] = useState(true);
-  const [showPill, setShowPill] = useState(false);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('rs_winter_snow');
-      if (saved === 'false') {
-        setSnowEnabled(false);
-      }
-    } catch {
-      // ignore storage errors
-    }
-    setShowPill(true);
-  }, []);
-
-  const toggleSnow = () => {
-    setSnowEnabled((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem('rs_winter_snow', String(next));
-      } catch {
-        // ignore storage errors
-      }
-      return next;
-    });
-  };
-
-  useEffect(() => {
-    if (!snowEnabled) return;
-
-    // Check prefers-reduced-motion
-    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
       return;
     }
 
@@ -55,72 +38,94 @@ export default function WinterSnow() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let animationFrameId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    let animationFrameId = 0;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-    const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+    const syncDimensions = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
-    window.addEventListener('resize', handleResize, { passive: true });
+    syncDimensions();
+    window.addEventListener('resize', syncDimensions, { passive: true });
 
-    // Generate ~50 lightweight, natural snowflakes
-    const count = Math.min(Math.max(Math.floor(width / 26), 35), 60);
-    const flakes: Snowflake[] = [];
-
-    for (let i = 0; i < count; i++) {
-      flakes.push({
+    const count = width < 640 ? 24 : Math.min(Math.max(Math.floor(width / 34), 32), 52);
+    const flakes: Snowflake[] = Array.from({ length: count }, (_, idx) => {
+      const crystal = idx % 7 === 0;
+      return {
         x: Math.random() * width,
         y: Math.random() * height,
-        r: Math.random() * 2.2 + 1, // radius 1px to 3.2px
-        speed: Math.random() * 0.75 + 0.35, // soft realistic fall speed
+        r: crystal ? Math.random() * 1.4 + 2.4 : Math.random() * 1.4 + 0.8,
+        speedY: crystal ? Math.random() * 0.35 + 0.28 : Math.random() * 0.48 + 0.24,
         angle: Math.random() * Math.PI * 2,
-        angleSpeed: Math.random() * 0.015 + 0.005,
-        opacity: Math.random() * 0.45 + 0.3,
-      });
-    }
+        angleSpeed: Math.random() * 0.012 + 0.004,
+        driftAmp: Math.random() * 0.28 + 0.12,
+        opacity: crystal ? Math.random() * 0.14 + 0.22 : Math.random() * 0.28 + 0.16,
+        crystal,
+        rotation: Math.random() * Math.PI,
+        rotationSpeed: (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 0.005 + 0.002),
+      };
+    });
 
-    let isVisible = true;
+    let isVisible = document.visibilityState === 'visible';
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === 'visible';
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    const render = () => {
-      if (!isVisible) {
-        animationFrameId = requestAnimationFrame(render);
-        return;
-      }
-
-      ctx.clearRect(0, 0, width, height);
-
-      for (let i = 0; i < flakes.length; i++) {
-        const f = flakes[i];
-
-        f.angle += f.angleSpeed;
-        f.y += f.speed;
-        f.x += Math.sin(f.angle) * 0.55;
-
-        // Wrap around viewport
-        if (f.y > height + 6) {
-          f.y = -6;
-          f.x = Math.random() * width;
-        }
-        if (f.x > width + 6) {
-          f.x = -6;
-        } else if (f.x < -6) {
-          f.x = width + 6;
-        }
-
+    const drawCrystal = (f: Snowflake) => {
+      ctx.save();
+      ctx.translate(f.x, f.y);
+      ctx.rotate(f.rotation);
+      ctx.strokeStyle = `rgba(230, 227, 220, ${f.opacity})`;
+      ctx.lineWidth = 0.85;
+      ctx.lineCap = 'round';
+      for (let arm = 0; arm < 3; arm++) {
         ctx.beginPath();
-        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, false);
-        ctx.fillStyle = `rgba(220, 240, 255, ${f.opacity})`;
-        ctx.shadowColor = 'rgba(160, 215, 255, 0.45)';
-        ctx.shadowBlur = f.r > 2 ? 3 : 1;
-        ctx.fill();
+        ctx.moveTo(-f.r, 0);
+        ctx.lineTo(f.r, 0);
+        ctx.stroke();
+        ctx.rotate(Math.PI / 3);
+      }
+      ctx.restore();
+    };
+
+    const render = () => {
+      if (isVisible) {
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < flakes.length; i++) {
+          const f = flakes[i];
+          f.angle += f.angleSpeed;
+          f.rotation += f.rotationSpeed;
+          f.y += f.speedY;
+          f.x += Math.sin(f.angle) * f.driftAmp;
+
+          if (f.y > height + 8) {
+            f.y = -8;
+            f.x = Math.random() * width;
+          }
+          if (f.x > width + 8) {
+            f.x = -8;
+          } else if (f.x < -8) {
+            f.x = width + 8;
+          }
+
+          if (f.crystal) {
+            drawCrystal(f);
+          } else {
+            ctx.beginPath();
+            ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, false);
+            ctx.fillStyle = `rgba(230, 227, 220, ${f.opacity})`;
+            ctx.fill();
+          }
+        }
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -130,77 +135,23 @@ export default function WinterSnow() {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', syncDimensions);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [snowEnabled]);
+  }, []);
 
   return (
-    <>
-      {snowEnabled && (
-        <canvas
-          ref={canvasRef}
-          aria-hidden="true"
-          style={{
-            position: 'fixed',
-            inset: 0,
-            width: '100vw',
-            height: '100vh',
-            pointerEvents: 'none',
-            zIndex: 9995,
-          }}
-        />
-      )}
-
-      {showPill && (
-        <aside
-          className="winter-season-pill"
-          aria-label="Kış Sezonu Teması"
-          style={{
-            position: 'fixed',
-            bottom: '20px',
-            left: '20px',
-            zIndex: 9992,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '6px 12px',
-            background: 'rgba(12, 13, 20, 0.88)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            border: '1px solid rgba(140, 210, 255, 0.3)',
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 113, 227, 0.2)',
-            borderRadius: '999px',
-            fontSize: '12px',
-            fontWeight: 600,
-            color: '#e0f2fe',
-            userSelect: 'none',
-            transition: 'all 0.2s',
-          }}
-        >
-          <span style={{ fontSize: '13px' }}>❄️</span>
-          <span>Kış Sezonu</span>
-          <button
-            type="button"
-            onClick={toggleSnow}
-            title={snowEnabled ? 'Kar yağışını kapat' : 'Kar yağışını aç'}
-            style={{
-              background: snowEnabled ? 'rgba(0, 113, 227, 0.3)' : 'rgba(255, 255, 255, 0.08)',
-              border: '1px solid ' + (snowEnabled ? 'rgba(0, 113, 227, 0.6)' : 'rgba(255, 255, 255, 0.15)'),
-              borderRadius: '999px',
-              padding: '2px 8px',
-              fontSize: '11px',
-              color: snowEnabled ? '#38bdf8' : '#a1a1aa',
-              cursor: 'pointer',
-              fontWeight: 700,
-              marginLeft: '2px',
-              transition: 'all 0.2s',
-            }}
-          >
-            {snowEnabled ? 'Kar: Açık' : 'Kar: Kapalı'}
-          </button>
-        </aside>
-      )}
-    </>
+    <canvas
+      ref={canvasRef}
+      aria-hidden="true"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        zIndex: 45,
+      }}
+    />
   );
 }

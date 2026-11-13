@@ -862,6 +862,22 @@ textarea {
   z-index: 2;
 }
 
+/* Minimalist geometric North Star mark in upper showcase sky */
+.showcase-polaris-mark {
+  position: absolute;
+  top: clamp(18px, 3vh, 28px);
+  right: clamp(18px, 2.5vw, 30px);
+  z-index: 3;
+  pointer-events: none;
+  color: rgba(230, 227, 220, 0.48);
+}
+
+@media (max-width: 980px) {
+  .showcase-polaris-mark {
+    display: none;
+  }
+}
+
 /* CALM TELEMETRY CONSOLE CHASSIS (Matte Obsidian + Soft Chalk Borders) */
 .device-mockup-chassis {
   position: relative;

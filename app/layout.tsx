@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import WinterSnow from '@/components/WinterSnow';
 
 export const metadata: Metadata = {
   title: 'Restricted Studio — Kurumsal FiveM Altyapı & Yazılım Ekosistemi',
@@ -60,6 +61,7 @@ export default function RootLayout({
             </filter>
           </defs>
         </svg>
+        <WinterSnow />
         {children}
       </body>
     </html>

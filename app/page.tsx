@@ -305,8 +305,22 @@ export default function HomePage() {
 
             <div className="bcm-top-wrap">
               <div className="bcm-eyebrow">
-                <span className="bcm-dot" />
-                <span>RESTRICTED STUDIO · FIVEM ARCHITECTURE</span>
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#c62828"
+                  strokeWidth="2.1"
+                  strokeLinecap="round"
+                  aria-hidden="true"
+                  style={{ flexShrink: 0 }}
+                >
+                  <line x1="12" y1="2" x2="12" y2="22" />
+                  <line x1="3.34" y1="7" x2="20.66" y2="17" />
+                  <line x1="20.66" y1="7" x2="3.34" y2="17" />
+                </svg>
+                <span>RESTRICTED STUDIO · YILBAŞI SÜRÜMÜ 2026</span>
               </div>
 
               <h1 className="bcm-headline">
@@ -469,7 +483,24 @@ export default function HomePage() {
             <div className="noir-grain-heavy" aria-hidden="true" />
             <div className="showcase-inverted-beam" aria-hidden="true" />
 
-            {/* Singular Signature Image 2 Horizon Monolith behind Console */}
+            {/* Minimalist New Year North Star + Distant Horizon Constellation */}
+            <svg
+              className="showcase-polaris-mark"
+              width="48"
+              height="48"
+              viewBox="0 0 48 48"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M28 6 L29.4 16.6 L40 18 L29.4 19.4 L28 30 L26.6 19.4 L16 18 L26.6 16.6 Z"
+                fill="currentColor"
+              />
+              <circle cx="11" cy="11" r="1.1" fill="currentColor" opacity="0.55" />
+              <circle cx="40" cy="34" r="0.9" fill="#c62828" opacity="0.7" />
+            </svg>
+
+            {/* Singular Signature Image 2 Winter Horizon Monolith behind Console */}
             <svg
               className="showcase-horizon-art"
               viewBox="0 0 400 180"
@@ -480,8 +511,26 @@ export default function HomePage() {
                 d="M0 44 Q 65 26, 130 40 T 260 36 T 400 46 L 400 180 L 0 180 Z"
                 fill="#090909"
               />
+              {/* Soft frost hairline along rolling winter terrain */}
+              <path
+                d="M0 44 Q 65 26, 130 40 T 260 36 T 400 46"
+                stroke="#E8E5DE"
+                strokeWidth="1.2"
+                fill="none"
+                opacity="0.22"
+              />
+              {/* Monolith cabin silhouette with snow-dusted pitch */}
               <polygon points="312,18 326,8 326,42 312,42" fill="#090909" />
               <polygon points="326,8 340,18 340,42 326,42" fill="#E8E5DE" opacity="0.82" />
+              <polyline
+                points="311,18.5 326,7.5 341,18.5"
+                stroke="#E8E5DE"
+                strokeWidth="2.1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+                opacity="0.92"
+              />
               <rect x="331" y="28" width="5" height="14" fill="#090909" />
               <path
                 d="M 185 180 Q 245 135, 215 100 T 308 42"
@@ -489,7 +538,7 @@ export default function HomePage() {
                 strokeWidth="12"
                 strokeLinecap="round"
                 fill="none"
-                opacity="0.14"
+                opacity="0.16"
               />
             </svg>
 

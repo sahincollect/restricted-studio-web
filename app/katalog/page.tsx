@@ -488,8 +488,22 @@ export default function CatalogPage() {
         <div className="container catalog-hero-strip-inner">
           <div className="chs-left">
             <div className="chs-pill">
-              <span className="chs-dot"></span>
-              <span>Kurumsal FiveM Yazılım Kataloğu</span>
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#c83232"
+                strokeWidth="2.1"
+                strokeLinecap="round"
+                aria-hidden="true"
+                style={{ flexShrink: 0 }}
+              >
+                <line x1="12" y1="2" x2="12" y2="22" />
+                <line x1="3.34" y1="7" x2="20.66" y2="17" />
+                <line x1="20.66" y1="7" x2="3.34" y2="17" />
+              </svg>
+              <span>Yılbaşı Sezonu · Kurumsal FiveM Arşivi</span>
             </div>
             <h1 className="chs-title">FiveM Yazılım &amp; Altyapı Arşivi</h1>
             <p className="chs-desc">
