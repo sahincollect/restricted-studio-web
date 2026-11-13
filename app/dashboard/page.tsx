@@ -173,22 +173,37 @@ export default function DashboardPage() {
       {/* Top Header */}
       <header style={styles.header}>
         <div style={styles.headerInner}>
-          <Link href="/" style={styles.logo}>
-            <span style={styles.logoDot}></span>
-            RESTRICTED STUDIO
-          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <Link href="/" style={styles.logo}>
+              <span style={styles.logoDot}></span>
+              RESTRICTED STUDIO
+            </Link>
+            <span
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '10px',
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                color: 'rgba(240, 240, 240, 0.65)',
+                borderLeft: '1px solid rgba(240, 240, 240, 0.2)',
+                paddingLeft: '12px',
+              }}
+            >
+              İTEMSATIŞ GÜVENCESİYLE
+            </span>
+          </div>
           <div style={styles.userSection}>
             {isAdmin && (
               <Link
                 href="/admin"
                 style={{
-                  fontSize: '12px',
+                  fontSize: '11.5px',
                   fontWeight: 700,
-                  color: '#ffffff',
-                  backgroundColor: 'rgba(0, 113, 227, 0.16)',
-                  border: '1px solid rgba(0, 113, 227, 0.4)',
+                  color: '#F0F0F0',
+                  backgroundColor: 'rgba(139, 0, 0, 0.45)',
+                  border: '1px solid #F0F0F0',
                   padding: '6px 12px',
-                  borderRadius: '6px',
+                  borderRadius: '0px',
                   textDecoration: 'none',
                 }}
               >

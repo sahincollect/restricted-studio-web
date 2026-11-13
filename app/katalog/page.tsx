@@ -322,10 +322,22 @@ export default function CatalogPage() {
            ===================================================================== */}
       <header className="global-nav" id="navbar">
         <div className="nav-container">
-          <Link href="/" className="nav-brand" aria-label="Restricted Studio Ana Sayfa">
-            <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="nav-brand-logo" />
-            <span className="nav-brand-text">Restricted Studio</span>
-          </Link>
+          <div className="nav-brand-wrap">
+            <Link href="/" className="nav-brand" aria-label="Restricted Studio Ana Sayfa">
+              <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="nav-brand-logo" />
+              <span className="nav-brand-text">Restricted Studio</span>
+            </Link>
+            <a
+              href={ITEMSATIS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-brand-trust"
+              title="İtemsatış Resmi Mağaza Güvencesi"
+            >
+              <ItemsatisLogo variant="icon" width={12} height={12} />
+              <span>İtemsatış Güvencesiyle</span>
+            </a>
+          </div>
 
           <nav className={`nav-menu ${mobileMenuOpen ? 'open' : ''}`} id="navMenu" aria-label="Ana Menü">
             <Link href="/" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
@@ -341,9 +353,6 @@ export default function CatalogPage() {
             </Link>
             <Link href="/discord" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
               Discord
-            </Link>
-            <Link href="/dashboard" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
-              Portal
             </Link>
 
             {/* Mobile Actions */}
@@ -423,16 +432,17 @@ export default function CatalogPage() {
               )}
             </button>
 
-            {/* Official Itemsatis Header Icon Link */}
+            {/* Official Itemsatis Header Button (Icon + Full Label) */}
             <a
               href={ITEMSATIS_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="nav-icon-btn nav-icon-itemsatis"
+              className="nav-btn-itemsatis"
               title="Resmi İtemsatış Mağazası"
               aria-label="Resmi İtemsatış Mağazası"
             >
-              <ItemsatisLogo variant="icon" width={18} height={18} />
+              <ItemsatisLogo variant="icon" width={15} height={15} />
+              <span>İtemsatış</span>
             </a>
 
             {/* Discord Header Icon Link */}

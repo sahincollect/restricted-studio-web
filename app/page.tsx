@@ -118,10 +118,37 @@ export default function HomePage() {
            TOP FLOATING PILL NAVBAR (Image 1 Sharp Header Frame)
            =============================================================== */}
       <header className="bento-pill-nav" id="navbar">
-        <Link href="/" className="bpn-brand" aria-label="Restricted Studio Ana Sayfa">
-          <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="bpn-logo" />
-          <span className="bpn-title">RESTRICTED STUDIO</span>
-        </Link>
+        <div className="bpn-brand-group">
+          <Link href="/" className="bpn-brand" aria-label="Restricted Studio Ana Sayfa">
+            <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="bpn-logo" />
+            <div className="bpn-brand-text">
+              <span className="bpn-title">RESTRICTED STUDIO</span>
+              <span className="bpn-trust-mobile">
+                <img src="/assets/itemsatis-icon.png" alt="" width={10} height={10} />
+                İTEMSATIŞ GÜVENCESİYLE
+              </span>
+            </div>
+          </Link>
+
+          <span className="bpn-brand-divider" aria-hidden="true" />
+
+          <a
+            href={ITEMSATIS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bpn-trust-badge"
+            title="İtemsatış Resmi Mağaza Güvencesi"
+          >
+            <img
+              src="/assets/itemsatis-icon.png"
+              alt="İtemsatış"
+              width={13}
+              height={13}
+              className="bpn-trust-icon"
+            />
+            <span>İTEMSATIŞ GÜVENCESİYLE</span>
+          </a>
+        </div>
 
         <nav className="bpn-menu" aria-label="Ana Menü">
           <button
@@ -170,7 +197,7 @@ export default function HomePage() {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2.4"
+              strokeWidth="2.3"
             >
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.3-4.3" />
@@ -181,17 +208,18 @@ export default function HomePage() {
             href={ITEMSATIS_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="bpn-icon-btn bpn-icon-itemsatis"
+            className="bpn-itemsatis-btn"
             title="Resmi İtemsatış Mağazası"
             aria-label="Resmi İtemsatış Mağazası"
           >
             <img
               src="/assets/itemsatis-icon.png"
               alt="İtemsatış"
-              width="16"
-              height="16"
-              style={{ objectFit: 'contain', display: 'block' }}
+              width={15}
+              height={15}
+              className="bpn-itemsatis-img"
             />
+            <span className="bpn-itemsatis-label">İTEMSATIŞ</span>
           </a>
 
           <Link
@@ -205,14 +233,11 @@ export default function HomePage() {
             </svg>
           </Link>
 
-          <div className="bpn-portal-pill">
-            <Link href="/login" className="bpn-pill-sub">
-              GİRİŞ
-            </Link>
-            <Link href="/dashboard" className="bpn-pill-main">
-              <span>PORTAL</span>
-            </Link>
-          </div>
+          <Link href="/dashboard" className="bpn-portal-btn">
+            <span className="bpn-portal-dot" aria-hidden="true" />
+            <span>MÜŞTERİ PORTALI</span>
+            <span aria-hidden="true">→</span>
+          </Link>
 
           <button
             type="button"
@@ -274,89 +299,125 @@ export default function HomePage() {
       <main className="bento-grid-container">
         {/* LEFT COLUMN */}
         <div className="bento-col-left">
-          {/* MAIN OBSIDIAN STIPPLED HEADLINE CARD */}
+          {/* MAIN OBSIDIAN ARCHITECTURAL HEADLINE CARD */}
           <section className="bento-card bento-card-main">
             <div className="noir-stipple-chalk" aria-hidden="true" />
             <div className="noir-grain-overlay" aria-hidden="true" />
 
-            <div className="bcm-top-wrap">
-              <div className="bcm-eyebrow">
-                <span className="bcm-dot" />
-                <span>RESTRICTED STUDIO // FIVEM ARCHITECTURE</span>
+            <div className="bcm-layout">
+              <div className="bcm-left-col">
+                <div className="bcm-top-wrap">
+                  <div className="bcm-eyebrow">
+                    <span className="bcm-dot" />
+                    <span>RESTRICTED STUDIO // FIVEM ARCHITECTURE</span>
+                  </div>
+
+                  <h1 className="bcm-headline">
+                    ANALİZİ BIRAKIN
+                    <br />
+                    VE SİSTEMİ ÇALIŞTIRIN.
+                    <br />
+                    <span className="bcm-headline-highlight">RESTRICTED İLE.</span>
+                  </h1>
+
+                  <p className="bcm-subhead">
+                    Şüpheli sızıntılar ve karmaşık kurulumlarla vakit kaybetmeyin.{' '}
+                    {catalogStats.total.toLocaleString('tr-TR')}+ doğrulanmış açık kaynak script,
+                    optimize 3D mekanlar ve sıfır gecikmeli SQL mimarisiyle doğrudan üretime geçin.
+                  </p>
+                </div>
+
+                <div className="bcm-actions-row">
+                  <Link href="/katalog" className="bcm-split-btn bcm-split-primary">
+                    <div className="bsb-text-wrap">
+                      <span className="bsb-sub">RESTRICTED STUDIO</span>
+                      <span className="bsb-main">KATALOĞU KEŞFET</span>
+                    </div>
+                    <div className="bsb-icon-wrap">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.4"
+                      >
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </Link>
+
+                  <a
+                    href={ITEMSATIS_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bcm-split-btn bcm-split-secondary"
+                  >
+                    <div className="bsb-text-wrap">
+                      <span className="bsb-sub">RESMİ MAĞAZA GÜVENCESİ</span>
+                      <span className="bsb-main">İTEMSATIŞ</span>
+                    </div>
+                    <div className="bsb-icon-wrap">
+                      <ItemsatisLogo
+                        variant="icon"
+                        width={16}
+                        height={16}
+                        style={{ filter: 'grayscale(100%) contrast(1.15)' }}
+                      />
+                    </div>
+                  </a>
+                </div>
               </div>
 
-              <h1 className="bcm-headline">
-                ANALİZİ BIRAKIN
-                <br />
-                VE SİSTEMİ ÇALIŞTIRIN.
-                <br />
-                <span className="bcm-headline-highlight">RESTRICTED İLE.</span>
-              </h1>
-
-              <p className="bcm-subhead">
-                Şüpheli sızıntılar ve karmaşık kurulumlarla vakit kaybetmeyin.{' '}
-                {catalogStats.total.toLocaleString('tr-TR')}+ doğrulanmış açık kaynak script,
-                optimize 3D mekanlar ve sıfır gecikmeli SQL mimarisiyle doğrudan üretime geçin.
-              </p>
-            </div>
-
-            <div className="bcm-actions-row">
-              <Link href="/katalog" className="bcm-split-btn bcm-split-primary">
-                <div className="bsb-text-wrap">
-                  <span className="bsb-sub">RESTRICTED STUDIO</span>
-                  <span className="bsb-main">KATALOĞU KEŞFET</span>
+              {/* Right Architectural Specification Rail (Cures Right-Side Void Calmly) */}
+              <aside className="bcm-spec-panel" aria-label="Mimari Özellik Özeti">
+                <div className="bsp-header">
+                  <span className="bsp-code">ED.2026 // SPEC-01</span>
+                  <span className="bsp-cross" aria-hidden="true">+</span>
                 </div>
-                <div className="bsb-icon-wrap">
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.6"
-                  >
-                    <path d="M5 12h14M12 5l7 7-7 7" />
+
+                <div className="bsp-vignette" aria-hidden="true">
+                  <svg viewBox="0 0 180 68" fill="none">
+                    <defs>
+                      <linearGradient id="specBeamFade" x1="0.35" y1="1" x2="0.1" y2="0">
+                        <stop offset="0%" stopColor="#E6E4DF" stopOpacity="0.45" />
+                        <stop offset="45%" stopColor="#8B0000" stopOpacity="0.24" />
+                        <stop offset="100%" stopColor="#080808" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
+                    <polygon points="88,48 112,48 76,0 44,0" fill="url(#specBeamFade)" />
+                    <path d="M0 54 Q 45 44, 92 52 T 180 48 L 180 68 L 0 68 Z" fill="#080808" />
+                    <polygon points="90,46 102,38 102,58 90,58" fill="#080808" />
+                    <polygon points="102,38 114,46 114,58 102,58" fill="#E6E4DF" opacity="0.88" />
+                    <rect x="106" y="49" width="4" height="9" fill="#080808" />
+                    <line x1="12" y1="54" x2="72" y2="54" stroke="#8B0000" strokeWidth="1" opacity="0.8" />
                   </svg>
                 </div>
-              </Link>
 
-              <a
-                href={ITEMSATIS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bcm-split-btn bcm-split-secondary"
-              >
-                <div className="bsb-text-wrap">
-                  <span className="bsb-sub">RESMİ MAĞAZA</span>
-                  <span className="bsb-main">İTEMSATIŞ</span>
+                <div className="bsp-rows">
+                  <div className="bsp-row">
+                    <span className="bsp-k">ARŞİV</span>
+                    <span className="bsp-v">{catalogStats.total.toLocaleString('tr-TR')}+ Paket</span>
+                  </div>
+                  <div className="bsp-row">
+                    <span className="bsp-k">RESMON</span>
+                    <span className="bsp-v">≤ 0.04 ms</span>
+                  </div>
+                  <div className="bsp-row">
+                    <span className="bsp-k">LİSANS</span>
+                    <span className="bsp-v">Escrow Yok · Open</span>
+                  </div>
+                  <div className="bsp-row">
+                    <span className="bsp-k">MOTOR</span>
+                    <span className="bsp-v">QBox · QB · ESX</span>
+                  </div>
                 </div>
-                <div className="bsb-icon-wrap">
-                  <ItemsatisLogo
-                    variant="icon"
-                    width={16}
-                    height={16}
-                    style={{ filter: 'grayscale(100%) contrast(1.25)' }}
-                  />
-                </div>
-              </a>
-            </div>
 
-            {/* Risograph Technical Sketch Arrow */}
-            <div className="bcm-accent-sketch" aria-hidden="true">
-              <svg width="96" height="44" viewBox="0 0 100 46" fill="none">
-                <path
-                  d="M8 38 C 36 10, 64 40, 88 14"
-                  stroke="#A50000"
-                  strokeWidth="2.2"
-                  strokeDasharray="3 3"
-                />
-                <path
-                  d="M78 11 L 90 13 L 86 24"
-                  stroke="#F0F0F0"
-                  strokeWidth="2"
-                  strokeLinecap="square"
-                />
-              </svg>
+                <Link href="/katalog" className="bsp-promo-foot">
+                  <span>16+ SEPETTE %50 İNDİRİM</span>
+                  <span>→</span>
+                </Link>
+              </aside>
             </div>
           </section>
 
@@ -478,10 +539,18 @@ export default function HomePage() {
         {/* RIGHT COLUMN: LIMINAL INVERTED-SPOTLIGHT CRIMSON SHOWCASE */}
         <div className="bento-col-right">
           <section className="bento-card bento-card-showcase" aria-label="Sistem Telemetri Monitörü">
-            {/* Image 2 Crimson Sky + Inverted Spotlight Beam + Stipple Texture */}
+            {/* Image 2 Crimson Sky + Inverted Spotlight Beam + Grain */}
             <div className="noir-stipple-obsidian" aria-hidden="true" />
             <div className="noir-grain-heavy" aria-hidden="true" />
             <div className="showcase-inverted-beam" aria-hidden="true" />
+
+            <div className="showcase-meta-bar" aria-hidden="true">
+              <span className="smb-tag">RS // CANLI TELEMETRİ MİMARİSİ</span>
+              <span className="smb-status">
+                <span className="smb-dot" />
+                60.0 TPS STABİL
+              </span>
+            </div>
 
             {/* Liminal Horizon Monolith & Path behind the Console */}
             <svg

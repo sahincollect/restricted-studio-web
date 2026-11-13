@@ -16,10 +16,25 @@ export default function DiscordPage() {
       {/* Header */}
       <header style={styles.header}>
         <div style={styles.headerInner}>
-          <Link href="/" style={styles.brandLink}>
-            <img src="/assets/rslogo.jpg" alt="Restricted Studio" style={styles.brandLogo} />
-            <span style={styles.brandText}>Restricted Studio</span>
-          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <Link href="/" style={styles.brandLink}>
+              <img src="/assets/rslogo.jpg" alt="Restricted Studio" style={styles.brandLogo} />
+              <span style={styles.brandText}>Restricted Studio</span>
+            </Link>
+            <span
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '10px',
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                color: 'rgba(240, 240, 240, 0.72)',
+                borderLeft: '1px solid rgba(240, 240, 240, 0.2)',
+                paddingLeft: '12px',
+              }}
+            >
+              İTEMSATIŞ GÜVENCESİYLE
+            </span>
+          </div>
 
           <nav style={styles.headerNav}>
             <Link href="/" style={styles.navLink}>
