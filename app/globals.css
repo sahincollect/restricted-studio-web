@@ -228,9 +228,8 @@ textarea {
 .bpn-title {
   font-family: var(--font-mono);
   font-size: clamp(11px, 1.02vw, 12.5px);
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.12em;
-  color: var(--chalk-paper);
   white-space: nowrap;
   line-height: 1.1;
 }
@@ -350,6 +349,9 @@ textarea {
   }
 }
 
+.bpn-title,
+.nav-brand-text,
+.brand-logo-shimmer,
 .bpn-link-highlight,
 .nav-katalog-shimmer,
 .nav-item.nav-katalog-shimmer,
@@ -377,6 +379,9 @@ textarea {
   animation: noirKatalogSweep 2.6s ease-in-out infinite;
 }
 
+.bpn-title:hover,
+.nav-brand-text:hover,
+.brand-logo-shimmer:hover,
 .bpn-link-highlight:hover,
 .nav-katalog-shimmer:hover {
   -webkit-text-fill-color: transparent;
@@ -384,6 +389,9 @@ textarea {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .bpn-title,
+  .nav-brand-text,
+  .brand-logo-shimmer,
   .bpn-link-highlight,
   .nav-katalog-shimmer {
     animation: none;
@@ -581,7 +589,36 @@ textarea {
   inset: 0;
   background: radial-gradient(circle at 90% 88%, rgba(110, 6, 6, 0.16) 0%, rgba(110, 6, 6, 0.04) 45%, transparent 72%);
   pointer-events: none;
-  z-index: 1;
+  z-index: 3;
+}
+
+.bcm-visual-stage {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: clamp(230px, 47%, 470px);
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0%, transparent 10%, rgba(0, 0, 0, 0.38) 36%, rgba(0, 0, 0, 0.96) 70%, #000 100%),
+    linear-gradient(180deg, #000 0%, #000 66%, rgba(0, 0, 0, 0.25) 84%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent 0%, transparent 10%, rgba(0, 0, 0, 0.38) 36%, rgba(0, 0, 0, 0.96) 70%, #000 100%),
+    linear-gradient(180deg, #000 0%, #000 66%, rgba(0, 0, 0, 0.25) 84%, transparent 100%);
+  mask-composite: intersect;
+}
+
+.bcm-visual-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 54% 38%;
+  display: block;
+  opacity: 0.9;
+  filter: contrast(1.06);
 }
 
 .bcm-top-wrap {
@@ -826,21 +863,42 @@ textarea {
   z-index: 4;
   flex: 1 1 0%;
   min-height: 0;
-  max-height: clamp(58px, 10dvh, 96px);
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  margin: 4px 0;
-  opacity: 0.9;
+  margin: 10px 0;
+  border-radius: 12px;
+  border: 1px solid rgba(240, 240, 240, 0.16);
+  background: #080808;
+  box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.65);
 }
 
-.bcc-art-wrap svg,
-.bcn-art-wrap svg {
+.bcc-art-wrap::after,
+.bcn-art-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 45%, transparent 56%, rgba(8, 8, 8, 0.52) 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.bento-art-photo {
   width: 100%;
   height: 100%;
-  max-height: clamp(58px, 10dvh, 96px);
+  object-fit: cover;
+  object-position: center;
   display: block;
+  opacity: 0.94;
+  transition: transform 0.35s ease, opacity 0.25s ease;
+}
+
+.bento-card-crimson:hover .bento-art-photo,
+.bento-card-noir:hover .bento-art-photo {
+  transform: scale(1.03);
+  opacity: 1;
 }
 
 .bcc-bottom,
@@ -1446,6 +1504,11 @@ textarea {
   .bcm-subhead {
     font-size: 11.5px;
     line-height: 1.4;
+    max-width: 390px;
+  }
+  .bcm-visual-stage {
+    width: clamp(200px, 44%, 340px);
+    opacity: 0.86;
   }
   .bcm-bottom-bar {
     padding-top: 10px;
@@ -1457,10 +1520,9 @@ textarea {
     font-size: 10px;
   }
   .bcc-art-wrap,
-  .bcn-art-wrap,
-  .bcc-art-wrap svg,
-  .bcn-art-wrap svg {
-    max-height: 58px;
+  .bcn-art-wrap {
+    margin: 7px 0;
+    border-radius: 9px;
   }
   .device-mockup-chassis {
     padding: 10px 12px;
@@ -1565,11 +1627,14 @@ textarea {
   .bento-card-noir {
     padding: 10px 12px;
   }
+  .bcm-visual-stage {
+    width: 56%;
+    opacity: 0.42;
+  }
   .bcc-art-wrap,
-  .bcn-art-wrap,
-  .bcc-art-wrap svg,
-  .bcn-art-wrap svg {
-    max-height: clamp(28px, 5.2dvh, 48px);
+  .bcn-art-wrap {
+    margin: 5px 0;
+    border-radius: 7px;
   }
   .bcc-title,
   .bcn-title {
@@ -1706,9 +1771,8 @@ textarea {
 .nav-brand-text {
   font-family: var(--font-mono);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.1em;
-  color: var(--chalk-paper);
   text-transform: uppercase;
 }
 

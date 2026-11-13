@@ -118,7 +118,7 @@ export default function LoginPage() {
         <div style={styles.header}>
           <Link href="/" style={styles.brandLink}>
             <span style={styles.brandDot}></span>
-            RESTRICTED STUDIO
+            <span className="brand-logo-shimmer">RESTRICTED STUDIO</span>
           </Link>
           <h1 style={styles.title}>Müşteri Girişi</h1>
           <p style={styles.subtitle}>R-AI lisans yönetimi ve dosya indirmeleri için hesabınıza giriş yapın.</p>

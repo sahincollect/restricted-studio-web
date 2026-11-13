@@ -19,7 +19,9 @@ export default function DiscordPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <Link href="/" style={styles.brandLink}>
               <img src="/assets/rslogo.jpg" alt="Restricted Studio" style={styles.brandLogo} />
-              <span style={styles.brandText}>Restricted Studio</span>
+              <span className="brand-logo-shimmer" style={{ ...styles.brandText, color: undefined }}>
+                Restricted Studio
+              </span>
             </Link>
             <span
               style={{

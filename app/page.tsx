@@ -302,6 +302,13 @@ export default function HomePage() {
           {/* MAIN OBSIDIAN ARCHITECTURAL HEADLINE CARD */}
           <section className="bento-card bento-card-main">
             <div className="noir-grain-overlay" aria-hidden="true" />
+            <div className="bcm-visual-stage" aria-hidden="true">
+              <img
+                src="/assets/noir-hero-monolith.jpg"
+                alt=""
+                className="bcm-visual-img"
+              />
+            </div>
 
             <div className="bcm-top-wrap">
               <div className="bcm-eyebrow">
@@ -416,13 +423,11 @@ export default function HomePage() {
               </div>
 
               <div className="bcc-art-wrap" aria-hidden="true">
-                <svg viewBox="0 0 180 78" fill="none">
-                  <line x1="16" y1="62" x2="164" y2="62" stroke="rgba(232,229,222,0.18)" strokeWidth="1" />
-                  <rect x="44" y="20" width="92" height="42" rx="4" stroke="rgba(232,229,222,0.28)" strokeWidth="1.2" fill="rgba(8,8,8,0.45)" />
-                  <path d="M78 35 L68 41 L78 47" stroke="#E8E5DE" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M102 35 L112 41 L102 47" stroke="#E8E5DE" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <line x1="94" y1="32" x2="86" y2="50" stroke="#C83232" strokeWidth="1.8" strokeLinecap="round" />
-                </svg>
+                <img
+                  src="/assets/noir-art-opensource.jpg"
+                  alt=""
+                  className="bento-art-photo"
+                />
               </div>
 
               <div className="bcc-bottom">
@@ -452,21 +457,11 @@ export default function HomePage() {
               </div>
 
               <div className="bcn-art-wrap" aria-hidden="true">
-                <svg viewBox="0 0 180 78" fill="none">
-                  <line x1="16" y1="62" x2="164" y2="62" stroke="rgba(232,229,222,0.16)" strokeWidth="1" />
-                  <line x1="16" y1="22" x2="164" y2="22" stroke="rgba(165,0,0,0.45)" strokeWidth="1" />
-                  <path
-                    d="M 104 22 C 120 34, 88 46, 108 58 L 122 62 C 134 52, 114 38, 118 22 Z"
-                    fill="#E8E5DE"
-                    opacity="0.72"
-                  />
-                  <circle cx="64" cy="34" r="3.2" fill="#E8E5DE" opacity="0.88" />
-                  <path
-                    d="M59 40 L69 40 L70 51 L67 51 L66.5 62 L64.5 62 L64.5 52 L63.5 52 L63 62 L61 62 L61 51 L58 51 Z"
-                    fill="#E8E5DE"
-                    opacity="0.75"
-                  />
-                </svg>
+                <img
+                  src="/assets/noir-art-discord.jpg"
+                  alt=""
+                  className="bento-art-photo"
+                />
               </div>
 
               <div className="bcn-bottom">

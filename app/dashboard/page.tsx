@@ -176,7 +176,7 @@ export default function DashboardPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <Link href="/" style={styles.logo}>
               <span style={styles.logoDot}></span>
-              RESTRICTED STUDIO
+              <span className="brand-logo-shimmer">RESTRICTED STUDIO</span>
             </Link>
             <span
               style={{

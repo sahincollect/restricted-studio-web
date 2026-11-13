@@ -171,7 +171,7 @@ export default function RegisterPage() {
         <div style={styles.header}>
           <Link href="/" style={styles.brandLink}>
             <span style={styles.brandDot}></span>
-            RESTRICTED STUDIO
+            <span className="brand-logo-shimmer">RESTRICTED STUDIO</span>
           </Link>
           <h1 style={styles.title}>Hesap Oluştur</h1>
           <p style={styles.subtitle}>İtemsatış kodlarınızı aktive etmek ve R-AI kullanmak için kaydolun.</p>

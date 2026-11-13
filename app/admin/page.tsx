@@ -224,7 +224,9 @@ export default function AdminPage() {
         <div style={styles.headerInner}>
           <Link href="/" style={styles.logo}>
             <span style={styles.logoDot}></span>
-            RESTRICTED STUDIO // YÖNETİCİ PANELİ
+            <span>
+              <span className="brand-logo-shimmer">RESTRICTED STUDIO</span> // YÖNETİCİ PANELİ
+            </span>
           </Link>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <Link href="/dashboard" style={styles.backBtn}>
