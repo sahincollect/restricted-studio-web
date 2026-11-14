@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import type { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { createAdminSupabase } from '@/lib/supabase';
 import {
   CUSTOMER_ACCESS_COOKIE,
@@ -21,6 +22,35 @@ export interface CustomerUserSession {
   familyId: string;
 }
 
+export interface DashboardLicenseRow {
+  id: string;
+  product_name: string;
+  hwid: string | null;
+  status: string;
+  expires_at: string;
+  created_at: string;
+}
+
+export interface DashboardSessionMeta {
+  familyId: string;
+  issuedAt: number;
+  expiresAt: number;
+  isGuest: boolean;
+}
+
+export interface ServerDashboardSessionResult {
+  authenticated: boolean;
+  needsRefresh: boolean;
+  user?: {
+    id: string;
+    email?: string;
+    name?: string;
+  };
+  licenses: DashboardLicenseRow[];
+  isAdmin: boolean;
+  sessionMeta?: DashboardSessionMeta;
+}
+
 interface RefreshClaims {
   sub: string;
   email?: string;
@@ -29,6 +59,7 @@ interface RefreshClaims {
   fid: string;
   jti: string;
   iat: number;
+  iatMs?: number;
   exp: number;
 }
 
@@ -44,9 +75,11 @@ const MAX_MEMORY_REFRESH = 5000;
 const globalRefresh = globalThis as unknown as {
   __rsRefreshStore?: Map<string, MemoryRefreshRecord>;
   __rsRevokedFamilies?: Set<string>;
+  __rsRevokedUsers?: Map<string, number>;
 };
 const memoryRefreshStore = (globalRefresh.__rsRefreshStore ||= new Map<string, MemoryRefreshRecord>());
 const memoryRevokedFamilies = (globalRefresh.__rsRevokedFamilies ||= new Set<string>());
+const memoryRevokedUsers = (globalRefresh.__rsRevokedUsers ||= new Map<string, number>());
 
 export function isSecureRequest(request: Request): boolean {
   const proto = (request.headers.get('x-forwarded-proto') || '').toLowerCase();
@@ -155,7 +188,8 @@ function createAccessAndRefreshTokens(user: {
     throw new Error('Customer session secret is not configured in production');
   }
   const secret = secrets[0];
-  const nowSec = Math.floor(Date.now() / 1000);
+  const nowMs = Date.now();
+  const nowSec = Math.floor(nowMs / 1000);
   const familyId = user.familyId || crypto.randomUUID();
 
   const accessToken = signPayload(
@@ -167,6 +201,7 @@ function createAccessAndRefreshTokens(user: {
       fid: familyId,
       jti: crypto.randomUUID(),
       iat: nowSec,
+      iatMs: nowMs,
       exp: nowSec + CUSTOMER_ACCESS_TTL_SECONDS,
     },
     secret
@@ -181,6 +216,7 @@ function createAccessAndRefreshTokens(user: {
       fid: familyId,
       jti: crypto.randomUUID(),
       iat: nowSec,
+      iatMs: nowMs,
       exp: nowSec + CUSTOMER_REFRESH_TTL_SECONDS,
     },
     secret
@@ -358,7 +394,9 @@ export async function rotateCustomerRefreshToken(request: Request): Promise<Refr
   const tokenHash = sha256Hex(rawRefresh);
   const nowIso = new Date().toISOString();
 
-  if (memoryRevokedFamilies.has(claims.fid)) {
+  const userRevokedAtMs = memoryRevokedUsers.get(claims.sub);
+  const refreshIssuedMs = typeof claims.iatMs === 'number' ? claims.iatMs : (claims.iat ?? 0) * 1000;
+  if (memoryRevokedFamilies.has(claims.fid) || (userRevokedAtMs !== undefined && refreshIssuedMs <= userRevokedAtMs)) {
     return { ok: false, reuseDetected: true };
   }
 
@@ -491,6 +529,72 @@ export async function revokeCurrentCustomerRefreshFamily(request: Request): Prom
   return userId;
 }
 
+export async function revokeAllCustomerSessions(userId: string): Promise<void> {
+  if (!userId) return;
+  const revokedAtMs = Date.now();
+  memoryRevokedUsers.set(userId, revokedAtMs);
+
+  for (const [, rec] of memoryRefreshStore.entries()) {
+    if (rec.userId === userId) {
+      rec.revokedAt = revokedAtMs;
+      memoryRevokedFamilies.add(rec.familyId);
+    }
+  }
+
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) return;
+  try {
+    const adminSupabase = createAdminSupabase();
+    await adminSupabase
+      .from('auth_refresh_tokens')
+      .update({ revoked_at: new Date(revokedAtMs).toISOString() })
+      .eq('user_id', userId)
+      .is('revoked_at', null);
+  } catch {
+    // Ignore when DB table is unavailable
+  }
+}
+
+async function isFamilyOrUserRevoked(
+  userId: string,
+  familyId: string,
+  iatMs?: number,
+  iatSec?: number
+): Promise<boolean> {
+  if (memoryRevokedFamilies.has(familyId)) {
+    return true;
+  }
+
+  const userRevokedAtMs = memoryRevokedUsers.get(userId);
+  if (userRevokedAtMs !== undefined) {
+    const tokenIssuedMs = typeof iatMs === 'number' ? iatMs : (iatSec ?? 0) * 1000;
+    if (tokenIssuedMs <= userRevokedAtMs) {
+      return true;
+    }
+  }
+
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return false;
+  }
+
+  try {
+    const adminSupabase = createAdminSupabase();
+    const { data: rows, error } = await adminSupabase
+      .from('auth_refresh_tokens')
+      .select('revoked_at')
+      .eq('family_id', familyId)
+      .limit(10);
+
+    if (!error && Array.isArray(rows) && rows.length > 0 && rows.every((r) => Boolean(r.revoked_at))) {
+      memoryRevokedFamilies.add(familyId);
+      return true;
+    }
+  } catch {
+    // Graceful degradation
+  }
+
+  return false;
+}
+
 export interface ResolvedCustomerSession {
   authenticated: boolean;
   user?: CustomerUserSession;
@@ -505,7 +609,12 @@ export async function resolveCustomerSession(request: Request): Promise<Resolved
   const accessCookie = readRequestCookie(request, CUSTOMER_ACCESS_COOKIE);
   const accessClaims = verifySignedPayload<RefreshClaims>(accessCookie);
 
-  if (accessClaims?.sub && accessClaims?.fid && !memoryRevokedFamilies.has(accessClaims.fid)) {
+  if (
+    accessClaims?.role === 'customer' &&
+    accessClaims?.sub &&
+    accessClaims?.fid &&
+    !(await isFamilyOrUserRevoked(accessClaims.sub, accessClaims.fid, accessClaims.iatMs, accessClaims.iat))
+  ) {
     return {
       authenticated: true,
       user: {
@@ -535,5 +644,112 @@ export async function resolveCustomerSession(request: Request): Promise<Resolved
   return {
     authenticated: false,
     clearCookies: Boolean(rotated.reuseDetected),
+  };
+}
+
+/**
+ * Verifies customer session inside Server Components (SSR) before any /dashboard HTML is emitted.
+ * Does not mutate refresh tokens (DashboardClient triggers silent API rotation when needsRefresh=true).
+ */
+export async function verifyServerDashboardSession(): Promise<ServerDashboardSessionResult> {
+  const cookieStore = await cookies();
+  const accessRaw = cookieStore.get(CUSTOMER_ACCESS_COOKIE)?.value;
+  const refreshRaw = cookieStore.get(CUSTOMER_REFRESH_COOKIE)?.value;
+
+  let sessionClaims: RefreshClaims | null = null;
+  let needsRefresh = false;
+
+  const accessClaims = verifySignedPayload<RefreshClaims>(accessRaw);
+  if (
+    accessClaims?.role === 'customer' &&
+    accessClaims?.sub &&
+    accessClaims?.fid &&
+    !(await isFamilyOrUserRevoked(accessClaims.sub, accessClaims.fid, accessClaims.iatMs, accessClaims.iat))
+  ) {
+    sessionClaims = accessClaims;
+  } else if (refreshRaw) {
+    const refreshClaims = verifySignedPayload<RefreshClaims>(refreshRaw);
+    if (
+      refreshClaims?.role === 'customer' &&
+      refreshClaims?.sub &&
+      refreshClaims?.fid &&
+      !(await isFamilyOrUserRevoked(refreshClaims.sub, refreshClaims.fid, refreshClaims.iatMs, refreshClaims.iat))
+    ) {
+      const tokenHash = sha256Hex(refreshRaw);
+      const memRec = memoryRefreshStore.get(tokenHash);
+      if (memRec && (memRec.revokedAt || memRec.usedAt)) {
+        return { authenticated: false, needsRefresh: false, licenses: [], isAdmin: false };
+      }
+
+      if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        try {
+          const adminSupabase = createAdminSupabase();
+          const { data: existing, error } = await adminSupabase
+            .from('auth_refresh_tokens')
+            .select('revoked_at, used_at, expires_at')
+            .eq('token_hash', tokenHash)
+            .maybeSingle();
+
+          if (!error) {
+            if (
+              !existing ||
+              existing.revoked_at ||
+              existing.used_at ||
+              new Date(existing.expires_at).getTime() <= Date.now()
+            ) {
+              return { authenticated: false, needsRefresh: false, licenses: [], isAdmin: false };
+            }
+          }
+        } catch {
+          // Rely on in-memory store when DB check is unavailable
+        }
+      }
+
+      sessionClaims = refreshClaims;
+      needsRefresh = true;
+    }
+  }
+
+  if (!sessionClaims) {
+    return { authenticated: false, needsRefresh: false, licenses: [], isAdmin: false };
+  }
+
+  let licenses: DashboardLicenseRow[] = [];
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const adminSupabase = createAdminSupabase();
+      const { data, error } = await adminSupabase
+        .from('user_licenses')
+        .select('id, product_name, hwid, status, expires_at, created_at')
+        .eq('user_id', sessionClaims.sub)
+        .order('created_at', { ascending: false });
+      if (!error && Array.isArray(data)) {
+        licenses = data as DashboardLicenseRow[];
+      }
+    } catch {
+      licenses = [];
+    }
+  }
+
+  const adminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+  const isAdmin = Boolean(adminEmail && sessionClaims.email?.toLowerCase() === adminEmail);
+  const isGuest = Boolean(sessionClaims.email?.toLowerCase().endsWith('@anon.restrictedstudio.shop'));
+
+  return {
+    authenticated: true,
+    needsRefresh,
+    user: {
+      id: sessionClaims.sub,
+      email: sessionClaims.email,
+      name: sessionClaims.name,
+    },
+    licenses,
+    isAdmin,
+    sessionMeta: {
+      familyId: sessionClaims.fid,
+      issuedAt: sessionClaims.iat,
+      expiresAt: sessionClaims.exp,
+      isGuest,
+    },
   };
 }

@@ -15,6 +15,7 @@ import {
   safeRedirectPath,
   verifyCloudflareOriginSecret,
   verifyCustomerAccessCookieEdge,
+  verifyCustomerRefreshCookieEdge,
 } from '@/lib/security-edge';
 
 function buildSecHeadersForRequest(request: NextRequest, noIndex: boolean, nonce: string): Record<string, string> {
@@ -24,11 +25,35 @@ function buildSecHeadersForRequest(request: NextRequest, noIndex: boolean, nonce
   return buildSecurityHeaders({ isHttps, isDev, noIndex, nonce });
 }
 
+function isSecureEdgeCookie(request: NextRequest): boolean {
+  const proto = (request.headers.get('x-forwarded-proto') || request.nextUrl.protocol.replace(':', '')).toLowerCase();
+  return proto === 'https' && !isLocalHostRequest(request);
+}
+
+function expireCustomerCookies(response: NextResponse, request: NextRequest): void {
+  const secure = isSecureEdgeCookie(request);
+  response.cookies.set(CUSTOMER_ACCESS_COOKIE, '', {
+    httpOnly: true,
+    secure,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 0,
+  });
+  response.cookies.set(CUSTOMER_REFRESH_COOKIE, '', {
+    httpOnly: true,
+    secure,
+    sameSite: 'strict',
+    path: '/',
+    maxAge: 0,
+  });
+}
+
 function applyResponseHeaders(
   response: NextResponse,
   request: NextRequest,
   secHeaders: Record<string, string>,
-  isApi: boolean
+  isApi: boolean,
+  noStore = false
 ): NextResponse {
   for (const [k, v] of Object.entries(secHeaders)) {
     response.headers.set(k, v);
@@ -41,6 +66,10 @@ function applyResponseHeaders(
     if (!response.headers.has('Cache-Control')) {
       response.headers.set('Cache-Control', 'no-store');
     }
+  }
+  if (noStore) {
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    response.headers.set('Pragma', 'no-cache');
   }
   return response;
 }
@@ -184,23 +213,41 @@ export async function middleware(request: NextRequest) {
     }
 
     // 6. Customer Page Access Gate (/dashboard, /login, /register) using HttpOnly cookies only
+    const isPortalNoStore =
+      isApi ||
+      isAdminPath ||
+      path.startsWith('/dashboard') ||
+      path === '/login' ||
+      path === '/register' ||
+      path.startsWith('/auth');
+    let clearStaleOnNext = false;
+
     if (path.startsWith('/dashboard') || path === '/login' || path === '/register') {
       const accessCookie = request.cookies.get(CUSTOMER_ACCESS_COOKIE)?.value;
       const refreshCookie = request.cookies.get(CUSTOMER_REFRESH_COOKIE)?.value;
       const accessCheck = await verifyCustomerAccessCookieEdge(accessCookie);
+      const refreshCheck = accessCheck.valid
+        ? { valid: true as const }
+        : await verifyCustomerRefreshCookieEdge(refreshCookie);
+      const clearSessionRequested = request.nextUrl.searchParams.get('clear_session') === '1';
 
-      if (path.startsWith('/dashboard') && !accessCheck.valid && !refreshCookie) {
+      if (path.startsWith('/dashboard') && !accessCheck.valid && !refreshCheck.valid) {
         const redirectUrl = new URL('/login', request.url);
         redirectUrl.searchParams.set('redirect', safeRedirectPath(path, '/dashboard'));
-        return applyResponseHeaders(NextResponse.redirect(redirectUrl), request, secHeaders, false);
+        const redirectRes = NextResponse.redirect(redirectUrl, 307);
+        expireCustomerCookies(redirectRes, request);
+        return applyResponseHeaders(redirectRes, request, secHeaders, false, true);
       }
 
-      if ((path === '/login' || path === '/register') && accessCheck.valid) {
+      if ((path === '/login' || path === '/register') && clearSessionRequested) {
+        clearStaleOnNext = true;
+      } else if ((path === '/login' || path === '/register') && accessCheck.valid) {
         return applyResponseHeaders(
-          NextResponse.redirect(new URL('/dashboard', request.url)),
+          NextResponse.redirect(new URL('/dashboard', request.url), 307),
           request,
           secHeaders,
-          false
+          false,
+          true
         );
       }
     }
@@ -254,7 +301,10 @@ export async function middleware(request: NextRequest) {
         headers: requestHeaders,
       },
     });
-    return applyResponseHeaders(response, request, secHeaders, isApi);
+    if (clearStaleOnNext) {
+      expireCustomerCookies(response, request);
+    }
+    return applyResponseHeaders(response, request, secHeaders, isApi, isPortalNoStore);
   } catch {
     return applyResponseHeaders(NextResponse.next(), request, secHeaders, isApi);
   }

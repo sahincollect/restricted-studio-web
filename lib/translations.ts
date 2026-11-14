@@ -288,6 +288,7 @@ export interface TranslationDictionary {
       oauth_denied: string;
       oauth_failed: string;
       rate_limited: string;
+      session_expired: string;
     };
     registeredInfo: string;
     anonStartError: string;
@@ -312,7 +313,6 @@ export interface TranslationDictionary {
     verifyingBtn: string;
     loginBtn: string;
     orDivider: string;
-    googleContinueBtn: string;
     anonOpeningBtn: string;
     anonContinueBtn: string;
     noAccountText: string;
@@ -332,10 +332,23 @@ export interface TranslationDictionary {
     registerSubmitBtn: string;
     alreadyHaveAccount: string;
     loginHereLink: string;
+    showPassword: string;
+    hidePassword: string;
+    securityEyebrow: string;
+    securityHeadline: string;
+    securitySummary: string;
+    securitySpecs: [string, string, string];
+    backHomeLink: string;
+    catalogLink: string;
+    pwStrengthLabel: string;
+    pwLevels: [string, string, string, string];
   };
   dashboard: {
     adminPanelBtn: string;
     logoutBtn: string;
+    logoutAllBtn: string;
+    loggingOutAllBtn: string;
+    catalogLink: string;
     pageTitle: string;
     pageSubtitle: string;
     redeemTitle: string;
@@ -373,6 +386,30 @@ export interface TranslationDictionary {
     daysSuffix: string;
     hwidLockedPrefix: string;
     hwidPending: string;
+    kpiActiveLicenses: string;
+    kpiStationStatus: string;
+    kpiHwidStatus: string;
+    kpiSessionPosture: string;
+    stationReady: string;
+    stationLocked: string;
+    hwidBound: string;
+    hwidUnbound: string;
+    sessionProtected: string;
+    filterAll: string;
+    filterActive: string;
+    filterExpired: string;
+    pasteBtn: string;
+    copyHwidBtn: string;
+    copiedBtn: string;
+    securityModuleTitle: string;
+    securityModuleSubtitle: string;
+    accountModeLabel: string;
+    registeredMode: string;
+    guestMode: string;
+    sessionFamilyLabel: string;
+    tokenShieldLabel: string;
+    tokenShieldValue: string;
+    revokeAllHint: string;
   };
   discordPage: {
     statusBadge: string;
@@ -775,9 +812,10 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
     },
     auth: {
       loginErrors: {
-        oauth_denied: 'Google oturum açma isteği iptal edildi.',
-        oauth_failed: 'Google ile giriş doğrulaması tamamlanamadı. Lütfen tekrar deneyin.',
+        oauth_denied: 'Doğrulama isteği iptal edildi.',
+        oauth_failed: 'E-posta doğrulama bağlantısı geçersiz veya süresi dolmuş.',
         rate_limited: 'Çok fazla deneme algılandı. Lütfen birkaç dakika sonra tekrar deneyin.',
+        session_expired: 'Oturum süreniz doldu veya iptal edildi. Lütfen tekrar giriş yapın.',
       },
       registeredInfo: 'Hesabınız oluşturuldu. Güvenli giriş yapabilirsiniz.',
       anonStartError: 'Misafir oturumu başlatılamadı.',
@@ -802,7 +840,6 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       verifyingBtn: 'Doğrulanıyor...',
       loginBtn: 'Giriş Yap',
       orDivider: 'VEYA TEK TIKLA',
-      googleContinueBtn: 'Google ile Devam Et',
       anonOpeningBtn: 'Güvenli Oturum Açılıyor...',
       anonContinueBtn: 'Anonim Olarak Devam Et',
       noAccountText: 'İsteğe bağlı hesap oluşturmak için:',
@@ -822,10 +859,27 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       registerSubmitBtn: 'Güvenli Kayıt Ol',
       alreadyHaveAccount: 'Zaten hesabınız var mı?',
       loginHereLink: 'Giriş Yapın',
+      showPassword: 'Göster',
+      hidePassword: 'Gizle',
+      securityEyebrow: 'RESTRICTED PORTAL GATEWAY',
+      securityHeadline: 'Sıfır Güvenli Lisans ve İstasyon Erişimi',
+      securitySummary: 'Üçüncü taraf OAuth bağımlılığı olmadan doğrudan donanım ve oturum doğrulaması.',
+      securitySpecs: [
+        'Argon2id bellek-sert parola koruması',
+        'Sunucu taraflı HttpOnly oturum rotasyonu',
+        'HWID donanım kilidi ve tek kullanımlık aktivasyon',
+      ],
+      backHomeLink: 'Ana Sayfa',
+      catalogLink: 'Katalog',
+      pwStrengthLabel: 'PAROLA GÜVENLİĞİ',
+      pwLevels: ['Zayıf', 'Orta', 'Güçlü', 'Maksimum'],
     },
     dashboard: {
       adminPanelBtn: 'Yönetici Paneli',
       logoutBtn: 'Çıkış Yap',
+      logoutAllBtn: 'Tüm Cihazlardan Çık',
+      loggingOutAllBtn: 'İptal Ediliyor...',
+      catalogLink: 'Katalog',
       pageTitle: 'Müşteri Kontrol Paneli',
       pageSubtitle: 'İtemsatış kodlarınızı aktive edin, lisanslarınızı görüntüleyin ve R-AI kurulum dosyasını indirin.',
       redeemTitle: 'Aktivasyon Kodu Kullan (Redeem)',
@@ -863,6 +917,30 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       daysSuffix: 'Gün',
       hwidLockedPrefix: 'Kilitli',
       hwidPending: 'İlk Cihaz Bekleniyor',
+      kpiActiveLicenses: 'AKTİF LİSANSLAR',
+      kpiStationStatus: 'R-AI İSTASYON',
+      kpiHwidStatus: 'HWID BAĞLANTISI',
+      kpiSessionPosture: 'OTURUM KORUMASI',
+      stationReady: 'Hazır',
+      stationLocked: 'Kilitli',
+      hwidBound: 'Kilitli',
+      hwidUnbound: 'Beklemede',
+      sessionProtected: 'Doğrulandı',
+      filterAll: 'Tümü',
+      filterActive: 'Aktif',
+      filterExpired: 'Süresi Dolmuş',
+      pasteBtn: 'Yapıştır',
+      copyHwidBtn: 'Kopyala',
+      copiedBtn: 'Kopyalandı',
+      securityModuleTitle: 'Oturum ve Güvenlik Durumu',
+      securityModuleSubtitle: 'Sunucu taraflı oturum doğrulaması ve cihaz sonlandırma kontrolü.',
+      accountModeLabel: 'HESAP TİPİ',
+      registeredMode: 'Kayıtlı Müşteri',
+      guestMode: 'Misafir Oturumu',
+      sessionFamilyLabel: 'OTURUM AİLESİ (FID)',
+      tokenShieldLabel: 'DOĞRULAMA MİMARİSİ',
+      tokenShieldValue: 'HttpOnly + HMAC-SHA256 + SameSite',
+      revokeAllHint: 'Şüpheli bir durum varsa aktif tüm tarayıcı ve cihaz oturumlarını anında sonlandırın.',
     },
     discordPage: {
       statusBadge: 'YAPILANDIRMA AŞAMASINDA',
@@ -1276,9 +1354,10 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
     },
     auth: {
       loginErrors: {
-        oauth_denied: 'Google sign-in request was canceled.',
-        oauth_failed: 'Google authentication could not be verified. Please try again.',
+        oauth_denied: 'Verification request was canceled.',
+        oauth_failed: 'Verification link is invalid or expired. Please try again.',
         rate_limited: 'Too many attempts detected. Please wait a few minutes and try again.',
+        session_expired: 'Your session expired or was revoked. Please sign in again.',
       },
       registeredInfo: 'Your account has been created. You can now sign in securely.',
       anonStartError: 'Could not start guest session.',
@@ -1303,7 +1382,6 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       verifyingBtn: 'Verifying...',
       loginBtn: 'Sign In',
       orDivider: 'OR ONE-CLICK',
-      googleContinueBtn: 'Continue with Google',
       anonOpeningBtn: 'Starting Secure Session...',
       anonContinueBtn: 'Continue Anonymously',
       noAccountText: 'Need a dedicated account?',
@@ -1323,10 +1401,27 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       registerSubmitBtn: 'Create Secure Account',
       alreadyHaveAccount: 'Already have an account?',
       loginHereLink: 'Sign In',
+      showPassword: 'Show',
+      hidePassword: 'Hide',
+      securityEyebrow: 'RESTRICTED PORTAL GATEWAY',
+      securityHeadline: 'Zero-Trust License & Workstation Access',
+      securitySummary: 'Direct cryptographic session verification without third-party OAuth dependencies.',
+      securitySpecs: [
+        'Argon2id memory-hard credential protection',
+        'Server-side HttpOnly rotating token families',
+        'HWID hardware binding and atomic key redemption',
+      ],
+      backHomeLink: 'Home',
+      catalogLink: 'Catalog',
+      pwStrengthLabel: 'PASSWORD STRENGTH',
+      pwLevels: ['Weak', 'Fair', 'Strong', 'Maximum'],
     },
     dashboard: {
       adminPanelBtn: 'Admin Panel',
       logoutBtn: 'Sign Out',
+      logoutAllBtn: 'Sign Out All Devices',
+      loggingOutAllBtn: 'Revoking...',
+      catalogLink: 'Catalog',
       pageTitle: 'Client Control Panel',
       pageSubtitle: 'Redeem Itemsatis activation codes, inspect active licenses, and download the R-AI installer.',
       redeemTitle: 'Redeem Activation Code',
@@ -1364,6 +1459,30 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       daysSuffix: 'Days',
       hwidLockedPrefix: 'Bound',
       hwidPending: 'Awaiting First Device',
+      kpiActiveLicenses: 'ACTIVE LICENSES',
+      kpiStationStatus: 'R-AI WORKSTATION',
+      kpiHwidStatus: 'HWID BINDING',
+      kpiSessionPosture: 'SESSION SHIELD',
+      stationReady: 'Ready',
+      stationLocked: 'Locked',
+      hwidBound: 'Bound',
+      hwidUnbound: 'Pending',
+      sessionProtected: 'Verified',
+      filterAll: 'All',
+      filterActive: 'Active',
+      filterExpired: 'Expired',
+      pasteBtn: 'Paste',
+      copyHwidBtn: 'Copy',
+      copiedBtn: 'Copied',
+      securityModuleTitle: 'Session & Security Posture',
+      securityModuleSubtitle: 'Server-side token validation and cross-device revocation control.',
+      accountModeLabel: 'ACCOUNT TIER',
+      registeredMode: 'Registered Client',
+      guestMode: 'Guest Session',
+      sessionFamilyLabel: 'SESSION FAMILY (FID)',
+      tokenShieldLabel: 'AUTH ARCHITECTURE',
+      tokenShieldValue: 'HttpOnly + HMAC-SHA256 + SameSite',
+      revokeAllHint: 'Terminate every active browser and device session immediately if suspicious activity occurs.',
     },
     discordPage: {
       statusBadge: 'CONFIGURATION IN PROGRESS',
@@ -1777,9 +1896,10 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
     },
     auth: {
       loginErrors: {
-        oauth_denied: 'Вход через Google был отменён.',
-        oauth_failed: 'Не удалось завершить вход через Google. Попробуйте ещё раз.',
+        oauth_denied: 'Запрос подтверждения был отменён.',
+        oauth_failed: 'Ссылка подтверждения недействительна или устарела. Попробуйте ещё раз.',
         rate_limited: 'Слишком много попыток входа. Подождите несколько минут.',
+        session_expired: 'Сессия истекла или была отозвана. Войдите снова.',
       },
       registeredInfo: 'Аккаунт успешно создан. Теперь вы можете войти.',
       anonStartError: 'Не удалось открыть гостевую сессию.',
@@ -1804,7 +1924,6 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       verifyingBtn: 'Проверка...',
       loginBtn: 'Войти',
       orDivider: 'ИЛИ В ОДИН КЛИК',
-      googleContinueBtn: 'Войти через Google',
       anonOpeningBtn: 'Создание безопасной сессии...',
       anonContinueBtn: 'Продолжить анонимно',
       noAccountText: 'Хотите создать аккаунт?',
@@ -1824,10 +1943,27 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       registerSubmitBtn: 'Создать аккаунт',
       alreadyHaveAccount: 'Уже есть аккаунт?',
       loginHereLink: 'Войти',
+      showPassword: 'Показать',
+      hidePassword: 'Скрыть',
+      securityEyebrow: 'RESTRICTED PORTAL GATEWAY',
+      securityHeadline: 'Защищённый доступ к лицензиям',
+      securitySummary: 'Прямая криптографическая проверка сессии без сторонних OAuth-провайдеров.',
+      securitySpecs: [
+        'Защита паролей Argon2id',
+        'Серверная ротация HttpOnly-токенов',
+        'Привязка HWID и атомарная активация',
+      ],
+      backHomeLink: 'Главная',
+      catalogLink: 'Каталог',
+      pwStrengthLabel: 'НАДЁЖНОСТЬ ПАРОЛЯ',
+      pwLevels: ['Слабый', 'Средний', 'Надёжный', 'Максимум'],
     },
     dashboard: {
       adminPanelBtn: 'Панель администратора',
       logoutBtn: 'Выйти',
+      logoutAllBtn: 'Завершить все сессии',
+      loggingOutAllBtn: 'Отзыв...',
+      catalogLink: 'Каталог',
       pageTitle: 'Личный кабинет клиента',
       pageSubtitle: 'Активируйте коды Itemsatis, управляйте лицензиями и скачайте установщик R-AI.',
       redeemTitle: 'Активация ключа (Redeem)',
@@ -1865,6 +2001,30 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       daysSuffix: 'дн.',
       hwidLockedPrefix: 'Привязан',
       hwidPending: 'Ожидание запуска',
+      kpiActiveLicenses: 'АКТИВНЫЕ ЛИЦЕНЗИИ',
+      kpiStationStatus: 'СТАНЦИЯ R-AI',
+      kpiHwidStatus: 'HWID СТАТУС',
+      kpiSessionPosture: 'ЗАЩИТА СЕССИИ',
+      stationReady: 'Готова',
+      stationLocked: 'Закрыто',
+      hwidBound: 'Привязан',
+      hwidUnbound: 'Ожидает',
+      sessionProtected: 'Подтверждена',
+      filterAll: 'Все',
+      filterActive: 'Активные',
+      filterExpired: 'Истёкшие',
+      pasteBtn: 'Вставить',
+      copyHwidBtn: 'Копировать',
+      copiedBtn: 'Скопировано',
+      securityModuleTitle: 'Безопасность и сессия',
+      securityModuleSubtitle: 'Серверная проверка токена и отзыв всех активных устройств.',
+      accountModeLabel: 'ТИП АККАУНТА',
+      registeredMode: 'Зарегистрированный клиент',
+      guestMode: 'Гостевая сессия',
+      sessionFamilyLabel: 'СЕМЕЙСТВО СЕССИИ (FID)',
+      tokenShieldLabel: 'АРХИТЕКТУРА ЗАЩИТЫ',
+      tokenShieldValue: 'HttpOnly + HMAC-SHA256 + SameSite',
+      revokeAllHint: 'Мгновенно завершите все активные сессии во всех браузерах и на устройствах.',
     },
     discordPage: {
       statusBadge: 'НАСТРОЙКА ИНФРАСТРУКТУРЫ',
@@ -2278,9 +2438,10 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
     },
     auth: {
       loginErrors: {
-        oauth_denied: 'La connexion Google a été annulée.',
-        oauth_failed: 'La vérification Google a échoué. Veuillez réessayer.',
+        oauth_denied: 'La demande de vérification a été annulée.',
+        oauth_failed: 'Le lien de vérification est invalide ou expiré. Veuillez réessayer.',
         rate_limited: 'Trop de tentatives détectées. Réessayez dans quelques minutes.',
+        session_expired: 'Votre session a expiré ou été révoquée. Veuillez vous reconnecter.',
       },
       registeredInfo: 'Votre compte a été créé. Vous pouvez maintenant vous connecter.',
       anonStartError: 'Impossible de démarrer la session invité.',
@@ -2305,7 +2466,6 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       verifyingBtn: 'Vérification...',
       loginBtn: 'Se connecter',
       orDivider: 'OU EN UN CLIC',
-      googleContinueBtn: 'Continuer avec Google',
       anonOpeningBtn: 'Ouverture session sécurisée...',
       anonContinueBtn: 'Continuer en mode anonyme',
       noAccountText: 'Besoin d’un compte dédié ?',
@@ -2325,10 +2485,27 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       registerSubmitBtn: 'Créer un compte sécurisé',
       alreadyHaveAccount: 'Vous avez déjà un compte ?',
       loginHereLink: 'Se connecter',
+      showPassword: 'Afficher',
+      hidePassword: 'Masquer',
+      securityEyebrow: 'RESTRICTED PORTAL GATEWAY',
+      securityHeadline: 'Accès Licences & Station Zero-Trust',
+      securitySummary: 'Vérification cryptographique directe sans dépendance OAuth tierce.',
+      securitySpecs: [
+        'Protection des mots de passe Argon2id',
+        'Rotation serveur de jetons HttpOnly',
+        'Verrou matériel HWID et activation atomique',
+      ],
+      backHomeLink: 'Accueil',
+      catalogLink: 'Catalogue',
+      pwStrengthLabel: 'ROBUSTESSE DU MOT DE PASSE',
+      pwLevels: ['Faible', 'Moyen', 'Fort', 'Maximum'],
     },
     dashboard: {
       adminPanelBtn: 'Panneau Admin',
       logoutBtn: 'Déconnexion',
+      logoutAllBtn: 'Déconnecter tout',
+      loggingOutAllBtn: 'Révocation...',
+      catalogLink: 'Catalogue',
       pageTitle: 'Tableau de Bord Client',
       pageSubtitle: 'Activez vos codes Itemsatis, consultez vos licences et téléchargez l’installateur R-AI.',
       redeemTitle: 'Activer un code (Redeem)',
@@ -2366,6 +2543,30 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       daysSuffix: 'jours',
       hwidLockedPrefix: 'Lié',
       hwidPending: 'En attente du 1er lancement',
+      kpiActiveLicenses: 'LICENCES ACTIVES',
+      kpiStationStatus: 'STATION R-AI',
+      kpiHwidStatus: 'LIEN HWID',
+      kpiSessionPosture: 'BOUCLIER SESSION',
+      stationReady: 'Prêt',
+      stationLocked: 'Verrouillé',
+      hwidBound: 'Lié',
+      hwidUnbound: 'En attente',
+      sessionProtected: 'Vérifiée',
+      filterAll: 'Tout',
+      filterActive: 'Actives',
+      filterExpired: 'Expirées',
+      pasteBtn: 'Coller',
+      copyHwidBtn: 'Copier',
+      copiedBtn: 'Copié',
+      securityModuleTitle: 'Sécurité & Posture de Session',
+      securityModuleSubtitle: 'Validation serveur et révocation multi-appareils instantanée.',
+      accountModeLabel: 'TYPE DE COMPTE',
+      registeredMode: 'Client Enregistré',
+      guestMode: 'Session Invité',
+      sessionFamilyLabel: 'FAMILLE DE SESSION (FID)',
+      tokenShieldLabel: 'ARCHITECTURE AUTH',
+      tokenShieldValue: 'HttpOnly + HMAC-SHA256 + SameSite',
+      revokeAllHint: 'Révoquez immédiatement toutes les sessions actives sur vos autres navigateurs.',
     },
     discordPage: {
       statusBadge: 'CONFIGURATION EN COURS',

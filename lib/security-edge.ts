@@ -437,10 +437,10 @@ export function buildSecurityHeaders(options: {
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: blob: https:",
     "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com",
-    "frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com",
+    "frame-src 'self' https://challenges.cloudflare.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
-    "form-action 'self' https://accounts.google.com https://*.supabase.co",
+    "form-action 'self' https://*.supabase.co",
     "object-src 'none'",
     options.isHttps && !options.isDev ? 'upgrade-insecure-requests' : '',
   ].filter(Boolean);
@@ -453,7 +453,7 @@ export function buildSecurityHeaders(options: {
     'Permissions-Policy':
       'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()',
     'X-DNS-Prefetch-Control': 'off',
-    'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+    'Cross-Origin-Opener-Policy': 'same-origin',
     'Cross-Origin-Resource-Policy': 'same-origin',
   };
 
@@ -509,7 +509,7 @@ export interface EdgeCustomerClaims {
 /**
  * Pure Web Crypto HMAC-SHA256 verification for Edge middleware (no Node crypto dependency).
  */
-export async function verifyCustomerAccessCookieEdge(
+async function verifyCustomerTokenEdge(
   token?: string | null
 ): Promise<{ valid: true; claims: EdgeCustomerClaims } | { valid: false }> {
   if (!token || !token.includes('.')) return { valid: false };
@@ -558,11 +558,31 @@ export async function verifyCustomerAccessCookieEdge(
   try {
     const rawJson = new TextDecoder().decode(base64UrlDecodeToBytes(encodedPayload));
     const claims = JSON.parse(rawJson) as EdgeCustomerClaims;
-    if (!claims?.sub || typeof claims.exp !== 'number') return { valid: false };
+    if (
+      !claims?.sub ||
+      claims.role !== 'customer' ||
+      !claims.fid ||
+      !claims.jti ||
+      typeof claims.exp !== 'number'
+    ) {
+      return { valid: false };
+    }
     const nowSec = Math.floor(Date.now() / 1000);
     if (claims.exp <= nowSec) return { valid: false };
     return { valid: true, claims };
   } catch {
     return { valid: false };
   }
+}
+
+export async function verifyCustomerAccessCookieEdge(
+  token?: string | null
+): Promise<{ valid: true; claims: EdgeCustomerClaims } | { valid: false }> {
+  return verifyCustomerTokenEdge(token);
+}
+
+export async function verifyCustomerRefreshCookieEdge(
+  token?: string | null
+): Promise<{ valid: true; claims: EdgeCustomerClaims } | { valid: false }> {
+  return verifyCustomerTokenEdge(token);
 }

@@ -72,6 +72,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?error=oauth_failed`);
   }
 
+  const hasGoogleIdentity =
+    data.user.app_metadata?.provider === 'google' ||
+    (Array.isArray(data.user.identities) &&
+      data.user.identities.some((ident) => ident.provider === 'google'));
+
+  if (hasGoogleIdentity) {
+    return NextResponse.redirect(`${origin}/login?error=oauth_failed`);
+  }
+
   const redirectRes = NextResponse.redirect(`${origin}${nextPath}`);
   redirectRes.headers.set('Cache-Control', 'no-store');
   redirectRes.headers.set('X-Robots-Tag', 'noindex, nofollow');
@@ -108,7 +117,7 @@ export async function GET(request: NextRequest) {
     actorId: data.user.id,
     actorType: 'customer',
     action: 'CUSTOMER_LOGIN_SUCCESS',
-    metadata: { provider: 'google_oauth' },
+    metadata: { provider: 'email_callback' },
   });
 
   return redirectRes;
