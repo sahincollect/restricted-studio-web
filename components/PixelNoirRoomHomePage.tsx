@@ -153,7 +153,13 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
       {/* ===============================================================
            3-LAYER PIXEL TOWN PARALLAX STAGE (FAR + MID + FOREGROUND)
            =============================================================== */}
-      <LivingPixelRoomCanvas />
+      <LivingPixelRoomCanvas
+        onSelectAction={(action) => {
+          if (action.type === 'modal') {
+            openModal(action.modal);
+          }
+        }}
+      />
 
       {/* ===============================================================
            TOP FLOATING PILL NAVBAR
