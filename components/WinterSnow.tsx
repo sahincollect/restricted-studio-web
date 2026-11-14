@@ -100,30 +100,32 @@ export default function WinterSnow() {
       if (isVisible) {
         ctx.clearRect(0, 0, width, height);
 
-        for (let i = 0; i < flakes.length; i++) {
-          const f = flakes[i];
-          f.angle += f.angleSpeed;
-          f.rotation += f.rotationSpeed;
-          f.y += f.speedY;
-          f.x += Math.sin(f.angle) * f.driftAmp;
+        if (!document.querySelector('.pixel-noir-shell')) {
+          for (let i = 0; i < flakes.length; i++) {
+            const f = flakes[i];
+            f.angle += f.angleSpeed;
+            f.rotation += f.rotationSpeed;
+            f.y += f.speedY;
+            f.x += Math.sin(f.angle) * f.driftAmp;
 
-          if (f.y > height + 8) {
-            f.y = -8;
-            f.x = Math.random() * width;
-          }
-          if (f.x > width + 8) {
-            f.x = -8;
-          } else if (f.x < -8) {
-            f.x = width + 8;
-          }
+            if (f.y > height + 8) {
+              f.y = -8;
+              f.x = Math.random() * width;
+            }
+            if (f.x > width + 8) {
+              f.x = -8;
+            } else if (f.x < -8) {
+              f.x = width + 8;
+            }
 
-          if (f.crystal) {
-            drawCrystal(f);
-          } else {
-            ctx.beginPath();
-            ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, false);
-            ctx.fillStyle = `rgba(230, 227, 220, ${f.opacity})`;
-            ctx.fill();
+            if (f.crystal) {
+              drawCrystal(f);
+            } else {
+              ctx.beginPath();
+              ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, false);
+              ctx.fillStyle = `rgba(230, 227, 220, ${f.opacity})`;
+              ctx.fill();
+            }
           }
         }
       }
@@ -143,6 +145,7 @@ export default function WinterSnow() {
   return (
     <canvas
       ref={canvasRef}
+      className="global-winter-snow"
       aria-hidden="true"
       style={{
         position: 'fixed',

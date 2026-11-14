@@ -26,6 +26,7 @@
   --font-display: 'Barlow Condensed', 'Roboto Condensed', 'Inter', system-ui, sans-serif;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-pixel: 'Pixelify Sans', 'JetBrains Mono', ui-monospace, monospace;
 
   /* Analog Risograph SVG Film Grain Data URI (subtle matte organic film grain) */
   --grain-svg: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.94  0 0 0 0 0.94  0 0 0 0 0.94  0 0 0 0.36 -0.10'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
@@ -54,7 +55,9 @@ body {
 html.is-viewport-locked,
 html.is-viewport-locked body,
 html:has(.noir-entrance-shell),
-html:has(.noir-entrance-shell) body {
+html:has(.noir-entrance-shell) body,
+html:has(.pixel-noir-shell),
+html:has(.pixel-noir-shell) body {
   width: 100% !important;
   max-width: 100% !important;
   height: 100vh !important;
@@ -63,6 +66,10 @@ html:has(.noir-entrance-shell) body {
   overflow: hidden !important;
   overscroll-behavior: none !important;
   position: relative;
+}
+
+html:has(.pixel-noir-shell) .global-winter-snow {
+  display: none !important;
 }
 
 a {
