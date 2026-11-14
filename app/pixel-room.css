@@ -275,7 +275,22 @@
   will-change: transform;
 }
 
-/* 6-frame burning barrel animation (48x56 per frame -> scaled 2x = 96x112, total sheet 576x112) */
+/* 1. Far-Left Alley: Overflowing Street Dumpster + Trash Bags + Cardboard Boxes + Bottles (84x58 -> scaled 1.75x = 147x102) */
+.px-prop-dumpster {
+  position: absolute;
+  left: 3.8%;
+  bottom: 5.8%;
+  width: 147px;
+  height: 102px;
+  background-image: url('/assets/parallax/sprites/street-dumpster.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.92));
+}
+
+/* 2. 6-frame burning barrel animation (48x56 per frame -> scaled 2x = 96x112, total sheet 576x112) */
 @keyframes pxBarrelFire6 {
   from {
     background-position-x: 0px;
@@ -312,6 +327,14 @@
   animation: pxBarrelFire6 0.72s steps(6) infinite;
 }
 
+.px-prop-fire-barrel--right {
+  left: 91.2%;
+  bottom: 5.2%;
+  transform: scale(0.94);
+  transform-origin: bottom center;
+  animation-delay: -0.35s;
+}
+
 .px-fire-light {
   position: absolute;
   left: 48%;
@@ -329,10 +352,34 @@
   animation: pxFireGlowPulse 1.4s ease-in-out infinite;
 }
 
-/* Road Barricade + Traffic Cone + Scattered Beer Bottles (64x40 -> scaled 1.85x = 118x74) */
+/* 3. Steaming Manhole Grate + Wet Neon Puddle (64x48 per frame -> scaled 1.75x = 112x84, 6 frames = 672x84) */
+@keyframes pxSteamGrate6 {
+  from {
+    background-position-x: 0px;
+  }
+  to {
+    background-position-x: -672px;
+  }
+}
+
+.px-prop-steam-grate {
+  position: absolute;
+  left: 33.2%;
+  bottom: 3.2%;
+  width: 112px;
+  height: 84px;
+  background-image: url('/assets/parallax/sprites/street-steam-grate.png');
+  background-size: 672px 84px;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  animation: pxSteamGrate6 1.65s steps(6) infinite;
+}
+
+/* 4. Road Barricade + Traffic Cone + Scattered Beer Bottles (64x40 -> scaled 1.85x = 118x74) */
 .px-prop-barricade {
   position: absolute;
-  left: 50.5%;
+  left: 48.2%;
   bottom: 5.6%;
   width: 118px;
   height: 74px;
@@ -344,6 +391,31 @@
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.88));
 }
 
+/* 5. Sleeping Drifter on Cardboard Mat + Boombox + Bottles (68x36 per frame -> scaled 1.75x = 119x63, 4 frames = 476x63) */
+@keyframes pxDrifterBreath4 {
+  from {
+    background-position-x: 0px;
+  }
+  to {
+    background-position-x: -476px;
+  }
+}
+
+.px-prop-drifter-sleep {
+  position: absolute;
+  left: 66.5%;
+  bottom: 4.8%;
+  width: 119px;
+  height: 63px;
+  background-image: url('/assets/parallax/sprites/street-drifter-sleep.png');
+  background-size: 476px 63px;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.9));
+  animation: pxDrifterBreath4 2.4s steps(4) infinite;
+}
+
 .px-citizen-slot {
   position: absolute;
   display: flex;
@@ -353,18 +425,51 @@
 }
 
 .px-citizen-left {
-  left: 15.5%;
+  left: 15.2%;
   bottom: 5.5%;
 }
 
 .px-citizen-mid {
-  left: 38.5%;
+  left: 38.2%;
   bottom: 4.2%;
 }
 
 .px-citizen-right {
-  left: 63.5%;
+  left: 57.5%;
   bottom: 4.5%;
+}
+
+/* Far-Right Sidewalk: Two Men Chatting Face-to-Face */
+.px-chat-duo {
+  position: absolute;
+  left: 77.2%;
+  bottom: 4.4%;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.px-chat-person {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.px-chat-bubble-left {
+  max-width: 168px;
+  margin-bottom: -18px;
+  transform: translateX(-16px);
+  animation-delay: 0.4s;
+}
+
+.px-chat-bubble-right {
+  max-width: 168px;
+  margin-bottom: -36px;
+  transform: translateX(16px);
+  animation-delay: 1.8s;
 }
 
 /* Pixel Art Thought Bubble — Snugly Seated Just Above Character Heads */
@@ -545,6 +650,26 @@
   transform: scaleX(-1);
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.85));
   animation: pxSheet6 1.35s steps(6) infinite;
+}
+
+.px-actor-chat-left {
+  width: 102px;
+  height: 140px;
+  background-image: url('/assets/parallax/sprites/human-chat-left.png');
+  background-size: 612px 140px;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.88));
+  animation: pxSheet6 1.18s steps(6) infinite;
+}
+
+.px-actor-chat-right {
+  width: 102px;
+  height: 140px;
+  background-image: url('/assets/parallax/sprites/human-chat-right.png');
+  background-size: 612px 140px;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.88));
+  animation: pxSheet6 1.45s steps(6) infinite;
 }
 
 /* Layer 5: Atmospheric Nocturnal Rain & Neon Vignette Overlay */
@@ -810,8 +935,18 @@
 
   .px-citizen-mid,
   .px-citizen-right,
-  .px-prop-barricade {
+  .px-prop-barricade,
+  .px-prop-dumpster,
+  .px-prop-drifter-sleep,
+  .px-prop-fire-barrel--right {
     display: none;
+  }
+
+  .px-chat-duo {
+    left: 52%;
+    bottom: 4%;
+    transform: scale(0.84);
+    transform-origin: bottom center;
   }
 
   .px-prop-fire-barrel {

@@ -77,16 +77,31 @@ export default function LivingPixelRoomCanvas() {
       {/* Layer 3: Foreground Cyber-Noir Street */}
       <div className="px-parallax-layer px-layer-fg" aria-hidden="true" />
 
-      {/* Foreground Street Props (Burning Barrel w/ Beer Bottles + Road Barricade) & Citizens */}
+      {/* Foreground Street Props (Rich Homeless Alley / Noir Street Details) & Citizens */}
       <div className="px-street-actors">
-        {/* Homeless Alley Props: Burning Fire Barrel + Crate + Beer Bottles (Left-Center Curb) */}
+        {/* 1. Far-Left Alley: Overflowing Street Dumpster + Trash Bags + Cardboard Boxes + Bottles */}
+        <div className="px-prop-dumpster" aria-hidden="true" />
+
+        {/* 2. Left-Center Curb: Burning 55-Gallon Fire Barrel + Milk Crate + Beer Bottles */}
         <div className="px-prop-fire-barrel" aria-hidden="true">
           <span className="px-fire-light" />
         </div>
 
-        {/* Road Barricade + Traffic Cone + Scattered Beer Bottles (Right-Center Asphalt) */}
+        {/* 3. Center-Left Asphalt: Steaming Manhole Grate + Wet Neon Puddle + Crushed Cans */}
+        <div className="px-prop-steam-grate" aria-hidden="true" />
+
+        {/* 4. Right-Center Asphalt: Road Barricade + Traffic Cone + Scattered Beer Bottles */}
         <div className="px-prop-barricade" aria-hidden="true" />
-        {/* 1. Left Bar Patron — Stationary animated jacket citizen with thought bubble */}
+
+        {/* 5. Right Storefront Curb: Sleeping Drifter on Cardboard Mat + Boombox + Bottles */}
+        <div className="px-prop-drifter-sleep" aria-hidden="true" />
+
+        {/* 6. Far-Right Sidewalk: Second Burning Fire Barrel warming the two chatting men */}
+        <div className="px-prop-fire-barrel px-prop-fire-barrel--right" aria-hidden="true">
+          <span className="px-fire-light" />
+        </div>
+
+        {/* CITIZEN 1: Left Bar Patron — Stationary animated jacket citizen with thought bubble */}
         <div className="px-citizen-slot px-citizen-left">
           <Link
             href="/katalog"
@@ -104,7 +119,7 @@ export default function LivingPixelRoomCanvas() {
           <div className="px-actor px-actor-jacket-idle" aria-hidden="true" />
         </div>
 
-        {/* 2. Center-Left Crosswalk Citizen — Stationary animated red-beanie citizen with thought bubble */}
+        {/* CITIZEN 2: Center Crosswalk Citizen — Stationary animated red-beanie citizen with thought bubble */}
         <div className="px-citizen-slot px-citizen-mid">
           <Link
             href="/katalog"
@@ -122,7 +137,7 @@ export default function LivingPixelRoomCanvas() {
           <div className="px-actor px-actor-red-idle" aria-hidden="true" />
         </div>
 
-        {/* 3. Right Storefront Citizen — Stationary animated backpack citizen */}
+        {/* CITIZEN 3: Right-Center Storefront Citizen — Stationary animated backpack citizen */}
         <div className="px-citizen-slot px-citizen-right">
           <Link
             href="/katalog"
@@ -138,6 +153,45 @@ export default function LivingPixelRoomCanvas() {
             </span>
           </Link>
           <div className="px-actor px-actor-backpack-idle" aria-hidden="true" />
+        </div>
+
+        {/* CITIZENS 4 & 5: Far-Right Sidewalk — Two Men Chatting Face-to-Face (Casual Daily Street Banter) */}
+        <div className="px-chat-duo" aria-label="Sokakta sohbet eden iki kişi">
+          {/* Left Man (Facing Right, holding bottle & smoking) */}
+          <div className="px-chat-person px-chat-person--left">
+            <Link
+              href="/katalog"
+              className="px-thought-bubble px-thought-bubble--amber px-chat-bubble-left"
+              aria-label="Sohbet: Kanka şu ateşin başına geçelim, gece bayağı soğudu..."
+            >
+              <span className="px-thought-text">
+                &ldquo;kanka şu ateşin başına geçelim, bu gece sokak bayağı ayaz yaptı...&rdquo;
+              </span>
+              <span className="px-thought-dots" aria-hidden="true">
+                <i className="px-dot-lg" />
+                <i className="px-dot-sm" />
+              </span>
+            </Link>
+            <div className="px-actor px-actor-chat-left" aria-hidden="true" />
+          </div>
+
+          {/* Right Man (Facing Left, gesturing in conversation) */}
+          <div className="px-chat-person px-chat-person--right">
+            <Link
+              href="/katalog"
+              className="px-thought-bubble px-chat-bubble-right"
+              aria-label="Sohbet: Vallahi öyle, biraları da aldık sabaha kadar muhabbet ederiz."
+            >
+              <span className="px-thought-text">
+                &ldquo;vallahi öyle, kasadaki biraları da aldık sabaha kadar muhabbet ederiz.&rdquo;
+              </span>
+              <span className="px-thought-dots" aria-hidden="true">
+                <i className="px-dot-lg" />
+                <i className="px-dot-sm" />
+              </span>
+            </Link>
+            <div className="px-actor px-actor-chat-right" aria-hidden="true" />
+          </div>
         </div>
       </div>
 
