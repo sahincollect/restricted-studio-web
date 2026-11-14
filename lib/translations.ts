@@ -1,5 +1,4 @@
 import type { Locale } from './i18n';
-import type { PixelTownBuildingId } from './pixel-town-config';
 
 export const CATALOG_CATEGORY_KEYS = [
   'Tümü',
@@ -133,24 +132,6 @@ export interface TranslationDictionary {
       faqItems: { q: string; a: string }[];
       goToCatalog: string;
       itemsatisLink: string;
-    };
-    town: {
-      marqueeEyebrow: string;
-      marqueeTitle: string;
-      hudSelectedPrefix: string;
-      hudHint: string;
-      statusNominal: string;
-      statusDegraded: string;
-      buildings: Record<
-        PixelTownBuildingId,
-        {
-          signTitle: string;
-          badge: string;
-          category: string;
-          summary: string;
-          ctaLabel: string;
-        }
-      >;
     };
   };
   catalog: {
@@ -656,79 +637,6 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
         ],
         goToCatalog: 'Paket Kataloğuna Git →',
         itemsatisLink: 'İtemsatış Mağazası ↗',
-      },
-      town: {
-        marqueeEyebrow: 'RESTRICTED STUDIO · KIŞ SÜRÜMÜ 2026',
-        marqueeTitle: 'KARARLI ALTYAPI. ŞEFFAF MÜHENDİSLİK.',
-        hudSelectedPrefix: 'SEÇİLİ YAPI',
-        hudHint: 'Binaların üzerine gelin veya giriş yapmak için tıklayın',
-        statusNominal: 'OPERASYONEL',
-        statusDegraded: 'KONTROL',
-        buildings: {
-          status: {
-            signTitle: 'DURUM İSTASYONU',
-            badge: 'AKTİF',
-            category: 'ALTYAPI',
-            summary: 'Canlı uptime göstergesi, servis sağlığı ve İstanbul düğüm gecikmesi.',
-            ctaLabel: 'DURUMU AÇ',
-          },
-          discord: {
-            signTitle: 'DİSCORD KULESİ',
-            badge: '7/24',
-            category: 'TOPLULUK',
-            summary: 'Birebir kurulum desteği, ticket merkezi ve topluluk kanalları.',
-            ctaLabel: 'DİSCORD',
-          },
-          portal: {
-            signTitle: 'MÜŞTERİ PORTALI',
-            badge: 'LİSANS',
-            category: 'ERİŞİM',
-            summary: 'Lisans anahtarları, satın alım doğrulama ve müşteri kontrol paneli.',
-            ctaLabel: 'PORTALA GİR',
-          },
-          catalog: {
-            signTitle: 'MERKEZ KATALOG',
-            badge: '6.446+',
-            category: 'TÜM ARŞİV',
-            summary: 'Escrow kilitsiz, tamamen açık kaynaklı tüm FiveM arşivi tek merkezde.',
-            ctaLabel: 'KATALOĞA GİR',
-          },
-          engineering: {
-            signTitle: 'KOD LAB',
-            badge: '%0 ESCROW',
-            category: 'MÜHENDİSLİK',
-            summary: 'Okunabilir Lua/JS/SQL mimarisi, sıfır arka kapı ve 0.04 ms hedefi.',
-            ctaLabel: 'DETAYI AÇ',
-          },
-          itemsatis: {
-            signTitle: 'İTEMSATIŞ VEZNESİ',
-            badge: '3D SECURE',
-            category: 'RESMİ MAĞAZA',
-            summary: 'Resmî İtemsatış güvencesiyle taksitli ve korumalı hızlı teslimat.',
-            ctaLabel: 'MAĞAZAYA GİT',
-          },
-          scripts: {
-            signTitle: 'SCRIPT DÜKKÂNI',
-            badge: '3.561',
-            category: 'LUA & JS',
-            summary: 'QB-Core, Qbox ve ESX uyumlu optimize oyun mekanikleri ve HUD sistemleri.',
-            ctaLabel: 'SCRİPTLER',
-          },
-          mlo: {
-            signTitle: 'MLO GALERİSİ',
-            badge: '1.298',
-            category: '3D MEKAN',
-            summary: 'Portal ve occlusion optimizasyonlu, yüksek FPS dostu özel iç mekanlar.',
-            ctaLabel: 'MEKANLAR',
-          },
-          vehicles: {
-            signTitle: 'ARAÇ GARAJI',
-            badge: '1.152',
-            category: 'PAKETLER',
-            summary: 'Özel handling ayarlı, optimize poligonlu performans ve devriye araçları.',
-            ctaLabel: 'ARAÇLAR',
-          },
-        },
       },
     },
     catalog: {
@@ -1285,79 +1193,6 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
         goToCatalog: 'Browse Package Catalog →',
         itemsatisLink: 'Itemsatis Store ↗',
       },
-      town: {
-        marqueeEyebrow: 'RESTRICTED STUDIO · WINTER EDITION 2026',
-        marqueeTitle: 'STABLE INFRASTRUCTURE. TRANSPARENT CODE.',
-        hudSelectedPrefix: 'ACTIVE BUILDING',
-        hudHint: 'Hover any building or click a signboard to enter',
-        statusNominal: 'OPERATIONAL',
-        statusDegraded: 'DEGRADED',
-        buildings: {
-          status: {
-            signTitle: 'STATUS RELAY',
-            badge: 'ONLINE',
-            category: 'INFRASTRUCTURE',
-            summary: 'Live uptime monitor, service probes, and endpoint latency tracking.',
-            ctaLabel: 'OPEN STATUS',
-          },
-          discord: {
-            signTitle: 'DISCORD TOWER',
-            badge: '24/7',
-            category: 'COMMUNITY',
-            summary: 'Direct setup assistance, private tickets, and developer updates.',
-            ctaLabel: 'JOIN DISCORD',
-          },
-          portal: {
-            signTitle: 'CLIENT PORTAL',
-            badge: 'LICENSE',
-            category: 'ACCESS',
-            summary: 'License key management, order verification, and client dashboard.',
-            ctaLabel: 'ENTER PORTAL',
-          },
-          catalog: {
-            signTitle: 'CENTRAL CATALOG',
-            badge: '6.446+',
-            category: 'FULL ARCHIVE',
-            summary: 'Complete unencrypted, 0% escrow open-source FiveM package archive.',
-            ctaLabel: 'OPEN CATALOG',
-          },
-          engineering: {
-            signTitle: 'CODE LAB',
-            badge: '0% ESCROW',
-            category: 'ENGINEERING',
-            summary: 'Readable Lua/JS/SQL engineering, clean audits, and 0.04 ms targets.',
-            ctaLabel: 'INSPECT CODE',
-          },
-          itemsatis: {
-            signTitle: 'ITEMSATIS BOOTH',
-            badge: '3D SECURE',
-            category: 'OFFICIAL STORE',
-            summary: 'Verified storefront checkout via official Itemsatis 3D Secure escrow.',
-            ctaLabel: 'VISIT STORE',
-          },
-          scripts: {
-            signTitle: 'SCRIPT SHOP',
-            badge: '3.561',
-            category: 'LUA & JS',
-            summary: 'Modular QB-Core, Qbox, and ESX systems tuned for zero idle overhead.',
-            ctaLabel: 'BROWSE SCRIPTS',
-          },
-          mlo: {
-            signTitle: 'MLO GALLERY',
-            badge: '1.298',
-            category: '3D INTERIORS',
-            summary: 'Portal-culled custom interiors built for stable city FPS at peak load.',
-            ctaLabel: 'BROWSE MLO',
-          },
-          vehicles: {
-            signTitle: 'VEHICLE GARAGE',
-            badge: '1.152',
-            category: 'VEHICLES',
-            summary: 'Balanced handling configs, optimized LODs, and interceptor fleets.',
-            ctaLabel: 'BROWSE CARS',
-          },
-        },
-      },
     },
     catalog: {
       eyebrow: 'New Year Edition · Enterprise FiveM Archive',
@@ -1913,79 +1748,6 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
         goToCatalog: 'Перейти в каталог →',
         itemsatisLink: 'Магазин Itemsatis ↗',
       },
-      town: {
-        marqueeEyebrow: 'RESTRICTED STUDIO · ЗИМА 2026',
-        marqueeTitle: 'НАДЁЖНАЯ АРХИТЕКТУРА. ЧИСТЫЙ КОД.',
-        hudSelectedPrefix: 'ЗДАНИЕ',
-        hudHint: 'Наведите на здание или нажмите вывеску для входа',
-        statusNominal: 'АКТИВЕН',
-        statusDegraded: 'ПРОВЕРКА',
-        buildings: {
-          status: {
-            signTitle: 'СТАТУС СЕРВЕРА',
-            badge: 'АКТИВЕН',
-            category: 'ИНФРАСТРУКТУРА',
-            summary: 'Аптайм в реальном времени, состояние узлов и задержка отклика.',
-            ctaLabel: 'СТАТУС',
-          },
-          discord: {
-            signTitle: 'БАШНЯ DISCORD',
-            badge: '24/7',
-            category: 'СООБЩЕСТВО',
-            summary: 'Индивидуальная помощь по установке, тикеты и обновления.',
-            ctaLabel: 'DISCORD',
-          },
-          portal: {
-            signTitle: 'ПОРТАЛ КЛИЕНТА',
-            badge: 'ЛИЦЕНЗИЯ',
-            category: 'ДОСТУП',
-            summary: 'Лицензионные ключи, проверка заказов и личный кабинет.',
-            ctaLabel: 'В ПОРТАЛ',
-          },
-          catalog: {
-            signTitle: 'ЦЕНТР КАТАЛОГА',
-            badge: '6.446+',
-            category: 'ВЕСЬ АРХИВ',
-            summary: 'Полный открытый архив FiveM без шифрования и escrow-блокировок.',
-            ctaLabel: 'В КАТАЛОГ',
-          },
-          engineering: {
-            signTitle: 'ЛАБ БЕЗ ШИФРА',
-            badge: '0% ESCROW',
-            category: 'ИНЖЕНЕРИЯ',
-            summary: 'Чистая архитектура Lua/JS/SQL, аудит кода и цель 0.04 мс.',
-            ctaLabel: 'ПОДРОБНЕЕ',
-          },
-          itemsatis: {
-            signTitle: 'КАССА ITEMSATIS',
-            badge: '3D SECURE',
-            category: 'МАГАЗИН',
-            summary: 'Защищённая оплата и доставка через официальный Itemsatis.',
-            ctaLabel: 'МАГАЗИН',
-          },
-          scripts: {
-            signTitle: 'ЛАВКА СКРИПТОВ',
-            badge: '3.561',
-            category: 'LUA & JS',
-            summary: 'Модульные механики и интерфейсы для QB-Core, Qbox и ESX.',
-            ctaLabel: 'СКРИПТЫ',
-          },
-          mlo: {
-            signTitle: 'ГАЛЕРЕЯ MLO',
-            badge: '1.298',
-            category: '3D ИНТЕРЬЕРЫ',
-            summary: 'Кастомные 3D-интерьеры с оптимизацией порталов для стабильного FPS.',
-            ctaLabel: 'ИНТЕРЬЕРЫ',
-          },
-          vehicles: {
-            signTitle: 'ГАРАЖ ТРАНСПОРТА',
-            badge: '1.152',
-            category: 'ТРАНСПОРТ',
-            summary: 'Настроенный хендлинг, оптимизированные LOD и спецтранспорт.',
-            ctaLabel: 'АВТОПАРК',
-          },
-        },
-      },
     },
     catalog: {
       eyebrow: 'Новогодний сезон · Архив FiveM',
@@ -2540,79 +2302,6 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
         ],
         goToCatalog: 'Explorer le catalogue →',
         itemsatisLink: 'Boutique Itemsatis ↗',
-      },
-      town: {
-        marqueeEyebrow: 'RESTRICTED STUDIO · HIVER 2026',
-        marqueeTitle: 'INFRASTRUCTURE STABLE. CODE OUVERT.',
-        hudSelectedPrefix: 'BÂTIMENT',
-        hudHint: 'Survolez un bâtiment ou cliquez sur une enseigne',
-        statusNominal: 'OPÉRATIONNEL',
-        statusDegraded: 'DÉGRADÉ',
-        buildings: {
-          status: {
-            signTitle: 'STATION STATUT',
-            badge: 'ACTIF',
-            category: 'INFRASTRUCTURE',
-            summary: 'Disponibilité en direct, sondes de service et latence serveur.',
-            ctaLabel: 'VOIR STATUT',
-          },
-          discord: {
-            signTitle: 'TOUR DISCORD',
-            badge: '24/7',
-            category: 'COMMUNAUTÉ',
-            summary: 'Assistance directe, tickets privés et entraide technique.',
-            ctaLabel: 'DISCORD',
-          },
-          portal: {
-            signTitle: 'PORTAIL CLIENT',
-            badge: 'LICENCE',
-            category: 'ACCÈS',
-            summary: 'Clés de licence, vérification des achats et espace client.',
-            ctaLabel: 'PORTAIL',
-          },
-          catalog: {
-            signTitle: 'CATALOGUE CENTRAL',
-            badge: '6.446+',
-            category: 'ARCHIVE COMPLÈTE',
-            summary: 'Archive FiveM 100% open source sans chiffrement ni verrou escrow.',
-            ctaLabel: 'OUVRIR',
-          },
-          engineering: {
-            signTitle: 'LABO CODE OUVERT',
-            badge: '0% ESCROW',
-            category: 'INGÉNIERIE',
-            summary: 'Architecture Lua/JS/SQL lisible, audit propre et cible 0.04 ms.',
-            ctaLabel: 'INSPECTER',
-          },
-          itemsatis: {
-            signTitle: 'GUICHET ITEMSATIS',
-            badge: '3D SECURE',
-            category: 'BOUTIQUE OFFICIELLE',
-            summary: 'Paiement sécurisé 3D Secure et livraison officielle Itemsatis.',
-            ctaLabel: 'BOUTIQUE',
-          },
-          scripts: {
-            signTitle: 'BOUTIQUE SCRIPTS',
-            badge: '3.561',
-            category: 'LUA & JS',
-            summary: 'Systèmes modulaires QB-Core, Qbox et ESX optimisés 0.00 ms.',
-            ctaLabel: 'SCRIPTS',
-          },
-          mlo: {
-            signTitle: 'GALERIE MLO',
-            badge: '1.298',
-            category: 'INTÉRIEURS 3D',
-            summary: 'Intérieurs 3D optimisés par portails pour préserver vos FPS.',
-            ctaLabel: 'INTÉRIEURS',
-          },
-          vehicles: {
-            signTitle: 'GARAGE VÉHICULES',
-            badge: '1.152',
-            category: 'VÉHICULES',
-            summary: 'Packs véhicules avec handling calibré et LODs optimisés.',
-            ctaLabel: 'VÉHICULES',
-          },
-        },
       },
     },
     catalog: {

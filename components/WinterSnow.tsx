@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { usePathname } from 'next/navigation';
 
 interface Snowflake {
   x: number;
@@ -24,26 +23,20 @@ interface Snowflake {
  */
 export default function WinterSnow() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const pathname = usePathname();
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    if (document.querySelector('.pixel-noir-shell')) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      return;
-    }
-
     if (
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
     ) {
       return;
     }
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
     let animationFrameId = 0;
     let width = window.innerWidth;
@@ -145,12 +138,11 @@ export default function WinterSnow() {
       window.removeEventListener('resize', syncDimensions);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [pathname]);
+  }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="global-winter-snow"
       aria-hidden="true"
       style={{
         position: 'fixed',
