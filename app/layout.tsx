@@ -3,6 +3,7 @@ import { cookies, headers } from 'next/headers';
 import './globals.css';
 import WinterSnow from '@/components/WinterSnow';
 import CursorSpotlight from '@/components/CursorSpotlight';
+import MinimalAudioPlayer from '@/components/MinimalAudioPlayer';
 import { I18nProvider } from '@/components/I18nProvider';
 import {
   LOCALE_COOKIE_NAME,
@@ -176,6 +177,7 @@ export default async function RootLayout({
         </svg>
         <WinterSnow />
         <CursorSpotlight />
+        <MinimalAudioPlayer />
         <I18nProvider
           initialLocale={locale}
           initialDetectedFromHeader={initialDetectedFromHeader}

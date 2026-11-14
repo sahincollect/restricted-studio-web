@@ -6,7 +6,6 @@ import catalogStats from '../lib/catalog-stats.json';
 import { useI18n } from '../components/I18nProvider';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import LivingPixelRoomCanvas from '../components/LivingPixelRoomCanvas';
-import { PIXEL_ROOM_HOTSPOTS } from '../lib/pixel-room-config';
 import '../app/pixel-room.css';
 
 type ModalId = 'about' | 'solutions' | 'engineering' | 'faq' | null;
@@ -194,32 +193,21 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
             className={`bpn-link ${activeModal === 'about' ? 'is-active' : ''}`}
             onClick={() => openModal('about')}
           >
-            {t.home.nav.about}
-          </button>
-          <button
-            type="button"
-            className={`bpn-link ${activeModal === 'solutions' ? 'is-active' : ''}`}
-            onClick={() => openModal('solutions')}
-          >
-            {t.home.nav.solutions}
+            HAKKIMIZDA
           </button>
           <Link href="/katalog" className="bpn-link bpn-link-highlight">
-            {t.home.nav.catalog}
+            KATALOG
           </Link>
-          <button
-            type="button"
-            className={`bpn-link ${activeModal === 'engineering' ? 'is-active' : ''}`}
-            onClick={() => openModal('engineering')}
-          >
-            {t.home.nav.engineering}
-          </button>
           <button
             type="button"
             className={`bpn-link ${activeModal === 'faq' ? 'is-active' : ''}`}
             onClick={() => openModal('faq')}
           >
-            {t.home.nav.faq}
+            SSS
           </button>
+          <Link href="/iletisim" className="bpn-link">
+            İLETİŞİM
+          </Link>
         </nav>
 
         <div className="bpn-actions">
@@ -302,25 +290,21 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
           <LanguageSwitcher compact />
         </div>
         <button type="button" className="bmn-link-btn" onClick={() => openModal('about')}>
-          <span>{t.home.drawer.about}</span>
-          <span>↗</span>
-        </button>
-        <button type="button" className="bmn-link-btn" onClick={() => openModal('solutions')}>
-          <span>{t.home.drawer.solutions}</span>
+          <span>HAKKIMIZDA</span>
           <span>↗</span>
         </button>
         <Link href="/katalog" className="bmn-link-btn" style={{ background: '#A50000' }}>
-          <span>{t.home.drawer.catalog}</span>
+          <span>KATALOG (6.400+)</span>
           <span>→</span>
         </Link>
-        <button type="button" className="bmn-link-btn" onClick={() => openModal('engineering')}>
-          <span>{t.home.drawer.engineering}</span>
-          <span>↗</span>
-        </button>
         <button type="button" className="bmn-link-btn" onClick={() => openModal('faq')}>
-          <span>{t.home.drawer.faq}</span>
+          <span>SSS</span>
           <span>↗</span>
         </button>
+        <Link href="/iletisim" className="bmn-link-btn">
+          <span>İLETİŞİM</span>
+          <span>→</span>
+        </Link>
         <Link href="/dashboard" className="bmn-link-btn" style={{ background: '#F0F0F0', color: '#080808' }}>
           <span>{t.home.drawer.portal}</span>
           <span>→</span>
@@ -334,65 +318,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
           <span>{t.home.drawer.itemsatis}</span>
           <span>↗</span>
         </a>
-        <Link href="/iletisim" className="bmn-link-btn">
-          <span>İLETİŞİM (MAİL)</span>
-          <span>→</span>
-        </Link>
-        <Link href="/status" className="bmn-link-btn">
-          <span>{t.home.drawer.status}</span>
-          <span>↗</span>
-        </Link>
       </div>
-
-      {/* ===============================================================
-           ARCHITECTURAL NOIR BLADE DIRECTORY (INTEGRATED RIGHT FACADE SIGN)
-           =============================================================== */}
-      <main className="living-room-hotspots" aria-label="Şehir Yönlendirme Tabelası">
-        <aside className="px-blade-directory" aria-label="Şehir Yönlendirme Tabelası">
-          <div className="px-blade-header">
-            <span className="px-blade-pulse" aria-hidden="true" />
-            <span className="px-blade-eyebrow">RESTRICTED // DİZİN</span>
-          </div>
-
-          <div className="px-blade-list">
-            {PIXEL_ROOM_HOTSPOTS.map((spot) => {
-              const isActive =
-                spot.action.type === 'modal' && activeModal === spot.action.modal;
-              const itemClass = `px-blade-item px-blade-item--${spot.tone} ${
-                isActive ? 'is-active' : ''
-              }`;
-
-              if (spot.action.type === 'route') {
-                return (
-                  <Link key={spot.id} href={spot.action.href} className={itemClass}>
-                    <span className="px-blade-num">{spot.shortNum}</span>
-                    <span className="px-blade-text">{spot.badge}</span>
-                    <span className="px-blade-arrow" aria-hidden="true">
-                      →
-                    </span>
-                  </Link>
-                );
-              }
-
-              const modalTarget = spot.action.modal;
-              return (
-                <button
-                  key={spot.id}
-                  type="button"
-                  className={itemClass}
-                  onClick={() => openModal(modalTarget)}
-                >
-                  <span className="px-blade-num">{spot.shortNum}</span>
-                  <span className="px-blade-text">{spot.badge}</span>
-                  <span className="px-blade-arrow" aria-hidden="true">
-                    ↗
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </aside>
-      </main>
 
       {/* ===============================================================
            IN-VIEWPORT NOIR MODALS
