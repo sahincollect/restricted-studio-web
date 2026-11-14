@@ -571,7 +571,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
           ['Kaynak Kod', 'Escrow kilitli, müdahaleye kapalı', '%100 Açık kaynak, düzenlenebilir'],
           ['Performans', 'Yüksek işlemci yükü & FPS kaybı', '0.00 ms boşta tüketim, optimize SQL'],
           ['Güvenlik', 'Denetlenemeyen şifreli dosyalar', 'Şeffaf güvenlik taramalı temiz kod'],
-          ['Satış & Güvence', 'Belirsiz forum ticareti', 'İtemsatış 3D Secure & Discord'],
+          ['Satış & Güvence', 'Belirsiz forum ticareti', 'İtemsatış 3D Secure & E-Posta'],
         ],
         solutionsCards: [
           {
@@ -1126,7 +1126,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
           ['Source Code', 'Escrow locked, uneditable', '100% Open-source, customizable'],
           ['Performance', 'High CPU spikes & FPS drops', '0.00 ms idle tick, indexed SQL'],
           ['Security', 'Opaque encrypted binaries', 'Scanned clean readable source'],
-          ['Checkout', 'Unverified forum DMs', 'Itemsatis 3D Secure & Discord'],
+          ['Checkout', 'Unverified forum DMs', 'Itemsatis 3D Secure & E-Mail'],
         ],
         solutionsCards: [
           {
@@ -1681,7 +1681,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
           ['Исходный код', 'Закрыт Escrow, нельзя править', '100% открытый исходный код'],
           ['Нагрузка CPU', 'Просадки FPS и фризы', '0.00 ms в простое, быстрый SQL'],
           ['Безопасность', 'Непроверяемые шифрованные файлы', 'Аудит и чистая структура кода'],
-          ['Покупка', 'Рискованные переводы на форумах', 'Itemsatis 3D Secure и Discord'],
+          ['Покупка', 'Рискованные переводы на форумах', 'Itemsatis 3D Secure и E-Mail'],
         ],
         solutionsCards: [
           {
@@ -2236,7 +2236,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
           ['Code Source', 'Verrouillé Escrow, non modifiable', '100% Open-source, modifiable'],
           ['Performance', 'Surcharge CPU & chutes de FPS', '0.00 ms au repos, SQL indexé'],
           ['Sécurité', 'Fichiers chiffrés opaques', 'Code source sain et vérifié'],
-          ['Achat & Garantie', 'Échanges risqués sur forums', 'Itemsatis 3D Secure & Discord'],
+          ['Achat & Garantie', 'Échanges risqués sur forums', 'Itemsatis 3D Secure & E-Mail'],
         ],
         solutionsCards: [
           {

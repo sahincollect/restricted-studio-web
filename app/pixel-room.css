@@ -337,7 +337,7 @@
 }
 
 .px-bg-walker--1 {
-  bottom: 16.5%;
+  bottom: 13.4%;
   background-image: url('/assets/parallax/sprites/walk-bg-coat.png');
   background-size: 504px 99px;
   animation:
@@ -346,7 +346,7 @@
 }
 
 .px-bg-walker--2 {
-  bottom: 17.3%;
+  bottom: 14.2%;
   background-image: url('/assets/parallax/sprites/walk-bg-hoodie.png');
   background-size: 576px 99px;
   animation:
@@ -355,7 +355,7 @@
 }
 
 .px-bg-walker--3 {
-  bottom: 15.9%;
+  bottom: 12.8%;
   background-image: url('/assets/parallax/sprites/walk-bg-backpack.png');
   background-size: 504px 99px;
   animation:
@@ -364,7 +364,7 @@
 }
 
 .px-bg-walker--4 {
-  bottom: 16.9%;
+  bottom: 13.8%;
   background-image: url('/assets/parallax/sprites/walk-bg-coat.png');
   background-size: 504px 99px;
   filter: brightness(0.68) saturate(0.85) hue-rotate(-14deg) drop-shadow(0 3px 5px rgba(0, 0, 0, 0.88));

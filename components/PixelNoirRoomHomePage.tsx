@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import catalogStats from '../lib/catalog-stats.json';
 import { useI18n } from '../components/I18nProvider';
+import { useCrtTransition } from '../components/CrtTransitionProvider';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import LivingPixelRoomCanvas from '../components/LivingPixelRoomCanvas';
 import '../app/pixel-room.css';
@@ -15,6 +16,7 @@ const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
 
 export default function PixelNoirRoomHomePage() {
   const { t, formatNumber, formatPercent } = useI18n();
+  const { navigateWithCrt } = useCrtTransition();
   const shellRef = useRef<HTMLDivElement | null>(null);
   const [activeModal, setActiveModal] = useState<ModalId>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -144,6 +146,23 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
     setActiveModal(id);
   };
 
+  const handleCrtNav = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (
+      e.defaultPrevented ||
+      e.button !== 0 ||
+      e.metaKey ||
+      e.ctrlKey ||
+      e.shiftKey ||
+      e.altKey
+    ) {
+      return;
+    }
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    setActiveModal(null);
+    navigateWithCrt(href);
+  };
+
   return (
     <div ref={shellRef} className="living-room-shell">
       {/* ===============================================================
@@ -188,13 +207,13 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
         </div>
 
         <nav className="bpn-menu" aria-label={t.common.home}>
-          <button
-            type="button"
-            className={`bpn-link ${activeModal === 'about' ? 'is-active' : ''}`}
-            onClick={() => openModal('about')}
+          <Link
+            href="/hakkimizda"
+            className="bpn-link"
+            onClick={(e) => handleCrtNav(e, '/hakkimizda')}
           >
             HAKKIMIZDA
-          </button>
+          </Link>
           <Link href="/katalog" className="bpn-link bpn-link-highlight">
             KATALOG
           </Link>
@@ -289,10 +308,14 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
           </span>
           <LanguageSwitcher compact />
         </div>
-        <button type="button" className="bmn-link-btn" onClick={() => openModal('about')}>
+        <Link
+          href="/hakkimizda"
+          className="bmn-link-btn"
+          onClick={(e) => handleCrtNav(e, '/hakkimizda')}
+        >
           <span>HAKKIMIZDA</span>
           <span>↗</span>
-        </button>
+        </Link>
         <Link href="/katalog" className="bmn-link-btn" style={{ background: '#A50000' }}>
           <span>KATALOG (6.400+)</span>
           <span>→</span>
