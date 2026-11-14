@@ -127,8 +127,8 @@ export default function LivingPixelRoomCanvas({ onSelectAction }: LivingPixelRoo
         {/* 2. Patrolling Red-Beanie Citizen walking along the crosswalk */}
         <div className="px-actor px-actor-red-walker" />
 
-        {/* 3. Patrolling Crimson Cyber-Guard on the right sidewalk */}
-        <div className="px-actor px-actor-cyber-guard" />
+        {/* 3. Patrolling Crimson-Jacket Woman on the right restaurant sidewalk */}
+        <div className="px-actor px-actor-woman-walker" />
       </div>
 
       {/* Layer 4: Atmospheric Nocturnal Rain & Vignette */}

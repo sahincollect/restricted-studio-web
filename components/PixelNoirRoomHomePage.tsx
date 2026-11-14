@@ -388,13 +388,8 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
           );
         })}
 
-        {/* Pixel Street Directory Signboard (Tabela) — Stacked vertical planks */}
+        {/* Right-Facade Neon Wall Signboard (Tabela) — Mounted with steel wall brackets */}
         <aside className="px-street-signboard" aria-label="Şehir Yönlendirme Tabelası">
-          <div className="px-signboard-chains" aria-hidden="true">
-            <span />
-            <span />
-          </div>
-
           <div className="px-signboard-frame">
             <div className="px-signboard-header">
               <span className="px-signboard-bolt" aria-hidden="true" />
@@ -441,7 +436,10 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
             </div>
           </div>
 
-          <div className="px-signboard-post" aria-hidden="true" />
+          <div className="px-signboard-brackets" aria-hidden="true">
+            <span />
+            <span />
+          </div>
         </aside>
       </main>
 
