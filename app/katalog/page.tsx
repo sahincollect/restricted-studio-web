@@ -7,6 +7,7 @@ import ItemsatisLogo from '@/components/ItemsatisLogo';
 import { useI18n } from '@/components/I18nProvider';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { INTERACTIVE_I18N } from '@/lib/interactive-i18n';
+import { getCatalogItemArtwork } from '@/lib/catalog-artwork';
 import {
   FEATURED_BASELINE_CLICKS,
   getItemPopularityScore,
@@ -23,6 +24,7 @@ interface CatalogItem {
   slug: string;
   source: string;
   status: string;
+  image?: string;
 }
 
 const CATEGORIES = [
@@ -913,72 +915,21 @@ export default function CatalogPage() {
                ================================================================= */}
           <main className="catalog-main-content">
 
-            {/* Content Top Bar (Status, Active filters & Mobile Trigger) */}
+            {/* Content Top Bar (Symmetrical Fixed Header Row) */}
             <div className="catalog-main-topbar">
               <div className="cmt-left">
                 <h2 className="cmt-category-title">
-                  {viewMode === 'featured'
-                    ? extraT.viewFeatured
-                    : viewMode === 'popular'
-                    ? extraT.viewPopular
-                    : t.catalog.categoryLabels[selectedCategory] || selectedCategory}
+                  <span>
+                    {viewMode === 'featured'
+                      ? extraT.viewFeatured
+                      : viewMode === 'popular'
+                      ? extraT.viewPopular
+                      : t.catalog.categoryLabels[selectedCategory] || selectedCategory}
+                  </span>
                   <span className="cmt-count-badge">
                     {t.catalog.packageCountLabel(formatNumber(filteredItems.length))}
                   </span>
                 </h2>
-
-                {/* Active Filter Chips */}
-                {(search || selectedCategory !== 'Tümü' || viewMode !== 'all') && (
-                  <div className="cmt-active-filters">
-                    {viewMode !== 'all' && (
-                      <span className="cmt-chip">
-                        {viewMode === 'featured' ? extraT.viewFeatured : extraT.viewPopular}
-                        <button
-                          type="button"
-                          onClick={() => setViewMode('all')}
-                          aria-label={t.catalog.resetFilters}
-                        >
-                          ✕
-                        </button>
-                      </span>
-                    )}
-                    {selectedCategory !== 'Tümü' && (
-                      <span className="cmt-chip">
-                        {t.catalog.categoryLabels[selectedCategory] || selectedCategory}
-                        <button
-                          type="button"
-                          onClick={() => setSelectedCategory('Tümü')}
-                          aria-label={t.catalog.removeCategoryAria}
-                        >
-                          ✕
-                        </button>
-                      </span>
-                    )}
-                    {search && (
-                      <span className="cmt-chip">
-                        &quot;{search}&quot;
-                        <button
-                          type="button"
-                          onClick={() => setSearch('')}
-                          aria-label={t.catalog.removeSearchAria}
-                        >
-                          ✕
-                        </button>
-                      </span>
-                    )}
-                    <button
-                      type="button"
-                      className="cmt-chip-clear-all"
-                      onClick={() => {
-                        setViewMode('all');
-                        setSelectedCategory('Tümü');
-                        setSearch('');
-                      }}
-                    >
-                      {t.catalog.resetFilters}
-                    </button>
-                  </div>
-                )}
               </div>
 
               <div className="cmt-right">
@@ -1035,6 +986,66 @@ export default function CatalogPage() {
               </div>
             </div>
 
+            {/* Dedicated Active Filter Bar (Keeps Header Symmetrical & Cleanly Scannable) */}
+            {(search || selectedCategory !== 'Tümü' || viewMode !== 'all') && (
+              <div className="cmt-active-filters" role="region" aria-label={extraT.viewsLabel}>
+                {viewMode !== 'all' && (
+                  <span className="cmt-chip">
+                    <span className="cmt-chip-text">
+                      {viewMode === 'featured' ? `★ ${extraT.viewFeatured}` : `▲ ${extraT.viewPopular}`}
+                    </span>
+                    <button
+                      type="button"
+                      className="cmt-chip-remove"
+                      onClick={() => setViewMode('all')}
+                      aria-label={t.catalog.resetFilters}
+                    >
+                      ✕
+                    </button>
+                  </span>
+                )}
+                {selectedCategory !== 'Tümü' && (
+                  <span className="cmt-chip">
+                    <span className="cmt-chip-text">
+                      {t.catalog.categoryLabels[selectedCategory] || selectedCategory}
+                    </span>
+                    <button
+                      type="button"
+                      className="cmt-chip-remove"
+                      onClick={() => setSelectedCategory('Tümü')}
+                      aria-label={t.catalog.removeCategoryAria}
+                    >
+                      ✕
+                    </button>
+                  </span>
+                )}
+                {search && (
+                  <span className="cmt-chip">
+                    <span className="cmt-chip-text">&quot;{search}&quot;</span>
+                    <button
+                      type="button"
+                      className="cmt-chip-remove"
+                      onClick={() => setSearch('')}
+                      aria-label={t.catalog.removeSearchAria}
+                    >
+                      ✕
+                    </button>
+                  </span>
+                )}
+                <button
+                  type="button"
+                  className="cmt-chip-clear-all"
+                  onClick={() => {
+                    setViewMode('all');
+                    setSelectedCategory('Tümü');
+                    setSearch('');
+                  }}
+                >
+                  {t.catalog.resetFilters}
+                </button>
+              </div>
+            )}
+
             {/* Mobile Category Horizontal Scroll Strip */}
             <div className="catalog-mobile-cats-strip">
               <button
@@ -1089,6 +1100,7 @@ export default function CatalogPage() {
                 <div className="cps-grid">
                   {topPopularStrip.map(({ item, score }, idx) => {
                     const inCart = cartIds.has(item.id);
+                    const thumbSrc = getCatalogItemArtwork(item);
                     return (
                       <div
                         key={item.id}
@@ -1098,11 +1110,14 @@ export default function CatalogPage() {
                           setPreviewItem(item);
                         }}
                       >
-                        <div className="cps-card-top">
-                          <span className="cps-rank">#{idx + 1}</span>
-                          <span className="cps-clicks">
-                            ▲ {formatNumber(score)} {extraT.clicksUnit}
-                          </span>
+                        <div className="cps-card-thumb">
+                          <img src={thumbSrc} alt={item.title} className="cps-card-thumb-img" loading="lazy" />
+                          <div className="cps-card-top">
+                            <span className="cps-rank">#{idx + 1}</span>
+                            <span className="cps-clicks">
+                              ▲ {formatNumber(score)} {extraT.clicksUnit}
+                            </span>
+                          </div>
                         </div>
                         <div className="cps-card-title" title={item.title}>
                           {item.title}
@@ -1139,6 +1154,7 @@ export default function CatalogPage() {
                   const isVerified = item.source === 'restricted-verified';
                   const isFeatured = isFeaturedCatalogItem(item.id);
                   const popScore = getItemPopularityScore(item.id, clickCounts);
+                  const coverSrc = getCatalogItemArtwork(item);
 
                   return (
                     <article key={item.id} className="catalog-card-v2 spotlight-surface">
@@ -1149,13 +1165,15 @@ export default function CatalogPage() {
                           setPreviewItem(item);
                         }}
                       >
-                        {/* Visual Category Header Box */}
-                        <div
-                          className="cc-card-visual"
-                          style={{
-                            background: `linear-gradient(135deg, ${(CATEGORY_STYLE[item.category] || DEFAULT_STYLE).from}, ${(CATEGORY_STYLE[item.category] || DEFAULT_STYLE).to})`,
-                          }}
-                        >
+                        {/* Triadic Noir Illustrated Cover */}
+                        <div className="cc-card-visual has-artwork">
+                          <img
+                            src={coverSrc}
+                            alt={item.title}
+                            className="cc-visual-art"
+                            loading="lazy"
+                          />
+                          <div className="cc-visual-scrim" aria-hidden="true" />
                           <div className="cc-visual-top-row">
                             <span className="cc-visual-id">{item.id}</span>
                             {popScore > 0 && (
@@ -1164,28 +1182,17 @@ export default function CatalogPage() {
                               </span>
                             )}
                           </div>
-                          <div className="cc-visual-badges-line">
-                            {isFeatured && (
-                              <span className="cc-visual-featured">★ {extraT.featuredTag}</span>
-                            )}
-                            {isVerified && !isFeatured && (
-                              <span className="cc-visual-verified">{t.catalog.verifiedItemBadge}</span>
-                            )}
+                          <div className="cc-visual-bottom-meta">
+                            <div className="cc-visual-badges-line">
+                              {isFeatured && (
+                                <span className="cc-visual-featured">★ {extraT.featuredTag}</span>
+                              )}
+                              {isVerified && !isFeatured && (
+                                <span className="cc-visual-verified">{t.catalog.verifiedItemBadge}</span>
+                              )}
+                            </div>
+                            <span className="cc-visual-cat">{t.catalog.categoryLabels[item.category] || item.category}</span>
                           </div>
-                          <svg
-                            className="cc-visual-icon"
-                            width="40"
-                            height="40"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            {(CATEGORY_STYLE[item.category] || DEFAULT_STYLE).icon}
-                          </svg>
-                          <span className="cc-visual-cat">{t.catalog.categoryLabels[item.category] || item.category}</span>
                         </div>
 
                         {/* Product Title */}
@@ -1715,6 +1722,14 @@ export default function CatalogPage() {
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
+
+            <div className="cpm-cover-wrap">
+              <img
+                src={getCatalogItemArtwork(previewItem)}
+                alt={previewItem.title}
+                className="cpm-cover-img"
+              />
+            </div>
 
             <div className="cpm-badge-row">
               <span className="cpm-kicker">{extraT.previewTitle}</span>
