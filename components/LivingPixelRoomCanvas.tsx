@@ -62,8 +62,11 @@ export default function LivingPixelRoomCanvas() {
       {/* Layer 1: Far Horizon Skyline (Moves slowest) */}
       <div className="px-parallax-layer px-layer-far" aria-hidden="true" />
 
-      {/* Layer 2: Midground Noir Towers + Overpass Highway with Modern Everyday Cars in Opposite Lanes */}
-      <div className="px-parallax-layer px-layer-mid" aria-hidden="true">
+      {/* Layer 2: Midground Noir Towers */}
+      <div className="px-parallax-layer px-layer-mid" aria-hidden="true" />
+
+      {/* Overpass Bridge Traffic (Locked to Foreground Bridge Deck so cars never float on mouse tilt) */}
+      <div className="px-bridge-traffic" aria-hidden="true">
         {/* Eastbound Lane (Left -> Right): Modern Crimson Sport Coupe */}
         <div className="px-traffic-car px-traffic-car--east" />
 
@@ -74,8 +77,15 @@ export default function LivingPixelRoomCanvas() {
       {/* Layer 3: Foreground Cyber-Noir Street */}
       <div className="px-parallax-layer px-layer-fg" aria-hidden="true" />
 
-      {/* Foreground Street Citizens + Pixel Thought Bubbles (Synced with Foreground Layer-3 Parallax) */}
+      {/* Foreground Street Props (Burning Barrel w/ Beer Bottles + Road Barricade) & Citizens */}
       <div className="px-street-actors">
+        {/* Homeless Alley Props: Burning Fire Barrel + Crate + Beer Bottles (Left-Center Curb) */}
+        <div className="px-prop-fire-barrel" aria-hidden="true">
+          <span className="px-fire-light" />
+        </div>
+
+        {/* Road Barricade + Traffic Cone + Scattered Beer Bottles (Right-Center Asphalt) */}
+        <div className="px-prop-barricade" aria-hidden="true" />
         {/* 1. Left Bar Patron — Stationary animated jacket citizen with thought bubble */}
         <div className="px-citizen-slot px-citizen-left">
           <Link
