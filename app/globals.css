@@ -6574,3 +6574,104 @@ textarea {
     padding: 18px;
   }
 }
+
+/* ============================================================================
+   MINIMAL AUDIO PLAYER (CSP-Safe External Stylesheet — Anchored Bottom-Left)
+   ============================================================================ */
+.rs-minimal-audio-wrap {
+  position: fixed;
+  left: 22px;
+  bottom: 22px;
+  z-index: 95;
+}
+
+.rs-minimal-audio-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: rgba(10, 11, 16, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  color: rgba(244, 246, 251, 0.9);
+  cursor: pointer;
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.82),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition:
+    border-color 0.16s ease,
+    background-color 0.16s ease,
+    color 0.16s ease,
+    box-shadow 0.16s ease,
+    transform 0.16s ease;
+}
+
+.rs-minimal-audio-btn:hover {
+  background: rgba(22, 12, 16, 0.96);
+  border-color: rgba(224, 27, 36, 0.72);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 18px rgba(224, 27, 36, 0.35),
+    0 10px 26px rgba(0, 0, 0, 0.88);
+}
+
+.rs-minimal-audio-btn.is-playing {
+  border-color: rgba(224, 27, 36, 0.65);
+  color: #ffffff;
+  box-shadow:
+    0 0 14px rgba(224, 27, 36, 0.25),
+    0 10px 26px rgba(0, 0, 0, 0.85);
+}
+
+.rs-eq-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 14px;
+}
+
+.rs-eq-bar {
+  display: block;
+  width: 2.5px;
+  height: 4px;
+  border-radius: 1.5px;
+  background: rgba(240, 242, 248, 0.48);
+  transition: height 0.18s ease, background-color 0.18s ease;
+}
+
+.rs-minimal-audio-btn.is-playing .rs-eq-bar {
+  background: #e01b24;
+  animation: rsEqBounce 0.82s ease-in-out infinite alternate;
+}
+
+.rs-minimal-audio-btn.is-playing .rs-eq-1 {
+  animation-duration: 0.58s;
+}
+
+.rs-minimal-audio-btn.is-playing .rs-eq-2 {
+  animation-duration: 0.44s;
+  animation-delay: 0.14s;
+}
+
+.rs-minimal-audio-btn.is-playing .rs-eq-3 {
+  animation-duration: 0.7s;
+  animation-delay: 0.26s;
+}
+
+.rs-minimal-audio-btn.is-playing .rs-eq-4 {
+  animation-duration: 0.52s;
+  animation-delay: 0.08s;
+}
+
+@keyframes rsEqBounce {
+  0% {
+    height: 4px;
+  }
+  100% {
+    height: 14px;
+  }
+}

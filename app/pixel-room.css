@@ -278,8 +278,8 @@
 /* 1. Far-Left Alley: Overflowing Street Dumpster + Trash Bags + Cardboard Boxes + Bottles (84x58 -> scaled 1.75x = 147x102) */
 .px-prop-dumpster {
   position: absolute;
-  left: 3.8%;
-  bottom: 5.8%;
+  left: 6.2%;
+  bottom: 8.8%;
   width: 147px;
   height: 102px;
   background-image: url('/assets/parallax/sprites/street-dumpster.png');
@@ -315,7 +315,7 @@
 .px-prop-fire-barrel {
   position: absolute;
   left: 25.5%;
-  bottom: 5.2%;
+  bottom: 8.2%;
   width: 96px;
   height: 112px;
   background-image: url('/assets/parallax/sprites/street-fire-barrel.png');
@@ -328,8 +328,8 @@
 }
 
 .px-prop-fire-barrel--right {
-  left: 91.2%;
-  bottom: 5.2%;
+  left: 88.2%;
+  bottom: 8.2%;
   transform: scale(0.94);
   transform-origin: bottom center;
   animation-delay: -0.35s;
@@ -365,7 +365,7 @@
 .px-prop-steam-grate {
   position: absolute;
   left: 33.2%;
-  bottom: 3.2%;
+  bottom: 6.8%;
   width: 112px;
   height: 84px;
   background-image: url('/assets/parallax/sprites/street-steam-grate.png');
@@ -380,7 +380,7 @@
 .px-prop-barricade {
   position: absolute;
   left: 48.2%;
-  bottom: 5.6%;
+  bottom: 8.6%;
   width: 118px;
   height: 74px;
   background-image: url('/assets/parallax/sprites/street-barricade.png');
@@ -403,8 +403,8 @@
 
 .px-prop-drifter-sleep {
   position: absolute;
-  left: 66.5%;
-  bottom: 4.8%;
+  left: 65.2%;
+  bottom: 8.2%;
   width: 119px;
   height: 63px;
   background-image: url('/assets/parallax/sprites/street-drifter-sleep.png');
@@ -425,28 +425,28 @@
 }
 
 .px-citizen-left {
-  left: 15.2%;
-  bottom: 5.5%;
+  left: 16.2%;
+  bottom: 8.4%;
 }
 
 .px-citizen-mid {
-  left: 38.2%;
-  bottom: 4.2%;
+  left: 38.8%;
+  bottom: 7.4%;
 }
 
 .px-citizen-right {
   left: 57.5%;
-  bottom: 4.5%;
+  bottom: 7.8%;
 }
 
 /* Far-Right Sidewalk: Two Men Chatting Face-to-Face */
 .px-chat-duo {
   position: absolute;
-  left: 77.2%;
-  bottom: 4.4%;
+  left: 74.2%;
+  bottom: 7.8%;
   display: flex;
   align-items: flex-end;
-  gap: 8px;
+  gap: 4px;
   pointer-events: none;
 }
 
@@ -459,16 +459,16 @@
 }
 
 .px-chat-bubble-left {
-  max-width: 168px;
-  margin-bottom: -18px;
-  transform: translateX(-16px);
+  max-width: 160px;
+  margin-bottom: -14px;
+  transform: translateX(-22px);
   animation-delay: 0.4s;
 }
 
 .px-chat-bubble-right {
-  max-width: 168px;
+  max-width: 160px;
   margin-bottom: -36px;
-  transform: translateX(16px);
+  transform: translateX(8px);
   animation-delay: 1.8s;
 }
 
@@ -698,11 +698,11 @@
 
 /* ==========================================================================
    REFINED TOP NAVBAR — SLEEK ARCHITECTURAL NOIR GLASS DECK
-   High legibility, subtle 8px bevels, crisp typography (never blocky or low-bit)
+   True horizontal center alignment for menu links + lowered slightly from top
    ========================================================================== */
 .living-room-shell .bento-pill-nav {
   position: absolute;
-  top: 14px;
+  top: 22px;
   left: 24px;
   right: 24px;
   max-width: 1480px;
@@ -718,17 +718,39 @@
     0 12px 32px rgba(0, 0, 0, 0.72),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.living-room-shell .bpn-menu {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .living-room-shell .bpn-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  line-height: 1;
   font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.06em;
   color: rgba(242, 244, 250, 0.86);
-  padding: 7px 11px;
+  padding: 0 12px;
   border-radius: 6px;
   transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+.living-room-shell .bpn-link::after {
+  bottom: 3px;
 }
 
 .living-room-shell .bpn-link:hover,
@@ -926,11 +948,15 @@
 
 @media (max-width: 980px) {
   .living-room-shell .bento-pill-nav {
-    top: 8px;
+    top: 12px;
     left: 10px;
     right: 10px;
     height: 48px;
     padding: 0 12px;
+  }
+
+  .living-room-shell .bpn-menu {
+    display: none;
   }
 
   .px-citizen-mid,
@@ -944,21 +970,21 @@
 
   .px-chat-duo {
     left: 52%;
-    bottom: 4%;
+    bottom: 7.5%;
     transform: scale(0.84);
     transform-origin: bottom center;
   }
 
   .px-prop-fire-barrel {
     left: 38%;
-    bottom: 4.5%;
+    bottom: 7.5%;
     transform: scale(0.85);
     transform-origin: bottom center;
   }
 
   .px-citizen-left {
     left: 6%;
-    bottom: 4%;
+    bottom: 7.5%;
   }
 
   .px-thought-bubble {
