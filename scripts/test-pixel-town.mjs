@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import catalogStats from '../lib/catalog-stats.json' with { type: 'json' };
-import { CATALOG_CATEGORY_KEYS } from '../lib/translations.ts';
+import { CATALOG_CATEGORY_KEYS, TRANSLATIONS } from '../lib/translations.ts';
 import { resolveCatalogCategoryParam } from '../lib/catalog-query.ts';
 import {
   PIXEL_TOWN_BUILDINGS,
@@ -65,5 +65,36 @@ describe('pixel-town-config', () => {
     assert.equal(getTownBuildingBadge('catalog', '6.400+', catalogStats), '6.446+');
     assert.equal(getTownBuildingBadge('status', 'AKTİF', catalogStats, okSnap), '42 ms');
     assert.equal(getTownBuildingBadge('status', 'AKTİF', catalogStats, null), 'AKTİF');
+  });
+});
+
+describe('pixel-town-translations', () => {
+  it('provides complete 4-locale town strings with compact signboard character budgets', () => {
+    for (const loc of ['tr', 'en', 'ru', 'fr']) {
+      const town = TRANSLATIONS[loc].home.town;
+      assert.ok(town, `${loc}: missing home.town`);
+      assert.ok(town.marqueeEyebrow.length > 0, `${loc}: marqueeEyebrow empty`);
+      assert.ok(town.marqueeTitle.length > 0, `${loc}: marqueeTitle empty`);
+      assert.ok(town.hudSelectedPrefix.length > 0, `${loc}: hudSelectedPrefix empty`);
+      assert.ok(town.hudHint.length > 0, `${loc}: hudHint empty`);
+      assert.ok(town.statusNominal.length > 0, `${loc}: statusNominal empty`);
+      assert.ok(town.statusDegraded.length > 0, `${loc}: statusDegraded empty`);
+
+      for (const building of PIXEL_TOWN_BUILDINGS) {
+        const copy = town.buildings[building.id];
+        assert.ok(copy, `${loc}: missing building ${building.id}`);
+        assert.ok(
+          copy.signTitle.length > 0 && copy.signTitle.length <= 22,
+          `${loc}.${building.id}.signTitle out of bounds (${copy.signTitle.length}): ${copy.signTitle}`
+        );
+        assert.ok(
+          copy.badge.length > 0 && copy.badge.length <= 14,
+          `${loc}.${building.id}.badge out of bounds (${copy.badge.length}): ${copy.badge}`
+        );
+        assert.ok(copy.category.length > 0, `${loc}.${building.id}.category empty`);
+        assert.ok(copy.summary.length > 0, `${loc}.${building.id}.summary empty`);
+        assert.ok(copy.ctaLabel.length > 0, `${loc}.${building.id}.ctaLabel empty`);
+      }
+    }
   });
 });
