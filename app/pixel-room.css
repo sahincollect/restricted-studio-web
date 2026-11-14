@@ -1,0 +1,442 @@
+/* ==========================================================================
+   RESTRICTED STUDIO — PIXEL NOIR ROOM DIORAMA HOMEPAGE
+   Exact Katana Zero / 3/4 Top-Down Room Aesthetic with Restricted Noir Palette
+   (#08080a Obsidian, #a50000 / #e01b24 Crimson, #e8a848 Warm Lamp Amber)
+   ========================================================================== */
+
+.pixel-room-shell {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 45%, #121016 0%, #070709 78%, #040406 100%);
+  color: #f0f0f4;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px 20px 12px;
+  box-sizing: border-box;
+  user-select: none;
+  font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
+}
+
+/* Main Center Stage holding the 16:9 Pixel Room Diorama */
+.pr-stage-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 1420px;
+  margin: 8px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pr-diorama-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-height: calc(100dvh - 148px);
+  aspect-ratio: 1554 / 828;
+  margin: 0 auto;
+  background: #08080b;
+  border: 3px solid #2b1419;
+  box-shadow:
+    inset 0 0 0 2px #09090d,
+    0 0 0 1px rgba(224, 27, 36, 0.28),
+    0 20px 55px rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+}
+
+.pr-diorama-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: contrast(1.04) saturate(1.06);
+}
+
+/* Ambient Noir Lighting Overlays (Warm Floor Lamp Pulse + Crimson Sofa/Clock Glow + Subtle Vignette) */
+.pr-ambient-lighting {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    radial-gradient(circle at 31% 31%, rgba(232, 168, 72, 0.16) 0%, transparent 24%),
+    radial-gradient(circle at 48% 45%, rgba(212, 28, 44, 0.14) 0%, transparent 32%),
+    radial-gradient(circle at 74% 14%, rgba(224, 27, 36, 0.18) 0%, transparent 14%),
+    radial-gradient(circle at 46% 68%, rgba(220, 230, 255, 0.08) 0%, transparent 22%),
+    radial-gradient(circle at 50% 50%, transparent 58%, rgba(4, 4, 7, 0.72) 100%);
+}
+
+/* Top-Left Floating Pixel Campaign Banner Overlay inside the Room Frame */
+.pr-room-hud-overlay {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 370px;
+  padding: 10px 12px;
+  background: rgba(8, 8, 12, 0.88);
+  border: 2px solid #8c1d28;
+  box-shadow:
+    inset 0 0 0 1px #1a0c10,
+    0 8px 24px rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+}
+
+.pr-hud-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #ff6b75;
+  text-transform: uppercase;
+}
+
+.pr-hud-dot {
+  width: 7px;
+  height: 7px;
+  background: #e01b24;
+  box-shadow: 0 0 8px #e01b24;
+  display: inline-block;
+}
+
+.pr-hud-promos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pr-promo-chip {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  padding: 4px 8px;
+  text-decoration: none;
+  border: 1.5px solid;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.pr-promo-chip:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.15);
+}
+
+.pr-promo-chip--crimson {
+  background: #2b090e;
+  border-color: #d41c2c;
+  color: #ff858d;
+}
+
+.pr-promo-chip--amber {
+  background: #261909;
+  border-color: #d99538;
+  color: #f5c26b;
+}
+
+.pr-hud-hint {
+  margin: 0;
+  font-size: 11.5px;
+  color: rgba(240, 240, 245, 0.78);
+  line-height: 1.35;
+}
+
+/* ==========================================================================
+   INTERACTIVE PIXEL ROOM OBJECT HOTSPOTS (RPG / KATANA ZERO STYLE PINS)
+   ========================================================================== */
+
+.pr-hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(10, 10, 14, 0.92);
+  border: 2px solid #454d66;
+  box-shadow:
+    0 0 0 2px #060609,
+    0 6px 16px rgba(0, 0, 0, 0.8);
+  color: #f0f2f8;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.16s ease, border-color 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+/* Downward Pixel Pointer Triangle under each Hotspot Tag */
+.pr-hotspot::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid currentColor;
+}
+
+.pr-hotspot:hover,
+.pr-hotspot.is-selected {
+  transform: translate(-50%, calc(-50% - 4px)) scale(1.04);
+  z-index: 8;
+}
+
+.pr-hotspot-beacon {
+  width: 7px;
+  height: 7px;
+  background: currentColor;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.pr-hotspot-badge {
+  color: #ffffff;
+}
+
+/* Tone Styling for Room Hotspots */
+.pr-hotspot--crimson {
+  border-color: #b81d2a;
+  color: #ff6b75;
+  background: rgba(22, 7, 10, 0.94);
+}
+.pr-hotspot--crimson:hover,
+.pr-hotspot--crimson.is-selected {
+  border-color: #ff4d5a;
+  box-shadow:
+    0 0 0 2px #090607,
+    0 0 18px rgba(224, 27, 36, 0.55);
+}
+
+.pr-hotspot--amber {
+  border-color: #c78b36;
+  color: #f3b659;
+  background: rgba(22, 15, 7, 0.94);
+}
+.pr-hotspot--amber:hover,
+.pr-hotspot--amber.is-selected {
+  border-color: #ffbe5c;
+  box-shadow:
+    0 0 0 2px #090705,
+    0 0 18px rgba(232, 168, 72, 0.5);
+}
+
+.pr-hotspot--frost {
+  border-color: #3e76a8;
+  color: #7ec4f2;
+  background: rgba(8, 15, 23, 0.94);
+}
+.pr-hotspot--frost:hover,
+.pr-hotspot--frost.is-selected {
+  border-color: #70b8f7;
+  box-shadow:
+    0 0 0 2px #05080c,
+    0 0 18px rgba(112, 184, 247, 0.45);
+}
+
+.pr-hotspot--slate {
+  border-color: #526080;
+  color: #cfd8eb;
+  background: rgba(12, 15, 22, 0.94);
+}
+.pr-hotspot--slate:hover,
+.pr-hotspot--slate.is-selected {
+  border-color: #96a8cf;
+  box-shadow:
+    0 0 0 2px #06070a,
+    0 0 16px rgba(150, 168, 207, 0.4);
+}
+
+/* ==========================================================================
+   BOTTOM RPG DIALOGUE / INSPECTOR BAR
+   ========================================================================== */
+
+.pr-dialogue-dock {
+  position: relative;
+  z-index: 6;
+  max-width: 1420px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 10px 16px;
+  background: rgba(10, 10, 15, 0.95);
+  border: 2px solid #6e1820;
+  box-shadow:
+    inset 0 0 0 2px #060609,
+    0 8px 24px rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pr-dialogue-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.pr-dialogue-code {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 9px;
+  background: #290b10;
+  border: 1.5px solid #c92a37;
+  color: #ff858d;
+  white-space: nowrap;
+}
+
+.pr-dialogue-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pr-dialogue-title {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.03em;
+}
+
+.pr-dialogue-title span {
+  color: #ff6b75;
+  margin-left: 8px;
+}
+
+.pr-dialogue-desc {
+  font-size: 12px;
+  color: #b8c0d4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pr-dialogue-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pr-dock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  background: #141722;
+  border: 2px solid #2e364d;
+  color: #dce2f0;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.pr-dock-btn:hover {
+  background: #1d2233;
+  border-color: #5b6b94;
+  color: #ffffff;
+}
+
+.pr-dock-btn--crimson {
+  background: #8c0c17;
+  border-color: #e01b24;
+  color: #ffffff;
+}
+
+.pr-dock-btn--crimson:hover {
+  background: #ad101d;
+  border-color: #ff5c66;
+}
+
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVE LAYOUT
+   ========================================================================== */
+
+@media (max-width: 980px) {
+  html:has(.pixel-room-shell),
+  body:has(.pixel-room-shell) {
+    overflow-y: auto !important;
+    height: auto !important;
+  }
+
+  .pixel-room-shell {
+    height: auto;
+    max-height: none;
+    min-height: 100dvh;
+    overflow-y: visible;
+    padding: 10px 12px 24px;
+    gap: 12px;
+  }
+
+  .pr-stage-wrap {
+    flex-direction: column;
+    gap: 10px;
+    margin: 4px auto;
+  }
+
+  .pr-diorama-frame {
+    max-height: none;
+    width: 100%;
+    aspect-ratio: 1554 / 828;
+    height: auto;
+  }
+
+  .pr-room-hud-overlay {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    max-width: none;
+    padding: 6px 8px;
+    gap: 4px;
+  }
+
+  .pr-hud-hint {
+    display: none;
+  }
+
+  .pr-hotspot {
+    padding: 2px 5px;
+    font-size: 8px;
+    gap: 4px;
+    border-width: 1.5px;
+  }
+
+  .pr-hotspot-beacon {
+    width: 5px;
+    height: 5px;
+  }
+
+  .pr-dialogue-desc {
+    white-space: normal;
+  }
+}
