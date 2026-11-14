@@ -145,8 +145,6 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
     setActiveModal(id);
   };
 
-  const directoryHotspots = PIXEL_ROOM_HOTSPOTS.filter((h) => !h.alwaysOpen);
-
   return (
     <div ref={shellRef} className="living-room-shell">
       {/* ===============================================================
@@ -346,60 +344,51 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
       </div>
 
       {/* ===============================================================
-           RIGHT-FACADE PIXEL DIRECTORY SIGNBOARD (TABELA)
+           ARCHITECTURAL NOIR BLADE DIRECTORY (INTEGRATED RIGHT FACADE SIGN)
            =============================================================== */}
       <main className="living-room-hotspots" aria-label="Şehir Yönlendirme Tabelası">
-        {/* Right-Facade Neon Wall Signboard (Tabela) — Mounted with steel wall brackets */}
-        <aside className="px-street-signboard" aria-label="Şehir Yönlendirme Tabelası">
-          <div className="px-signboard-frame">
-            <div className="px-signboard-header">
-              <span className="px-signboard-bolt" aria-hidden="true" />
-              <span className="px-signboard-title">SEKTÖR TABELASI</span>
-              <span className="px-signboard-bolt" aria-hidden="true" />
-            </div>
-
-            <div className="px-signboard-list">
-              {directoryHotspots.map((spot) => {
-                const isActive =
-                  spot.action.type === 'modal' && activeModal === spot.action.modal;
-                const itemClass = `px-signboard-plank px-signboard-plank--${spot.tone} ${
-                  isActive ? 'is-active' : ''
-                }`;
-
-                if (spot.action.type === 'route') {
-                  return (
-                    <Link key={spot.id} href={spot.action.href} className={itemClass}>
-                      <span className="px-plank-led" aria-hidden="true" />
-                      <span className="px-plank-text">{spot.badge}</span>
-                      <span className="px-plank-arrow" aria-hidden="true">
-                        →
-                      </span>
-                    </Link>
-                  );
-                }
-
-                const modalTarget = spot.action.modal;
-                return (
-                  <button
-                    key={spot.id}
-                    type="button"
-                    className={itemClass}
-                    onClick={() => openModal(modalTarget)}
-                  >
-                    <span className="px-plank-led" aria-hidden="true" />
-                    <span className="px-plank-text">{spot.badge}</span>
-                    <span className="px-plank-arrow" aria-hidden="true">
-                      ↗
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+        <aside className="px-blade-directory" aria-label="Şehir Yönlendirme Tabelası">
+          <div className="px-blade-header">
+            <span className="px-blade-pulse" aria-hidden="true" />
+            <span className="px-blade-eyebrow">RESTRICTED // DİZİN</span>
           </div>
 
-          <div className="px-signboard-brackets" aria-hidden="true">
-            <span />
-            <span />
+          <div className="px-blade-list">
+            {PIXEL_ROOM_HOTSPOTS.map((spot) => {
+              const isActive =
+                spot.action.type === 'modal' && activeModal === spot.action.modal;
+              const itemClass = `px-blade-item px-blade-item--${spot.tone} ${
+                isActive ? 'is-active' : ''
+              }`;
+
+              if (spot.action.type === 'route') {
+                return (
+                  <Link key={spot.id} href={spot.action.href} className={itemClass}>
+                    <span className="px-blade-num">{spot.shortNum}</span>
+                    <span className="px-blade-text">{spot.badge}</span>
+                    <span className="px-blade-arrow" aria-hidden="true">
+                      →
+                    </span>
+                  </Link>
+                );
+              }
+
+              const modalTarget = spot.action.modal;
+              return (
+                <button
+                  key={spot.id}
+                  type="button"
+                  className={itemClass}
+                  onClick={() => openModal(modalTarget)}
+                >
+                  <span className="px-blade-num">{spot.shortNum}</span>
+                  <span className="px-blade-text">{spot.badge}</span>
+                  <span className="px-blade-arrow" aria-hidden="true">
+                    ↗
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </aside>
       </main>

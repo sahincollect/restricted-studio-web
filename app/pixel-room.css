@@ -186,36 +186,57 @@
 }
 
 /* ==========================================================================
-   LIVING PIXEL CITIZENS, RED HOVERCAR & CRIMSON MASCOT ON THE STREET
+   MODERN WHEELED PIXEL TRAFFIC ON THE MIDGROUND OVERPASS HIGHWAY
+   - Eastbound Lane (Left -> Right): Crimson Sport Coupe
+   - Westbound Lane (Right -> Left, opposite direction): Smoked-Amber SUV
    ========================================================================== */
 
-/* Midground Red Cyberpunk Hovercar cruising across the skyway */
-@keyframes pxHovercarFlight {
+@keyframes pxTrafficEastbound {
   0% {
-    left: 108%;
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-6px);
+    left: -18%;
   }
   100% {
-    left: -18%;
-    transform: translateY(0px);
+    left: 112%;
   }
 }
 
-.px-actor-hovercar {
+@keyframes pxTrafficWestbound {
+  0% {
+    left: 112%;
+  }
+  100% {
+    left: -18%;
+  }
+}
+
+.px-traffic-car {
   position: absolute;
-  top: 44%;
-  left: 108%;
-  width: 144px;
-  height: 91px;
-  background-image: url('/assets/parallax/sprites/hovercar-red.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
   image-rendering: pixelated;
-  filter: drop-shadow(0 0 14px rgba(224, 27, 36, 0.55));
-  animation: pxHovercarFlight 22s linear infinite;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+}
+
+.px-traffic-car--east {
+  top: 63.2%;
+  left: -18%;
+  width: 118px;
+  height: 32px;
+  background-image: url('/assets/parallax/sprites/car-sport-crimson.png');
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.85));
+  animation: pxTrafficEastbound 17s linear infinite;
+}
+
+.px-traffic-car--west {
+  top: 61.8%;
+  left: 112%;
+  width: 126px;
+  height: 44px;
+  background-image: url('/assets/parallax/sprites/car-suv-amber.png');
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.85));
+  animation: pxTrafficWestbound 21s linear infinite;
+  animation-delay: -7s;
 }
 
 /* Foreground Street Citizens + Pixel Thought Bubbles (Moves in lockstep with Foreground Layer-3) */
@@ -456,346 +477,232 @@
   opacity: 0.62;
 }
 
-/* Floating Top Navbar over the Parallax Scene */
+/* ==========================================================================
+   REFINED TOP NAVBAR — SLEEK ARCHITECTURAL NOIR GLASS DECK
+   High legibility, subtle 8px bevels, crisp typography (never blocky or low-bit)
+   ========================================================================== */
 .living-room-shell .bento-pill-nav {
   position: absolute;
-  top: 12px;
-  left: 20px;
-  right: 20px;
+  top: 14px;
+  left: 24px;
+  right: 24px;
+  max-width: 1480px;
+  margin: 0 auto;
+  height: 54px;
   z-index: 20;
-  background: rgba(8, 8, 12, 0.84);
-  backdrop-filter: blur(8px);
-  border-color: rgba(212, 28, 44, 0.42);
-}
-
-/* ==========================================================================
-   ARCHITECTURAL BUILDING PINS & SIGNBOARDS (NO MORE RANDOM FLOATING BOXES!)
-   - Secondary buildings show a sleek numbered architectural node (`[03]`) with a
-     laser leader-line down to the roof; hovering expands the full label!
-   - Primary campaign banners (`TÜM ÜRÜNLER 100TL!` & `15+ ALIMA %50 İNDİRİM`)
-     stay mounted as crisp neon storefront marquees.
-   ========================================================================== */
-
-.living-room-hotspots {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.lr-spot {
-  position: absolute;
-  pointer-events: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  background: rgba(9, 9, 14, 0.92);
-  border: 1.5px solid #3c455c;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(14, 15, 22, 0.92) 0%, rgba(8, 9, 14, 0.95) 100%);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-bottom: 1.5px solid rgba(224, 27, 36, 0.55);
   box-shadow:
-    0 0 0 2px #050508,
-    0 8px 20px rgba(0, 0, 0, 0.85);
-  color: #eef1f8;
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 10.5px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-decoration: none;
-  cursor: pointer;
-  white-space: nowrap;
-  will-change: transform;
-  transition:
-    padding 0.18s ease,
-    border-color 0.18s ease,
-    box-shadow 0.18s ease,
-    background-color 0.18s ease;
+    0 12px 32px rgba(0, 0, 0, 0.72),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  padding: 0 18px;
 }
 
-/* Vertical Architectural Laser Anchor Line + Diamond Target Dot */
-.lr-spot::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 100%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 18px;
-  background: linear-gradient(180deg, currentColor 0%, rgba(255, 255, 255, 0.15) 100%);
-  pointer-events: none;
+.living-room-shell .bpn-link {
+  font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(242, 244, 250, 0.86);
+  padding: 7px 11px;
+  border-radius: 6px;
+  transition: background-color 0.16s ease, color 0.16s ease;
 }
 
-.lr-spot::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: calc(100% + 16px);
-  transform: translateX(-50%) rotate(45deg);
-  width: 6px;
-  height: 6px;
-  background: currentColor;
-  box-shadow: 0 0 8px currentColor;
-  pointer-events: none;
-}
-
-/* Synchronize hotspot parallax shift with its layer (1 = far, 2 = mid, 3 = fg) */
-.lr-spot--layer-1 {
-  transform: translate3d(
-    calc(-50% + var(--px, 0) * -14px),
-    calc(-50% + var(--py, 0) * -8px),
-    0
-  );
-}
-.lr-spot--layer-2 {
-  transform: translate3d(
-    calc(-50% + var(--px, 0) * -32px),
-    calc(-50% + var(--py, 0) * -16px),
-    0
-  );
-}
-.lr-spot--layer-3 {
-  transform: translate3d(
-    calc(-50% + var(--px, 0) * -58px),
-    calc(-50% + var(--py, 0) * -24px),
-    0
-  );
-}
-
-.lr-spot-dot {
-  width: 7px;
-  height: 7px;
-  background: currentColor;
-  box-shadow: 0 0 8px currentColor;
-  flex-shrink: 0;
-}
-
-.lr-spot--always .lr-spot-label {
+.living-room-shell .bpn-link:hover,
+.living-room-shell .bpn-link.is-active {
+  background: rgba(224, 27, 36, 0.16);
   color: #ffffff;
 }
 
-.lr-spot--always {
-  padding: 6px 12px;
-  font-size: 11.5px;
-  border-width: 2px;
-}
-
-.lr-spot:hover,
-.lr-spot.is-selected {
-  z-index: 16;
-}
-
-.lr-spot--crimson {
-  border-color: #c92230;
-  color: #ff6b75;
-  background: rgba(20, 6, 9, 0.93);
-}
-.lr-spot--crimson:hover,
-.lr-spot--crimson.is-selected {
-  border-color: #ff5460;
-  box-shadow:
-    0 0 0 2px #060405,
-    0 0 22px rgba(224, 27, 36, 0.7);
-}
-
-.lr-spot--amber {
-  border-color: #cf8e34;
-  color: #f5ba5b;
-  background: rgba(20, 14, 6, 0.93);
-}
-.lr-spot--amber:hover,
-.lr-spot--amber.is-selected {
-  border-color: #ffc86b;
-  box-shadow:
-    0 0 0 2px #070503,
-    0 0 22px rgba(232, 168, 72, 0.65);
+.living-room-shell .bpn-trust-badge,
+.living-room-shell .bpn-itemsatis-btn,
+.living-room-shell .bpn-portal-btn,
+.living-room-shell .bpn-icon-btn {
+  border-radius: 7px;
 }
 
 /* ==========================================================================
-   RIGHT-FACADE WALL-BRACKETED NEON SIGNBOARD (TABELA)
-   Mounted on the far-right building wall with steel brackets so it never
-   blocks any street character or sidewalk!
+   ARCHITECTURAL NOIR BLADE SIGN DIRECTORY (FLUSH RIGHT-EDGE NEON FINS)
+   Anchored seamlessly to the right viewport wall like a vertical neon blade sign.
    ========================================================================== */
-.px-street-signboard {
+.living-room-hotspots {
   position: absolute;
-  right: 18px;
-  top: 52%;
+  inset: 0;
+  z-index: 14;
+  pointer-events: none;
+}
+
+.px-blade-directory {
+  position: absolute;
+  right: 0;
+  top: 53%;
+  transform: translateY(-50%);
   z-index: 16;
   pointer-events: auto;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  padding: 10px 0 10px 12px;
+}
+
+.px-blade-header {
+  display: inline-flex;
   align-items: center;
-  width: 244px;
-  transform: translate3d(
-    calc(var(--px, 0) * -28px),
-    calc(-50% + var(--py, 0) * -14px),
-    0
-  );
-  will-change: transform;
+  gap: 7px;
+  padding: 5px 14px 5px 11px;
+  background: rgba(12, 13, 19, 0.92);
+  border: 1px solid rgba(224, 27, 36, 0.45);
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  margin-bottom: 2px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.75);
 }
 
-.px-signboard-brackets {
+.px-blade-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #e01b24;
+  box-shadow: 0 0 8px #e01b24;
+}
+
+.px-blade-eyebrow {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: rgba(240, 242, 248, 0.72);
+}
+
+.px-blade-list {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  width: 16px;
-  height: 190px;
-  flex-shrink: 0;
-}
-
-.px-signboard-brackets span {
-  display: block;
-  width: 100%;
-  height: 8px;
-  background: linear-gradient(180deg, #4b556e 0%, #1c202b 55%, #0b0d12 100%);
-  border-top: 1.5px solid #8c98b8;
-  border-bottom: 1.5px solid #050608;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.85);
-}
-
-.px-signboard-frame {
-  flex: 1;
-  min-width: 0;
-  background: rgba(9, 10, 15, 0.94);
-  backdrop-filter: blur(6px);
-  border: 2px solid #b81d2a;
-  box-shadow:
-    0 0 0 2px #040407,
-    inset 0 0 0 2px #1e0b10,
-    0 0 24px rgba(224, 27, 36, 0.35),
-    0 16px 32px rgba(0, 0, 0, 0.92);
-  padding: 6px;
-  display: flex;
-  flex-direction: column;
+  align-items: flex-end;
   gap: 5px;
 }
 
-.px-signboard-header {
-  display: flex;
+.px-blade-item {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 5px 8px;
-  background: linear-gradient(90deg, #2b080d 0%, #590e18 50%, #2b080d 100%);
-  border: 1.5px solid #e01b24;
-}
-
-.px-signboard-bolt {
-  width: 5px;
-  height: 5px;
-  background: #f5ba5b;
-  box-shadow: 0 0 4px rgba(245, 186, 91, 0.8);
-}
-
-.px-signboard-title {
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 10.5px;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  color: #ffd6da;
-}
-
-.px-signboard-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.px-signboard-plank {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 9px;
-  background: #11131c;
-  border: 1.5px solid #2b3247;
-  box-shadow: inset 0 0 0 1px #06070b;
-  color: #e6ebf5;
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 10.5px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  gap: 10px;
+  width: 228px;
+  padding: 8px 14px 8px 11px;
+  background: linear-gradient(90deg, rgba(13, 15, 22, 0.92) 0%, rgba(9, 10, 15, 0.96) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-right: none;
+  border-left: 3px solid #e01b24;
+  border-radius: 7px 0 0 7px;
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.78),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  color: #eef1f8;
+  font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   text-align: left;
   text-decoration: none;
   cursor: pointer;
   transition:
-    transform 0.14s ease,
-    background-color 0.14s ease,
-    border-color 0.14s ease,
-    box-shadow 0.14s ease;
+    width 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    color 0.16s ease;
 }
 
-.px-signboard-plank:hover,
-.px-signboard-plank.is-active {
-  transform: translateX(-4px);
+.px-blade-item:hover,
+.px-blade-item.is-active {
+  width: 244px;
   color: #ffffff;
 }
 
-.px-plank-led {
-  width: 6px;
-  height: 6px;
+.px-blade-num {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(240, 242, 248, 0.78);
   flex-shrink: 0;
-  background: currentColor;
-  box-shadow: 0 0 6px currentColor;
 }
 
-.px-plank-text {
+.px-blade-text {
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.px-plank-arrow {
+.px-blade-arrow {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
   font-size: 11px;
-  opacity: 0.75;
-  transition: transform 0.14s ease, opacity 0.14s ease;
+  opacity: 0.65;
+  transition: transform 0.16s ease, opacity 0.16s ease;
 }
 
-.px-signboard-plank:hover .px-plank-arrow {
+.px-blade-item:hover .px-blade-arrow {
   transform: translateX(2px);
   opacity: 1;
 }
 
-.px-signboard-plank--crimson {
-  border-left: 3px solid #e01b24;
-  color: #ff858d;
+.px-blade-item--crimson {
+  border-left-color: #e01b24;
 }
-.px-signboard-plank--crimson:hover,
-.px-signboard-plank--crimson.is-active {
-  background: #24090e;
-  border-color: #ff4754;
-  box-shadow: 0 0 14px rgba(224, 27, 36, 0.45);
-}
-
-.px-signboard-plank--amber {
-  border-left: 3px solid #e8a848;
-  color: #f7c674;
-}
-.px-signboard-plank--amber:hover,
-.px-signboard-plank--amber.is-active {
-  background: #241909;
-  border-color: #ffc266;
-  box-shadow: 0 0 14px rgba(232, 168, 72, 0.45);
+.px-blade-item--crimson:hover,
+.px-blade-item--crimson.is-active {
+  background: linear-gradient(90deg, rgba(42, 10, 15, 0.95) 0%, rgba(18, 8, 12, 0.98) 100%);
+  border-color: rgba(255, 84, 96, 0.45);
+  border-left-color: #ff4754;
+  box-shadow:
+    0 8px 24px rgba(224, 27, 36, 0.32),
+    0 8px 20px rgba(0, 0, 0, 0.85);
 }
 
-.px-signboard-plank--frost {
-  border-left: 3px solid #4da6e8;
-  color: #96d2ff;
+.px-blade-item--amber {
+  border-left-color: #e8a848;
 }
-.px-signboard-plank--frost:hover,
-.px-signboard-plank--frost.is-active {
-  background: #0b1b29;
-  border-color: #6ec0ff;
-  box-shadow: 0 0 14px rgba(77, 166, 232, 0.45);
+.px-blade-item--amber:hover,
+.px-blade-item--amber.is-active {
+  background: linear-gradient(90deg, rgba(42, 28, 10, 0.95) 0%, rgba(18, 14, 8, 0.98) 100%);
+  border-color: rgba(245, 186, 91, 0.45);
+  border-left-color: #ffc266;
+  box-shadow:
+    0 8px 24px rgba(232, 168, 72, 0.28),
+    0 8px 20px rgba(0, 0, 0, 0.85);
 }
 
-.px-signboard-plank--slate {
-  border-left: 3px solid #7f91b8;
-  color: #d6e0f5;
+.px-blade-item--frost {
+  border-left-color: #4da6e8;
 }
-.px-signboard-plank--slate:hover,
-.px-signboard-plank--slate.is-active {
-  background: #171c29;
-  border-color: #a4b6de;
-  box-shadow: 0 0 14px rgba(127, 145, 184, 0.4);
+.px-blade-item--frost:hover,
+.px-blade-item--frost.is-active {
+  background: linear-gradient(90deg, rgba(12, 28, 44, 0.95) 0%, rgba(9, 15, 24, 0.98) 100%);
+  border-color: rgba(110, 192, 255, 0.45);
+  border-left-color: #6ec0ff;
+  box-shadow:
+    0 8px 24px rgba(77, 166, 232, 0.28),
+    0 8px 20px rgba(0, 0, 0, 0.85);
+}
+
+.px-blade-item--slate {
+  border-left-color: #7f91b8;
+}
+.px-blade-item--slate:hover,
+.px-blade-item--slate.is-active {
+  background: linear-gradient(90deg, rgba(24, 30, 44, 0.95) 0%, rgba(12, 15, 22, 0.98) 100%);
+  border-color: rgba(164, 182, 222, 0.42);
+  border-left-color: #a4b6de;
+  box-shadow:
+    0 8px 24px rgba(127, 145, 184, 0.25),
+    0 8px 20px rgba(0, 0, 0, 0.85);
 }
 
 @media (max-width: 980px) {
@@ -803,6 +710,8 @@
     top: 8px;
     left: 10px;
     right: 10px;
+    height: 48px;
+    padding: 0 12px;
   }
 
   .px-citizen-mid,
@@ -811,7 +720,7 @@
   }
 
   .px-citizen-left {
-    left: 8%;
+    left: 6%;
     bottom: 4%;
   }
 
@@ -821,26 +730,21 @@
     padding: 5px 8px;
   }
 
-  .lr-spot {
-    padding: 4px 8px;
-    font-size: 9.5px;
-    gap: 5px;
-  }
-
-  .px-street-signboard {
-    right: 10px;
+  .px-blade-directory {
     top: auto;
     bottom: 12px;
-    width: 204px;
     transform: none;
   }
 
-  .px-signboard-brackets {
-    display: none;
+  .px-blade-item {
+    width: 192px;
+    padding: 6px 10px 6px 8px;
+    font-size: 10px;
+    gap: 6px;
   }
 
-  .px-signboard-plank {
-    padding: 6px 8px;
-    font-size: 9.5px;
+  .px-blade-item:hover,
+  .px-blade-item.is-active {
+    width: 198px;
   }
 }

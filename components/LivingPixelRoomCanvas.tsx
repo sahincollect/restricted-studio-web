@@ -62,9 +62,13 @@ export default function LivingPixelRoomCanvas() {
       {/* Layer 1: Far Horizon Skyline (Moves slowest) */}
       <div className="px-parallax-layer px-layer-far" aria-hidden="true" />
 
-      {/* Layer 2: Midground Noir Towers + Cruising Red Cyberpunk Hovercar */}
+      {/* Layer 2: Midground Noir Towers + Overpass Highway with Modern Everyday Cars in Opposite Lanes */}
       <div className="px-parallax-layer px-layer-mid" aria-hidden="true">
-        <div className="px-actor-hovercar" title="Restricted Red Interceptor" />
+        {/* Eastbound Lane (Left -> Right): Modern Crimson Sport Coupe */}
+        <div className="px-traffic-car px-traffic-car--east" />
+
+        {/* Westbound Lane (Right -> Left, opposite direction): Modern Smoked-Amber SUV */}
+        <div className="px-traffic-car px-traffic-car--west" />
       </div>
 
       {/* Layer 3: Foreground Cyber-Noir Street */}
@@ -108,7 +112,7 @@ export default function LivingPixelRoomCanvas() {
           <div className="px-actor px-actor-red-idle" aria-hidden="true" />
         </div>
 
-        {/* 3. Right Storefront Citizen — Stationary animated backpack citizen replacing the girl sprite */}
+        {/* 3. Right Storefront Citizen — Stationary animated backpack citizen */}
         <div className="px-citizen-slot px-citizen-right">
           <Link
             href="/katalog"
