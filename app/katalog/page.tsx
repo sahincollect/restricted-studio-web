@@ -115,7 +115,7 @@ function renderSystemIcon(systemKey: CatalogSystemKey) {
   }
 }
 
-const DISCORD_INVITE = '/discord';
+const DISCORD_INVITE = '/iletisim';
 const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
 const PAGE_SIZE = 60;
 
@@ -588,8 +588,8 @@ export default function CatalogPage() {
             >
               {t.common.catalog}
             </Link>
-            <Link href="/discord" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
-              {t.common.discord}
+            <Link href="/iletisim" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
+              İletişim
             </Link>
             <Link href="/status" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
               {t.common.status}
@@ -1492,7 +1492,7 @@ export default function CatalogPage() {
                 <li><Link href="/">{t.common.home}</Link></li>
                 <li><Link href="/katalog">{t.catalog.footerCatalogLink}</Link></li>
                 <li><Link href="/dashboard">{t.common.clientPortal}</Link></li>
-                <li><Link href="/discord">{t.catalog.footerDiscordSupport}</Link></li>
+                <li><Link href="/iletisim">İletişim & E-Posta</Link></li>
               </ul>
             </div>
 
@@ -1515,7 +1515,7 @@ export default function CatalogPage() {
                     <span>{t.home.modals.itemsatisLink}</span>
                   </a>
                 </li>
-                <li><Link href={DISCORD_INVITE}>{t.home.nav.discordTitle} ↗</Link></li>
+                <li><Link href={DISCORD_INVITE}>info@restrictedstudio.shop ↗</Link></li>
               </ul>
             </div>
           </div>

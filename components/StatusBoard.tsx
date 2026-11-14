@@ -443,13 +443,13 @@ export default function StatusBoard() {
               <>
                 <a href={siteLink('/')}>{t.common.home}</a>
                 <a href={siteLink('/katalog')}>{t.common.catalog}</a>
-                <a href={siteLink('/discord')}>{t.common.discord}</a>
+                <a href={siteLink('/iletisim')}>İletişim</a>
               </>
             ) : (
               <>
                 <Link href="/">{t.common.home}</Link>
                 <Link href="/katalog">{t.common.catalog}</Link>
-                <Link href="/discord">{t.common.discord}</Link>
+                <Link href="/iletisim">İletişim</Link>
               </>
             )}
           </div>
