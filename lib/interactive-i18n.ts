@@ -2,41 +2,30 @@ import type { Locale } from './i18n';
 
 export interface InteractiveLocaleStrings {
   showcase: {
-    tabs: {
-      arcade: string;
-      core: string;
-      console: string;
-    };
-    arcade: {
-      title: string;
-      score: string;
-      best: string;
-      playBtn: string;
-      resumeHint: string;
-      retryBtn: string;
-      autoDemo: string;
-      gameOver: string;
-      victory: string;
-      controls: string;
-      godmode: string;
-      mobilePreviewNote: string;
-    };
+    headerEyebrow: string;
+    statusOperational: string;
+    loadProfileLabel: string;
     core: {
       idle: string;
       load128: string;
       stress256: string;
     };
-    f8: {
-      openFull: string;
-      placeholder: string;
-      helpHint: string;
-      close: string;
-      title: string;
-      emptySearch: string;
-      addToCartDone: string;
-      openInCatalog: string;
-      godmodeToast: string;
+    metrics: {
+      resmonLabel: string;
+      resmonSub: string;
+      sqlLabel: string;
+      sqlSub: string;
+      escrowLabel: string;
+      escrowSub: string;
+      archiveLabel: string;
+      archiveSub: string;
     };
+    bridgesLabel: string;
+    archivePanelTitle: string;
+    archivePanelSub: string;
+    slaPanelTitle: string;
+    slaItems: readonly [string, string, string];
+    openCatalogCta: string;
   };
   catalogExtra: {
     viewsLabel: string;
@@ -70,37 +59,34 @@ export interface InteractiveLocaleStrings {
 export const INTERACTIVE_I18N: Record<Locale, InteractiveLocaleStrings> = {
   tr: {
     showcase: {
-      tabs: { arcade: 'PAC-RUN', core: 'CORE', console: 'F8' },
-      arcade: {
-        title: 'PAC-RUN // NOIR',
-        score: 'SKOR',
-        best: 'REKOR',
-        playBtn: 'OYNA',
-        resumeHint: 'WASD / OK TUŞLARI',
-        retryBtn: 'TEKRAR OYNA',
-        autoDemo: 'OTOPİLOT',
-        gameOver: 'ESCROW YAKALADI',
-        victory: 'ARŞİV TEMİZLENDİ',
-        controls: 'WASD / Yön · F8 Konsol',
-        godmode: 'GODMODE',
-        mobilePreviewNote: 'Dokunmatik yön tuşlarıyla oyna',
-      },
+      headerEyebrow: 'KURUMSAL ALTYAPI & TELEMETRİ',
+      statusOperational: 'OPERASYONEL',
+      loadProfileLabel: 'Yük Profili',
       core: {
-        idle: 'BOŞTA',
-        load128: '128 OYUNCU',
-        stress256: '256 YÜK',
+        idle: 'STANDBY · 0P',
+        load128: 'PROD · 128P',
+        stress256: 'STRESS · 256P',
       },
-      f8: {
-        openFull: 'F8 Konsolu Aç (Ctrl+K)',
-        placeholder: 'komut yaz: help, noclip, pacman, ara roxwood, lang en...',
-        helpHint: 'F8 / Ctrl+K · "help" yazarak gizli komutları gör',
-        close: 'ESC',
-        title: 'RESTRICTED F8 KONSOL',
-        emptySearch: 'Aramak için paket adı veya komut yazın.',
-        addToCartDone: 'Katalogda açılıyor',
-        openInCatalog: 'Katalogda Göster →',
-        godmodeToast: 'NOIR GODMODE AKTİF · 0.00 MS OVERDRIVE',
+      metrics: {
+        resmonLabel: 'RESMON',
+        resmonSub: 'Sunucu Thread',
+        sqlLabel: 'DB SORGU',
+        sqlSub: 'InnoDB UTF8MB4',
+        escrowLabel: 'ESCROW',
+        escrowSub: 'Tam Açık Kaynak',
+        archiveLabel: 'DOĞRULANMIŞ',
+        archiveSub: 'Aktif Modül',
       },
+      bridgesLabel: 'Çekirdek Uyumu',
+      archivePanelTitle: 'ARŞİV DAĞILIMI',
+      archivePanelSub: '6 Ana Kategori',
+      slaPanelTitle: 'KURUMSAL STANDART',
+      slaItems: [
+        'Backdoor & webhook güvenlik taramalı temiz kod',
+        'Escrow kilitsiz %100 düzenlenebilir mimari',
+        'İtemsatış 3D Secure & Discord 7/24 SLA',
+      ],
+      openCatalogCta: 'KATALOĞU AÇ',
     },
     catalogExtra: {
       viewsLabel: 'Koleksiyon',
@@ -132,37 +118,34 @@ export const INTERACTIVE_I18N: Record<Locale, InteractiveLocaleStrings> = {
   },
   en: {
     showcase: {
-      tabs: { arcade: 'PAC-RUN', core: 'CORE', console: 'F8' },
-      arcade: {
-        title: 'PAC-RUN // NOIR',
-        score: 'SCORE',
-        best: 'BEST',
-        playBtn: 'PLAY',
-        resumeHint: 'WASD / ARROWS',
-        retryBtn: 'RETRY',
-        autoDemo: 'AUTOPILOT',
-        gameOver: 'CAUGHT BY ESCROW',
-        victory: 'SECTOR CLEARED',
-        controls: 'WASD / Arrows · F8 Console',
-        godmode: 'GODMODE',
-        mobilePreviewNote: 'Use D-pad below to play',
-      },
+      headerEyebrow: 'ENTERPRISE INFRASTRUCTURE',
+      statusOperational: 'OPERATIONAL',
+      loadProfileLabel: 'Load Profile',
       core: {
-        idle: 'IDLE',
-        load128: '128 PLAYERS',
-        stress256: '256 STRESS',
+        idle: 'STANDBY · 0P',
+        load128: 'PROD · 128P',
+        stress256: 'STRESS · 256P',
       },
-      f8: {
-        openFull: 'Open F8 Console (Ctrl+K)',
-        placeholder: 'command: help, noclip, pacman, find roxwood, lang tr...',
-        helpHint: 'F8 / Ctrl+K · type "help" for secret commands',
-        close: 'ESC',
-        title: 'RESTRICTED F8 CONSOLE',
-        emptySearch: 'Type a package keyword or console command.',
-        addToCartDone: 'Opening in catalog',
-        openInCatalog: 'Open in Catalog →',
-        godmodeToast: 'NOIR GODMODE ENABLED · 0.00 MS OVERDRIVE',
+      metrics: {
+        resmonLabel: 'RESMON',
+        resmonSub: 'Server Thread',
+        sqlLabel: 'DB QUERY',
+        sqlSub: 'InnoDB UTF8MB4',
+        escrowLabel: 'ESCROW',
+        escrowSub: '100% Open Source',
+        archiveLabel: 'VERIFIED',
+        archiveSub: 'Active Modules',
       },
+      bridgesLabel: 'Core Bridge',
+      archivePanelTitle: 'ARCHIVE BREAKDOWN',
+      archivePanelSub: '6 Main Sectors',
+      slaPanelTitle: 'ENTERPRISE SLA',
+      slaItems: [
+        'Audited clean source · Zero hidden webhooks',
+        '100% unlocked architecture · Zero Escrow DRM',
+        '3D Secure storefront & 24/7 Discord SLA',
+      ],
+      openCatalogCta: 'OPEN CATALOG',
     },
     catalogExtra: {
       viewsLabel: 'Collections',
@@ -194,37 +177,34 @@ export const INTERACTIVE_I18N: Record<Locale, InteractiveLocaleStrings> = {
   },
   ru: {
     showcase: {
-      tabs: { arcade: 'PAC-RUN', core: 'CORE', console: 'F8' },
-      arcade: {
-        title: 'PAC-RUN // NOIR',
-        score: 'СЧЁТ',
-        best: 'РЕКОРД',
-        playBtn: 'ИГРАТЬ',
-        resumeHint: 'WASD / СТРЕЛКИ',
-        retryBtn: 'ЗАНОВО',
-        autoDemo: 'АВТОДЕМО',
-        gameOver: 'ПОЙМАН ESCROW',
-        victory: 'СЕКТОР ОЧИЩЕН',
-        controls: 'WASD / Стрелки · F8',
-        godmode: 'GODMODE',
-        mobilePreviewNote: 'Управление кнопками ниже',
-      },
+      headerEyebrow: 'КОРПОРАТИВНАЯ ИНФРАСТРУКТУРА',
+      statusOperational: 'В СЕТИ',
+      loadProfileLabel: 'Профиль',
       core: {
-        idle: 'ПРОСТОЙ',
-        load128: '128 ИГРОКОВ',
-        stress256: '256 СТРЕСС',
+        idle: 'ПРОСТОЙ · 0P',
+        load128: 'PROD · 128P',
+        stress256: 'СТРЕСС · 256P',
       },
-      f8: {
-        openFull: 'Открыть F8 Консоль (Ctrl+K)',
-        placeholder: 'команда: help, noclip, pacman, find roxwood, lang en...',
-        helpHint: 'F8 / Ctrl+K · введите "help" для секретных команд',
-        close: 'ESC',
-        title: 'КОНСОЛЬ RESTRICTED F8',
-        emptySearch: 'Введите название пакета или команду консоли.',
-        addToCartDone: 'Открытие в каталоге',
-        openInCatalog: 'Открыть в каталоге →',
-        godmodeToast: 'NOIR GODMODE ВКЛЮЧЁН · 0.00 MS',
+      metrics: {
+        resmonLabel: 'RESMON',
+        resmonSub: 'Поток сервера',
+        sqlLabel: 'SQL ЗАПРОС',
+        sqlSub: 'InnoDB UTF8MB4',
+        escrowLabel: 'ESCROW',
+        escrowSub: 'Открытый код',
+        archiveLabel: 'ПРОВЕРЕНО',
+        archiveSub: 'Модулей в базе',
       },
+      bridgesLabel: 'Совместимость',
+      archivePanelTitle: 'СОСТАВ АРХИВА',
+      archivePanelSub: '6 категорий',
+      slaPanelTitle: 'СТАНДАРТ SLA',
+      slaItems: [
+        'Аудит чистоты кода · Без скрытых вебхуков',
+        'Открытый код без привязки Escrow DRM',
+        'Защищённая оплата и поддержка SLA 24/7',
+      ],
+      openCatalogCta: 'ОТКРЫТЬ КАТАЛОГ',
     },
     catalogExtra: {
       viewsLabel: 'Подборки',
@@ -256,37 +236,34 @@ export const INTERACTIVE_I18N: Record<Locale, InteractiveLocaleStrings> = {
   },
   fr: {
     showcase: {
-      tabs: { arcade: 'PAC-RUN', core: 'CORE', console: 'F8' },
-      arcade: {
-        title: 'PAC-RUN // NOIR',
-        score: 'SCORE',
-        best: 'RECORD',
-        playBtn: 'JOUER',
-        resumeHint: 'WASD / FLÈCHES',
-        retryBtn: 'REJOUER',
-        autoDemo: 'DÉMO',
-        gameOver: 'CAPTURÉ ESCROW',
-        victory: 'ARCHIVE NETTOYÉE',
-        controls: 'WASD / Flèches · Console F8',
-        godmode: 'GODMODE',
-        mobilePreviewNote: 'Utilisez les touches ci-dessous',
-      },
+      headerEyebrow: 'INFRASTRUCTURE ENTREPRISE',
+      statusOperational: 'OPÉRATIONNEL',
+      loadProfileLabel: 'Profil Charge',
       core: {
-        idle: 'REPOS',
-        load128: '128 JOUEURS',
-        stress256: '256 CHARGE',
+        idle: 'VEILLE · 0P',
+        load128: 'PROD · 128P',
+        stress256: 'STRESS · 256P',
       },
-      f8: {
-        openFull: 'Ouvrir Console F8 (Ctrl+K)',
-        placeholder: 'commande : help, noclip, pacman, find roxwood, lang en...',
-        helpHint: 'F8 / Ctrl+K · tapez "help" pour les commandes secrètes',
-        close: 'ESC',
-        title: 'CONSOLE RESTRICTED F8',
-        emptySearch: 'Saisissez un mot-clé ou une commande console.',
-        addToCartDone: 'Ouverture catalogue',
-        openInCatalog: 'Voir au catalogue →',
-        godmodeToast: 'NOIR GODMODE ACTIF · 0.00 MS OVERDRIVE',
+      metrics: {
+        resmonLabel: 'RESMON',
+        resmonSub: 'Thread Serveur',
+        sqlLabel: 'REQUÊTE SQL',
+        sqlSub: 'InnoDB UTF8MB4',
+        escrowLabel: 'ESCROW',
+        escrowSub: '100% Open Source',
+        archiveLabel: 'VÉRIFIÉ',
+        archiveSub: 'Modules Actifs',
       },
+      bridgesLabel: 'Compatibilité',
+      archivePanelTitle: 'RÉPARTITION ARCHIVE',
+      archivePanelSub: '6 Catégories',
+      slaPanelTitle: 'GARANTIE SLA',
+      slaItems: [
+        'Code audité · Aucune porte dérobée ni webhook',
+        'Architecture ouverte · Zéro verrou Escrow DRM',
+        'Paiement sécurisé & support Discord 24/7',
+      ],
+      openCatalogCta: 'OUVRIR CATALOGUE',
     },
     catalogExtra: {
       viewsLabel: 'Sélections',

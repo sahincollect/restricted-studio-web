@@ -3,7 +3,6 @@ import { cookies, headers } from 'next/headers';
 import './globals.css';
 import WinterSnow from '@/components/WinterSnow';
 import CursorSpotlight from '@/components/CursorSpotlight';
-import ConsoleEasterEgg from '@/components/ConsoleEasterEgg';
 import { I18nProvider } from '@/components/I18nProvider';
 import {
   LOCALE_COOKIE_NAME,
@@ -181,7 +180,6 @@ export default async function RootLayout({
           initialLocale={locale}
           initialDetectedFromHeader={initialDetectedFromHeader}
         >
-          <ConsoleEasterEgg />
           {children}
         </I18nProvider>
       </body>

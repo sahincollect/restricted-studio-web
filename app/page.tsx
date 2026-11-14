@@ -20,7 +20,6 @@ export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [codeTab, setCodeTab] = useState<CodeTabKey>('bridge');
   const [openFaqIdx, setOpenFaqIdx] = useState<number>(0);
-  const [overdrive, setOverdrive] = useState(false);
 
   const codeSnippets: Record<CodeTabKey, { label: string; code: string }> = {
     bridge: {
@@ -83,14 +82,10 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
     };
     window.addEventListener('keydown', onKeyDown);
 
-    const onOverdrive = () => setOverdrive(true);
-    window.addEventListener('rs:overdrive', onOverdrive);
-
     return () => {
       html.classList.remove('is-viewport-locked');
       body.classList.remove('is-viewport-locked');
       window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('rs:overdrive', onOverdrive);
     };
   }, []);
 
@@ -475,41 +470,17 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
           </div>
         </div>
 
-        {/* RIGHT COLUMN: SERENE CHIAROSCURO 3D MONOLITH + ARCADE/CORE SHOWCASE */}
+        {/* RIGHT COLUMN: CORPORATE RESTRICTED CORE INFRASTRUCTURE PANEL */}
         <div className="bento-col-right">
           <section className="bento-card bento-card-showcase spotlight-surface" aria-label={t.home.telemetry.ariaLabel}>
             <div className="noir-grain-heavy" aria-hidden="true" />
             <div className="showcase-inverted-beam" aria-hidden="true" />
 
-            {/* Interactive 3D Wireframe Monolith + Cursor Depth Stage */}
-            <MonolithStage overdrive={overdrive} />
-
-            {/* Minimalist New Year North Star + Distant Horizon Constellation */}
-            <svg
-              className="showcase-polaris-mark"
-              width="48"
-              height="48"
-              viewBox="0 0 48 48"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M28 6 L29.4 16.6 L40 18 L29.4 19.4 L28 30 L26.6 19.4 L16 18 L26.6 16.6 Z"
-                fill="currentColor"
-              />
-              <circle cx="11" cy="11" r="1.1" fill="currentColor" opacity="0.55" />
-              <circle cx="40" cy="34" r="0.9" fill="#c62828" opacity="0.7" />
-            </svg>
+            {/* Subtle 3D Wireframe Monolith Architectural Backdrop */}
+            <MonolithStage />
 
             <div className="showcase-callout-ticks">
-              <ShowcaseTerminal
-                godmode={overdrive}
-                onOpenFullConsole={() => window.dispatchEvent(new CustomEvent('rs:open-console'))}
-                onTriggerOverdrive={() => {
-                  setOverdrive(true);
-                  window.dispatchEvent(new CustomEvent('rs:overdrive', { detail: { active: true } }));
-                }}
-              />
+              <ShowcaseTerminal />
             </div>
           </section>
         </div>

@@ -29,11 +29,9 @@ function rotatePoint(p: Vec3, yaw: number, pitch: number): Vec3 {
  * tuned to Triadic Noir (#080808 obsidian, #A50000 crimson, #E8E5DE chalk)
  * with zero runtime dependencies and full strict-CSP compatibility.
  */
-export default function MonolithStage({ overdrive = false }: { overdrive?: boolean }) {
+export default function MonolithStage() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const pointerRef = useRef({ tx: 0, ty: 0, cx: 0, cy: 0, active: false });
-  const overdriveRef = useRef(overdrive);
-  overdriveRef.current = overdrive;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -155,7 +153,7 @@ export default function MonolithStage({ overdrive = false }: { overdrive?: boole
       p.cy += (p.ty - p.cy) * 0.08;
 
       if (!reducedMotion) {
-        time += overdriveRef.current ? 0.016 : 0.0075;
+        time += 0.006;
       }
 
       ctx.clearRect(0, 0, width, height);
@@ -164,8 +162,8 @@ export default function MonolithStage({ overdrive = false }: { overdrive?: boole
       const haloX = p.active ? width * (0.5 + p.cx * 0.35) : width * 0.5;
       const haloY = p.active ? height * (0.48 + p.cy * 0.35) : height * 0.34;
       const halo = ctx.createRadialGradient(haloX, haloY, 12, haloX, haloY, Math.max(width, height) * 0.55);
-      halo.addColorStop(0, overdriveRef.current ? 'rgba(200, 30, 30, 0.34)' : 'rgba(165, 0, 0, 0.22)');
-      halo.addColorStop(0.55, 'rgba(92, 10, 10, 0.08)');
+      halo.addColorStop(0, 'rgba(165, 0, 0, 0.18)');
+      halo.addColorStop(0.55, 'rgba(92, 10, 10, 0.07)');
       halo.addColorStop(1, 'rgba(8, 8, 8, 0)');
       ctx.fillStyle = halo;
       ctx.fillRect(0, 0, width, height);
@@ -173,7 +171,7 @@ export default function MonolithStage({ overdrive = false }: { overdrive?: boole
       // Perspective topographic floor grid at lower 34% of stage
       const horizonY = height * 0.68;
       const vpX = width * 0.5 + p.cx * 26;
-      const gridAlpha = overdriveRef.current ? 0.26 : 0.14;
+      const gridAlpha = 0.12;
       ctx.lineWidth = 1;
 
       for (let i = -7; i <= 7; i++) {
@@ -226,8 +224,8 @@ export default function MonolithStage({ overdrive = false }: { overdrive?: boole
         ctx.lineWidth = tone === 'crimson' ? 1.5 : 1.2;
         ctx.strokeStyle =
           tone === 'crimson'
-            ? `rgba(214, 44, 44, ${(depth * (overdriveRef.current ? 0.96 : 0.78)).toFixed(2)})`
-            : `rgba(232, 229, 222, ${(depth * 0.62).toFixed(2)})`;
+            ? `rgba(214, 44, 44, ${(depth * 0.68).toFixed(2)})`
+            : `rgba(232, 229, 222, ${(depth * 0.48).toFixed(2)})`;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(b.x, b.y);
@@ -240,9 +238,7 @@ export default function MonolithStage({ overdrive = false }: { overdrive?: boole
       for (const [aIdx, bIdx] of coreEdges) {
         const a = projCore[aIdx];
         const b = projCore[bIdx];
-        ctx.strokeStyle = overdriveRef.current
-          ? 'rgba(240, 240, 240, 0.86)'
-          : 'rgba(210, 40, 40, 0.78)';
+        ctx.strokeStyle = 'rgba(210, 40, 40, 0.66)';
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(b.x, b.y);
