@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import Link from 'next/link';
 
 interface RainStreak {
   x: number;
@@ -57,33 +58,78 @@ export default function LivingPixelRoomCanvas() {
   }, []);
 
   return (
-    <div className="px-parallax-stage" aria-hidden="true">
+    <div className="px-parallax-stage">
       {/* Layer 1: Far Horizon Skyline (Moves slowest) */}
-      <div className="px-parallax-layer px-layer-far" />
+      <div className="px-parallax-layer px-layer-far" aria-hidden="true" />
 
       {/* Layer 2: Midground Noir Towers + Cruising Red Cyberpunk Hovercar */}
-      <div className="px-parallax-layer px-layer-mid">
+      <div className="px-parallax-layer px-layer-mid" aria-hidden="true">
         <div className="px-actor-hovercar" title="Restricted Red Interceptor" />
       </div>
 
       {/* Layer 3: Foreground Cyber-Noir Street */}
-      <div className="px-parallax-layer px-layer-fg" />
+      <div className="px-parallax-layer px-layer-fg" aria-hidden="true" />
 
-      {/* Foreground Street Actors Layer (Synced with Foreground Layer-3 Parallax) */}
+      {/* Foreground Street Citizens + Pixel Thought Bubbles (Synced with Foreground Layer-3 Parallax) */}
       <div className="px-street-actors">
-        {/* 1. Left Bar Patron (Idle animated jacket citizen) */}
-        <div className="px-actor px-actor-jacket-idle" />
+        {/* 1. Left Bar Patron — Stationary animated jacket citizen with thought bubble */}
+        <div className="px-citizen-slot px-citizen-left">
+          <Link
+            href="/katalog"
+            className="px-thought-bubble"
+            aria-label="Kataloğu İncele: Bu adamlar bu kadar ürünü nasıl 100 liraya veriyor?"
+          >
+            <span className="px-thought-text">
+              &ldquo;bu adamlar bu kadar ürünü nasıl 100 liraya veriyor&rdquo;
+            </span>
+            <span className="px-thought-dots" aria-hidden="true">
+              <i className="px-dot-lg" />
+              <i className="px-dot-sm" />
+            </span>
+          </Link>
+          <div className="px-actor px-actor-jacket-idle" aria-hidden="true" />
+        </div>
 
-        {/* 2. Patrolling Red-Beanie Citizen walking along the crosswalk */}
-        <div className="px-actor px-actor-red-walker" />
+        {/* 2. Center-Left Crosswalk Citizen — Stationary animated red-beanie citizen with thought bubble */}
+        <div className="px-citizen-slot px-citizen-mid">
+          <Link
+            href="/katalog"
+            className="px-thought-bubble px-thought-bubble--amber"
+            aria-label="Kataloğu İncele: 15 paket seçince sepette yarısı direkt düştü"
+          >
+            <span className="px-thought-text">
+              &ldquo;15 paket seçince sepette yarısı direkt düştü, tanesi 50 liraya geldi...&rdquo;
+            </span>
+            <span className="px-thought-dots" aria-hidden="true">
+              <i className="px-dot-lg" />
+              <i className="px-dot-sm" />
+            </span>
+          </Link>
+          <div className="px-actor px-actor-red-idle" aria-hidden="true" />
+        </div>
 
-        {/* 3. Patrolling Crimson-Jacket Woman on the right restaurant sidewalk */}
-        <div className="px-actor px-actor-woman-walker" />
+        {/* 3. Right Storefront Citizen — Stationary animated backpack citizen replacing the girl sprite */}
+        <div className="px-citizen-slot px-citizen-right">
+          <Link
+            href="/katalog"
+            className="px-thought-bubble px-thought-bubble--slate"
+            aria-label="Kataloğu İncele: 6.400'den fazla açık kaynak paket var"
+          >
+            <span className="px-thought-text">
+              &ldquo;şifreleme yok, 6.400+ paketin tamamı açık kaynak teslim ediliyor.&rdquo;
+            </span>
+            <span className="px-thought-dots" aria-hidden="true">
+              <i className="px-dot-lg" />
+              <i className="px-dot-sm" />
+            </span>
+          </Link>
+          <div className="px-actor px-actor-backpack-idle" aria-hidden="true" />
+        </div>
       </div>
 
       {/* Layer 4: Atmospheric Nocturnal Rain & Vignette */}
-      <canvas ref={rainCanvasRef} className="px-rain-canvas" />
-      <div className="px-parallax-atmosphere" />
+      <canvas ref={rainCanvasRef} className="px-rain-canvas" aria-hidden="true" />
+      <div className="px-parallax-atmosphere" aria-hidden="true" />
     </div>
   );
 }
