@@ -145,7 +145,6 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
     setActiveModal(id);
   };
 
-  const campaignHotspots = PIXEL_ROOM_HOTSPOTS.filter((h) => h.alwaysOpen);
   const directoryHotspots = PIXEL_ROOM_HOTSPOTS.filter((h) => !h.alwaysOpen);
 
   return (
@@ -153,13 +152,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
       {/* ===============================================================
            3-LAYER PIXEL TOWN PARALLAX STAGE (FAR + MID + FOREGROUND)
            =============================================================== */}
-      <LivingPixelRoomCanvas
-        onSelectAction={(action) => {
-          if (action.type === 'modal') {
-            openModal(action.modal);
-          }
-        }}
-      />
+      <LivingPixelRoomCanvas />
 
       {/* ===============================================================
            TOP FLOATING PILL NAVBAR
@@ -353,41 +346,9 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
       </div>
 
       {/* ===============================================================
-           STOREFRONT MARQUEE BANNERS + PIXEL DIRECTORY SIGNBOARD (TABELA)
+           RIGHT-FACADE PIXEL DIRECTORY SIGNBOARD (TABELA)
            =============================================================== */}
-      <main className="living-room-hotspots" aria-label="Mağaza Kampanyaları ve Şehir Tabelası">
-        {/* 2 Primary Storefront Campaign Marquees mounted directly on buildings */}
-        {campaignHotspots.map((spot) => {
-          const commonClass = `lr-spot lr-spot--${spot.tone} lr-spot--layer-${spot.layer} lr-spot--always`;
-          const style: React.CSSProperties = {
-            left: `${spot.x}%`,
-            top: `${spot.y}%`,
-          };
-
-          if (spot.action.type === 'route') {
-            return (
-              <Link key={spot.id} href={spot.action.href} className={commonClass} style={style}>
-                <span className="lr-spot-dot" aria-hidden="true" />
-                <span className="lr-spot-label">{spot.badge}</span>
-              </Link>
-            );
-          }
-
-          const modalTarget = spot.action.modal;
-          return (
-            <button
-              key={spot.id}
-              type="button"
-              className={commonClass}
-              style={style}
-              onClick={() => openModal(modalTarget)}
-            >
-              <span className="lr-spot-dot" aria-hidden="true" />
-              <span className="lr-spot-label">{spot.badge}</span>
-            </button>
-          );
-        })}
-
+      <main className="living-room-hotspots" aria-label="Şehir Yönlendirme Tabelası">
         {/* Right-Facade Neon Wall Signboard (Tabela) — Mounted with steel wall brackets */}
         <aside className="px-street-signboard" aria-label="Şehir Yönlendirme Tabelası">
           <div className="px-signboard-frame">
