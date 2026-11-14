@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import catalogStats from '../lib/catalog-stats.json';
 import { useI18n } from '../components/I18nProvider';
@@ -20,6 +20,7 @@ const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
 
 export default function PixelNoirRoomHomePage() {
   const { t, formatNumber, formatPercent } = useI18n();
+  const shellRef = useRef<HTMLDivElement | null>(null);
   const [activeModal, setActiveModal] = useState<ModalId>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [codeTab, setCodeTab] = useState<CodeTabKey>('bridge');
@@ -94,6 +95,53 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
     };
   }, []);
 
+  // Smooth spring-damped parallax camera controller (mouse + gentle idle drift)
+  useEffect(() => {
+    const el = shellRef.current;
+    if (!el) return;
+
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let lastMoveTime = Date.now();
+    let rafId = 0;
+
+    const onMouseMove = (e: MouseEvent) => {
+      const nx = (e.clientX / window.innerWidth - 0.5) * 2; // -1 .. 1
+      const ny = (e.clientY / window.innerHeight - 0.5) * 2; // -1 .. 1
+      targetX = Math.max(-1, Math.min(1, nx));
+      targetY = Math.max(-1, Math.min(1, ny));
+      lastMoveTime = Date.now();
+    };
+
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+
+    const tick = () => {
+      const idleMs = Date.now() - lastMoveTime;
+      if (idleMs > 2400) {
+        // Gentle autonomous camera sway when mouse is idle
+        const tSec = Date.now() * 0.00055;
+        targetX = Math.sin(tSec) * 0.42;
+        targetY = Math.cos(tSec * 0.7) * 0.18;
+      }
+
+      currentX += (targetX - currentX) * 0.065;
+      currentY += (targetY - currentY) * 0.065;
+
+      el.style.setProperty('--px', currentX.toFixed(4));
+      el.style.setProperty('--py', currentY.toFixed(4));
+
+      rafId = window.requestAnimationFrame(tick);
+    };
+
+    rafId = window.requestAnimationFrame(tick);
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.cancelAnimationFrame(rafId);
+    };
+  }, []);
+
   useEffect(() => {
     let active = true;
     fetch('/api/health')
@@ -122,9 +170,9 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
     PIXEL_ROOM_HOTSPOTS.find((h) => h.id === selectedHotspotId) ?? PIXEL_ROOM_HOTSPOTS[0];
 
   return (
-    <div className="living-room-shell">
+    <div ref={shellRef} className="living-room-shell">
       {/* ===============================================================
-           100% PROCEDURAL LIVING PIXEL ART ROOM ENGINE (FULLSCREEN CANVAS)
+           3-LAYER PIXEL TOWN PARALLAX STAGE (FAR + MID + FOREGROUND)
            =============================================================== */}
       <LivingPixelRoomCanvas />
 
@@ -320,12 +368,12 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
       </div>
 
       {/* ===============================================================
-           INTERACTIVE ROOM FURNITURE HOTSPOTS OVER FULLSCREEN CANVAS
+           DEPTH-LOCKED PARALLAX BUILDING HOTSPOTS
            =============================================================== */}
-      <main className="living-room-hotspots" aria-label="Yaşayan Pixel Oda Etkileşim Noktaları">
+      <main className="living-room-hotspots" aria-label="Pixel Şehir Binaları ve Etkileşim Noktaları">
         {PIXEL_ROOM_HOTSPOTS.map((spot) => {
           const isSelected = selectedHotspotId === spot.id;
-          const commonClass = `lr-spot lr-spot--${spot.tone} ${
+          const commonClass = `lr-spot lr-spot--${spot.tone} lr-spot--layer-${spot.layer} ${
             isSelected ? 'is-selected' : ''
           }`;
           const style: React.CSSProperties = {
@@ -370,7 +418,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
       {/* ===============================================================
            BOTTOM FLOATING RPG DIALOGUE & CAMPAIGN BAR
            =============================================================== */}
-      <footer className="lr-bottom-hud" aria-label="Seçili Oda Nesnesi ve Hızlı Erişim">
+      <footer className="lr-bottom-hud" aria-label="Seçili Bina Detayı ve Hızlı Erişim">
         <div className="lr-hud-info">
           <span className="lr-hud-code">{selectedHotspot.code}</span>
           <div className="lr-hud-text">

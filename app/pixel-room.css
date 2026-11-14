@@ -1,6 +1,7 @@
 /* ==========================================================================
-   RESTRICTED STUDIO — LIVING FULLSCREEN PIXEL ART ROOM ENGINE STYLES
-   Zero raster images. 100% Procedural HTML5 Canvas Pixel Art (320x180)
+   RESTRICTED STUDIO — MULTI-LAYER PIXEL TOWN PARALLAX STAGE
+   Authentic CC0 Ansimuz Pixel Art Layers (Far Skyline + Mid Towers + Street)
+   Graded in Restricted Studio Noir (#07080d Obsidian, #e01b24 Crimson, #e8a848 Amber)
    ========================================================================== */
 
 .living-room-shell {
@@ -9,49 +10,126 @@
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
-  background: #060609;
+  background: #07080d;
   color: #f0f2f8;
   user-select: none;
   font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
+  --px: 0;
+  --py: 0;
 }
 
-/* Fullscreen crisp pixel canvas */
-.living-room-canvas-wrap {
+/* Fullscreen Multi-Layer Parallax Viewport */
+.px-parallax-stage {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
-  background: #060609;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  z-index: 1;
+  background: linear-gradient(180deg, #05060a 0%, #090b12 45%, #120d14 100%);
 }
 
-.living-room-canvas {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center center;
-  display: block;
+/* Shared Parallax Layer Rules — Oversized by 8% so mouse shifting never exposes edges */
+.px-parallax-layer {
+  position: absolute;
+  inset: -5% -6%;
+  width: 112%;
+  height: 110%;
+  background-repeat: repeat-x;
+  background-position: center bottom;
+  background-size: auto 100%;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  will-change: transform;
+  pointer-events: none;
 }
 
-/* Floating top navbar override so it sits transparently over the top of the room */
+@keyframes pxSlowPan {
+  0%, 100% {
+    background-position-x: 48%;
+  }
+  50% {
+    background-position-x: 52%;
+  }
+}
+
+/* Layer 1: Distant Megastructures & Horizon Beacons (Slowest depth) */
+.px-layer-far {
+  z-index: 1;
+  background-image: url('/assets/parallax/far-buildings.png');
+  transform: translate3d(
+    calc(var(--px, 0) * -14px),
+    calc(var(--py, 0) * -8px),
+    0
+  );
+  filter: brightness(0.95) contrast(1.06);
+}
+
+/* Layer 2: Midground Noir Towers & Highway (Medium depth) */
+.px-layer-mid {
+  z-index: 2;
+  background-image: url('/assets/parallax/back-buildings.png');
+  transform: translate3d(
+    calc(var(--px, 0) * -32px),
+    calc(var(--py, 0) * -16px),
+    0
+  );
+  filter: drop-shadow(0 -6px 24px rgba(0, 0, 0, 0.75));
+}
+
+/* Layer 3: Foreground Cyber-Noir Street, Storefronts & Neon Signs (Closest depth) */
+.px-layer-fg {
+  z-index: 3;
+  background-image: url('/assets/parallax/foreground.png');
+  transform: translate3d(
+    calc(var(--px, 0) * -58px),
+    calc(var(--py, 0) * -24px),
+    0
+  );
+  filter: drop-shadow(0 -10px 28px rgba(0, 0, 0, 0.85));
+}
+
+/* Layer 4: Atmospheric Nocturnal Rain & Neon Vignette Overlay */
+.px-parallax-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 72% 68%, rgba(232, 168, 72, 0.14) 0%, transparent 28%),
+    radial-gradient(circle at 14% 62%, rgba(224, 27, 36, 0.14) 0%, transparent 25%),
+    radial-gradient(circle at 50% 50%, transparent 55%, rgba(4, 4, 8, 0.68) 100%);
+}
+
+/* Subtle Pixel Rain Canvas on top of the 3 Parallax Layers */
+.px-rain-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none;
+  image-rendering: pixelated;
+  opacity: 0.65;
+}
+
+/* Floating Top Navbar over the Parallax Scene */
 .living-room-shell .bento-pill-nav {
   position: absolute;
   top: 12px;
   left: 20px;
   right: 20px;
   z-index: 20;
-  background: rgba(8, 8, 12, 0.82);
-  backdrop-filter: blur(6px);
-  border-color: rgba(212, 28, 44, 0.38);
+  background: rgba(8, 8, 12, 0.84);
+  backdrop-filter: blur(8px);
+  border-color: rgba(212, 28, 44, 0.42);
 }
 
-/* Interactive Hotspots Overlay Layer */
+/* ==========================================================================
+   DEPTH-SYNCHRONIZED BUILDING SIGNBOARD HOTSPOTS
+   Each hotspot moves with the exact parallax multiplier of its building layer!
+   ========================================================================== */
+
 .living-room-hotspots {
   position: absolute;
   inset: 0;
@@ -61,17 +139,16 @@
 
 .lr-spot {
   position: absolute;
-  transform: translate(-50%, -50%);
   pointer-events: auto;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 10px;
-  background: rgba(9, 9, 14, 0.88);
+  padding: 5px 11px;
+  background: rgba(9, 9, 14, 0.9);
   border: 2px solid #3c455c;
   box-shadow:
     0 0 0 2px #050508,
-    0 6px 18px rgba(0, 0, 0, 0.82);
+    0 8px 20px rgba(0, 0, 0, 0.85);
   color: #eef1f8;
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
   font-size: 11px;
@@ -80,7 +157,31 @@
   text-decoration: none;
   cursor: pointer;
   white-space: nowrap;
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  will-change: transform;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+/* Synchronize hotspot parallax shift with its layer (1 = far, 2 = mid, 3 = fg) */
+.lr-spot--layer-1 {
+  transform: translate3d(
+    calc(-50% + var(--px, 0) * -14px),
+    calc(-50% + var(--py, 0) * -8px),
+    0
+  );
+}
+.lr-spot--layer-2 {
+  transform: translate3d(
+    calc(-50% + var(--px, 0) * -32px),
+    calc(-50% + var(--py, 0) * -16px),
+    0
+  );
+}
+.lr-spot--layer-3 {
+  transform: translate3d(
+    calc(-50% + var(--px, 0) * -58px),
+    calc(-50% + var(--py, 0) * -24px),
+    0
+  );
 }
 
 .lr-spot::after {
@@ -98,7 +199,6 @@
 
 .lr-spot:hover,
 .lr-spot.is-selected {
-  transform: translate(-50%, calc(-50% - 4px)) scale(1.05);
   z-index: 15;
 }
 
@@ -117,56 +217,56 @@
 .lr-spot--crimson {
   border-color: #c92230;
   color: #ff6b75;
-  background: rgba(20, 6, 9, 0.9);
+  background: rgba(20, 6, 9, 0.92);
 }
 .lr-spot--crimson:hover,
 .lr-spot--crimson.is-selected {
   border-color: #ff5460;
   box-shadow:
     0 0 0 2px #060405,
-    0 0 20px rgba(224, 27, 36, 0.65);
+    0 0 22px rgba(224, 27, 36, 0.7);
 }
 
 .lr-spot--amber {
   border-color: #cf8e34;
   color: #f5ba5b;
-  background: rgba(20, 14, 6, 0.9);
+  background: rgba(20, 14, 6, 0.92);
 }
 .lr-spot--amber:hover,
 .lr-spot--amber.is-selected {
   border-color: #ffc86b;
   box-shadow:
     0 0 0 2px #070503,
-    0 0 20px rgba(232, 168, 72, 0.6);
+    0 0 22px rgba(232, 168, 72, 0.65);
 }
 
 .lr-spot--frost {
   border-color: #3b76a8;
   color: #82c8f7;
-  background: rgba(7, 14, 22, 0.9);
+  background: rgba(7, 14, 22, 0.92);
 }
 .lr-spot--frost:hover,
 .lr-spot--frost.is-selected {
   border-color: #70beff;
   box-shadow:
     0 0 0 2px #04070b,
-    0 0 20px rgba(112, 190, 255, 0.55);
+    0 0 22px rgba(112, 190, 255, 0.6);
 }
 
 .lr-spot--slate {
   border-color: #546385;
   color: #d2dcf0;
-  background: rgba(11, 14, 21, 0.9);
+  background: rgba(11, 14, 21, 0.92);
 }
 .lr-spot--slate:hover,
 .lr-spot--slate.is-selected {
   border-color: #9eb0d9;
   box-shadow:
     0 0 0 2px #050609,
-    0 0 18px rgba(158, 176, 217, 0.45);
+    0 0 18px rgba(158, 176, 217, 0.5);
 }
 
-/* Floating Bottom RPG Inspector Bar over the Fullscreen Canvas */
+/* Floating Bottom RPG Inspector Bar over the Fullscreen Parallax Stage */
 .lr-bottom-hud {
   position: absolute;
   left: 20px;
@@ -177,7 +277,7 @@
   margin: 0 auto;
   padding: 10px 16px;
   background: rgba(8, 8, 13, 0.9);
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
   border: 2px solid #7a1822;
   box-shadow:
     inset 0 0 0 2px #050508,
