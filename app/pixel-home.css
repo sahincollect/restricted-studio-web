@@ -92,7 +92,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 0;
+  flex-shrink: 0;
 }
 
 .px-brand {
@@ -101,7 +101,7 @@
   gap: 10px;
   text-decoration: none;
   color: var(--px-snow);
-  min-width: 0;
+  flex-shrink: 0;
 }
 
 .px-logo-frame {
@@ -350,11 +350,20 @@
 }
 
 /* Mobile Drawer */
+.px-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(4, 4, 6, 0.72);
+}
+
 .px-mobile-drawer {
   position: fixed;
   top: calc(var(--px-nav-h) + 16px);
   left: 10px;
   right: 10px;
+  max-height: calc(100dvh - var(--px-nav-h) - 24px);
+  overflow-y: auto;
   z-index: 60;
   display: none;
   flex-direction: column;
@@ -383,6 +392,7 @@
   font-size: 11px;
   color: rgba(240, 240, 240, 0.7);
   letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .px-drawer-btn {
@@ -432,11 +442,13 @@
   flex-direction: column;
   gap: var(--px-gap);
   min-height: 0;
+  min-width: 0;
 }
 
 .px-col-right {
   display: flex;
   min-height: 0;
+  min-width: 0;
 }
 
 /* Base Pixel Panel Frame */
@@ -823,6 +835,7 @@
 .px-core-panel {
   width: 100%;
   height: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   background: #0a0a0c;
@@ -864,6 +877,7 @@
   z-index: 2;
   flex: 1;
   min-height: 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1215,6 +1229,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 10px;
+  min-width: 0;
 }
 
 .px-archive-box,
@@ -1226,6 +1241,7 @@
   padding: 10px 12px;
   background: rgba(12, 12, 15, 0.94);
   border: 1px solid rgba(240, 240, 240, 0.2);
+  min-width: 0;
 }
 
 .px-box-head {
@@ -1330,12 +1346,17 @@
 
 .px-sla-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
+  min-width: 0;
 }
 
 .px-sla-actions .px-btn {
-  flex: 1;
+  flex: 1 1 96px;
+  min-width: 0;
+  white-space: normal;
+  text-align: center;
 }
 
 /* ==========================================================================
@@ -1597,6 +1618,57 @@
 }
 
 /* ==========================================================================
+   COMPACT DESKTOP / TABLET WIDTH BREAKPOINT (981px - 1260px, e.g. 1024x768)
+   ========================================================================== */
+@media (max-width: 1260px) and (min-width: 981px) {
+  .px-nav {
+    padding: 0 10px;
+    gap: 8px;
+  }
+
+  .px-brand-title {
+    font-size: 11.5px;
+    letter-spacing: 0.05em;
+  }
+
+  .px-nav-divider,
+  .px-trust-badge,
+  .px-itemsatis-btn span {
+    display: none;
+  }
+
+  .px-nav-menu {
+    gap: 2px;
+  }
+
+  .px-nav-link {
+    padding: 5px 6px;
+    font-size: 9.5px;
+    letter-spacing: 0.04em;
+  }
+
+  .px-portal-btn {
+    padding: 0 8px;
+    font-size: 9.5px;
+  }
+
+  .px-telemetry-brand-text strong {
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+  }
+
+  .px-telemetry-brand-text span {
+    font-size: 8.5px;
+  }
+
+  .px-sla-actions .px-btn {
+    flex: 1 1 82px;
+    padding: 5px 7px;
+    font-size: 9px;
+  }
+}
+
+/* ==========================================================================
    SHORT DESKTOP BREAKPOINT (e.g., 1366x768)
    ========================================================================== */
 @media (max-height: 790px) and (min-width: 981px) {
@@ -1771,17 +1843,15 @@
   }
 
   .px-subhead {
-    font-size: 11px;
-    line-height: 1.32;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    font-size: 10.5px;
+    line-height: 1.28;
+    display: block;
+    overflow: visible;
   }
 
   .px-hero-bottom {
-    padding-top: 8px;
-    gap: 8px;
+    padding-top: 6px;
+    gap: 0;
     align-items: center;
   }
 
@@ -1797,30 +1867,16 @@
   }
 
   .px-hero-stats {
-    width: 100%;
-    justify-content: space-between;
-    padding: 5px 10px;
-  }
-
-  .px-stat-val {
-    font-size: 14px;
-  }
-
-  .px-stat-lbl {
-    font-size: 8px;
-  }
-
-  .px-stat-sep {
-    height: 18px;
+    display: none;
   }
 
   .px-sub-row {
-    height: 136px;
+    height: 146px;
     gap: 6px;
   }
 
   .px-card {
-    padding: 8px 9px;
+    padding: 7px 9px;
   }
 
   .px-card-tag {
@@ -1834,7 +1890,7 @@
   }
 
   .px-card-art {
-    margin: 5px 0;
+    margin: 4px 0;
   }
 
   .px-card-title {
@@ -1842,7 +1898,11 @@
   }
 
   .px-card-sub {
-    font-size: 9.5px;
+    font-size: 9px;
+    line-height: 1.22;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
   }
 
   .px-col-right {
@@ -1883,14 +1943,12 @@
   }
 
   .px-status-badge {
-    padding: 3px 5px;
-    font-size: 8px;
+    padding: 3px 6px;
+    font-size: 8.5px;
   }
 
   .px-status-top-link {
-    display: inline-flex;
-    font-size: 8px;
-    padding: 3px 5px;
+    display: none;
   }
 
   .px-engine-strip {
@@ -1951,7 +2009,7 @@
     font-size: 11px;
   }
 
-  .px-chart-head span {
+  .px-chart-head > div > span {
     display: none;
   }
 

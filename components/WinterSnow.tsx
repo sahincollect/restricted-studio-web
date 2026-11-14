@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface Snowflake {
   x: number;
@@ -23,20 +24,26 @@ interface Snowflake {
  */
 export default function WinterSnow() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    if (document.querySelector('.pixel-noir-shell')) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+
     if (
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
     ) {
       return;
     }
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
 
     let animationFrameId = 0;
     let width = window.innerWidth;
@@ -100,32 +107,30 @@ export default function WinterSnow() {
       if (isVisible) {
         ctx.clearRect(0, 0, width, height);
 
-        if (!document.querySelector('.pixel-noir-shell')) {
-          for (let i = 0; i < flakes.length; i++) {
-            const f = flakes[i];
-            f.angle += f.angleSpeed;
-            f.rotation += f.rotationSpeed;
-            f.y += f.speedY;
-            f.x += Math.sin(f.angle) * f.driftAmp;
+        for (let i = 0; i < flakes.length; i++) {
+          const f = flakes[i];
+          f.angle += f.angleSpeed;
+          f.rotation += f.rotationSpeed;
+          f.y += f.speedY;
+          f.x += Math.sin(f.angle) * f.driftAmp;
 
-            if (f.y > height + 8) {
-              f.y = -8;
-              f.x = Math.random() * width;
-            }
-            if (f.x > width + 8) {
-              f.x = -8;
-            } else if (f.x < -8) {
-              f.x = width + 8;
-            }
+          if (f.y > height + 8) {
+            f.y = -8;
+            f.x = Math.random() * width;
+          }
+          if (f.x > width + 8) {
+            f.x = -8;
+          } else if (f.x < -8) {
+            f.x = width + 8;
+          }
 
-            if (f.crystal) {
-              drawCrystal(f);
-            } else {
-              ctx.beginPath();
-              ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, false);
-              ctx.fillStyle = `rgba(230, 227, 220, ${f.opacity})`;
-              ctx.fill();
-            }
+          if (f.crystal) {
+            drawCrystal(f);
+          } else {
+            ctx.beginPath();
+            ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, false);
+            ctx.fillStyle = `rgba(230, 227, 220, ${f.opacity})`;
+            ctx.fill();
           }
         }
       }
@@ -140,7 +145,7 @@ export default function WinterSnow() {
       window.removeEventListener('resize', syncDimensions);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []);
+  }, [pathname]);
 
   return (
     <canvas

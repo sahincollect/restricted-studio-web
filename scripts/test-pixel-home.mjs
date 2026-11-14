@@ -43,6 +43,16 @@ describe('pixel-core-telemetry', () => {
 
     assert.ok(Number.isInteger(prod.apexX) && Number.isInteger(prod.apexY));
     assert.ok(!/[QTCqtc]/.test(prod.stepPath));
+
+    for (const [name, p] of Object.entries({ idle, prod, stress })) {
+      const yMatches = [...p.stepPath.matchAll(/(?:M\s+\d+|V)\s+(\d+)/g)].map((m) => Number(m[1]));
+      const minY = Math.min(...yMatches);
+      assert.equal(p.apexY, minY, `${name}: apexY (${p.apexY}) must equal minimum plotted Y (${minY})`);
+      assert.ok(
+        p.stepPath.includes(`H ${p.apexX} V ${p.apexY}`),
+        `${name}: apex (${p.apexX}, ${p.apexY}) must lie on step vertex`
+      );
+    }
   });
 
   it('quantizes pointer coordinates to discrete pixel illumination cells', () => {

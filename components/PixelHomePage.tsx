@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import '../app/pixel-home.css';
 import catalogStats from '@/lib/catalog-stats.json';
@@ -21,6 +21,17 @@ export default function PixelHomePage(): React.JSX.Element {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [codeTab, setCodeTab] = useState<CodeTabKey>('bridge');
   const [openFaqIdx, setOpenFaqIdx] = useState<number>(0);
+  const modalPanelRef = useRef<HTMLDivElement | null>(null);
+  const lastFocusedRef = useRef<HTMLElement | null>(null);
+
+  const closeModal = useCallback(() => {
+    setActiveModal(null);
+    const invoker = lastFocusedRef.current;
+    lastFocusedRef.current = null;
+    if (invoker && typeof invoker.focus === 'function') {
+      window.requestAnimationFrame(() => invoker.focus());
+    }
+  }, []);
 
   const codeSnippets: Record<CodeTabKey, { label: string; code: string }> = {
     bridge: {
@@ -76,7 +87,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setActiveModal(null);
+        closeModal();
         setMobileMenuOpen(false);
       }
     };
@@ -87,13 +98,52 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
       body.classList.remove('is-viewport-locked');
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, []);
+  }, [closeModal]);
+
+  useEffect(() => {
+    if (!activeModal || !modalPanelRef.current) return;
+    const panel = modalPanelRef.current;
+    const focusablesSelector =
+      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const focusables = [...panel.querySelectorAll<HTMLElement>(focusablesSelector)];
+    const initialTarget = focusables[0] ?? panel;
+    initialTarget.focus();
+
+    const trapFocus = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const items = [...panel.querySelectorAll<HTMLElement>(focusablesSelector)].filter(
+        (el) => el.offsetParent !== null || el === document.activeElement
+      );
+      if (items.length === 0) {
+        e.preventDefault();
+        panel.focus();
+        return;
+      }
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first || !panel.contains(document.activeElement)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (document.activeElement === last || !panel.contains(document.activeElement)) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', trapFocus);
+    return () => document.removeEventListener('keydown', trapFocus);
+  }, [activeModal]);
 
   const statRows = Object.entries(catalogStats.counts as Record<string, number>).sort(
     (a, b) => b[1] - a[1]
   );
 
   const openModal = (id: Exclude<ModalId, null>) => {
+    if (!activeModal && document.activeElement instanceof HTMLElement) {
+      lastFocusedRef.current = document.activeElement;
+    }
     setMobileMenuOpen(false);
     setActiveModal(id);
   };
@@ -261,6 +311,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             aria-label={t.common.openMenu}
             aria-expanded={mobileMenuOpen}
+            aria-controls="px-mobile-drawer"
           >
             <span />
             <span />
@@ -268,10 +319,21 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
         </div>
       </header>
 
+      {mobileMenuOpen && (
+        <div
+          className="px-drawer-backdrop"
+          aria-hidden="true"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Mobile Drawer */}
-      <div className={`px-mobile-drawer${mobileMenuOpen ? ' open' : ''}`}>
+      <div
+        id="px-mobile-drawer"
+        className={`px-mobile-drawer${mobileMenuOpen ? ' open' : ''}`}
+      >
         <div className="px-drawer-lang">
-          <span className="px-drawer-lang-label">{t.common.langLabel.toUpperCase()}</span>
+          <span className="px-drawer-lang-label">{t.common.langLabel}</span>
           <LanguageSwitcher compact />
         </div>
         <button type="button" className="px-drawer-btn" onClick={() => openModal('about')}>
@@ -488,9 +550,15 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
           className="px-modal-backdrop"
           role="dialog"
           aria-modal="true"
-          onClick={() => setActiveModal(null)}
+          aria-labelledby="px-modal-title"
+          onClick={closeModal}
         >
-          <div className="px-modal-panel" onClick={(e) => e.stopPropagation()}>
+          <div
+            ref={modalPanelRef}
+            tabIndex={-1}
+            className="px-modal-panel"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="px-modal-head">
               <div>
                 <p className="px-modal-eyebrow">
@@ -499,7 +567,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
                   {activeModal === 'engineering' && t.home.modals.engineeringEyebrow}
                   {activeModal === 'faq' && t.home.modals.faqEyebrow}
                 </p>
-                <h2 className="px-modal-title">
+                <h2 id="px-modal-title" className="px-modal-title">
                   {activeModal === 'about' && t.home.modals.aboutTitle}
                   {activeModal === 'solutions' && t.home.modals.solutionsTitle}
                   {activeModal === 'engineering' && t.home.modals.engineeringTitle}
@@ -509,7 +577,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
               <button
                 type="button"
                 className="px-modal-close"
-                onClick={() => setActiveModal(null)}
+                onClick={closeModal}
                 aria-label={t.common.close}
               >
                 ✕
