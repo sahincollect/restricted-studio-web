@@ -79,6 +79,14 @@ export default function LivingPixelRoomCanvas() {
 
       {/* Foreground Street Props (Rich Homeless Alley / Noir Street Details) & Citizens */}
       <div className="px-street-actors">
+        {/* Background Far-Sidewalk Commuters Walking Straight Home & Exiting Frame */}
+        <div className="px-bg-walkers" aria-hidden="true">
+          <div className="px-bg-walker px-bg-walker--1" />
+          <div className="px-bg-walker px-bg-walker--2" />
+          <div className="px-bg-walker px-bg-walker--3" />
+          <div className="px-bg-walker px-bg-walker--4" />
+        </div>
+
         {/* 1. Far-Left Alley: Overflowing Street Dumpster + Trash Bags + Cardboard Boxes + Bottles */}
         <div className="px-prop-dumpster" aria-hidden="true" />
 
