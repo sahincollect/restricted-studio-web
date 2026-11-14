@@ -7,6 +7,7 @@ import ItemsatisLogo from '@/components/ItemsatisLogo';
 import { useI18n } from '@/components/I18nProvider';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { INTERACTIVE_I18N } from '@/lib/interactive-i18n';
+import { resolveCatalogCategoryParam } from '@/lib/catalog-query';
 import {
   analyzeCatalogItem,
   normalizeSearchText,
@@ -187,13 +188,16 @@ export default function CatalogPage() {
   const [cartHydrated, setCartHydrated] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Sync URL params (?q= / ?view=) and fetch live popularity counts
+  // Sync URL params (?q= / ?view= / ?category=) and fetch live popularity counts
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
       const qParam = params.get('q');
       const viewParam = params.get('view');
+      const catParam = params.get('category');
+      const resolvedCategory = resolveCatalogCategoryParam(catParam);
       if (qParam) setSearch(qParam);
+      if (resolvedCategory) setSelectedCategory(resolvedCategory);
       if (viewParam === 'featured') {
         setViewMode('featured');
         setSortMode('featured');
