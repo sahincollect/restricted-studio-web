@@ -6,6 +6,15 @@ import catalogItems from '../../lib/catalog-data.json';
 import ItemsatisLogo from '@/components/ItemsatisLogo';
 import { useI18n } from '@/components/I18nProvider';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { INTERACTIVE_I18N } from '@/lib/interactive-i18n';
+import {
+  FEATURED_BASELINE_CLICKS,
+  getItemPopularityScore,
+  isFeaturedCatalogItem,
+} from '@/lib/catalog-featured';
+
+type CatalogViewMode = 'all' | 'featured' | 'popular';
+type CatalogSortMode = 'popular' | 'featured' | 'default' | 'name-asc' | 'name-desc';
 
 interface CatalogItem {
   id: string;
@@ -29,14 +38,12 @@ const CATEGORIES = [
 const POPULAR_TAGS = [
   'LB Phone',
   'Roxwood',
+  'Gabz',
+  'Qbox',
   'Soygun',
-  'EUP',
   'Polis',
   'GTR',
-  'Apartman',
-  'Craft',
-  'Motel',
-  'Banka',
+  'EUP',
 ];
 
 const DISCORD_INVITE = '/discord';
@@ -88,15 +95,22 @@ const CATEGORY_STYLE: Record<string, { from: string; to: string; icon: React.Rea
 
 export default function CatalogPage() {
   const { locale, t, formatNumber, formatPercent } = useI18n();
+  const extraT = INTERACTIVE_I18N[locale].catalogExtra;
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tümü');
-  const [sortMode, setSortMode] = useState<'default' | 'name-asc' | 'name-desc'>('default');
+  const [viewMode, setViewMode] = useState<CatalogViewMode>('all');
+  const [sortMode, setSortMode] = useState<CatalogSortMode>('popular');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [dontShowToday, setDontShowToday] = useState(false);
   const [templateCopied, setTemplateCopied] = useState(false);
+  const [previewItem, setPreviewItem] = useState<CatalogItem | null>(null);
+  const [previewCopied, setPreviewCopied] = useState(false);
+  const [clickCounts, setClickCounts] = useState<Record<string, number>>(
+    () => ({ ...FEATURED_BASELINE_CLICKS })
+  );
 
   // Cart State
   const [cart, setCart] = useState<CatalogItem[]>([]);
@@ -104,21 +118,93 @@ export default function CatalogPage() {
   const [cartHydrated, setCartHydrated] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Check 24-hour persistence for the order guide modal
+  // Sync URL params (?q= / ?view=) and fetch live popularity counts
   useEffect(() => {
     try {
-      const hideUntil = localStorage.getItem('rs_hide_order_guide_until');
-      if (hideUntil) {
-        const expiry = parseInt(hideUntil, 10);
-        if (!isNaN(expiry) && Date.now() < expiry) {
-          return;
-        }
+      const params = new URLSearchParams(window.location.search);
+      const qParam = params.get('q');
+      const viewParam = params.get('view');
+      if (qParam) setSearch(qParam);
+      if (viewParam === 'featured') {
+        setViewMode('featured');
+        setSortMode('featured');
+      } else if (viewParam === 'popular') {
+        setViewMode('popular');
+        setSortMode('popular');
       }
     } catch {
       // ignore
     }
-    setShowGuideModal(true);
+
+    let localExtras: Record<string, number> = {};
+    try {
+      const saved = JSON.parse(localStorage.getItem('rs_local_clicks') || '{}');
+      if (saved && typeof saved === 'object') localExtras = saved;
+    } catch {
+      // ignore
+    }
+
+    fetch('/api/catalog/clicks', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((data) => {
+        const merged: Record<string, number> = { ...FEATURED_BASELINE_CLICKS };
+        if (data?.counts && typeof data.counts === 'object') {
+          for (const [k, v] of Object.entries(data.counts)) {
+            if (typeof v === 'number') merged[k] = v;
+          }
+        }
+        for (const [k, v] of Object.entries(localExtras)) {
+          if (typeof v === 'number') {
+            merged[k] = Math.max(merged[k] || 0, (FEATURED_BASELINE_CLICKS[k] || 0) + v);
+          }
+        }
+        setClickCounts(merged);
+      })
+      .catch(() => {
+        setClickCounts((prev) => {
+          const next = { ...prev };
+          for (const [k, v] of Object.entries(localExtras)) {
+            if (typeof v === 'number') {
+              next[k] = Math.max(next[k] || 0, (FEATURED_BASELINE_CLICKS[k] || 0) + v);
+            }
+          }
+          return next;
+        });
+      });
   }, []);
+
+  const trackItemClick = (item: CatalogItem) => {
+    setClickCounts((prev) => ({
+      ...prev,
+      [item.id]: (prev[item.id] ?? FEATURED_BASELINE_CLICKS[item.id] ?? 0) + 1,
+    }));
+
+    try {
+      const localMap = JSON.parse(localStorage.getItem('rs_local_clicks') || '{}');
+      localMap[item.id] = (Number(localMap[item.id]) || 0) + 1;
+      localStorage.setItem('rs_local_clicks', JSON.stringify(localMap));
+    } catch {
+      // ignore
+    }
+
+    fetch('/api/catalog/clicks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ itemId: item.id }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && typeof data.clicks === 'number') {
+          setClickCounts((prev) => ({
+            ...prev,
+            [item.id]: Math.max(prev[item.id] || 0, data.clicks),
+          }));
+        }
+      })
+      .catch(() => {
+        // non-blocking telemetry
+      });
+  };
 
   // Cart local storage hydration
   useEffect(() => {
@@ -159,6 +245,19 @@ export default function CatalogPage() {
       document.body.classList.remove('has-catalog-cart');
     };
   }, [cart.length]);
+
+  useEffect(() => {
+    if (!previewItem && !showGuideModal && !isCartOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (previewItem) setPreviewItem(null);
+        else if (isCartOpen) setIsCartOpen(false);
+        else if (showGuideModal) setShowGuideModal(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [previewItem, isCartOpen, showGuideModal]);
 
   const handleCloseGuideModal = () => {
     if (dontShowToday) {
@@ -212,25 +311,50 @@ export default function CatalogPage() {
       entries = entries.filter((e) => e.item.category === selectedCategory);
     }
 
+    if (viewMode === 'featured') {
+      entries = entries.filter((e) => isFeaturedCatalogItem(e.item.id));
+    }
+
     if (q) {
       entries = entries.filter((e) => e.searchKey.includes(q));
     }
 
     const items = entries.map((e) => e.item);
 
-    if (sortMode === 'name-asc') {
+    if (sortMode === 'popular' || (viewMode === 'popular' && sortMode === 'default')) {
+      items.sort(
+        (a, b) => getItemPopularityScore(b.id, clickCounts) - getItemPopularityScore(a.id, clickCounts)
+      );
+    } else if (sortMode === 'featured') {
+      items.sort((a, b) => {
+        const fa = isFeaturedCatalogItem(a.id) ? 1 : 0;
+        const fb = isFeaturedCatalogItem(b.id) ? 1 : 0;
+        if (fb !== fa) return fb - fa;
+        return getItemPopularityScore(b.id, clickCounts) - getItemPopularityScore(a.id, clickCounts);
+      });
+    } else if (sortMode === 'name-asc') {
       items.sort((a, b) => a.title.localeCompare(b.title, locale));
     } else if (sortMode === 'name-desc') {
       items.sort((a, b) => b.title.localeCompare(a.title, locale));
     }
 
     return items;
-  }, [search, selectedCategory, sortMode, searchIndex, locale]);
+  }, [search, selectedCategory, viewMode, sortMode, searchIndex, locale, clickCounts]);
 
-  // Reset pagination when search or category changes
+  const topPopularStrip = useMemo(() => {
+    return (catalogItems as CatalogItem[])
+      .map((item) => ({
+        item,
+        score: getItemPopularityScore(item.id, clickCounts),
+      }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 4);
+  }, [clickCounts]);
+
+  // Reset pagination when search, category, view or sort changes
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [search, selectedCategory, sortMode]);
+  }, [search, selectedCategory, viewMode, sortMode]);
 
   const displayedItems = useMemo(() => {
     return filteredItems.slice(0, visibleCount);
@@ -257,6 +381,7 @@ export default function CatalogPage() {
   };
 
   const addToCart = (item: CatalogItem) => {
+    trackItemClick(item);
     setCart((prev) => {
       if (prev.some((c) => c.id === item.id)) return prev;
       return [...prev, item];
@@ -503,7 +628,7 @@ export default function CatalogPage() {
       </header>
 
       {/* =====================================================================
-           COMPACT FESTIVE HERO STRIP
+           COMPACT HERO STRIP (Texture Preserved, Verbose Copy Removed)
            ===================================================================== */}
       <section className="catalog-hero-strip">
         <div className="container catalog-hero-strip-inner">
@@ -527,10 +652,6 @@ export default function CatalogPage() {
               <span>{t.catalog.eyebrow}</span>
             </div>
             <h1 className="chs-title">{t.catalog.title}</h1>
-            <p className="chs-desc">
-              {t.catalog.descBeforeCount} <strong>{formatNumber(catalogItems.length)}+</strong>{' '}
-              {t.catalog.descMiddle} <strong>{t.catalog.descDiscount}</strong>.
-            </p>
           </div>
 
           <div className="chs-right">
@@ -570,10 +691,10 @@ export default function CatalogPage() {
         <div className="catalog-layout-grid">
 
           {/* =================================================================
-               LEFT SIDEBAR MENU
+               SIMPLIFIED LEFT SIDEBAR MENU
                ================================================================= */}
           <aside className={`catalog-sidebar-menu ${mobileFiltersOpen ? 'mobile-drawer-open' : ''}`}>
-            <div className="catalog-sidebar-inner">
+            <div className="catalog-sidebar-inner spotlight-surface">
 
               {/* Mobile Drawer Header */}
               <div className="sidebar-mobile-header">
@@ -628,7 +749,48 @@ export default function CatalogPage() {
                 </div>
               </div>
 
-              {/* 2. Vertical Category Navigation Menu */}
+              {/* 2. Functional Views: All / Featured / Most Clicked */}
+              <div className="sb-section">
+                <span className="sb-section-title">{extraT.viewsLabel}</span>
+                <div className="sb-cat-nav" role="group" aria-label={extraT.viewsLabel}>
+                  <button
+                    type="button"
+                    className={`sb-cat-item ${viewMode === 'all' ? 'active' : ''}`}
+                    onClick={() => {
+                      setViewMode('all');
+                      setMobileFiltersOpen(false);
+                    }}
+                  >
+                    <span className="sb-cat-label">{extraT.viewAll}</span>
+                    <span className="sb-cat-pill">{formatNumber(catalogItems.length)}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`sb-cat-item ${viewMode === 'featured' ? 'active' : ''}`}
+                    onClick={() => {
+                      setViewMode('featured');
+                      setSortMode('featured');
+                      setMobileFiltersOpen(false);
+                    }}
+                  >
+                    <span className="sb-cat-label">★ {extraT.viewFeatured}</span>
+                    <span className="sb-cat-pill">{Object.keys(FEATURED_BASELINE_CLICKS).length}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`sb-cat-item ${viewMode === 'popular' ? 'active' : ''}`}
+                    onClick={() => {
+                      setViewMode('popular');
+                      setSortMode('popular');
+                      setMobileFiltersOpen(false);
+                    }}
+                  >
+                    <span className="sb-cat-label">▲ {extraT.viewPopular}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* 3. Vertical Category Navigation Menu */}
               <div className="sb-section">
                 <div className="sb-section-head">
                   <span className="sb-section-title">{t.catalog.categoriesTitle}</span>
@@ -643,7 +805,7 @@ export default function CatalogPage() {
                       <button
                         key={cat}
                         type="button"
-                        className={`sb-cat-item ${isActive ? 'is-active' : ''}`}
+                        className={`sb-cat-item ${isActive ? 'active is-active' : ''}`}
                         onClick={() => {
                           setSelectedCategory(cat);
                           setMobileFiltersOpen(false);
@@ -666,47 +828,12 @@ export default function CatalogPage() {
                 </nav>
               </div>
 
-              {/* 3. Sorting Options */}
-              <div className="sb-section">
-                <span className="sb-section-title">{t.catalog.sortTitle}</span>
-                <div className="sb-sort-list">
-                  <button
-                    type="button"
-                    className={`sb-sort-pill ${sortMode === 'default' ? 'active' : ''}`}
-                    onClick={() => setSortMode('default')}
-                  >
-                    <span>{t.catalog.sortDefault}</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`sb-sort-pill ${sortMode === 'name-asc' ? 'active' : ''}`}
-                    onClick={() => setSortMode('name-asc')}
-                  >
-                    <span>{t.catalog.sortAsc}</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`sb-sort-pill ${sortMode === 'name-desc' ? 'active' : ''}`}
-                    onClick={() => setSortMode('name-desc')}
-                  >
-                    <span>{t.catalog.sortDesc}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* 4. Live Campaign & Cart Box */}
+              {/* 4. Compact Progress Meter (Text Clutter Removed) */}
               <div className={`sb-campaign-card ${isDiscounted ? 'discount-active' : ''}`}>
                 <div className="sbc-badge">
                   {isDiscounted ? t.catalog.campaignActiveBadge : t.catalog.campaignDefaultBadge}
                 </div>
                 <div className="sbc-body">
-                  {isDiscounted ? (
-                    <p className="sbc-text">{t.catalog.campaignActiveText(cart.length)}</p>
-                  ) : (
-                    <p className="sbc-text">{t.catalog.campaignDefaultText}</p>
-                  )}
-
-                  {/* Progress to discount */}
                   {!isDiscounted && (
                     <div className="sbc-progress-wrap">
                       <div className="sbc-progress-bar">
@@ -716,9 +843,7 @@ export default function CatalogPage() {
                         ></div>
                       </div>
                       <span className="sbc-progress-hint">
-                        {cart.length === 0
-                          ? t.catalog.progressStart
-                          : t.catalog.progressRemaining(remainingForDiscount)}
+                        {cart.length} / 16 · {t.catalog.badgeDiscount}
                       </span>
                     </div>
                   )}
@@ -736,7 +861,7 @@ export default function CatalogPage() {
                 </div>
               </div>
 
-              {/* 5. Popular Search Tags Cloud */}
+              {/* 5. Toggleable Quick Tags */}
               <div className="sb-section">
                 <span className="sb-section-title">{t.catalog.quickSearchTitle}</span>
                 <div className="sb-tags-cloud">
@@ -746,7 +871,7 @@ export default function CatalogPage() {
                       type="button"
                       className={`sb-tag-chip ${search === tag ? 'active' : ''}`}
                       onClick={() => {
-                        setSearch(tag);
+                        setSearch((prev) => (prev === tag ? '' : tag));
                         setMobileFiltersOpen(false);
                       }}
                     >
@@ -756,35 +881,18 @@ export default function CatalogPage() {
                 </div>
               </div>
 
-              {/* 6. Official Itemsatis Verified Store Box */}
-              <div className="sb-itemsatis-card">
-                <div className="sbi-header">
-                  <span className="sbi-verified-badge">{t.catalog.verifiedStoreBadge}</span>
-                  <ItemsatisLogo variant="full" width={90} height={20} />
-                </div>
-                <p className="sbi-desc">{t.catalog.verifiedStoreDesc}</p>
+              {/* 6. Compact Links (Verbose Store Description Removed) */}
+              <div className="sb-help-row">
                 <a
                   href={ITEMSATIS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="sbi-btn"
-                >
-                  <ItemsatisLogo variant="icon" width={16} height={16} />
-                  <span>{t.catalog.inspectStoreLink}</span>
-                </a>
-              </div>
-
-              {/* 7. Quick Help / Discord */}
-              <div className="sb-help-row">
-                <button
-                  type="button"
-                  onClick={() => setShowGuideModal(true)}
                   className="sb-help-link"
                 >
-                  {t.catalog.orderInstructionsLink}
-                </button>
+                  {t.common.itemsatisShort} ↗
+                </a>
                 <Link href={DISCORD_INVITE} className="sb-help-link">
-                  {t.catalog.discordSupportLink}
+                  {t.common.discord} ↗
                 </Link>
               </div>
 
@@ -809,15 +917,31 @@ export default function CatalogPage() {
             <div className="catalog-main-topbar">
               <div className="cmt-left">
                 <h2 className="cmt-category-title">
-                  {t.catalog.categoryLabels[selectedCategory] || selectedCategory}
+                  {viewMode === 'featured'
+                    ? extraT.viewFeatured
+                    : viewMode === 'popular'
+                    ? extraT.viewPopular
+                    : t.catalog.categoryLabels[selectedCategory] || selectedCategory}
                   <span className="cmt-count-badge">
                     {t.catalog.packageCountLabel(formatNumber(filteredItems.length))}
                   </span>
                 </h2>
 
                 {/* Active Filter Chips */}
-                {(search || selectedCategory !== 'Tümü') && (
+                {(search || selectedCategory !== 'Tümü' || viewMode !== 'all') && (
                   <div className="cmt-active-filters">
+                    {viewMode !== 'all' && (
+                      <span className="cmt-chip">
+                        {viewMode === 'featured' ? extraT.viewFeatured : extraT.viewPopular}
+                        <button
+                          type="button"
+                          onClick={() => setViewMode('all')}
+                          aria-label={t.catalog.resetFilters}
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    )}
                     {selectedCategory !== 'Tümü' && (
                       <span className="cmt-chip">
                         {t.catalog.categoryLabels[selectedCategory] || selectedCategory}
@@ -846,6 +970,7 @@ export default function CatalogPage() {
                       type="button"
                       className="cmt-chip-clear-all"
                       onClick={() => {
+                        setViewMode('all');
                         setSelectedCategory('Tümü');
                         setSearch('');
                       }}
@@ -877,15 +1002,17 @@ export default function CatalogPage() {
                   <span>{t.catalog.mobileMenuBtn}</span>
                 </button>
 
-                {/* Quick Sort Select */}
+                {/* Single Unified Sort Select */}
                 <div className="cmt-sort-wrap">
                   <label htmlFor="cmtSortSelect" className="cmt-sort-label">{t.catalog.sortLabel}</label>
                   <select
                     id="cmtSortSelect"
                     className="cmt-sort-select"
                     value={sortMode}
-                    onChange={(e) => setSortMode(e.target.value as any)}
+                    onChange={(e) => setSortMode(e.target.value as CatalogSortMode)}
                   >
+                    <option value="popular">{extraT.sortPopular}</option>
+                    <option value="featured">{extraT.sortFeatured}</option>
                     <option value="default">{t.catalog.sortDefault}</option>
                     <option value="name-asc">{t.catalog.sortAsc}</option>
                     <option value="name-desc">{t.catalog.sortDesc}</option>
@@ -910,6 +1037,16 @@ export default function CatalogPage() {
 
             {/* Mobile Category Horizontal Scroll Strip */}
             <div className="catalog-mobile-cats-strip">
+              <button
+                type="button"
+                className={`cm-cat-chip ${viewMode === 'featured' ? 'active' : ''}`}
+                onClick={() => {
+                  setViewMode((prev) => (prev === 'featured' ? 'all' : 'featured'));
+                  setSortMode('featured');
+                }}
+              >
+                <span>★ {extraT.viewFeatured}</span>
+              </button>
               {CATEGORIES.map((cat) => {
                 const isActive = selectedCategory === cat;
                 return (
@@ -927,6 +1064,72 @@ export default function CatalogPage() {
             </div>
 
             {/* =================================================================
+                 MOST CLICKED / FEATURED SPOTLIGHT STRIP
+                 ================================================================= */}
+            {viewMode === 'all' && selectedCategory === 'Tümü' && !search && topPopularStrip.length > 0 && (
+              <section className="catalog-popular-strip" aria-label={extraT.popularStripTitle}>
+                <div className="cps-header">
+                  <div className="cps-title-group">
+                    <span className="cps-dot" />
+                    <span className="cps-heading">{extraT.popularStripTitle}</span>
+                    <span className="cps-sub">{extraT.popularStripSub}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="cps-view-all-btn"
+                    onClick={() => {
+                      setViewMode('popular');
+                      setSortMode('popular');
+                    }}
+                  >
+                    {extraT.viewPopular} →
+                  </button>
+                </div>
+
+                <div className="cps-grid">
+                  {topPopularStrip.map(({ item, score }, idx) => {
+                    const inCart = cartIds.has(item.id);
+                    return (
+                      <div
+                        key={item.id}
+                        className="cps-card spotlight-surface"
+                        onClick={() => {
+                          trackItemClick(item);
+                          setPreviewItem(item);
+                        }}
+                      >
+                        <div className="cps-card-top">
+                          <span className="cps-rank">#{idx + 1}</span>
+                          <span className="cps-clicks">
+                            ▲ {formatNumber(score)} {extraT.clicksUnit}
+                          </span>
+                        </div>
+                        <div className="cps-card-title" title={item.title}>
+                          {item.title}
+                        </div>
+                        <div className="cps-card-foot">
+                          <span className="cps-card-cat">
+                            {t.catalog.categoryLabels[item.category] || item.category}
+                          </span>
+                          <button
+                            type="button"
+                            className={`cps-quick-add ${inCart ? 'is-added' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleCartItem(item);
+                            }}
+                          >
+                            {inCart ? '✓' : '+'}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* =================================================================
                  PRODUCT GRID
                  ================================================================= */}
             <div className="catalog-product-grid">
@@ -934,10 +1137,18 @@ export default function CatalogPage() {
                 displayedItems.map((item) => {
                   const inCart = cartIds.has(item.id);
                   const isVerified = item.source === 'restricted-verified';
+                  const isFeatured = isFeaturedCatalogItem(item.id);
+                  const popScore = getItemPopularityScore(item.id, clickCounts);
 
                   return (
-                    <article key={item.id} className="catalog-card-v2">
-                      <div className="cc-card-top">
+                    <article key={item.id} className="catalog-card-v2 spotlight-surface">
+                      <div
+                        className="cc-card-top cc-clickable"
+                        onClick={() => {
+                          trackItemClick(item);
+                          setPreviewItem(item);
+                        }}
+                      >
                         {/* Visual Category Header Box */}
                         <div
                           className="cc-card-visual"
@@ -945,8 +1156,22 @@ export default function CatalogPage() {
                             background: `linear-gradient(135deg, ${(CATEGORY_STYLE[item.category] || DEFAULT_STYLE).from}, ${(CATEGORY_STYLE[item.category] || DEFAULT_STYLE).to})`,
                           }}
                         >
-                          <span className="cc-visual-id">{item.id}</span>
-                          {isVerified && <span className="cc-visual-verified">{t.catalog.verifiedItemBadge}</span>}
+                          <div className="cc-visual-top-row">
+                            <span className="cc-visual-id">{item.id}</span>
+                            {popScore > 0 && (
+                              <span className="cc-visual-clicks">
+                                ▲ {formatNumber(popScore)}
+                              </span>
+                            )}
+                          </div>
+                          <div className="cc-visual-badges-line">
+                            {isFeatured && (
+                              <span className="cc-visual-featured">★ {extraT.featuredTag}</span>
+                            )}
+                            {isVerified && !isFeatured && (
+                              <span className="cc-visual-verified">{t.catalog.verifiedItemBadge}</span>
+                            )}
+                          </div>
                           <svg
                             className="cc-visual-icon"
                             width="40"
@@ -1059,31 +1284,6 @@ export default function CatalogPage() {
                 </button>
               </div>
             )}
-
-            {/* Trust and Workflow Strip */}
-            <div className="catalog-trust-strip">
-              <div className="cts-item">
-                <span className="cts-icon">✓</span>
-                <div>
-                  <strong>{t.catalog.trustOpenSourceTitle}</strong>
-                  <p>{t.catalog.trustOpenSourceDesc}</p>
-                </div>
-              </div>
-              <div className="cts-item">
-                <span className="cts-icon">✓</span>
-                <div>
-                  <strong>{t.catalog.trustSecureTitle}</strong>
-                  <p>{t.catalog.trustSecureDesc}</p>
-                </div>
-              </div>
-              <div className="cts-item">
-                <span className="cts-icon">✓</span>
-                <div>
-                  <strong>{t.catalog.trustPerfTitle}</strong>
-                  <p>{t.catalog.trustPerfDesc}</p>
-                </div>
-              </div>
-            </div>
 
           </main>
         </div>
@@ -1485,6 +1685,111 @@ export default function CatalogPage() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+           PACKAGE QUICK-PREVIEW MODAL
+           ===================================================================== */}
+      {previewItem && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="preview-modal-title"
+          onClick={() => setPreviewItem(null)}
+          className="guide-modal-overlay"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="guide-modal-dialog catalog-preview-dialog"
+          >
+            <button
+              type="button"
+              onClick={() => setPreviewItem(null)}
+              aria-label={t.common.close}
+              className="guide-modal-close"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+
+            <div className="cpm-badge-row">
+              <span className="cpm-kicker">{extraT.previewTitle}</span>
+              {isFeaturedCatalogItem(previewItem.id) && (
+                <span className="cc-visual-featured">★ {extraT.featuredTag}</span>
+              )}
+              {previewItem.source === 'restricted-verified' && (
+                <span className="cc-visual-verified">{t.catalog.verifiedItemBadge}</span>
+              )}
+            </div>
+
+            <h2 id="preview-modal-title" className="cpm-title">
+              {previewItem.title}
+            </h2>
+
+            <dl className="catalog-preview-meta">
+              <div className="cpm-meta-cell">
+                <dt>{extraT.previewId}</dt>
+                <dd>{previewItem.id}</dd>
+              </div>
+              <div className="cpm-meta-cell">
+                <dt>{extraT.previewCat}</dt>
+                <dd>{t.catalog.categoryLabels[previewItem.category] || previewItem.category}</dd>
+              </div>
+              <div className="cpm-meta-cell">
+                <dt>{extraT.previewClicks}</dt>
+                <dd>
+                  ▲ {formatNumber(getItemPopularityScore(previewItem.id, clickCounts))} {extraT.clicksUnit}
+                </dd>
+              </div>
+              <div className="cpm-meta-cell">
+                <dt>{extraT.previewStatus}</dt>
+                <dd>{previewItem.status || 'Active'}</dd>
+              </div>
+            </dl>
+
+            <div className="cpm-actions">
+              <button
+                type="button"
+                className={`cc-btn-add ${cartIds.has(previewItem.id) ? 'is-in-cart' : ''}`}
+                onClick={() => toggleCartItem(previewItem)}
+              >
+                {cartIds.has(previewItem.id) ? `✓ ${t.catalog.inCartBtn}` : `+ ${t.catalog.addToCartBtn}`}
+              </button>
+
+              <button
+                type="button"
+                className="cpm-copy-btn"
+                onClick={async () => {
+                  let ok = false;
+                  try {
+                    if (navigator?.clipboard?.writeText) {
+                      await navigator.clipboard.writeText(previewItem.title);
+                      ok = true;
+                    }
+                  } catch {
+                    ok = false;
+                  }
+                  if (ok) {
+                    setPreviewCopied(true);
+                    window.setTimeout(() => setPreviewCopied(false), 2200);
+                  }
+                }}
+              >
+                {previewCopied ? `✓ ${extraT.quickCopied}` : extraT.quickCopy}
+              </button>
+
+              <Link
+                href={DISCORD_INVITE}
+                className="cpm-discord-btn"
+                aria-label={t.catalog.askDiscordAria}
+              >
+                {t.common.discord} ↗
+              </Link>
+            </div>
           </div>
         </div>
       )}

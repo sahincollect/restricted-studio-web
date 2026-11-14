@@ -151,5 +151,49 @@ revoke all on public.auth_lockouts from anon, authenticated;
 revoke all on public.admin_mfa_secrets from anon, authenticated;
 revoke all on public.audit_logs from anon, authenticated;
 
+-- 8. Katalog Popülerlik ve Tıklama Sayaçları (Herkese açık istatistik)
+create table if not exists public.catalog_popularity (
+  item_id    text primary key,
+  clicks     bigint not null default 0,
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists catalog_popularity_clicks_idx on public.catalog_popularity (clicks desc);
+
+alter table public.catalog_popularity enable row level security;
+
+drop policy if exists "catalog_popularity_select_public" on public.catalog_popularity;
+create policy "catalog_popularity_select_public"
+  on public.catalog_popularity
+  for select
+  to anon, authenticated
+  using (true);
+
+create or replace function public.increment_catalog_click(p_item_id text)
+returns bigint
+language plpgsql
+security definer
+as $$
+declare
+  new_clicks bigint;
+begin
+  if p_item_id !~ '^RS-CAT-\d{4,6}$' then
+    raise exception 'Geçersiz katalog öğe kimliği';
+  end if;
+
+  insert into public.catalog_popularity (item_id, clicks, updated_at)
+  values (p_item_id, 1, now())
+  on conflict (item_id) do update
+    set clicks = public.catalog_popularity.clicks + 1,
+        updated_at = now()
+  returning clicks into new_clicks;
+
+  return new_clicks;
+end;
+$$;
+
+revoke all on public.catalog_popularity from anon, authenticated;
+grant select on public.catalog_popularity to anon, authenticated;
+
 -- PostgREST şema önbelleğini yenile
 notify pgrst, 'reload schema';

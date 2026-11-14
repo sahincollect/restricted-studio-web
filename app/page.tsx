@@ -6,6 +6,8 @@ import catalogStats from '../lib/catalog-stats.json';
 import ItemsatisLogo from '../components/ItemsatisLogo';
 import { useI18n } from '../components/I18nProvider';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import MonolithStage from '../components/MonolithStage';
+import ShowcaseTerminal from '../components/ShowcaseTerminal';
 
 type ModalId = 'about' | 'solutions' | 'engineering' | 'faq' | null;
 type CodeTabKey = 'bridge' | 'security' | 'database';
@@ -18,6 +20,7 @@ export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [codeTab, setCodeTab] = useState<CodeTabKey>('bridge');
   const [openFaqIdx, setOpenFaqIdx] = useState<number>(0);
+  const [overdrive, setOverdrive] = useState(false);
 
   const codeSnippets: Record<CodeTabKey, { label: string; code: string }> = {
     bridge: {
@@ -80,10 +83,14 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
     };
     window.addEventListener('keydown', onKeyDown);
 
+    const onOverdrive = () => setOverdrive(true);
+    window.addEventListener('rs:overdrive', onOverdrive);
+
     return () => {
       html.classList.remove('is-viewport-locked');
       body.classList.remove('is-viewport-locked');
       window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('rs:overdrive', onOverdrive);
     };
   }, []);
 
@@ -296,7 +303,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
         {/* LEFT COLUMN */}
         <div className="bento-col-left">
           {/* MAIN OBSIDIAN ARCHITECTURAL HEADLINE CARD */}
-          <section className="bento-card bento-card-main">
+          <section className="bento-card bento-card-main spotlight-surface">
             <div className="noir-grain-overlay" aria-hidden="true" />
             <div className="bcm-visual-stage" aria-hidden="true">
               <img
@@ -397,7 +404,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
             {/* SUB-CARD 1: OPEN-SOURCE ARCHITECTURE */}
             <button
               type="button"
-              className="bento-card bento-card-crimson"
+              className="bento-card bento-card-crimson spotlight-surface"
               onClick={() => openModal('engineering')}
             >
               <div className="noir-grain-overlay" aria-hidden="true" />
@@ -433,7 +440,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
             </button>
 
             {/* SUB-CARD 2: DISCORD COMMUNITY */}
-            <Link href="/discord" className="bento-card bento-card-noir">
+            <Link href="/discord" className="bento-card bento-card-noir spotlight-surface">
               <div className="noir-grain-overlay" aria-hidden="true" />
 
               <div className="bento-card-head">
@@ -468,11 +475,14 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
           </div>
         </div>
 
-        {/* RIGHT COLUMN: SERENE CHIAROSCURO INVERTED-SPOTLIGHT SHOWCASE */}
+        {/* RIGHT COLUMN: SERENE CHIAROSCURO 3D MONOLITH + ARCADE/CORE SHOWCASE */}
         <div className="bento-col-right">
-          <section className="bento-card bento-card-showcase" aria-label={t.home.telemetry.ariaLabel}>
+          <section className="bento-card bento-card-showcase spotlight-surface" aria-label={t.home.telemetry.ariaLabel}>
             <div className="noir-grain-heavy" aria-hidden="true" />
             <div className="showcase-inverted-beam" aria-hidden="true" />
+
+            {/* Interactive 3D Wireframe Monolith + Cursor Depth Stage */}
+            <MonolithStage overdrive={overdrive} />
 
             {/* Minimalist New Year North Star + Distant Horizon Constellation */}
             <svg
@@ -491,137 +501,15 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
               <circle cx="40" cy="34" r="0.9" fill="#c62828" opacity="0.7" />
             </svg>
 
-            {/* Singular Signature Image 2 Winter Horizon Monolith behind Console */}
-            <svg
-              className="showcase-horizon-art"
-              viewBox="0 0 400 180"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M0 44 Q 65 26, 130 40 T 260 36 T 400 46 L 400 180 L 0 180 Z"
-                fill="#090909"
-              />
-              {/* Soft frost hairline along rolling winter terrain */}
-              <path
-                d="M0 44 Q 65 26, 130 40 T 260 36 T 400 46"
-                stroke="#E8E5DE"
-                strokeWidth="1.2"
-                fill="none"
-                opacity="0.22"
-              />
-              {/* Monolith cabin silhouette with snow-dusted pitch */}
-              <polygon points="312,18 326,8 326,42 312,42" fill="#090909" />
-              <polygon points="326,8 340,18 340,42 326,42" fill="#E8E5DE" opacity="0.82" />
-              <polyline
-                points="311,18.5 326,7.5 341,18.5"
-                stroke="#E8E5DE"
-                strokeWidth="2.1"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-                opacity="0.92"
-              />
-              <rect x="331" y="28" width="5" height="14" fill="#090909" />
-              <path
-                d="M 185 180 Q 245 135, 215 100 T 308 42"
-                stroke="#E8E5DE"
-                strokeWidth="12"
-                strokeLinecap="round"
-                fill="none"
-                opacity="0.16"
-              />
-            </svg>
-
             <div className="showcase-callout-ticks">
-              {/* Calm Obsidian Telemetry Console Mockup */}
-              <div className="device-mockup-chassis">
-                <div className="device-top-bar">
-                  <div className="device-user-info">
-                    <img src="/assets/rslogo.jpg" alt="Restricted Core" className="device-avatar" />
-                    <div className="device-user-text">
-                      <span className="dut-greeting">Restricted Core</span>
-                      <span className="dut-status">
-                        <span className="dut-dot" />
-                        {t.home.telemetry.statusVersion}
-                      </span>
-                    </div>
-                  </div>
-                  <span className="device-tps-pill">60.0 TPS</span>
-                </div>
-
-                <div className="device-server-selector">
-                  <span className="dss-name">◆ Saint Roleplay — Istanbul Engine</span>
-                  <span className="dss-tag">{t.home.telemetry.online}</span>
-                </div>
-
-                {/* Clean 3-Stat Line Row */}
-                <div className="device-metrics-strip">
-                  <div className="dms-col">
-                    <span className="dms-v">0.04 ms</span>
-                    <span className="dms-l">{t.home.telemetry.tick}</span>
-                  </div>
-                  <span className="dms-sep" aria-hidden="true" />
-                  <div className="dms-col">
-                    <span className="dms-v">1.1 ms</span>
-                    <span className="dms-l">{t.home.telemetry.sql}</span>
-                  </div>
-                  <span className="dms-sep" aria-hidden="true" />
-                  <div className="dms-col">
-                    <span className="dms-v">{formatPercent(0)}</span>
-                    <span className="dms-l">{t.home.telemetry.escrow}</span>
-                  </div>
-                </div>
-
-                {/* Widget: Calm Server Capacity Graph */}
-                <div className="device-capacity-card">
-                  <div className="dcc-head">
-                    <div>
-                      <span className="dcc-title">{t.home.telemetry.capacityTitle}</span>
-                      <span className="dcc-sub">{t.home.telemetry.capacitySub}</span>
-                    </div>
-                    <span className="dcc-apex-badge">{formatPercent(91)} · 60 FPS</span>
-                  </div>
-
-                  <div className="dcc-chart-container">
-                    <svg viewBox="0 0 320 110" preserveAspectRatio="none" className="capacity-curve-svg">
-                      <defs>
-                        <linearGradient id="crimsonPeakFill" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#9B1111" stopOpacity="0.55" />
-                          <stop offset="100%" stopColor="#080808" stopOpacity="0.05" />
-                        </linearGradient>
-                      </defs>
-                      <path
-                        d="M 0 98 Q 35 88, 60 72 T 115 44 T 155 26 T 205 52 T 255 32 T 320 16 L 320 110 L 0 110 Z"
-                        fill="url(#crimsonPeakFill)"
-                      />
-                      <path
-                        d="M 0 98 Q 35 88, 60 72 T 115 44 T 155 26 T 205 52 T 255 32 T 320 16"
-                        fill="none"
-                        stroke="#E8E5DE"
-                        strokeWidth="1.8"
-                        opacity="0.88"
-                      />
-                      <circle cx="155" cy="26" r="3.5" fill="#C83232" stroke="#E8E5DE" strokeWidth="1.5" />
-                    </svg>
-                  </div>
-
-                  <div className="dcc-footer">
-                    <span>{t.home.telemetry.capacityFooter}</span>
-                    <Link
-                      href="/status"
-                      style={{
-                        color: '#F0F0F0',
-                        textDecoration: 'underline',
-                        textUnderlineOffset: '2px',
-                        fontWeight: 700,
-                      }}
-                    >
-                      {t.home.telemetry.statusLink}
-                    </Link>
-                  </div>
-                </div>
-              </div>
+              <ShowcaseTerminal
+                godmode={overdrive}
+                onOpenFullConsole={() => window.dispatchEvent(new CustomEvent('rs:open-console'))}
+                onTriggerOverdrive={() => {
+                  setOverdrive(true);
+                  window.dispatchEvent(new CustomEvent('rs:overdrive', { detail: { active: true } }));
+                }}
+              />
             </div>
           </section>
         </div>
