@@ -373,7 +373,8 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
       <main className="living-room-hotspots" aria-label="Pixel Şehir Binaları ve Etkileşim Noktaları">
         {PIXEL_ROOM_HOTSPOTS.map((spot) => {
           const isSelected = selectedHotspotId === spot.id;
-          const commonClass = `lr-spot lr-spot--${spot.tone} lr-spot--layer-${spot.layer} ${
+          const modeClass = spot.alwaysOpen ? 'lr-spot--always' : 'lr-spot--compact';
+          const commonClass = `lr-spot lr-spot--${spot.tone} lr-spot--layer-${spot.layer} ${modeClass} ${
             isSelected ? 'is-selected' : ''
           }`;
           const style: React.CSSProperties = {
@@ -391,7 +392,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
                 onMouseEnter={() => setSelectedHotspotId(spot.id)}
                 onFocus={() => setSelectedHotspotId(spot.id)}
               >
-                <span className="lr-spot-dot" aria-hidden="true" />
+                <span className="lr-spot-num">[{spot.shortNum}]</span>
                 <span className="lr-spot-label">{spot.badge}</span>
               </Link>
             );
@@ -408,7 +409,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
               onFocus={() => setSelectedHotspotId(spot.id)}
               onClick={() => openModal(modalTarget)}
             >
-              <span className="lr-spot-dot" aria-hidden="true" />
+              <span className="lr-spot-num">[{spot.shortNum}]</span>
               <span className="lr-spot-label">{spot.badge}</span>
             </button>
           );
