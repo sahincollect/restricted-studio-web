@@ -54,6 +54,17 @@ const TOWN_ROAD_SEGMENTS: readonly string[] = [
   'M 210 470 L 340 554 L 632 614 L 624 630 L 328 568 L 198 482 Z',
 ];
 
+const TOWN_BLDG_PADS: readonly [number, number][] = [
+  [621, 224],
+  [845, 174],
+  [1101, 224],
+  [198, 444],
+  [442, 480],
+  [634, 600],
+  [877, 606],
+  [1120, 592],
+];
+
 function HolidayPixelTreeSvg() {
   return (
     <svg
@@ -182,6 +193,18 @@ function TownRoadsSvg() {
           stroke="#272e3e"
           strokeWidth="2"
           opacity="0.88"
+        />
+      ))}
+
+      {/* Isometric foundation plinths beneath each district building */}
+      {TOWN_BLDG_PADS.map(([px, py]) => (
+        <polygon
+          key={`pad-${px}-${py}`}
+          points={`${px},${py - 36} ${px + 86},${py} ${px},${py + 36} ${px - 86},${py}`}
+          fill="#12141b"
+          stroke="#283042"
+          strokeWidth="1.5"
+          opacity="0.9"
         />
       ))}
 
