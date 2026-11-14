@@ -1,0 +1,869 @@
+/* ==========================================================================
+   RESTRICTED NIGHT EXPRESS — EXPERIMENTAL PIXEL ART TRAIN HOMEPAGE
+   Low-glare matte midnight palette (#08090d / #10141d / #181e2c)
+   Soft warm amber lights (#e8a848) & deep matte crimson (#a50000)
+   Zero harsh flicker, crisp integer pixel geometry
+   ========================================================================== */
+
+.pixel-train-shell {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  background: linear-gradient(180deg, #07080c 0%, #0b0e15 48%, #10141f 78%, #090b10 100%);
+  color: #e4e7ef;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px 20px 14px;
+  box-sizing: border-box;
+  user-select: none;
+  font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
+}
+
+/* Crisp pixel rendering helper */
+.px-crisp {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  shape-rendering: crispEdges;
+}
+
+/* Subtle nocturnal pixel backdrop (stars + moon + distant pixel skyline) */
+.px-night-sky {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.px-sky-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0.82;
+}
+
+/* Top HUD bar below pill nav */
+.px-station-hud {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 1420px;
+  width: 100%;
+  margin: 4px auto 0;
+  padding: 8px 14px;
+  background: rgba(13, 16, 24, 0.86);
+  border: 2px solid #232a3b;
+  box-shadow:
+    inset 0 0 0 2px #0b0e15,
+    0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.px-hud-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.px-line-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background: #171c28;
+  border: 2px solid #303950;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #cfd6e6;
+  text-transform: uppercase;
+}
+
+.px-line-led {
+  width: 8px;
+  height: 8px;
+  background: #47c97e;
+  box-shadow: 0 0 6px rgba(71, 201, 126, 0.45);
+  display: inline-block;
+}
+
+.px-hud-headline {
+  font-size: 13px;
+  color: #9ba5bc;
+  letter-spacing: 0.01em;
+}
+
+.px-hud-headline strong {
+  color: #edf0f7;
+  font-weight: 600;
+}
+
+.px-hud-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.px-mode-btn {
+  appearance: none;
+  background: #141923;
+  color: #c7d0e2;
+  border: 2px solid #2b344a;
+  padding: 5px 11px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.px-mode-btn:hover {
+  background: #1c2331;
+  border-color: #455373;
+  color: #ffffff;
+}
+
+.px-mode-btn.is-active {
+  background: #23181c;
+  border-color: #a53535;
+  color: #f4d6d6;
+}
+
+/* ==========================================================================
+   MAIN PIXEL TRAIN STAGE
+   ========================================================================== */
+
+.px-train-stage {
+  position: relative;
+  z-index: 4;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 1420px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: 0;
+}
+
+/* Overhead Pixel Catenary Wire & Poles */
+.px-catenary-bar {
+  position: relative;
+  width: 100%;
+  height: 18px;
+  border-bottom: 2px solid #252d3f;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 24px;
+  box-sizing: border-box;
+  opacity: 0.75;
+}
+
+.px-catenary-mast {
+  width: 6px;
+  height: 18px;
+  background: #2c354a;
+  border-left: 2px solid #3c4763;
+}
+
+.px-catenary-tag {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: #6f7b96;
+  background: #0b0e15;
+  padding: 0 8px;
+  transform: translateY(50%);
+}
+
+/* Train Assembly (Locomotive + Coupled Wagons) */
+.px-train-assembly {
+  display: grid;
+  grid-template-columns: 230px repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+  position: relative;
+  padding: 4px 0 0;
+}
+
+/* Subtle horizontal coupler bar running through all cars */
+.px-train-assembly::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 34px;
+  height: 8px;
+  background: repeating-linear-gradient(
+    90deg,
+    #252c3d 0px,
+    #252c3d 8px,
+    #161b26 8px,
+    #161b26 12px
+  );
+  border-top: 2px solid #384259;
+  border-bottom: 2px solid #0d1017;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Gentle idle chassis rhythm when cruising */
+@keyframes pxChassisbob {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.px-train-shell.is-cruising .px-locomotive-card,
+.px-train-shell.is-cruising .px-wagon {
+  animation: pxChassisbob 1.8s steps(2, end) infinite;
+}
+
+.px-train-shell.is-cruising .px-wagon:nth-child(even) {
+  animation-delay: 0.45s;
+}
+
+/* ==========================================================================
+   PIXEL LOCOMOTIVE (LEFT LEAD ENGINE)
+   ========================================================================== */
+
+.px-locomotive-card {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #121621;
+  border: 3px solid #323c54;
+  box-shadow:
+    inset 0 0 0 2px #0b0e15,
+    0 8px 0 #080a0f;
+  padding: 10px 10px 8px;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.px-locomotive-card:hover,
+.px-locomotive-card.is-selected {
+  border-color: #d49b4b;
+  transform: translateY(-3px);
+}
+
+.px-loco-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.px-loco-id {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #e8a848;
+  background: #1d1914;
+  border: 1px solid #594325;
+  padding: 2px 6px;
+}
+
+.px-loco-speed {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10px;
+  color: #8793ad;
+}
+
+.px-loco-art-wrap {
+  position: relative;
+  width: 100%;
+  height: 126px;
+  background: #0c0f17;
+  border: 2px solid #22293a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.px-loco-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@keyframes pxSmokeDrift {
+  0% {
+    transform: translate(0px, 0px);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translate(6px, -4px);
+    opacity: 0.45;
+  }
+  100% {
+    transform: translate(12px, -8px);
+    opacity: 0.15;
+  }
+}
+
+.px-train-shell.is-cruising .px-smoke-puff-1 {
+  animation: pxSmokeDrift 2.2s steps(3, end) infinite;
+}
+
+.px-train-shell.is-cruising .px-smoke-puff-2 {
+  animation: pxSmokeDrift 2.2s steps(3, end) 0.7s infinite;
+}
+
+.px-loco-footer {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.px-loco-title {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 12px;
+  font-weight: 800;
+  color: #edf0f7;
+  letter-spacing: 0.04em;
+}
+
+.px-loco-sub {
+  font-size: 11px;
+  color: #8f9bb3;
+  line-height: 1.35;
+}
+
+/* ==========================================================================
+   COUPLED PIXEL WAGONS (4 CARS)
+   ========================================================================== */
+
+.px-wagon {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #121621;
+  border: 3px solid #2c354a;
+  box-shadow:
+    inset 0 0 0 2px #0b0e15,
+    0 8px 0 #080a0f;
+  padding: 0;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.px-wagon:hover,
+.px-wagon.is-selected {
+  transform: translateY(-4px);
+}
+
+/* Pixel Roof Ribbing */
+.px-wagon-roof {
+  height: 12px;
+  background: repeating-linear-gradient(
+    90deg,
+    #1e2536 0px,
+    #1e2536 12px,
+    #151a26 12px,
+    #151a26 16px
+  );
+  border-bottom: 2px solid #2f3952;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+}
+
+.px-wagon-body {
+  padding: 10px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+/* Wagon Header Meta (Car code + Category Tag) */
+.px-wagon-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.px-wagon-code {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 2px 6px;
+  background: #191f2e;
+  border: 1px solid #34405c;
+  color: #aeb9d1;
+}
+
+.px-wagon-tag {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #93a0bc;
+}
+
+/* PIXEL LED SIGNBOARD ON WAGON BODY (Core User Requirement) */
+.px-wagon-signboard {
+  position: relative;
+  padding: 12px 10px;
+  background: #0a0c12;
+  border: 3px solid #2b344a;
+  box-shadow: inset 0 0 0 2px #050609;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 68px;
+}
+
+/* Subtle pixel dot-matrix texture inside signboard (eye-friendly low opacity) */
+.px-wagon-signboard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 0);
+  background-size: 4px 4px;
+  pointer-events: none;
+}
+
+.px-wagon-banner-text {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: clamp(15px, 1.35vw, 20px);
+  font-weight: 900;
+  line-height: 1.18;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  word-break: keep-all;
+}
+
+/* Tone variants — soft eye-friendly high legibility */
+.px-wagon--crimson {
+  border-color: #6e2228;
+}
+.px-wagon--crimson:hover,
+.px-wagon--crimson.is-selected {
+  border-color: #c93b46;
+}
+.px-wagon--crimson .px-wagon-signboard {
+  background: #14090c;
+  border-color: #8c2830;
+}
+.px-wagon--crimson .px-wagon-banner-text {
+  color: #ff6b75;
+  text-shadow: 2px 2px 0 #2b090d;
+}
+.px-wagon--crimson .px-wagon-code {
+  background: #2b1115;
+  border-color: #7d2830;
+  color: #f29ca3;
+}
+
+.px-wagon--amber {
+  border-color: #6b4c24;
+}
+.px-wagon--amber:hover,
+.px-wagon--amber.is-selected {
+  border-color: #d99b43;
+}
+.px-wagon--amber .px-wagon-signboard {
+  background: #141008;
+  border-color: #8f652c;
+}
+.px-wagon--amber .px-wagon-banner-text {
+  color: #f3b659;
+  text-shadow: 2px 2px 0 #2b1d08;
+}
+.px-wagon--amber .px-wagon-code {
+  background: #291e10;
+  border-color: #7d5928;
+  color: #f2CA85;
+}
+
+.px-wagon--frost {
+  border-color: #2d4963;
+}
+.px-wagon--frost:hover,
+.px-wagon--frost.is-selected {
+  border-color: #5ca0d3;
+}
+.px-wagon--frost .px-wagon-signboard {
+  background: #091017;
+  border-color: #365c7d;
+}
+.px-wagon--frost .px-wagon-banner-text {
+  color: #7ec4f2;
+  text-shadow: 2px 2px 0 #0c1f30;
+}
+
+.px-wagon--slate {
+  border-color: #353f57;
+}
+.px-wagon--slate:hover,
+.px-wagon--slate.is-selected {
+  border-color: #7c8db5;
+}
+.px-wagon--slate .px-wagon-signboard {
+  background: #0b0e15;
+  border-color: #414e6b;
+}
+.px-wagon--slate .px-wagon-banner-text {
+  color: #d5def2;
+  text-shadow: 2px 2px 0 #151b29;
+}
+
+/* Pixel Passenger Windows Row */
+.px-wagon-windows {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.px-window-pane {
+  height: 18px;
+  background: #1c2230;
+  border: 2px solid #2c364d;
+  position: relative;
+  overflow: hidden;
+}
+
+.px-window-pane.is-lit {
+  background: linear-gradient(180deg, #3b2d1d 0%, #634827 100%);
+  border-color: #7a5c37;
+}
+
+.px-window-pane.is-lit::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 6px;
+  height: 4px;
+  background: rgba(243, 198, 127, 0.35);
+}
+
+/* Wagon Description & CTA Footer */
+.px-wagon-desc {
+  font-size: 12px;
+  color: #b0bbd1;
+  line-height: 1.38;
+  margin: 0;
+}
+
+.px-wagon-spec {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10px;
+  color: #77839e;
+  margin: 0;
+}
+
+.px-wagon-cta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 6px;
+  border-top: 2px dashed #22293a;
+  margin-top: auto;
+}
+
+.px-wagon-cta {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #e4e9f5;
+}
+
+.px-wagon--crimson .px-wagon-cta {
+  color: #ff858d;
+}
+
+.px-wagon--amber .px-wagon-cta {
+  color: #f5c26b;
+}
+
+/* Pixel Undercarriage & Bogie Wheels */
+.px-undercarriage {
+  height: 26px;
+  background: #0b0d13;
+  border-top: 3px solid #232a3b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+}
+
+.px-bogie {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.px-wheel {
+  width: 16px;
+  height: 16px;
+  background: #1e2433;
+  border: 3px solid #526080;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.px-wheel::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background: #8e9cb8;
+}
+
+/* ==========================================================================
+   PIXEL RAILWAY TRACKBED & VIADUCT (UNDER THE TRAIN)
+   ========================================================================== */
+
+.px-trackbed {
+  position: relative;
+  width: 100%;
+  margin-top: -2px;
+  z-index: 3;
+}
+
+.px-rail-steel {
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(180deg, #697899 0%, #384157 100%);
+  border-top: 2px solid #8fa0c4;
+  border-bottom: 2px solid #161a24;
+}
+
+@keyframes pxTiesScroll {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -48px 0;
+  }
+}
+
+.px-rail-ties {
+  width: 100%;
+  height: 12px;
+  background: repeating-linear-gradient(
+    90deg,
+    #2b2118 0px,
+    #2b2118 14px,
+    #11151f 14px,
+    #11151f 24px
+  );
+  border-bottom: 3px solid #1c2233;
+}
+
+.px-train-shell.is-cruising .px-rail-ties {
+  animation: pxTiesScroll 1.2s steps(6, end) infinite;
+}
+
+.px-viaduct-wall {
+  width: 100%;
+  height: 20px;
+  background: repeating-linear-gradient(
+    90deg,
+    #151a26 0px,
+    #151a26 64px,
+    #0d1018 64px,
+    #0d1018 96px
+  );
+  border-top: 2px solid #283147;
+  border-bottom: 2px solid #22293b;
+}
+
+/* ==========================================================================
+   BOTTOM STATION PLATFORM & INSPECTOR DOCK
+   ========================================================================== */
+
+.px-platform-dock {
+  position: relative;
+  z-index: 5;
+  max-width: 1420px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 10px 16px;
+  background: rgba(13, 16, 24, 0.92);
+  border: 2px solid #262f45;
+  box-shadow: inset 0 0 0 2px #0a0c12;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.px-inspector-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.px-inspector-badge {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 8px;
+  background: #24191c;
+  border: 2px solid #8c2f39;
+  color: #ff858d;
+  white-space: nowrap;
+}
+
+.px-inspector-text {
+  font-size: 12px;
+  color: #c2cce0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.px-inspector-text strong {
+  color: #ffffff;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+}
+
+.px-station-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.px-station-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #151a26;
+  border: 2px solid #2d374f;
+  color: #d3dced;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.px-station-pill:hover {
+  background: #1f2738;
+  border-color: #52648c;
+  color: #ffffff;
+}
+
+.px-station-pill--primary {
+  background: #2b1216;
+  border-color: #9e303a;
+  color: #ffd6d9;
+}
+
+.px-station-pill--primary:hover {
+  background: #3d181e;
+  border-color: #d14753;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .px-train-shell.is-cruising .px-locomotive-card,
+  .px-train-shell.is-cruising .px-wagon,
+  .px-train-shell.is-cruising .px-rail-ties,
+  .px-train-shell.is-cruising .px-smoke-puff-1,
+  .px-train-shell.is-cruising .px-smoke-puff-2 {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS (TABLET & MOBILE)
+   ========================================================================== */
+
+@media (max-width: 1180px) {
+  .px-train-assembly {
+    grid-template-columns: 195px repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .px-wagon-banner-text {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 980px) {
+  html:has(.pixel-train-shell),
+  body:has(.pixel-train-shell) {
+    overflow-y: auto !important;
+    height: auto !important;
+  }
+
+  .pixel-train-shell {
+    height: auto;
+    max-height: none;
+    min-height: 100dvh;
+    overflow-y: visible;
+    padding: 10px 12px 24px;
+    gap: 14px;
+  }
+
+  .px-station-hud {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 12px;
+  }
+
+  .px-catenary-bar {
+    display: none;
+  }
+
+  .px-train-assembly {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .px-train-assembly::before {
+    display: none;
+  }
+
+  .px-wagon-banner-text {
+    font-size: 18px;
+  }
+
+  .px-platform-dock {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .px-inspector-text {
+    white-space: normal;
+  }
+}
