@@ -862,7 +862,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       showPassword: 'Göster',
       hidePassword: 'Gizle',
       securityEyebrow: 'RESTRICTED PORTAL GATEWAY',
-      securityHeadline: 'Sıfır Güvenli Lisans ve İstasyon Erişimi',
+      securityHeadline: 'Doğrulanmış Lisans ve İstasyon Erişimi',
       securitySummary: 'Üçüncü taraf OAuth bağımlılığı olmadan doğrudan donanım ve oturum doğrulaması.',
       securitySpecs: [
         'Argon2id bellek-sert parola koruması',
@@ -1404,7 +1404,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       showPassword: 'Show',
       hidePassword: 'Hide',
       securityEyebrow: 'RESTRICTED PORTAL GATEWAY',
-      securityHeadline: 'Zero-Trust License & Workstation Access',
+      securityHeadline: 'Verified License & Workstation Access',
       securitySummary: 'Direct cryptographic session verification without third-party OAuth dependencies.',
       securitySpecs: [
         'Argon2id memory-hard credential protection',
@@ -2488,7 +2488,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       showPassword: 'Afficher',
       hidePassword: 'Masquer',
       securityEyebrow: 'RESTRICTED PORTAL GATEWAY',
-      securityHeadline: 'Accès Licences & Station Zero-Trust',
+      securityHeadline: 'Accès Licences & Station Vérifié',
       securitySummary: 'Vérification cryptographique directe sans dépendance OAuth tierce.',
       securitySpecs: [
         'Protection des mots de passe Argon2id',

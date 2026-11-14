@@ -5731,10 +5731,12 @@ textarea {
 
 .rs-portal-shell {
   min-height: 100vh;
-  background-color: var(--bg-obsidian);
+  background-color: #080808;
   background-image:
     var(--grain-svg),
-    linear-gradient(180deg, #0b0b0d 0%, #080808 55%, #160303 100%);
+    radial-gradient(rgba(240, 240, 240, 0.06) 1px, transparent 1px),
+    linear-gradient(155deg, #080808 0%, #080808 62%, rgba(139, 0, 0, 0.32) 100%);
+  background-size: 160px 160px, 5px 5px, 100% 100%;
   color: var(--chalk-white);
   padding-bottom: 64px;
 }
