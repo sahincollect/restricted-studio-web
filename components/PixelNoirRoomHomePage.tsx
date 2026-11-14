@@ -5,6 +5,7 @@ import Link from 'next/link';
 import catalogStats from '../lib/catalog-stats.json';
 import { useI18n } from '../components/I18nProvider';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import LivingPixelRoomCanvas from '../components/LivingPixelRoomCanvas';
 import {
   PIXEL_ROOM_HOTSPOTS,
   PIXEL_ROOM_PROMOS,
@@ -121,11 +122,16 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
     PIXEL_ROOM_HOTSPOTS.find((h) => h.id === selectedHotspotId) ?? PIXEL_ROOM_HOTSPOTS[0];
 
   return (
-    <div className="pixel-room-shell">
+    <div className="living-room-shell">
       {/* ===============================================================
-           TOP FLOATING PILL NAVBAR (100% Parity with Noir Navigation)
+           100% PROCEDURAL LIVING PIXEL ART ROOM ENGINE (FULLSCREEN CANVAS)
            =============================================================== */}
-      <header className="bento-pill-nav" id="navbar" style={{ position: 'relative', zIndex: 10 }}>
+      <LivingPixelRoomCanvas />
+
+      {/* ===============================================================
+           TOP FLOATING PILL NAVBAR
+           =============================================================== */}
+      <header className="bento-pill-nav" id="navbar">
         <div className="bpn-brand-group">
           <Link href="/" className="bpn-brand" aria-label={`Restricted Studio ${t.common.home}`}>
             <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="bpn-logo" />
@@ -263,7 +269,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
       </header>
 
       {/* Mobile Drawer */}
-      <div className={`bpn-mobile-drawer ${mobileMenuOpen ? 'open' : ''}`} style={{ zIndex: 12 }}>
+      <div className={`bpn-mobile-drawer ${mobileMenuOpen ? 'open' : ''}`} style={{ zIndex: 25 }}>
         <div style={{ padding: '4px 0 8px', borderBottom: '1px solid rgba(240,240,240,0.16)', marginBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'rgba(240,240,240,0.65)', letterSpacing: '0.08em' }}>
             {t.common.langLabel.toUpperCase()}
@@ -314,121 +320,82 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
       </div>
 
       {/* ===============================================================
-           CENTER PIXEL NOIR ROOM DIORAMA STAGE
+           INTERACTIVE ROOM FURNITURE HOTSPOTS OVER FULLSCREEN CANVAS
            =============================================================== */}
-      <main className="pr-stage-wrap" aria-label="Restricted Studio Pixel Noir Oda Sahnesi">
-        <div className="pr-diorama-frame">
-          <img
-            src="/assets/pixel-noir-room.png"
-            alt="Restricted Studio Pixel Noir Oda Sahnesi"
-            className="pr-diorama-img"
-            draggable={false}
-          />
+      <main className="living-room-hotspots" aria-label="Yaşayan Pixel Oda Etkileşim Noktaları">
+        {PIXEL_ROOM_HOTSPOTS.map((spot) => {
+          const isSelected = selectedHotspotId === spot.id;
+          const commonClass = `lr-spot lr-spot--${spot.tone} ${
+            isSelected ? 'is-selected' : ''
+          }`;
+          const style: React.CSSProperties = {
+            left: `${spot.x}%`,
+            top: `${spot.y}%`,
+          };
 
-          {/* Ambient Noir Lighting & Vignette */}
-          <div className="pr-ambient-lighting" aria-hidden="true" />
-
-          {/* Top-Left Compact Campaign & Instruction HUD */}
-          <aside className="pr-room-hud-overlay" aria-label="Kampanya ve Oda Rehberi">
-            <div className="pr-hud-eyebrow">
-              <span className="pr-hud-dot" aria-hidden="true" />
-              <span>RESTRICTED SAFEHOUSE // ODA ETKİLEŞİMİ</span>
-            </div>
-            <div className="pr-hud-promos">
-              <Link href="/katalog" className="pr-promo-chip pr-promo-chip--crimson">
-                {PIXEL_ROOM_PROMOS.unitPrice}
-              </Link>
-              <Link href="/katalog" className="pr-promo-chip pr-promo-chip--amber">
-                {PIXEL_ROOM_PROMOS.bulkDiscount}
-              </Link>
-            </div>
-            <p className="pr-hud-hint">
-              Odadaki eşyaların üzerine gelin veya tıklayarak doğrudan ilgili bölüme gidin.
-            </p>
-          </aside>
-
-          {/* Interactive Pixel Hotspots Pinned to Room Furniture */}
-          {PIXEL_ROOM_HOTSPOTS.map((spot) => {
-            const isSelected = selectedHotspotId === spot.id;
-            const commonClass = `pr-hotspot pr-hotspot--${spot.tone} ${
-              isSelected ? 'is-selected' : ''
-            }`;
-            const style: React.CSSProperties = {
-              left: `${spot.x}%`,
-              top: `${spot.y}%`,
-            };
-
-            if (spot.action.type === 'route') {
-              return (
-                <Link
-                  key={spot.id}
-                  href={spot.action.href}
-                  className={commonClass}
-                  style={style}
-                  onMouseEnter={() => setSelectedHotspotId(spot.id)}
-                  onFocus={() => setSelectedHotspotId(spot.id)}
-                >
-                  <span className="pr-hotspot-beacon" aria-hidden="true" />
-                  <span className="pr-hotspot-badge">{spot.badge}</span>
-                </Link>
-              );
-            }
-
-            const modalTarget = spot.action.modal;
+          if (spot.action.type === 'route') {
             return (
-              <button
+              <Link
                 key={spot.id}
-                type="button"
+                href={spot.action.href}
                 className={commonClass}
                 style={style}
                 onMouseEnter={() => setSelectedHotspotId(spot.id)}
                 onFocus={() => setSelectedHotspotId(spot.id)}
-                onClick={() => openModal(modalTarget)}
               >
-                <span className="pr-hotspot-beacon" aria-hidden="true" />
-                <span className="pr-hotspot-badge">{spot.badge}</span>
-              </button>
+                <span className="lr-spot-dot" aria-hidden="true" />
+                <span className="lr-spot-label">{spot.badge}</span>
+              </Link>
             );
-          })}
-        </div>
+          }
+
+          const modalTarget = spot.action.modal;
+          return (
+            <button
+              key={spot.id}
+              type="button"
+              className={commonClass}
+              style={style}
+              onMouseEnter={() => setSelectedHotspotId(spot.id)}
+              onFocus={() => setSelectedHotspotId(spot.id)}
+              onClick={() => openModal(modalTarget)}
+            >
+              <span className="lr-spot-dot" aria-hidden="true" />
+              <span className="lr-spot-label">{spot.badge}</span>
+            </button>
+          );
+        })}
       </main>
 
       {/* ===============================================================
-           BOTTOM RPG DIALOGUE / ROOM OBJECT INSPECTOR BAR
+           BOTTOM FLOATING RPG DIALOGUE & CAMPAIGN BAR
            =============================================================== */}
-      <footer className="pr-dialogue-dock" aria-label="Seçili Oda Nesnesi Detayı">
-        <div className="pr-dialogue-left">
-          <span className="pr-dialogue-code">{selectedHotspot.code}</span>
-          <div className="pr-dialogue-body">
-            <div className="pr-dialogue-title">
+      <footer className="lr-bottom-hud" aria-label="Seçili Oda Nesnesi ve Hızlı Erişim">
+        <div className="lr-hud-info">
+          <span className="lr-hud-code">{selectedHotspot.code}</span>
+          <div className="lr-hud-text">
+            <div className="lr-hud-title">
               {selectedHotspot.label}
               <span>[{selectedHotspot.badge}]</span>
             </div>
-            <div className="pr-dialogue-desc">
+            <div className="lr-hud-desc">
               {selectedHotspot.description} — {selectedHotspot.spec}
             </div>
           </div>
         </div>
 
-        <div className="pr-dialogue-actions">
-          <Link href="/katalog" className="pr-dock-btn pr-dock-btn--crimson">
-            <span>KATALOG ({formatNumber(catalogStats.total)}+)</span>
-            <span aria-hidden="true">→</span>
+        <div className="lr-hud-actions">
+          <Link href="/katalog" className="lr-action-pill lr-action-pill--crimson">
+            <span>{PIXEL_ROOM_PROMOS.unitPrice}</span>
           </Link>
-          <a
-            href={ITEMSATIS_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="pr-dock-btn"
-          >
-            <span>İTEMSATIŞ</span>
-            <span aria-hidden="true">↗</span>
-          </a>
-          <Link href="/dashboard" className="pr-dock-btn">
-            <span>PORTAL</span>
+          <Link href="/katalog" className="lr-action-pill lr-action-pill--amber">
+            <span>{PIXEL_ROOM_PROMOS.bulkDiscount}</span>
           </Link>
-          <Link href="/status" className="pr-dock-btn">
-            <span>DURUM ({healthLabel})</span>
+          <Link href="/katalog" className="lr-action-pill">
+            <span>KATALOG ({formatNumber(catalogStats.total)}+) →</span>
+          </Link>
+          <Link href="/dashboard" className="lr-action-pill">
+            <span>PORTAL ({healthLabel})</span>
           </Link>
         </div>
       </footer>
