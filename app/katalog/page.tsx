@@ -7,7 +7,13 @@ import ItemsatisLogo from '@/components/ItemsatisLogo';
 import { useI18n } from '@/components/I18nProvider';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { INTERACTIVE_I18N } from '@/lib/interactive-i18n';
-import { getCatalogItemArtwork } from '@/lib/catalog-artwork';
+import {
+  analyzeCatalogItem,
+  normalizeSearchText,
+  scoreSearchMatch,
+  splitTitleHighlight,
+  type CatalogSystemKey,
+} from '@/lib/catalog-intel';
 import {
   FEATURED_BASELINE_CLICKS,
   getItemPopularityScore,
@@ -39,14 +45,75 @@ const CATEGORIES = [
 
 const POPULAR_TAGS = [
   'LB Phone',
-  'Roxwood',
   'Gabz',
+  'Roxwood',
   'Qbox',
   'Soygun',
   'Polis',
-  'GTR',
+  'Banka',
+  'Garaj',
   'EUP',
 ];
+
+function renderSystemIcon(systemKey: CatalogSystemKey) {
+  switch (systemKey) {
+    case 'phone':
+      return (
+        <>
+          <rect x="7" y="2" width="10" height="20" rx="2" />
+          <line x1="11" y1="18" x2="13" y2="18" />
+        </>
+      );
+    case 'vehicle':
+      return (
+        <>
+          <path d="M5 17h14M3 13l2-6h14l2 6v4H3z" />
+          <circle cx="7.5" cy="17" r="1.5" />
+          <circle cx="16.5" cy="17" r="1.5" />
+        </>
+      );
+    case 'police':
+      return <path d="M12 2l7 4v5c0 5-3.5 9.2-7 11-3.5-1.8-7-6-7-11V6l7-4z" />;
+    case 'heist':
+      return (
+        <>
+          <rect x="3" y="4" width="18" height="16" rx="2" />
+          <circle cx="12" cy="12" r="3.5" />
+          <line x1="12" y1="8.5" x2="12" y2="12" />
+        </>
+      );
+    case 'nightlife':
+      return (
+        <>
+          <path d="M12 2l2.4 5.2L20 8l-4 3.8.9 5.5-4.9-2.6-4.9 2.6.9-5.5L4 8l5.6-.8z" />
+        </>
+      );
+    case 'mlo':
+      return (
+        <>
+          <path d="M3 21V9l9-6 9 6v12" />
+          <path d="M9 21v-7h6v7" />
+        </>
+      );
+    case 'clothing':
+      return <path d="M8 3l-5 4 3 3 2-1v12h8V9l2 1 3-3-5-4a4 4 0 0 1-8 0z" />;
+    case 'security':
+      return (
+        <>
+          <polyline points="4 17 10 11 4 5" />
+          <line x1="12" y1="19" x2="20" y2="19" />
+        </>
+      );
+    default:
+      return (
+        <>
+          <polyline points="8 6 3 12 8 18" />
+          <polyline points="16 6 21 12 16 18" />
+          <line x1="14" y1="4" x2="10" y2="20" />
+        </>
+      );
+  }
+}
 
 const DISCORD_INVITE = '/discord';
 const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
@@ -287,11 +354,12 @@ export default function CatalogPage() {
     }, 3000);
   };
 
-  // Pre-index items for lightning-fast search (<2ms over 6400 items)
+  // Pre-index normalized items for fast bilingual & token search across 6400+ packages
   const searchIndex = useMemo(() => {
     return (catalogItems as CatalogItem[]).map((item) => ({
       item,
-      searchKey: `${item.title} ${item.category} ${item.id} ${item.slug}`.toLowerCase(),
+      normalizedTitle: normalizeSearchText(item.title),
+      normalizedKey: normalizeSearchText(`${item.title} ${item.category} ${item.id} ${item.slug}`),
     }));
   }, []);
 
@@ -304,9 +372,10 @@ export default function CatalogPage() {
     return counts;
   }, []);
 
-  // Filter and sort items
+  // Filter, score search relevance, and sort items
   const filteredItems = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const rawNormalized = normalizeSearchText(search);
+    const tokens = rawNormalized ? rawNormalized.split(/\s+/).filter(Boolean) : [];
     let entries = searchIndex;
 
     if (selectedCategory !== 'Tümü') {
@@ -317,8 +386,32 @@ export default function CatalogPage() {
       entries = entries.filter((e) => isFeaturedCatalogItem(e.item.id));
     }
 
-    if (q) {
-      entries = entries.filter((e) => e.searchKey.includes(q));
+    if (tokens.length > 0) {
+      const scored = entries
+        .map((e) => {
+          const pop = getItemPopularityScore(e.item.id, clickCounts);
+          const relevance = scoreSearchMatch(
+            e.normalizedTitle,
+            e.normalizedKey,
+            tokens,
+            rawNormalized,
+            pop,
+            isFeaturedCatalogItem(e.item.id),
+            e.item.source === 'restricted-verified'
+          );
+          return { item: e.item, relevance, pop };
+        })
+        .filter((x) => x.relevance >= 0);
+
+      if (sortMode === 'name-asc') {
+        scored.sort((a, b) => a.item.title.localeCompare(b.item.title, locale));
+      } else if (sortMode === 'name-desc') {
+        scored.sort((a, b) => b.item.title.localeCompare(a.item.title, locale));
+      } else {
+        scored.sort((a, b) => b.relevance - a.relevance || b.pop - a.pop);
+      }
+
+      return scored.map((x) => x.item);
     }
 
     const items = entries.map((e) => e.item);
@@ -353,14 +446,30 @@ export default function CatalogPage() {
       .slice(0, 4);
   }, [clickCounts]);
 
+  const showPopularStrip =
+    viewMode === 'all' && selectedCategory === 'Tümü' && !search.trim() && topPopularStrip.length > 0;
+
+  const stripIds = useMemo(
+    () => new Set(topPopularStrip.map((entry) => entry.item.id)),
+    [topPopularStrip]
+  );
+
+  // Deduplicate top 4 popular showcase items from main grid when both appear together
+  const gridItems = useMemo(() => {
+    if (showPopularStrip && sortMode === 'popular') {
+      return filteredItems.filter((item) => !stripIds.has(item.id));
+    }
+    return filteredItems;
+  }, [filteredItems, showPopularStrip, sortMode, stripIds]);
+
   // Reset pagination when search, category, view or sort changes
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [search, selectedCategory, viewMode, sortMode]);
 
   const displayedItems = useMemo(() => {
-    return filteredItems.slice(0, visibleCount);
-  }, [filteredItems, visibleCount]);
+    return gridItems.slice(0, visibleCount);
+  }, [gridItems, visibleCount]);
 
   const handleLoadMore = () => {
     setVisibleCount((prev) => prev + PAGE_SIZE);
@@ -1075,9 +1184,9 @@ export default function CatalogPage() {
             </div>
 
             {/* =================================================================
-                 MOST CLICKED / FEATURED SPOTLIGHT STRIP
+                 MOST CLICKED / FEATURED SPOTLIGHT STRIP (COMPACT, NO DUPLICATE CARDS BELOW)
                  ================================================================= */}
-            {viewMode === 'all' && selectedCategory === 'Tümü' && !search && topPopularStrip.length > 0 && (
+            {showPopularStrip && (
               <section className="catalog-popular-strip" aria-label={extraT.popularStripTitle}>
                 <div className="cps-header">
                   <div className="cps-title-group">
@@ -1100,7 +1209,7 @@ export default function CatalogPage() {
                 <div className="cps-grid">
                   {topPopularStrip.map(({ item, score }, idx) => {
                     const inCart = cartIds.has(item.id);
-                    const thumbSrc = getCatalogItemArtwork(item);
+                    const intel = analyzeCatalogItem(item, locale);
                     return (
                       <div
                         key={item.id}
@@ -1110,25 +1219,24 @@ export default function CatalogPage() {
                           setPreviewItem(item);
                         }}
                       >
-                        <div className="cps-card-thumb">
-                          <img src={thumbSrc} alt={item.title} className="cps-card-thumb-img" loading="lazy" />
-                          <div className="cps-card-top">
+                        <div className="cps-card-top">
+                          <div className="cps-card-rank-wrap">
                             <span className="cps-rank">#{idx + 1}</span>
-                            <span className="cps-clicks">
-                              ▲ {formatNumber(score)} {extraT.clicksUnit}
-                            </span>
+                            {intel.studio && <span className="cps-studio">{intel.studio}</span>}
                           </div>
+                          <span className="cps-clicks">
+                            ▲ {formatNumber(score)}
+                          </span>
                         </div>
                         <div className="cps-card-title" title={item.title}>
                           {item.title}
                         </div>
                         <div className="cps-card-foot">
-                          <span className="cps-card-cat">
-                            {t.catalog.categoryLabels[item.category] || item.category}
-                          </span>
+                          <span className="cps-card-cat">{intel.roleLabel}</span>
                           <button
                             type="button"
                             className={`cps-quick-add ${inCart ? 'is-added' : ''}`}
+                            aria-label={inCart ? t.catalog.removeFromCartTitle : t.catalog.addToCartTitle}
                             onClick={(e) => {
                               e.stopPropagation();
                               toggleCartItem(item);
@@ -1144,8 +1252,22 @@ export default function CatalogPage() {
               </section>
             )}
 
+            {/* Section Subheader separating Spotlight Strip / Search Context */}
+            {(showPopularStrip || search.trim()) && displayedItems.length > 0 && (
+              <div className="catalog-grid-section-bar">
+                <span className="cgs-title">
+                  {search.trim() ? extraT.gridHeadingResults : extraT.gridHeadingAll}
+                </span>
+                <span className="cgs-hint">
+                  {search.trim()
+                    ? `${formatNumber(filteredItems.length)} · ${extraT.searchRelevanceHint}`
+                    : t.catalog.packageCountLabel(formatNumber(gridItems.length))}
+                </span>
+              </div>
+            )}
+
             {/* =================================================================
-                 PRODUCT GRID
+                 PRODUCT GRID (SPACIOUS 2-COLUMN EDITORIAL CARDS)
                  ================================================================= */}
             <div className="catalog-product-grid">
               {displayedItems.length > 0 ? (
@@ -1154,10 +1276,15 @@ export default function CatalogPage() {
                   const isVerified = item.source === 'restricted-verified';
                   const isFeatured = isFeaturedCatalogItem(item.id);
                   const popScore = getItemPopularityScore(item.id, clickCounts);
-                  const coverSrc = getCatalogItemArtwork(item);
+                  const intel = analyzeCatalogItem(item, locale);
+                  const titleSegments = search.trim() ? splitTitleHighlight(item.title, search) : null;
+                  const categoryDisplay = t.catalog.categoryLabels[item.category] || item.category;
 
                   return (
-                    <article key={item.id} className="catalog-card-v2 spotlight-surface">
+                    <article
+                      key={item.id}
+                      className={`catalog-card-v2 spotlight-surface ${isFeatured ? 'is-featured-card' : ''}`}
+                    >
                       <div
                         className="cc-card-top cc-clickable"
                         onClick={() => {
@@ -1165,46 +1292,73 @@ export default function CatalogPage() {
                           setPreviewItem(item);
                         }}
                       >
-                        {/* Triadic Noir Illustrated Cover */}
-                        <div className="cc-card-visual has-artwork">
-                          <img
-                            src={coverSrc}
-                            alt={item.title}
-                            className="cc-visual-art"
-                            loading="lazy"
-                          />
-                          <div className="cc-visual-scrim" aria-hidden="true" />
-                          <div className="cc-visual-top-row">
-                            <span className="cc-visual-id">{item.id}</span>
-                            {popScore > 0 && (
-                              <span className="cc-visual-clicks">
-                                ▲ {formatNumber(popScore)}
-                              </span>
+                        {/* Optional Real Custom Image (Only rendered if explicitly populated on item) */}
+                        {item.image && (
+                          <div className="cc-custom-media">
+                            <img src={item.image} alt={item.title} className="cc-custom-media-img" loading="lazy" />
+                          </div>
+                        )}
+
+                        {/* Top Identity Row */}
+                        <div className="cc-card-meta-top">
+                          <div className="cc-meta-badges">
+                            <span className="cc-sys-icon" aria-hidden="true">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                {renderSystemIcon(intel.systemKey)}
+                              </svg>
+                            </span>
+                            {intel.studio && <span className="cc-studio-badge">{intel.studio}</span>}
+                            <span className="cc-role-badge">{intel.roleLabel}</span>
+                            {isFeatured && (
+                              <span className="cc-featured-badge">★ {extraT.featuredTag}</span>
                             )}
                           </div>
-                          <div className="cc-visual-bottom-meta">
-                            <div className="cc-visual-badges-line">
-                              {isFeatured && (
-                                <span className="cc-visual-featured">★ {extraT.featuredTag}</span>
-                              )}
-                              {isVerified && !isFeatured && (
-                                <span className="cc-visual-verified">{t.catalog.verifiedItemBadge}</span>
-                              )}
-                            </div>
-                            <span className="cc-visual-cat">{t.catalog.categoryLabels[item.category] || item.category}</span>
+                          <div className="cc-meta-right">
+                            {popScore > 0 && (
+                              <span className="cc-clicks-badge">▲ {formatNumber(popScore)}</span>
+                            )}
+                            <span className="cc-id-code">{item.id}</span>
                           </div>
                         </div>
 
-                        {/* Product Title */}
-                        <h3 className="cc-card-title" title={item.title}>
-                          {item.title}
-                        </h3>
+                        {/* Product Title & Functional Summary */}
+                        <div className="cc-card-body">
+                          <h3 className="cc-card-title" title={item.title}>
+                            {titleSegments
+                              ? titleSegments.map((seg, i) =>
+                                  seg.match ? (
+                                    <mark key={i} className="cc-match">
+                                      {seg.text}
+                                    </mark>
+                                  ) : (
+                                    <React.Fragment key={i}>{seg.text}</React.Fragment>
+                                  )
+                                )
+                              : item.title}
+                          </h3>
+                          <p className="cc-card-summary">{intel.summary}</p>
+                        </div>
+
+                        {/* Spec / Compatibility Row */}
+                        <div className="cc-spec-row">
+                          {intel.frameworks.map((fw) => (
+                            <span key={fw} className="cc-spec-pill is-fw">
+                              {fw}
+                            </span>
+                          ))}
+                          {intel.versionTag && <span className="cc-spec-pill">{intel.versionTag}</span>}
+                          <span className="cc-spec-pill">{categoryDisplay}</span>
+                          {isVerified ? (
+                            <span className="cc-spec-pill is-verified">{t.catalog.verifiedItemBadge}</span>
+                          ) : (
+                            <span className="cc-spec-pill">{extraT.openSourceSpec}</span>
+                          )}
+                        </div>
                       </div>
 
-                      {/* Card Bottom Row: Price & Buttons */}
+                      {/* Clean Quiet Footer Action Row */}
                       <div className="cc-card-bottom">
                         <div className="cc-price-row">
-                          <span className="cc-price-lbl">{t.catalog.priceLabel}</span>
                           <div className="cc-price-val">
                             {isDiscounted ? (
                               <>
@@ -1220,20 +1374,31 @@ export default function CatalogPage() {
                         <div className="cc-btn-actions">
                           <button
                             type="button"
+                            className="cc-btn-inspect"
+                            onClick={() => {
+                              trackItemClick(item);
+                              setPreviewItem(item);
+                            }}
+                          >
+                            {extraT.inspectBtn}
+                          </button>
+
+                          <button
+                            type="button"
                             className={`cc-btn-add ${inCart ? 'is-in-cart' : ''}`}
                             onClick={() => toggleCartItem(item)}
                             title={inCart ? t.catalog.removeFromCartTitle : t.catalog.addToCartTitle}
                           >
                             {inCart ? (
                               <>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                   <polyline points="20 6 9 17 4 12" />
                                 </svg>
                                 <span>{t.catalog.inCartBtn}</span>
                               </>
                             ) : (
                               <>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                                   <line x1="12" y1="5" x2="12" y2="19" />
                                   <line x1="5" y1="12" x2="19" y2="12" />
                                 </svg>
@@ -1281,12 +1446,12 @@ export default function CatalogPage() {
             </div>
 
             {/* Load More Button */}
-            {filteredItems.length > visibleCount && (
+            {gridItems.length > visibleCount && (
               <div className="catalog-loadmore-wrap">
                 <button type="button" className="catalog-loadmore-btn" onClick={handleLoadMore}>
                   <span>{t.catalog.loadMoreBtn(PAGE_SIZE)}</span>
                   <span className="loadmore-counter">
-                    ({formatNumber(visibleCount)} / {formatNumber(filteredItems.length)})
+                    ({formatNumber(Math.min(visibleCount, gridItems.length))} / {formatNumber(gridItems.length)})
                   </span>
                 </button>
               </div>
@@ -1699,115 +1864,137 @@ export default function CatalogPage() {
       {/* =====================================================================
            PACKAGE QUICK-PREVIEW MODAL
            ===================================================================== */}
-      {previewItem && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="preview-modal-title"
-          onClick={() => setPreviewItem(null)}
-          className="guide-modal-overlay"
-        >
+      {previewItem && (() => {
+        const intel = analyzeCatalogItem(previewItem, locale);
+        const isFeat = isFeaturedCatalogItem(previewItem.id);
+        const isVer = previewItem.source === 'restricted-verified';
+        const compatText =
+          intel.frameworks.length > 0 ? intel.frameworks.join(' · ') : extraT.openSourceSpec;
+
+        return (
           <div
-            onClick={(e) => e.stopPropagation()}
-            className="guide-modal-dialog catalog-preview-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="preview-modal-title"
+            onClick={() => setPreviewItem(null)}
+            className="guide-modal-overlay"
           >
-            <button
-              type="button"
-              onClick={() => setPreviewItem(null)}
-              aria-label={t.common.close}
-              className="guide-modal-close"
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="guide-modal-dialog catalog-preview-dialog"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-
-            <div className="cpm-cover-wrap">
-              <img
-                src={getCatalogItemArtwork(previewItem)}
-                alt={previewItem.title}
-                className="cpm-cover-img"
-              />
-            </div>
-
-            <div className="cpm-badge-row">
-              <span className="cpm-kicker">{extraT.previewTitle}</span>
-              {isFeaturedCatalogItem(previewItem.id) && (
-                <span className="cc-visual-featured">★ {extraT.featuredTag}</span>
-              )}
-              {previewItem.source === 'restricted-verified' && (
-                <span className="cc-visual-verified">{t.catalog.verifiedItemBadge}</span>
-              )}
-            </div>
-
-            <h2 id="preview-modal-title" className="cpm-title">
-              {previewItem.title}
-            </h2>
-
-            <dl className="catalog-preview-meta">
-              <div className="cpm-meta-cell">
-                <dt>{extraT.previewId}</dt>
-                <dd>{previewItem.id}</dd>
-              </div>
-              <div className="cpm-meta-cell">
-                <dt>{extraT.previewCat}</dt>
-                <dd>{t.catalog.categoryLabels[previewItem.category] || previewItem.category}</dd>
-              </div>
-              <div className="cpm-meta-cell">
-                <dt>{extraT.previewClicks}</dt>
-                <dd>
-                  ▲ {formatNumber(getItemPopularityScore(previewItem.id, clickCounts))} {extraT.clicksUnit}
-                </dd>
-              </div>
-              <div className="cpm-meta-cell">
-                <dt>{extraT.previewStatus}</dt>
-                <dd>{previewItem.status || 'Active'}</dd>
-              </div>
-            </dl>
-
-            <div className="cpm-actions">
               <button
                 type="button"
-                className={`cc-btn-add ${cartIds.has(previewItem.id) ? 'is-in-cart' : ''}`}
-                onClick={() => toggleCartItem(previewItem)}
+                onClick={() => setPreviewItem(null)}
+                aria-label={t.common.close}
+                className="guide-modal-close"
               >
-                {cartIds.has(previewItem.id) ? `✓ ${t.catalog.inCartBtn}` : `+ ${t.catalog.addToCartBtn}`}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
 
-              <button
-                type="button"
-                className="cpm-copy-btn"
-                onClick={async () => {
-                  let ok = false;
-                  try {
-                    if (navigator?.clipboard?.writeText) {
-                      await navigator.clipboard.writeText(previewItem.title);
-                      ok = true;
+              {previewItem.image && (
+                <div className="cpm-cover-wrap">
+                  <img
+                    src={previewItem.image}
+                    alt={previewItem.title}
+                    className="cpm-cover-img"
+                  />
+                </div>
+              )}
+
+              <div className="cpm-badge-row">
+                <span className="cc-sys-icon" aria-hidden="true">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    {renderSystemIcon(intel.systemKey)}
+                  </svg>
+                </span>
+                <span className="cpm-kicker">{extraT.previewTitle}</span>
+                {intel.studio && <span className="cc-studio-badge">{intel.studio}</span>}
+                {isFeat && <span className="cc-featured-badge">★ {extraT.featuredTag}</span>}
+                {isVer && <span className="cc-spec-pill is-verified">{t.catalog.verifiedItemBadge}</span>}
+              </div>
+
+              <h2 id="preview-modal-title" className="cpm-title">
+                {previewItem.title}
+              </h2>
+
+              <p className="cpm-summary">{intel.summary}</p>
+
+              <dl className="catalog-preview-meta">
+                <div className="cpm-meta-cell">
+                  <dt>{extraT.roleLabel}</dt>
+                  <dd>{intel.roleLabel}</dd>
+                </div>
+                <div className="cpm-meta-cell">
+                  <dt>{extraT.compatLabel}</dt>
+                  <dd>{compatText}</dd>
+                </div>
+                <div className="cpm-meta-cell">
+                  <dt>{extraT.previewCat}</dt>
+                  <dd>{t.catalog.categoryLabels[previewItem.category] || previewItem.category}</dd>
+                </div>
+                <div className="cpm-meta-cell">
+                  <dt>{extraT.previewId}</dt>
+                  <dd>{previewItem.id}</dd>
+                </div>
+                <div className="cpm-meta-cell">
+                  <dt>{extraT.previewClicks}</dt>
+                  <dd>
+                    ▲ {formatNumber(getItemPopularityScore(previewItem.id, clickCounts))} {extraT.clicksUnit}
+                  </dd>
+                </div>
+                <div className="cpm-meta-cell">
+                  <dt>{extraT.previewStatus}</dt>
+                  <dd>{previewItem.status || 'Active'}</dd>
+                </div>
+              </dl>
+
+              <div className="cpm-actions">
+                <button
+                  type="button"
+                  className={`cc-btn-add ${cartIds.has(previewItem.id) ? 'is-in-cart' : ''}`}
+                  onClick={() => toggleCartItem(previewItem)}
+                >
+                  {cartIds.has(previewItem.id) ? `✓ ${t.catalog.inCartBtn}` : `+ ${t.catalog.addToCartBtn}`}
+                </button>
+
+                <button
+                  type="button"
+                  className="cpm-copy-btn"
+                  onClick={async () => {
+                    let ok = false;
+                    try {
+                      if (navigator?.clipboard?.writeText) {
+                        await navigator.clipboard.writeText(previewItem.title);
+                        ok = true;
+                      }
+                    } catch {
+                      ok = false;
                     }
-                  } catch {
-                    ok = false;
-                  }
-                  if (ok) {
-                    setPreviewCopied(true);
-                    window.setTimeout(() => setPreviewCopied(false), 2200);
-                  }
-                }}
-              >
-                {previewCopied ? `✓ ${extraT.quickCopied}` : extraT.quickCopy}
-              </button>
+                    if (ok) {
+                      setPreviewCopied(true);
+                      window.setTimeout(() => setPreviewCopied(false), 2200);
+                    }
+                  }}
+                >
+                  {previewCopied ? `✓ ${extraT.quickCopied}` : extraT.quickCopy}
+                </button>
 
-              <Link
-                href={DISCORD_INVITE}
-                className="cpm-discord-btn"
-                aria-label={t.catalog.askDiscordAria}
-              >
-                {t.common.discord} ↗
-              </Link>
+                <Link
+                  href={DISCORD_INVITE}
+                  className="cpm-discord-btn"
+                  aria-label={t.catalog.askDiscordAria}
+                >
+                  {t.common.discord} ↗
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* =====================================================================
            TOAST NOTIFICATION

@@ -57,6 +57,13 @@ export interface InteractiveLocaleStrings {
     previewCat: string;
     previewClicks: string;
     previewStatus: string;
+    gridHeadingAll: string;
+    gridHeadingResults: string;
+    studioLabel: string;
+    roleLabel: string;
+    compatLabel: string;
+    openSourceSpec: string;
+    searchRelevanceHint: string;
   };
 }
 
@@ -103,7 +110,7 @@ export const INTERACTIVE_I18N: Record<Locale, InteractiveLocaleStrings> = {
       sortPopular: 'En Çok Tıklanan',
       sortFeatured: 'Öne Çıkanlar',
       popularStripTitle: 'EN ÇOK TIKLANANLAR',
-      popularStripSub: 'Topluluğun en sık incelediği paketler',
+      popularStripSub: 'Topluluğun en çok açtığı 4 paket',
       featuredTag: 'ÖNE ÇIKAN',
       clicksUnit: 'tık',
       inspectBtn: 'İncele',
@@ -114,6 +121,13 @@ export const INTERACTIVE_I18N: Record<Locale, InteractiveLocaleStrings> = {
       previewCat: 'Kategori',
       previewClicks: 'Tıklanma',
       previewStatus: 'Durum',
+      gridHeadingAll: 'KATALOG PAKETLERİ',
+      gridHeadingResults: 'ARAMA SONUÇLARI',
+      studioLabel: 'Yapımcı / Marka',
+      roleLabel: 'Sistem Türü',
+      compatLabel: 'Uyumluluk / Özellikler',
+      openSourceSpec: 'Açık Kaynak',
+      searchRelevanceHint: 'Eşleşme sırasına göre',
     },
   },
   en: {
@@ -158,7 +172,7 @@ export const INTERACTIVE_I18N: Record<Locale, InteractiveLocaleStrings> = {
       sortPopular: 'Most Clicked',
       sortFeatured: 'Featured',
       popularStripTitle: 'MOST CLICKED',
-      popularStripSub: 'Top explored packages across the archive',
+      popularStripSub: 'Top 4 viewed packages in archive',
       featuredTag: 'FEATURED',
       clicksUnit: 'clicks',
       inspectBtn: 'Inspect',
@@ -169,6 +183,13 @@ export const INTERACTIVE_I18N: Record<Locale, InteractiveLocaleStrings> = {
       previewCat: 'Category',
       previewClicks: 'Clicks',
       previewStatus: 'Status',
+      gridHeadingAll: 'CATALOG PACKAGES',
+      gridHeadingResults: 'SEARCH RESULTS',
+      studioLabel: 'Studio / Brand',
+      roleLabel: 'System Type',
+      compatLabel: 'Compatibility / Specs',
+      openSourceSpec: 'Open Source',
+      searchRelevanceHint: 'Ranked by relevance',
     },
   },
   ru: {
@@ -213,7 +234,7 @@ export const INTERACTIVE_I18N: Record<Locale, InteractiveLocaleStrings> = {
       sortPopular: 'По кликам',
       sortFeatured: 'Рекомендуемые',
       popularStripTitle: 'САМЫЕ ПОПУЛЯРНЫЕ',
-      popularStripSub: 'Наиболее часто открываемые пакеты',
+      popularStripSub: 'Топ-4 просматриваемых пакета',
       featuredTag: 'ТОП',
       clicksUnit: 'клик.',
       inspectBtn: 'Обзор',
@@ -224,6 +245,13 @@ export const INTERACTIVE_I18N: Record<Locale, InteractiveLocaleStrings> = {
       previewCat: 'Категория',
       previewClicks: 'Клики',
       previewStatus: 'Статус',
+      gridHeadingAll: 'ПАКЕТЫ КАТАЛОГА',
+      gridHeadingResults: 'РЕЗУЛЬТАТЫ ПОИСКА',
+      studioLabel: 'Студия / Бренд',
+      roleLabel: 'Тип пакета',
+      compatLabel: 'Совместимость',
+      openSourceSpec: 'Открытый код',
+      searchRelevanceHint: 'По релевантности',
     },
   },
   fr: {
@@ -268,7 +296,7 @@ export const INTERACTIVE_I18N: Record<Locale, InteractiveLocaleStrings> = {
       sortPopular: 'Les plus cliqués',
       sortFeatured: 'À la une',
       popularStripTitle: 'LES PLUS CLIQUÉS',
-      popularStripSub: 'Packs les plus consultés par la communauté',
+      popularStripSub: 'Top 4 des packs consultés',
       featuredTag: 'À LA UNE',
       clicksUnit: 'clics',
       inspectBtn: 'Aperçu',
@@ -279,6 +307,13 @@ export const INTERACTIVE_I18N: Record<Locale, InteractiveLocaleStrings> = {
       previewCat: 'Catégorie',
       previewClicks: 'Clics',
       previewStatus: 'Statut',
+      gridHeadingAll: 'PACKS DU CATALOGUE',
+      gridHeadingResults: 'RÉSULTATS',
+      studioLabel: 'Studio / Marque',
+      roleLabel: 'Type',
+      compatLabel: 'Compatibilité',
+      openSourceSpec: 'Open Source',
+      searchRelevanceHint: 'Triés par pertinence',
     },
   },
 };
