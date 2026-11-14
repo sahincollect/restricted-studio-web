@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface Snowflake {
   x: number;
@@ -22,9 +23,12 @@ interface Snowflake {
  * 6-point geometric frost hairlines without UI clutter or pointer interference.
  */
 export default function WinterSnow() {
+  const pathname = usePathname();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const isHome = pathname === '/';
 
   useEffect(() => {
+    if (isHome) return;
     if (
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -138,7 +142,11 @@ export default function WinterSnow() {
       window.removeEventListener('resize', syncDimensions);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []);
+  }, [isHome]);
+
+  if (isHome) {
+    return null;
+  }
 
   return (
     <canvas

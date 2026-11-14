@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 const AUDIO_SRC = '/assets/audio/chasing-shadows.mp3';
-const DEFAULT_VOLUME = 0.5; // %50 ses yüksekliği
+const DEFAULT_VOLUME = 0.16; // %16 yumuşak arka plan ses yüksekliği
 
 export default function MinimalAudioPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -67,8 +67,8 @@ export default function MinimalAudioPlayer() {
         aria-label={isPlaying ? 'Müziği Durdur (Chasing Shadows)' : 'Müziği Başlat (Chasing Shadows)'}
         title={
           isPlaying
-            ? 'Durdur · gelowler - Chasing Shadows (%50)'
-            : 'Başlat · gelowler - Chasing Shadows (%50)'
+            ? 'Durdur · gelowler - Chasing Shadows'
+            : 'Başlat · gelowler - Chasing Shadows'
         }
       >
         {isPlaying ? (
