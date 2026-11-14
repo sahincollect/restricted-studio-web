@@ -6,11 +6,7 @@ import catalogStats from '../lib/catalog-stats.json';
 import { useI18n } from '../components/I18nProvider';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import LivingPixelRoomCanvas from '../components/LivingPixelRoomCanvas';
-import {
-  PIXEL_ROOM_HOTSPOTS,
-  PIXEL_ROOM_PROMOS,
-  type PixelRoomHotspot,
-} from '../lib/pixel-room-config';
+import { PIXEL_ROOM_HOTSPOTS } from '../lib/pixel-room-config';
 import '../app/pixel-room.css';
 
 type ModalId = 'about' | 'solutions' | 'engineering' | 'faq' | null;
@@ -25,8 +21,6 @@ export default function PixelNoirRoomHomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [codeTab, setCodeTab] = useState<CodeTabKey>('bridge');
   const [openFaqIdx, setOpenFaqIdx] = useState<number>(0);
-  const [selectedHotspotId, setSelectedHotspotId] = useState<string>('crt-catalog');
-  const [healthLabel, setHealthLabel] = useState<string>('AKTİF');
 
   const codeSnippets: Record<CodeTabKey, { label: string; code: string }> = {
     bridge: {
@@ -142,21 +136,6 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
     };
   }, []);
 
-  useEffect(() => {
-    let active = true;
-    fetch('/api/health')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (!active || !data) return;
-        const ok = data.status === 'ok' || data.status === 'healthy';
-        setHealthLabel(ok ? 'AKTİF' : 'İZLENİYOR');
-      })
-      .catch(() => {});
-    return () => {
-      active = false;
-    };
-  }, []);
-
   const statRows = Object.entries(catalogStats.counts as Record<string, number>).sort(
     (a, b) => b[1] - a[1]
   );
@@ -166,8 +145,8 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
     setActiveModal(id);
   };
 
-  const selectedHotspot: PixelRoomHotspot =
-    PIXEL_ROOM_HOTSPOTS.find((h) => h.id === selectedHotspotId) ?? PIXEL_ROOM_HOTSPOTS[0];
+  const campaignHotspots = PIXEL_ROOM_HOTSPOTS.filter((h) => h.alwaysOpen);
+  const directoryHotspots = PIXEL_ROOM_HOTSPOTS.filter((h) => !h.alwaysOpen);
 
   return (
     <div ref={shellRef} className="living-room-shell">
@@ -368,15 +347,12 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
       </div>
 
       {/* ===============================================================
-           DEPTH-LOCKED PARALLAX BUILDING HOTSPOTS
+           STOREFRONT MARQUEE BANNERS + PIXEL DIRECTORY SIGNBOARD (TABELA)
            =============================================================== */}
-      <main className="living-room-hotspots" aria-label="Pixel Şehir Binaları ve Etkileşim Noktaları">
-        {PIXEL_ROOM_HOTSPOTS.map((spot) => {
-          const isSelected = selectedHotspotId === spot.id;
-          const modeClass = spot.alwaysOpen ? 'lr-spot--always' : 'lr-spot--compact';
-          const commonClass = `lr-spot lr-spot--${spot.tone} lr-spot--layer-${spot.layer} ${modeClass} ${
-            isSelected ? 'is-selected' : ''
-          }`;
+      <main className="living-room-hotspots" aria-label="Mağaza Kampanyaları ve Şehir Tabelası">
+        {/* 2 Primary Storefront Campaign Marquees mounted directly on buildings */}
+        {campaignHotspots.map((spot) => {
+          const commonClass = `lr-spot lr-spot--${spot.tone} lr-spot--layer-${spot.layer} lr-spot--always`;
           const style: React.CSSProperties = {
             left: `${spot.x}%`,
             top: `${spot.y}%`,
@@ -384,15 +360,8 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
 
           if (spot.action.type === 'route') {
             return (
-              <Link
-                key={spot.id}
-                href={spot.action.href}
-                className={commonClass}
-                style={style}
-                onMouseEnter={() => setSelectedHotspotId(spot.id)}
-                onFocus={() => setSelectedHotspotId(spot.id)}
-              >
-                <span className="lr-spot-num">[{spot.shortNum}]</span>
+              <Link key={spot.id} href={spot.action.href} className={commonClass} style={style}>
+                <span className="lr-spot-dot" aria-hidden="true" />
                 <span className="lr-spot-label">{spot.badge}</span>
               </Link>
             );
@@ -405,49 +374,70 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
               type="button"
               className={commonClass}
               style={style}
-              onMouseEnter={() => setSelectedHotspotId(spot.id)}
-              onFocus={() => setSelectedHotspotId(spot.id)}
               onClick={() => openModal(modalTarget)}
             >
-              <span className="lr-spot-num">[{spot.shortNum}]</span>
+              <span className="lr-spot-dot" aria-hidden="true" />
               <span className="lr-spot-label">{spot.badge}</span>
             </button>
           );
         })}
-      </main>
 
-      {/* ===============================================================
-           BOTTOM FLOATING RPG DIALOGUE & CAMPAIGN BAR
-           =============================================================== */}
-      <footer className="lr-bottom-hud" aria-label="Seçili Bina Detayı ve Hızlı Erişim">
-        <div className="lr-hud-info">
-          <span className="lr-hud-code">{selectedHotspot.code}</span>
-          <div className="lr-hud-text">
-            <div className="lr-hud-title">
-              {selectedHotspot.label}
-              <span>[{selectedHotspot.badge}]</span>
+        {/* Pixel Street Directory Signboard (Tabela) — Stacked vertical planks */}
+        <aside className="px-street-signboard" aria-label="Şehir Yönlendirme Tabelası">
+          <div className="px-signboard-chains" aria-hidden="true">
+            <span />
+            <span />
+          </div>
+
+          <div className="px-signboard-frame">
+            <div className="px-signboard-header">
+              <span className="px-signboard-bolt" aria-hidden="true" />
+              <span className="px-signboard-title">SEKTÖR TABELASI</span>
+              <span className="px-signboard-bolt" aria-hidden="true" />
             </div>
-            <div className="lr-hud-desc">
-              {selectedHotspot.description} — {selectedHotspot.spec}
+
+            <div className="px-signboard-list">
+              {directoryHotspots.map((spot) => {
+                const isActive =
+                  spot.action.type === 'modal' && activeModal === spot.action.modal;
+                const itemClass = `px-signboard-plank px-signboard-plank--${spot.tone} ${
+                  isActive ? 'is-active' : ''
+                }`;
+
+                if (spot.action.type === 'route') {
+                  return (
+                    <Link key={spot.id} href={spot.action.href} className={itemClass}>
+                      <span className="px-plank-led" aria-hidden="true" />
+                      <span className="px-plank-text">{spot.badge}</span>
+                      <span className="px-plank-arrow" aria-hidden="true">
+                        →
+                      </span>
+                    </Link>
+                  );
+                }
+
+                const modalTarget = spot.action.modal;
+                return (
+                  <button
+                    key={spot.id}
+                    type="button"
+                    className={itemClass}
+                    onClick={() => openModal(modalTarget)}
+                  >
+                    <span className="px-plank-led" aria-hidden="true" />
+                    <span className="px-plank-text">{spot.badge}</span>
+                    <span className="px-plank-arrow" aria-hidden="true">
+                      ↗
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
-        </div>
 
-        <div className="lr-hud-actions">
-          <Link href="/katalog" className="lr-action-pill lr-action-pill--crimson">
-            <span>{PIXEL_ROOM_PROMOS.unitPrice}</span>
-          </Link>
-          <Link href="/katalog" className="lr-action-pill lr-action-pill--amber">
-            <span>{PIXEL_ROOM_PROMOS.bulkDiscount}</span>
-          </Link>
-          <Link href="/katalog" className="lr-action-pill">
-            <span>KATALOG ({formatNumber(catalogStats.total)}+) →</span>
-          </Link>
-          <Link href="/dashboard" className="lr-action-pill">
-            <span>PORTAL ({healthLabel})</span>
-          </Link>
-        </div>
-      </footer>
+          <div className="px-signboard-post" aria-hidden="true" />
+        </aside>
+      </main>
 
       {/* ===============================================================
            IN-VIEWPORT NOIR MODALS

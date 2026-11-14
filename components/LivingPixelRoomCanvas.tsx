@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import Link from 'next/link';
 
 interface RainStreak {
   x: number;
@@ -80,16 +79,6 @@ export default function LivingPixelRoomCanvas() {
 
         {/* 3. Patrolling Crimson Cyber-Guard on the right sidewalk */}
         <div className="px-actor px-actor-cyber-guard" />
-
-        {/* 4. RESTRICTED STUDIO CRIMSON MASCOT (Animated 5-frame pixel beast + nameplate) */}
-        <Link
-          href="/katalog"
-          className="px-actor px-actor-crimson-mascot"
-          aria-label="Restricted Studio Kırmızı Maskot - Kataloğu Aç"
-        >
-          <span className="px-mascot-tag">RS // MASKOT</span>
-          <span className="px-mascot-sprite" />
-        </Link>
       </div>
 
       {/* Layer 4: Atmospheric Nocturnal Rain & Vignette */}
