@@ -56,7 +56,7 @@ export default function PixelCoreMonitor(): React.JSX.Element {
             {t.home.telemetry.statusVersion}
           </span>
           <Link href="/status" className="px-status-top-link">
-            {t.home.telemetry.statusLink} →
+            {t.home.telemetry.statusLink}
           </Link>
         </div>
       </div>
@@ -171,28 +171,19 @@ export default function PixelCoreMonitor(): React.JSX.Element {
               fill="none"
               stroke="#F0F0F0"
               strokeWidth="2.5"
-              shapeRendering="crispEdges"
-            />
-
-            <rect
-              x={coreMetrics.apexX - 6}
-              y={coreMetrics.apexY - 6}
-              width="12"
-              height="12"
-              className="px-apex-halo"
-              shapeRendering="crispEdges"
-            />
-            <rect
-              x={coreMetrics.apexX - 3}
-              y={coreMetrics.apexY - 3}
-              width="6"
-              height="6"
-              fill="#A50000"
-              stroke="#F0F0F0"
-              strokeWidth="2"
+              vectorEffect="non-scaling-stroke"
               shapeRendering="crispEdges"
             />
           </svg>
+
+          <span
+            className="px-apex-dot"
+            style={{
+              left: `${(coreMetrics.apexX / 480) * 100}%`,
+              top: `${(coreMetrics.apexY / 140) * 100}%`,
+            }}
+            aria-hidden="true"
+          />
 
           <span className="px-axis-tag is-top">0.18 ms</span>
           <span className="px-axis-tag is-bottom">0.00 ms</span>
@@ -251,10 +242,10 @@ export default function PixelCoreMonitor(): React.JSX.Element {
 
           <div className="px-sla-actions">
             <Link href="/katalog" className="px-btn px-btn-crimson px-btn-compact">
-              {ui.openCatalogCta} →
+              {ui.openCatalogCta}
             </Link>
             <Link href="/status" className="px-btn px-btn-ghost px-btn-compact">
-              {t.home.telemetry.statusLink} →
+              {t.home.telemetry.statusLink}
             </Link>
           </div>
         </div>

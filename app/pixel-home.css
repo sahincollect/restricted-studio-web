@@ -135,10 +135,10 @@
 }
 
 .px-brand-title {
-  font-family: var(--font-pixel);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   line-height: 1;
   color: var(--px-snow);
   white-space: nowrap;
@@ -243,13 +243,13 @@
   flex-shrink: 0;
 }
 
-.pixel-noir-shell .px-lang-desktop .lang-switcher {
+.pixel-noir-shell .px-lang-desktop.rs-lang-switcher {
   border-radius: 0;
   border: 1px solid rgba(240, 240, 240, 0.28);
   background: #0a0a0c;
 }
 
-.pixel-noir-shell .px-lang-desktop .lang-switcher-btn {
+.pixel-noir-shell .px-lang-desktop .rs-lang-btn {
   border-radius: 0;
   font-family: var(--font-mono);
 }
@@ -899,10 +899,10 @@
 }
 
 .px-telemetry-brand-text strong {
-  font-family: var(--font-pixel);
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   line-height: 1;
   color: var(--px-snow);
 }
@@ -1105,10 +1105,10 @@
 
 .px-chart-head strong {
   display: block;
-  font-family: var(--font-pixel);
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--px-snow);
 }
@@ -1147,15 +1147,22 @@
 @keyframes pxApexPulse {
   0%,
   100% {
-    fill: rgba(255, 184, 77, 0.26);
+    box-shadow: 0 0 0 3px rgba(255, 184, 77, 0.35), 2px 2px 0 #000000;
   }
   50% {
-    fill: rgba(165, 0, 0, 0.52);
+    box-shadow: 0 0 0 5px rgba(165, 0, 0, 0.55), 2px 2px 0 #000000;
   }
 }
 
-.px-apex-halo {
+.px-apex-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  transform: translate(-50%, -50%);
+  background: var(--px-crimson);
+  border: 2px solid var(--px-snow);
   animation: pxApexPulse 1.4s steps(2) infinite;
+  pointer-events: none;
 }
 
 .px-axis-tag {
@@ -1229,10 +1236,10 @@
 }
 
 .px-box-head strong {
-  font-family: var(--font-pixel);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--px-snow);
 }
@@ -1433,8 +1440,10 @@
 
 .px-info-box h4 {
   margin: 0 0 6px;
-  font-family: var(--font-pixel);
-  font-size: 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
   color: var(--px-snow);
 }
 
@@ -1656,21 +1665,35 @@
   }
 
   .px-nav {
-    padding: 0 10px;
-    gap: 8px;
+    padding: 0 8px;
+    gap: 6px;
+  }
+
+  .px-brand {
+    gap: 6px;
   }
 
   .px-logo-frame {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
   }
 
   .px-brand-title {
-    font-size: 12.5px;
+    font-size: 10px;
+    letter-spacing: 0.03em;
+  }
+
+  .px-holiday-pine {
+    width: 10px;
+    height: 10px;
   }
 
   .px-trust-mobile {
     display: flex;
+    font-size: 7.5px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    gap: 3px;
   }
 
   .px-nav-divider,
@@ -1683,16 +1706,16 @@
   }
 
   .px-portal-btn {
-    height: 28px;
-    padding: 0 8px;
-    font-size: 9.5px;
-    gap: 5px;
+    height: 26px;
+    padding: 0 7px;
+    font-size: 8.5px;
+    gap: 4px;
   }
 
   .px-mobile-toggle {
     display: flex;
-    height: 28px;
-    width: 30px;
+    height: 26px;
+    width: 28px;
   }
 
   .px-grid {
@@ -1836,23 +1859,38 @@
     padding-bottom: 6px;
   }
 
+  .px-telemetry-brand {
+    gap: 6px;
+  }
+
+  .px-core-emblem {
+    width: 16px;
+    height: 16px;
+  }
+
   .px-telemetry-brand-text strong {
-    font-size: 13px;
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
   }
 
   .px-telemetry-brand-text span {
     display: none;
   }
 
+  .px-telemetry-badges {
+    gap: 5px;
+  }
+
   .px-status-badge {
-    padding: 3px 6px;
-    font-size: 8.5px;
+    padding: 3px 5px;
+    font-size: 8px;
   }
 
   .px-status-top-link {
     display: inline-flex;
-    font-size: 8.5px;
-    padding: 3px 6px;
+    font-size: 8px;
+    padding: 3px 5px;
   }
 
   .px-engine-strip {
@@ -1910,7 +1948,7 @@
   }
 
   .px-chart-head strong {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .px-chart-head span {
@@ -1968,7 +2006,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .px-apex-halo {
+  .px-apex-dot {
     animation: none;
   }
 }
