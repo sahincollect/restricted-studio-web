@@ -4298,7 +4298,7 @@ textarea {
 }
 
 /* ============================================================================
-   CORPORATE SYSTEM STATUS PAGE (/status & status.restrictedstudio.shop)
+   MINIMALIST TRIADIC NOIR STATUS PAGE (/status & status.restrictedstudio.shop)
    ============================================================================ */
 .status-page-shell {
   min-height: 100vh;
@@ -4307,14 +4307,24 @@ textarea {
   position: relative;
 }
 
+.status-grid-veil {
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(240, 240, 240, 0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.45;
+}
+
 .status-container {
-  max-width: 780px;
+  max-width: 820px;
   margin: 0 auto;
-  padding: 22px 20px 56px;
+  padding: 28px 20px 64px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
 }
 
 .status-topbar {
@@ -4322,12 +4332,11 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding: 8px 10px 8px 16px;
-  background: rgba(14, 14, 14, 0.88);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(240, 240, 240, 0.14);
-  border-radius: 999px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.48);
+  padding: 10px 14px;
+  background: rgba(8, 8, 8, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(240, 240, 240, 0.24);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
 }
 
 .status-brand-wrap {
@@ -4340,194 +4349,291 @@ textarea {
 .status-brand-link {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   text-decoration: none;
   font-family: var(--font-display);
   font-size: 16px;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   white-space: nowrap;
 }
 
 .status-brand-logo {
   width: 24px;
   height: 24px;
-  border-radius: 6px;
   object-fit: cover;
-  border: 1px solid rgba(240, 240, 240, 0.28);
+  border: 1px solid rgba(240, 240, 240, 0.36);
 }
 
 .status-pill-tag {
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   padding: 3px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(240, 240, 240, 0.16);
-  color: rgba(240, 240, 240, 0.68);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(165, 0, 0, 0.65);
+  color: #f0f0f0;
+  background: rgba(165, 0, 0, 0.16);
 }
 
 .status-nav-links {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex-shrink: 0;
-}
-
-.status-topbar .rs-lang-switcher {
-  border-radius: 999px;
-  border-width: 1px;
-  border-color: rgba(240, 240, 240, 0.16);
-  background: rgba(255, 255, 255, 0.03);
-  padding: 2px 3px;
-}
-
-.status-topbar .rs-lang-btn {
-  border-radius: 999px;
 }
 
 .status-nav-btn {
   padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: rgba(240, 240, 240, 0.78);
   border: 1px solid transparent;
   background: transparent;
   text-decoration: none;
   white-space: nowrap;
-  transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .status-nav-btn:hover {
   color: #f0f0f0;
-  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(240, 240, 240, 0.24);
+  background: rgba(240, 240, 240, 0.05);
 }
 
 .status-nav-primary {
   background: #a50000;
-  border-color: rgba(240, 240, 240, 0.22);
+  border-color: rgba(240, 240, 240, 0.32);
   color: #f0f0f0;
-  font-weight: 700;
-  padding: 6px 14px;
+  padding: 6px 13px;
 }
 
 .status-nav-primary:hover {
-  background: #bd0a0a;
-  border-color: rgba(240, 240, 240, 0.36);
+  background: #bf0d0d;
+  border-color: #f0f0f0;
 }
 
 .status-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
-.status-hero-card {
+/* Primary Architectural Monolith */
+.status-monolith {
   position: relative;
+  background: rgba(10, 10, 10, 0.94);
+  border: 1.5px solid rgba(240, 240, 240, 0.26);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.72);
+  overflow: hidden;
+}
+
+.status-monolith::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #a50000 0%, #22c55e 38%, rgba(240, 240, 240, 0.35) 100%);
+}
+
+.status-monolith[data-state='degraded']::before {
+  background: linear-gradient(90deg, #a50000 0%, #eab308 55%, rgba(240, 240, 240, 0.3) 100%);
+}
+
+.status-monolith[data-state='outage']::before {
+  background: linear-gradient(90deg, #ef4444 0%, #a50000 65%, rgba(240, 240, 240, 0.25) 100%);
+}
+
+.status-monolith[data-state='loading']::before {
+  background: rgba(240, 240, 240, 0.28);
+}
+
+.status-monolith-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 26px 26px;
-  border-radius: 18px;
-  background: rgba(14, 14, 14, 0.92);
-  border: 1px solid rgba(240, 240, 240, 0.12);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.52);
-  overflow: hidden;
+  padding: 26px 26px 24px;
+  border-bottom: 1px solid rgba(240, 240, 240, 0.14);
 }
 
-.status-hero-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.55;
-  background: radial-gradient(circle at 0% 50%, rgba(34, 197, 94, 0.14) 0%, transparent 55%);
-}
-
-.status-hero-card[data-state='degraded']::before {
-  background: radial-gradient(circle at 0% 50%, rgba(234, 179, 8, 0.16) 0%, transparent 55%);
-}
-
-.status-hero-card[data-state='outage']::before {
-  background: radial-gradient(circle at 0% 50%, rgba(239, 68, 68, 0.18) 0%, transparent 55%);
-}
-
-.status-hero-card[data-state='loading']::before {
-  background: radial-gradient(circle at 0% 50%, rgba(240, 240, 240, 0.06) 0%, transparent 55%);
-}
-
-.status-hero-left {
-  position: relative;
-  z-index: 1;
+.status-indicator-cluster {
+  display: flex;
+  align-items: center;
+  gap: 20px;
   min-width: 0;
 }
 
-.status-hero-indicator {
+@keyframes statusBeaconPulse {
+  0% {
+    transform: scale(0.86);
+    opacity: 0.72;
+  }
+  70% {
+    transform: scale(1.26);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.26);
+    opacity: 0;
+  }
+}
+
+.status-beacon-assembly {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  border: 1px solid rgba(240, 240, 240, 0.28);
+  background: rgba(240, 240, 240, 0.02);
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 6px;
+  justify-content: center;
 }
 
-@keyframes statusPulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45);
-  }
-  65% {
-    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
-  }
+.status-beacon-ring {
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(34, 197, 94, 0.55);
+  animation: statusBeaconPulse 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 
-.status-pulse-dot {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  flex-shrink: 0;
+.status-beacon-assembly[data-state='degraded'] .status-beacon-ring {
+  border-color: rgba(234, 179, 8, 0.65);
+  animation: none;
+}
+
+.status-beacon-assembly[data-state='outage'] .status-beacon-ring {
+  border-color: rgba(239, 68, 68, 0.75);
+  animation: statusBeaconPulse 1.4s ease-out infinite;
+}
+
+.status-beacon-assembly[data-state='loading'] .status-beacon-ring {
+  border-color: rgba(240, 240, 240, 0.25);
+  animation: none;
+}
+
+.status-beacon-cross {
+  position: absolute;
+  background: rgba(240, 240, 240, 0.16);
+}
+
+.status-beacon-cross-h {
+  left: 4px;
+  right: 4px;
+  height: 1px;
+}
+
+.status-beacon-cross-v {
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+}
+
+.status-beacon-core {
+  width: 10px;
+  height: 10px;
   background: #22c55e;
-  animation: statusPulse 2.4s ease-out infinite;
+  box-shadow: 0 0 14px rgba(34, 197, 94, 0.75);
+  transform: rotate(45deg);
+  position: relative;
+  z-index: 1;
 }
 
-.status-pulse-dot[data-state='degraded'] {
+.status-beacon-assembly[data-state='degraded'] .status-beacon-core {
   background: #eab308;
-  animation: none;
-  box-shadow: 0 0 12px rgba(234, 179, 8, 0.55);
+  box-shadow: 0 0 14px rgba(234, 179, 8, 0.7);
 }
 
-.status-pulse-dot[data-state='outage'] {
+.status-beacon-assembly[data-state='outage'] .status-beacon-core {
   background: #ef4444;
-  animation: none;
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.65);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.8);
 }
 
-.status-pulse-dot[data-state='loading'] {
+.status-beacon-assembly[data-state='loading'] .status-beacon-core {
   background: #71717a;
-  animation: none;
+  box-shadow: none;
+}
+
+.status-headline-block {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.status-eyebrow-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.status-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 9px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 1px solid rgba(34, 197, 94, 0.45);
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+}
+
+.status-live-badge[data-state='degraded'] {
+  border-color: rgba(234, 179, 8, 0.45);
+  background: rgba(234, 179, 8, 0.12);
+  color: #facc15;
+}
+
+.status-live-badge[data-state='outage'] {
+  border-color: rgba(239, 68, 68, 0.55);
+  background: rgba(165, 0, 0, 0.25);
+  color: #fca5a5;
+}
+
+.status-live-badge[data-state='loading'] {
+  border-color: rgba(240, 240, 240, 0.22);
+  background: rgba(240, 240, 240, 0.05);
+  color: rgba(240, 240, 240, 0.72);
+}
+
+.status-live-dot {
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+}
+
+.status-ping-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: rgba(240, 240, 240, 0.54);
+  border: 1px solid rgba(240, 240, 240, 0.16);
+  padding: 3px 8px;
 }
 
 .status-hero-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(22px, 3vw, 28px);
+  font-size: clamp(24px, 3.4vw, 34px);
   font-weight: 800;
-  letter-spacing: 0.03em;
-  line-height: 1.1;
+  letter-spacing: 0.05em;
+  line-height: 1.02;
   color: #f0f0f0;
   text-transform: uppercase;
-}
-
-.status-hero-sub {
-  margin: 0;
-  padding-left: 23px;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  color: rgba(240, 240, 240, 0.56);
 }
 
 @keyframes statusSpin {
@@ -4541,47 +4647,248 @@ textarea {
 }
 
 .status-refresh-btn {
-  position: relative;
-  z-index: 1;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 9px 15px;
-  border-radius: 999px;
-  background: rgba(240, 240, 240, 0.06);
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  background: transparent;
   color: #f0f0f0;
-  border: 1px solid rgba(240, 240, 240, 0.16);
-  font-size: 12px;
-  font-weight: 600;
+  border: 1px solid rgba(240, 240, 240, 0.28);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.16s ease, border-color 0.16s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .status-refresh-btn:hover:not(:disabled) {
-  background: rgba(240, 240, 240, 0.12);
-  border-color: rgba(240, 240, 240, 0.3);
+  background: #a50000;
+  border-color: #f0f0f0;
 }
 
 .status-refresh-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: wait;
 }
 
+/* Uptime Duration & Availability Showcase */
+.status-uptime-showcase {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  border-bottom: 1px solid rgba(240, 240, 240, 0.14);
+}
+
+.status-uptime-duration-col {
+  padding: 20px 26px;
+  border-right: 1px solid rgba(240, 240, 240, 0.14);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.status-uptime-ratio-col {
+  padding: 20px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.status-meta-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.54);
+}
+
+.status-duration-grid {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.status-duration-unit {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 6px 10px;
+  background: rgba(240, 240, 240, 0.03);
+  border: 1px solid rgba(240, 240, 240, 0.14);
+}
+
+.status-duration-unit strong {
+  font-family: var(--font-mono);
+  font-size: clamp(20px, 2.4vw, 24px);
+  font-weight: 800;
+  line-height: 1;
+  color: #f0f0f0;
+  font-variant-numeric: tabular-nums;
+}
+
+.status-duration-unit span {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #e04646;
+}
+
+.status-duration-sep {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(240, 240, 240, 0.3);
+  padding-bottom: 6px;
+}
+
+.status-ratio-primary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.status-ratio-big {
+  font-family: var(--font-mono);
+  font-size: clamp(22px, 2.6vw, 28px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #4ade80;
+  font-variant-numeric: tabular-nums;
+}
+
+.status-ratio-pills {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.status-ratio-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+  background: rgba(240, 240, 240, 0.025);
+  border: 1px solid rgba(240, 240, 240, 0.1);
+}
+
+.status-ratio-mini span {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.48);
+}
+
+.status-ratio-mini strong {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #f0f0f0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 60-Segment Architectural Uptime Bar */
+.status-uptime-track {
+  padding: 18px 26px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.status-uptime-bars {
+  display: flex;
+  align-items: stretch;
+  gap: 3px;
+  height: 24px;
+}
+
+.status-uptime-bar {
+  flex: 1;
+  background: rgba(34, 197, 94, 0.72);
+  border-top: 2px solid #4ade80;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.status-uptime-bar:hover {
+  transform: scaleY(1.16);
+  background: #4ade80;
+}
+
+.status-uptime-bar[data-state='degraded'] {
+  background: rgba(234, 179, 8, 0.78);
+  border-top-color: #facc15;
+}
+
+.status-uptime-bar[data-state='outage'] {
+  background: rgba(165, 0, 0, 0.85);
+  border-top-color: #f87171;
+}
+
+.status-uptime-bar[data-state='loading'] {
+  background: rgba(240, 240, 240, 0.12);
+  border-top-color: rgba(240, 240, 240, 0.25);
+}
+
+.status-uptime-axis {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.46);
+}
+
+.status-axis-center {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(240, 240, 240, 0.76);
+}
+
+.status-axis-dot {
+  width: 6px;
+  height: 6px;
+  background: #22c55e;
+}
+
+.status-axis-dot[data-state='degraded'] {
+  background: #eab308;
+}
+
+.status-axis-dot[data-state='outage'] {
+  background: #ef4444;
+}
+
+.status-axis-dot[data-state='loading'] {
+  background: #71717a;
+}
+
+/* Minimalist Service Matrix */
 .status-panel {
-  background: rgba(14, 14, 14, 0.86);
-  border: 1px solid rgba(240, 240, 240, 0.11);
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.36);
+  background: rgba(10, 10, 10, 0.92);
+  border: 1.5px solid rgba(240, 240, 240, 0.2);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.48);
 }
 
 .status-panel-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 22px;
-  border-bottom: 1px solid rgba(240, 240, 240, 0.08);
+  padding: 13px 22px;
+  border-bottom: 1px solid rgba(240, 240, 240, 0.12);
+  background: rgba(240, 240, 240, 0.02);
 }
 
 .status-panel-head h2 {
@@ -4589,16 +4896,17 @@ textarea {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(240, 240, 240, 0.6);
+  color: rgba(240, 240, 240, 0.72);
 }
 
 .status-count-pill {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
-  color: rgba(240, 240, 240, 0.56);
+  letter-spacing: 0.08em;
+  color: rgba(240, 240, 240, 0.65);
 }
 
 .status-list {
@@ -4611,16 +4919,16 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px 22px;
+  padding: 15px 22px;
   transition: background 0.15s ease;
 }
 
 .status-row + .status-row {
-  border-top: 1px solid rgba(240, 240, 240, 0.07);
+  border-top: 1px solid rgba(240, 240, 240, 0.09);
 }
 
 .status-row:hover {
-  background: rgba(255, 255, 255, 0.022);
+  background: rgba(240, 240, 240, 0.028);
 }
 
 .status-row-left {
@@ -4630,10 +4938,16 @@ textarea {
   min-width: 0;
 }
 
+.status-row-index {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(240, 240, 240, 0.34);
+}
+
 .status-dot-sm {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: 7px;
+  height: 7px;
   flex-shrink: 0;
   background: #22c55e;
 }
@@ -4651,68 +4965,75 @@ textarea {
 }
 
 .status-service-name {
-  font-size: 14.5px;
+  font-size: 14px;
   font-weight: 600;
   color: #f0f0f0;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.015em;
+}
+
+.status-row-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.status-metric-cell {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(240, 240, 240, 0.56);
+  font-variant-numeric: tabular-nums;
+}
+
+.status-latency-cell {
+  min-width: 54px;
+  text-align: right;
+  color: rgba(240, 240, 240, 0.78);
 }
 
 .status-state-pill {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 4px 11px;
-  border-radius: 999px;
-  border: 1px solid rgba(34, 197, 94, 0.34);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid rgba(34, 197, 94, 0.38);
   background: rgba(34, 197, 94, 0.1);
   color: #4ade80;
   white-space: nowrap;
 }
 
 .status-state-pill[data-state='degraded'] {
-  border-color: rgba(234, 179, 8, 0.36);
+  border-color: rgba(234, 179, 8, 0.42);
   background: rgba(234, 179, 8, 0.12);
   color: #facc15;
 }
 
 .status-state-pill[data-state='outage'] {
-  border-color: rgba(239, 68, 68, 0.42);
-  background: rgba(239, 68, 68, 0.14);
-  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.48);
+  background: rgba(165, 0, 0, 0.2);
+  color: #fca5a5;
 }
 
 .status-skeleton-pill {
-  width: 78px;
+  width: 82px;
   height: 22px;
-  border-radius: 999px;
-  background: rgba(240, 240, 240, 0.07);
-}
-
-.status-calm-note {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 13px 18px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(240, 240, 240, 0.08);
-  font-size: 13px;
-  color: rgba(240, 240, 240, 0.68);
+  background: rgba(240, 240, 240, 0.08);
 }
 
 .status-incident-alert {
-  padding: 16px 20px;
-  border-radius: 16px;
-  background: rgba(165, 0, 0, 0.09);
-  border: 1px solid rgba(239, 68, 68, 0.34);
+  padding: 16px 22px;
+  background: rgba(165, 0, 0, 0.12);
+  border: 1.5px solid rgba(239, 68, 68, 0.48);
 }
 
 .status-incident-head {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #fca5a5;
   margin-bottom: 10px;
@@ -4744,9 +5065,8 @@ textarea {
 
 .status-monitor-card {
   padding: 14px 16px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(240, 240, 240, 0.09);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(240, 240, 240, 0.12);
 }
 
 .status-monitor-head {
@@ -4793,8 +5113,20 @@ textarea {
   gap: 12px;
   font-family: var(--font-mono);
   font-size: 11px;
-  color: rgba(240, 240, 240, 0.46);
-  padding-top: 8px;
+  color: rgba(240, 240, 240, 0.52);
+  padding-top: 12px;
+  border-top: 1px solid rgba(240, 240, 240, 0.12);
+}
+
+.status-footer-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.status-footer-sep {
+  color: #a50000;
 }
 
 .status-footer-links {
@@ -4803,8 +5135,10 @@ textarea {
 }
 
 .status-footer-links a {
-  color: rgba(240, 240, 240, 0.65);
+  color: rgba(240, 240, 240, 0.7);
   text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   transition: color 0.15s ease;
 }
 
@@ -4812,13 +5146,22 @@ textarea {
   color: #f0f0f0;
 }
 
+@media (max-width: 820px) {
+  .status-uptime-showcase {
+    grid-template-columns: 1fr;
+  }
+  .status-uptime-duration-col {
+    border-right: none;
+    border-bottom: 1px solid rgba(240, 240, 240, 0.14);
+  }
+}
+
 @media (max-width: 680px) {
   .status-container {
-    padding: 14px 14px 40px;
-    gap: 20px;
+    padding: 14px 14px 44px;
+    gap: 18px;
   }
   .status-topbar {
-    border-radius: 18px;
     padding: 12px 14px;
     flex-direction: column;
     align-items: stretch;
@@ -4829,16 +5172,41 @@ textarea {
   .status-nav-hide-sm {
     display: none;
   }
-  .status-hero-card {
+  .status-monolith-head {
     flex-direction: column;
     align-items: flex-start;
-    padding: 20px;
+    padding: 20px 18px;
   }
-  .status-hero-sub {
-    padding-left: 0;
+  .status-indicator-cluster {
+    gap: 14px;
+  }
+  .status-beacon-assembly {
+    width: 42px;
+    height: 42px;
+  }
+  .status-uptime-duration-col,
+  .status-uptime-ratio-col,
+  .status-uptime-track {
+    padding: 16px 18px;
+  }
+  .status-duration-sep {
+    display: none;
+  }
+  .status-duration-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+    gap: 6px;
+  }
+  .status-duration-unit {
+    justify-content: center;
+    padding: 8px 4px;
   }
   .status-row {
     padding: 14px 18px;
+  }
+  .status-latency-cell {
+    display: none;
   }
   .status-footer {
     flex-direction: column;

@@ -259,6 +259,9 @@ export interface TranslationDictionary {
   statusPage: {
     pillTag: string;
     navAria: string;
+    activeTag: string;
+    degradedTag: string;
+    outageTag: string;
     states: {
       operational: { label: string; headline: string };
       degraded: { label: string; headline: string };
@@ -272,6 +275,16 @@ export interface TranslationDictionary {
     verifyingLive: string;
     checkingBtn: string;
     checkNowBtn: string;
+    uptimeDurationLabel: string;
+    uptimeRatioLabel: string;
+    latencyLabel: string;
+    daysUnit: string;
+    hoursUnit: string;
+    minutesUnit: string;
+    secondsUnit: string;
+    timelineStart: string;
+    timelineToday: string;
+    continuousActiveLabel: string;
     servicesTitle: string;
     serviceNames: Record<'web' | 'auth' | 'database' | 'catalog', string>;
     historicalTitle: string;
@@ -781,6 +794,9 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
     statusPage: {
       pillTag: 'DURUM',
       navAria: 'Hızlı Geçiş',
+      activeTag: 'AKTİF',
+      degradedTag: 'KISMİ KESİNTİ',
+      outageTag: 'KESİNTİ',
       states: {
         operational: { label: 'Çalışıyor', headline: 'Tüm Sistemler Çalışıyor' },
         degraded: { label: 'Kısmi Sorun', headline: 'Bazı Servislerde Yavaşlama' },
@@ -794,6 +810,16 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       verifyingLive: 'Servisler doğrulanıyor...',
       checkingBtn: 'Yenileniyor',
       checkNowBtn: 'Yenile',
+      uptimeDurationLabel: 'KESİNTİSİZ ÇALIŞMA SÜRESİ',
+      uptimeRatioLabel: '90 GÜNLÜK UPTIME',
+      latencyLabel: 'GECİKME',
+      daysUnit: 'GÜN',
+      hoursUnit: 'SA',
+      minutesUnit: 'DK',
+      secondsUnit: 'SN',
+      timelineStart: '90 GÜN ÖNCE',
+      timelineToday: 'BUGÜN',
+      continuousActiveLabel: 'KESİNTİSİZ AKTİF',
       servicesTitle: 'Servisler',
       serviceNames: {
         web: 'Web & Müşteri Portalı',
@@ -1323,6 +1349,9 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
     statusPage: {
       pillTag: 'STATUS',
       navAria: 'Quick Navigation',
+      activeTag: 'ACTIVE',
+      degradedTag: 'DEGRADED',
+      outageTag: 'OUTAGE',
       states: {
         operational: { label: 'Operational', headline: 'All Systems Operational' },
         degraded: { label: 'Degraded', headline: 'Partial Service Degradation' },
@@ -1336,6 +1365,16 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       verifyingLive: 'Verifying services...',
       checkingBtn: 'Refreshing',
       checkNowBtn: 'Refresh',
+      uptimeDurationLabel: 'CONTINUOUS UPTIME',
+      uptimeRatioLabel: '90-DAY UPTIME',
+      latencyLabel: 'LATENCY',
+      daysUnit: 'D',
+      hoursUnit: 'H',
+      minutesUnit: 'M',
+      secondsUnit: 'S',
+      timelineStart: '90 DAYS AGO',
+      timelineToday: 'TODAY',
+      continuousActiveLabel: 'CONTINUOUSLY OPERATIONAL',
       servicesTitle: 'Services',
       serviceNames: {
         web: 'Web & Client Portal',
@@ -1865,6 +1904,9 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
     statusPage: {
       pillTag: 'СТАТУС',
       navAria: 'Быстрая навигация',
+      activeTag: 'АКТИВНО',
+      degradedTag: 'ЗАМЕДЛЕНИЕ',
+      outageTag: 'СБОЙ',
       states: {
         operational: { label: 'Работает', headline: 'Все системы работают' },
         degraded: { label: 'Замедление', headline: 'Частичное снижение стабильности' },
@@ -1878,6 +1920,16 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       verifyingLive: 'Проверка сервисов...',
       checkingBtn: 'Обновление',
       checkNowBtn: 'Обновить',
+      uptimeDurationLabel: 'НЕПРЕРЫВНЫЙ АПТАЙМ',
+      uptimeRatioLabel: 'АПТАЙМ ЗА 90 ДНЕЙ',
+      latencyLabel: 'ЗАДЕРЖКА',
+      daysUnit: 'Д',
+      hoursUnit: 'Ч',
+      minutesUnit: 'М',
+      secondsUnit: 'С',
+      timelineStart: '90 ДНЕЙ НАЗАД',
+      timelineToday: 'СЕГОДНЯ',
+      continuousActiveLabel: 'НЕПРЕРЫВНАЯ РАБОТА',
       servicesTitle: 'Сервисы',
       serviceNames: {
         web: 'Веб-портал и сайт',
@@ -2407,6 +2459,9 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
     statusPage: {
       pillTag: 'STATUT',
       navAria: 'Navigation Rapide',
+      activeTag: 'ACTIF',
+      degradedTag: 'DÉGRADÉ',
+      outageTag: 'INCIDENT',
       states: {
         operational: { label: 'Opérationnel', headline: 'Tous les systèmes fonctionnent' },
         degraded: { label: 'Ralenti', headline: 'Dégradation partielle' },
@@ -2420,6 +2475,16 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       verifyingLive: 'Vérification des services...',
       checkingBtn: 'Actualisation',
       checkNowBtn: 'Actualiser',
+      uptimeDurationLabel: 'DISPONIBILITÉ CONTINUE',
+      uptimeRatioLabel: 'UPTIME 90 JOURS',
+      latencyLabel: 'LATENCE',
+      daysUnit: 'J',
+      hoursUnit: 'H',
+      minutesUnit: 'MIN',
+      secondsUnit: 'S',
+      timelineStart: 'IL Y A 90 JOURS',
+      timelineToday: 'AUJOURD’HUI',
+      continuousActiveLabel: 'FONCTIONNEMENT CONTINU',
       servicesTitle: 'Services',
       serviceNames: {
         web: 'Portail Web & Client',

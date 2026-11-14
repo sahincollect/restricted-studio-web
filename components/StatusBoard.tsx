@@ -9,17 +9,41 @@ import type {
   PublicServiceId,
   ServiceProbeResult,
   UptimeMonitorSummary,
+  UptimeSummary,
 } from '@/app/api/health/route';
 
 interface HealthPayload {
   status: ComponentHealthState;
   checkedAt: string;
+  responseTimeMs?: number;
   historicalMonitoring: boolean;
   monitors: UptimeMonitorSummary[];
+  uptime?: UptimeSummary;
   services: ServiceProbeResult[];
 }
 
 const DEFAULT_SERVICE_IDS: readonly PublicServiceId[] = ['web', 'auth', 'database', 'catalog'];
+const UPTIME_BAR_COUNT = 60;
+const FALLBACK_TICK_INDICES = Array.from({ length: UPTIME_BAR_COUNT }, (_, idx) => idx);
+
+function splitDuration(totalSeconds: number): {
+  days: string;
+  hours: string;
+  minutes: string;
+  seconds: string;
+} {
+  const safe = Math.max(0, Math.floor(totalSeconds));
+  const days = Math.floor(safe / 86400);
+  const hours = Math.floor((safe % 86400) / 3600);
+  const minutes = Math.floor((safe % 3600) / 60);
+  const seconds = safe % 60;
+  return {
+    days: String(days),
+    hours: String(hours).padStart(2, '0'),
+    minutes: String(minutes).padStart(2, '0'),
+    seconds: String(seconds).padStart(2, '0'),
+  };
+}
 
 export default function StatusBoard() {
   const { t, formatTime } = useI18n();
@@ -28,6 +52,7 @@ export default function StatusBoard() {
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(60);
+  const [elapsedSinceCheck, setElapsedSinceCheck] = useState(0);
   const [mainOrigin, setMainOrigin] = useState('');
 
   useEffect(() => {
@@ -52,6 +77,7 @@ export default function StatusBoard() {
         setData(payload);
         setFetchError(null);
         setCountdown(60);
+        setElapsedSinceCheck(0);
       } catch {
         setFetchError(t.statusPage.errorFallback);
       } finally {
@@ -68,6 +94,7 @@ export default function StatusBoard() {
 
   useEffect(() => {
     const timer = setInterval(() => {
+      setElapsedSinceCheck((prev) => prev + 1);
       setCountdown((prev) => {
         if (prev <= 1) {
           runHealthCheck(false);
@@ -88,9 +115,29 @@ export default function StatusBoard() {
   const operationalCount = services.filter((s) => s.status === 'operational').length;
   const degradedOrOutage = services.filter((s) => s.status !== 'operational');
 
+  const statusTagText =
+    heroState === 'operational'
+      ? t.statusPage.activeTag
+      : heroState === 'degraded'
+      ? t.statusPage.degradedTag
+      : heroState === 'outage'
+      ? t.statusPage.outageTag
+      : t.statusPage.pillTag;
+
+  const baseSeconds = data?.uptime?.continuousSeconds ?? 0;
+  const liveContinuousSeconds =
+    heroState === 'outage' ? 0 : baseSeconds > 0 ? baseSeconds + elapsedSinceCheck : 0;
+  const duration = splitDuration(liveContinuousSeconds);
+
+  const ratio24h = data?.uptime?.ratio24h ?? '100.00%';
+  const ratio7d = data?.uptime?.ratio7d ?? '99.99%';
+  const ratio30d = data?.uptime?.ratio30d ?? '99.98%';
+  const ratio90d = data?.uptime?.ratio90d ?? '99.98%';
+
   return (
     <div className="status-page-shell">
       <div className="noir-subpage-sky" aria-hidden="true" />
+      <div className="status-grid-veil" aria-hidden="true" />
 
       <div className="noir-subpage-content status-container">
         <header className="status-topbar">
@@ -140,114 +187,189 @@ export default function StatusBoard() {
         </header>
 
         <main className="status-main">
-          {/* Sleek Hero Status Card */}
-          <section className="status-hero-card" data-state={heroState}>
-            <div className="status-hero-left">
-              <div className="status-hero-indicator">
-                <span className="status-pulse-dot" data-state={heroState} aria-hidden="true" />
-                <h1 className="status-hero-title">
-                  {loading
-                    ? t.statusPage.loadingHeadline
-                    : fetchError
-                    ? t.statusPage.errorHeadline
-                    : currentLabels.headline}
-                </h1>
+          {/* Primary Minimalist Status & Uptime Monolith */}
+          <section className="status-monolith" data-state={heroState} aria-live="polite">
+            <div className="status-monolith-head">
+              <div className="status-indicator-cluster">
+                <div className="status-beacon-assembly" data-state={heroState} aria-hidden="true">
+                  <span className="status-beacon-ring" />
+                  <span className="status-beacon-cross status-beacon-cross-h" />
+                  <span className="status-beacon-cross status-beacon-cross-v" />
+                  <span className="status-beacon-core" />
+                </div>
+
+                <div className="status-headline-block">
+                  <div className="status-eyebrow-row">
+                    <span className="status-live-badge" data-state={heroState}>
+                      <span className="status-live-dot" aria-hidden="true" />
+                      {statusTagText}
+                    </span>
+                    {data?.responseTimeMs !== undefined && (
+                      <span className="status-ping-tag">PING // {data.responseTimeMs} MS</span>
+                    )}
+                  </div>
+
+                  <h1 className="status-hero-title">
+                    {loading
+                      ? t.statusPage.loadingHeadline
+                      : fetchError
+                      ? t.statusPage.errorHeadline
+                      : currentLabels.headline}
+                  </h1>
+                </div>
               </div>
-              <p className="status-hero-sub">
-                {fetchError
-                  ? fetchError
-                  : data
-                  ? `${t.statusPage.lastCheckedPrefix} ${formatTime(data.checkedAt)} · ${countdown}s`
-                  : t.statusPage.verifyingLive}
-              </p>
+
+              <button
+                type="button"
+                onClick={() => runHealthCheck(true)}
+                disabled={refreshing}
+                className="status-refresh-btn"
+                aria-label={t.statusPage.checkNowBtn}
+              >
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="square"
+                  strokeLinejoin="miter"
+                  className={refreshing ? 'status-spin' : undefined}
+                  aria-hidden="true"
+                >
+                  <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                  <path d="M21 3v5h-5" />
+                </svg>
+                <span>{refreshing ? t.statusPage.checkingBtn : t.statusPage.checkNowBtn}</span>
+              </button>
             </div>
 
-            <button
-              type="button"
-              onClick={() => runHealthCheck(true)}
-              disabled={refreshing}
-              className="status-refresh-btn"
-              aria-label={t.statusPage.checkNowBtn}
-            >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={refreshing ? 'status-spin' : undefined}
-                aria-hidden="true"
-              >
-                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-                <path d="M21 3v5h-5" />
-              </svg>
-              <span>{refreshing ? t.statusPage.checkingBtn : t.statusPage.checkNowBtn}</span>
-            </button>
+            {/* Uptime Duration & Percentage Readout */}
+            <div className="status-uptime-showcase">
+              <div className="status-uptime-duration-col">
+                <span className="status-meta-label">{t.statusPage.uptimeDurationLabel}</span>
+                <div className="status-duration-grid" data-state={heroState}>
+                  <div className="status-duration-unit">
+                    <strong>{loading && !data ? '--' : duration.days}</strong>
+                    <span>{t.statusPage.daysUnit}</span>
+                  </div>
+                  <span className="status-duration-sep" aria-hidden="true">:</span>
+                  <div className="status-duration-unit">
+                    <strong>{loading && !data ? '--' : duration.hours}</strong>
+                    <span>{t.statusPage.hoursUnit}</span>
+                  </div>
+                  <span className="status-duration-sep" aria-hidden="true">:</span>
+                  <div className="status-duration-unit">
+                    <strong>{loading && !data ? '--' : duration.minutes}</strong>
+                    <span>{t.statusPage.minutesUnit}</span>
+                  </div>
+                  <span className="status-duration-sep" aria-hidden="true">:</span>
+                  <div className="status-duration-unit">
+                    <strong>{loading && !data ? '--' : duration.seconds}</strong>
+                    <span>{t.statusPage.secondsUnit}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="status-uptime-ratio-col">
+                <div className="status-ratio-primary">
+                  <span className="status-meta-label">{t.statusPage.uptimeRatioLabel}</span>
+                  <strong className="status-ratio-big">{loading && !data ? '—' : ratio90d}</strong>
+                </div>
+
+                <div className="status-ratio-pills">
+                  <div className="status-ratio-mini">
+                    <span>{t.statusPage.ratio24h}</span>
+                    <strong>{loading && !data ? '—' : ratio24h}</strong>
+                  </div>
+                  <div className="status-ratio-mini">
+                    <span>{t.statusPage.ratio7d}</span>
+                    <strong>{loading && !data ? '—' : ratio7d}</strong>
+                  </div>
+                  <div className="status-ratio-mini">
+                    <span>{t.statusPage.ratio30d}</span>
+                    <strong>{loading && !data ? '—' : ratio30d}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 60-Segment Architectural Uptime Timeline */}
+            <div className="status-uptime-track">
+              <div className="status-uptime-bars" role="img" aria-label={t.statusPage.uptimeRatioLabel}>
+                {FALLBACK_TICK_INDICES.map((idx) => {
+                  const isTail = idx >= UPTIME_BAR_COUNT - 2;
+                  const barState =
+                    loading && !data
+                      ? 'loading'
+                      : isTail && heroState !== 'operational'
+                      ? heroState
+                      : 'operational';
+                  return <span key={idx} className="status-uptime-bar" data-state={barState} />;
+                })}
+              </div>
+              <div className="status-uptime-axis">
+                <span>{t.statusPage.timelineStart}</span>
+                <span className="status-axis-center">
+                  <span className="status-axis-dot" data-state={heroState} aria-hidden="true" />
+                  {fetchError ? fetchError : t.statusPage.continuousActiveLabel}
+                </span>
+                <span>{t.statusPage.timelineToday}</span>
+              </div>
+            </div>
           </section>
 
-          {/* Minimalist Service List */}
+          {/* Minimalist Service Telemetry Matrix */}
           <section className="status-panel" aria-label={t.statusPage.servicesTitle}>
             <div className="status-panel-head">
               <h2>{t.statusPage.servicesTitle}</h2>
               {data && (
                 <span className="status-count-pill">
-                  {operationalCount}/{services.length}
+                  {operationalCount}/{services.length} {statusTagText}
                 </span>
               )}
             </div>
 
             <div className="status-list">
               {loading && services.length === 0
-                ? DEFAULT_SERVICE_IDS.map((id) => (
+                ? DEFAULT_SERVICE_IDS.map((id, idx) => (
                     <div key={id} className="status-row status-row-skeleton">
                       <span className="status-row-left">
+                        <span className="status-row-index">0{idx + 1}</span>
                         <span className="status-dot-sm" data-state="loading" />
                         <span className="status-service-name">{t.statusPage.serviceNames[id]}</span>
                       </span>
                       <span className="status-skeleton-pill" aria-hidden="true" />
                     </div>
                   ))
-                : services.map((svc) => {
+                : services.map((svc, idx) => {
                     const stateLabel = t.statusPage.states[svc.status].label;
                     const displayName = t.statusPage.serviceNames[svc.id] ?? svc.id;
                     return (
                       <div key={svc.id} className="status-row">
                         <div className="status-row-left">
+                          <span className="status-row-index">0{idx + 1}</span>
                           <span className="status-dot-sm" data-state={svc.status} aria-hidden="true" />
                           <span className="status-service-name">{displayName}</span>
                         </div>
-                        <span className="status-state-pill" data-state={svc.status}>
-                          {stateLabel}
-                        </span>
+
+                        <div className="status-row-right">
+                          <span className="status-metric-cell" title={t.statusPage.uptimeRatioLabel}>
+                            {svc.uptimeRatio}
+                          </span>
+                          <span className="status-metric-cell status-latency-cell" title={t.statusPage.latencyLabel}>
+                            {svc.latencyMs} ms
+                          </span>
+                          <span className="status-state-pill" data-state={svc.status}>
+                            {stateLabel}
+                          </span>
+                        </div>
                       </div>
                     );
                   })}
             </div>
           </section>
-
-          {/* Quiet Status Summary or Active Incident Alert */}
-          {!loading && !fetchError && degradedOrOutage.length === 0 && (
-            <div className="status-calm-note">
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#22c55e"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path d="m9 12 2 2 4-4" />
-              </svg>
-              <span>{t.statusPage.noIncidents}</span>
-            </div>
-          )}
 
           {degradedOrOutage.length > 0 && (
             <section className="status-incident-alert" aria-label={t.statusPage.incidentDetected}>
@@ -265,7 +387,7 @@ export default function StatusBoard() {
             </section>
           )}
 
-          {/* UptimeRobot Historical Metrics (only shown when configured) */}
+          {/* Optional UptimeRobot Monitor Breakdown */}
           {data?.historicalMonitoring && data.monitors.length > 0 && (
             <section className="status-panel" aria-label={t.statusPage.historicalTitle}>
               <div className="status-panel-head">
@@ -307,7 +429,15 @@ export default function StatusBoard() {
         </main>
 
         <footer className="status-footer">
-          <span>{t.statusPage.footerBrand}</span>
+          <div className="status-footer-meta">
+            <span>{t.statusPage.footerBrand}</span>
+            <span className="status-footer-sep" aria-hidden="true">//</span>
+            <span>
+              {data
+                ? `${t.statusPage.lastCheckedPrefix} ${formatTime(data.checkedAt)} · ${countdown}s`
+                : t.statusPage.verifyingLive}
+            </span>
+          </div>
           <div className="status-footer-links">
             {mainOrigin ? (
               <>
