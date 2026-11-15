@@ -64,18 +64,18 @@ export default function ContactTerminalClient() {
 
       {/* Top Retro-Noir Navigation Bar */}
       <header style={styles.header}>
-        <div style={styles.headerInner}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div className="rs-contact-header-inner" style={styles.headerInner}>
+          <div className="rs-contact-brand-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <Link href="/" style={styles.brandLink}>
               <img src="/assets/rslogo.jpg" alt="Restricted Studio" style={styles.brandLogo} />
               <span className="brand-logo-shimmer" style={styles.brandText}>
                 RESTRICTED STUDIO
               </span>
             </Link>
-            <span style={styles.trustTag}>{t.common.itemsatisTrust}</span>
+            <span className="rs-contact-trust" style={styles.trustTag}>{t.common.itemsatisTrust}</span>
           </div>
 
-          <nav style={styles.headerNav}>
+          <nav className="rs-contact-nav" style={styles.headerNav}>
             <LanguageSwitcher compact />
             <Link href="/" style={styles.navLink}>
               {t.common.home}
@@ -83,10 +83,10 @@ export default function ContactTerminalClient() {
             <Link href="/katalog" className="nav-katalog-shimmer" style={styles.navLinkHighlight}>
               {t.common.catalog}
             </Link>
-            <Link href="/status" style={styles.navLink}>
+            <Link href="/status" className="rs-contact-status-link" style={styles.navLink}>
               SİSTEM DURUMU
             </Link>
-            <Link href="/dashboard" style={styles.navPortalBtn}>
+            <Link href="/dashboard" className="rs-contact-portal-btn" style={styles.navPortalBtn}>
               {t.common.clientPortal} →
             </Link>
           </nav>
@@ -94,10 +94,10 @@ export default function ContactTerminalClient() {
       </header>
 
       {/* Main Retro Mail Terminal */}
-      <main style={styles.main}>
+      <main className="rs-contact-main" style={styles.main}>
         <div style={styles.terminalWindow}>
           {/* Retro Terminal Title Bar */}
-          <div style={styles.terminalBar}>
+          <div className="rs-contact-bar" style={styles.terminalBar}>
             <div style={styles.terminalDots}>
               <span style={{ ...styles.termDot, background: '#e01b24' }} />
               <span style={{ ...styles.termDot, background: '#e8a848' }} />
@@ -106,13 +106,13 @@ export default function ContactTerminalClient() {
             <div style={styles.terminalTitle}>
               RS-MAIL // TERMINAL v2.4 — [{CONTACT_EMAIL.toUpperCase()}]
             </div>
-            <div style={styles.terminalStatus}>
+            <div className="rs-contact-bar-status" style={styles.terminalStatus}>
               <span style={styles.onlineLed} />
               <span>HAT AKTİF</span>
             </div>
           </div>
 
-          <div style={styles.terminalBody}>
+          <div className="rs-contact-body" style={styles.terminalBody}>
             {/* Left Column: Direct Mail Address Card & Retro Telemetry */}
             <div style={styles.leftCol}>
               <div style={styles.eyebrowBadge}>
@@ -145,7 +145,7 @@ export default function ContactTerminalClient() {
               </div>
 
               {/* Channel Specs */}
-              <div style={styles.specsGrid}>
+              <div className="rs-contact-specs" style={styles.specsGrid}>
                 <div style={styles.specCard}>
                   <div style={styles.specKey}>ORTALAMA YANIT SÜRESİ</div>
                   <div style={styles.specVal}>&lt; 2 Saat (7/24 Aktif Nöbet)</div>
@@ -167,13 +167,13 @@ export default function ContactTerminalClient() {
             </div>
 
             {/* Right Column: Interactive Retro E-Mail Composer */}
-            <form onSubmit={handleSubmit} style={styles.formCol}>
+            <form onSubmit={handleSubmit} className="rs-contact-form-col" style={styles.formCol}>
               <div style={styles.formHeader}>
                 <span>YENİ MESAJ OLUŞTUR</span>
                 <span style={{ color: '#ff6b75' }}>ALICI: {CONTACT_EMAIL}</span>
               </div>
 
-              <div style={styles.fieldRow}>
+              <div className="rs-contact-field-row" style={styles.fieldRow}>
                 <div style={styles.fieldGroup}>
                   <label htmlFor="contact-name" style={styles.label}>
                     İSİM / SUNUCU ADI
@@ -428,6 +428,8 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '6px',
     color: '#9ef0b8',
     fontSize: '10px',
+    whiteSpace: 'nowrap',
+    flexShrink: 0,
   },
   onlineLed: {
     width: '7px',
@@ -438,7 +440,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   terminalBody: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
     gap: '28px',
     padding: '28px',
   },
@@ -535,7 +537,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   specsGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))',
     gap: '10px',
     marginTop: 'auto',
   },
@@ -581,7 +583,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   fieldRow: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))',
     gap: '12px',
   },
   fieldGroup: {

@@ -798,7 +798,7 @@ export default function CatalogPage() {
       {/* =====================================================================
            2-COLUMN CATALOG LAYOUT (LEFT MENU SIDEBAR + RIGHT GRID)
            ===================================================================== */}
-      <div className="container catalog-layout-wrapper">
+      <div className={`container catalog-layout-wrapper ${mobileFiltersOpen ? 'mobile-drawer-active' : ''}`}>
         <div className="catalog-layout-grid">
 
           {/* =================================================================

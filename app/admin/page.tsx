@@ -299,19 +299,19 @@ export default function AdminPage() {
   return (
     <div style={styles.container}>
       <header style={styles.header}>
-        <div style={styles.headerInner}>
-          <Link href="/" style={styles.logo}>
+        <div className="rs-admin-header-inner" style={styles.headerInner}>
+          <Link href="/" className="rs-admin-brand" style={styles.logo}>
             <span style={styles.logoDot}></span>
             <span>
               <span className="brand-logo-shimmer">RESTRICTED STUDIO</span> // YÖNETİCİ PANELİ
             </span>
           </Link>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <Link href="/dashboard" style={styles.backBtn}>
+          <div className="rs-admin-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <Link href="/dashboard" className="rs-admin-btn" style={styles.backBtn}>
               Müşteri Paneli
             </Link>
             {authorized && (
-              <button type="button" onClick={handleLogout} style={styles.backBtn}>
+              <button type="button" onClick={handleLogout} className="rs-admin-btn" style={styles.backBtn}>
                 Çıkış Yap
               </button>
             )}
@@ -319,7 +319,7 @@ export default function AdminPage() {
         </div>
       </header>
 
-      <main style={styles.main}>
+      <main className="rs-admin-main" style={styles.main}>
         {actionMsg && !loading && (
           <div style={styles.alertBox}>
             <span>{actionMsg}</span>
@@ -351,6 +351,7 @@ export default function AdminPage() {
           </div>
         ) : !authorized ? (
           <div
+            className="rs-admin-auth-card"
             style={{
               ...styles.card,
               maxWidth: '420px',
@@ -517,8 +518,8 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <form onSubmit={handleGenerate} style={styles.formRow}>
-            <div style={styles.field}>
+          <form onSubmit={handleGenerate} className="rs-admin-form-row" style={styles.formRow}>
+            <div className="rs-admin-field" style={styles.field}>
               <label style={styles.label}>ÜRÜN ADI</label>
               <select value={genProduct} onChange={(e) => setGenProduct(e.target.value)} style={styles.select}>
                 <option value="R-AI">R-AI</option>
@@ -526,7 +527,7 @@ export default function AdminPage() {
               </select>
             </div>
 
-            <div style={styles.field}>
+            <div className="rs-admin-field" style={styles.field}>
               <label style={styles.label}>SÜRE (GÜN)</label>
               <select value={genDays} onChange={(e) => setGenDays(e.target.value)} style={styles.select}>
                 <option value="30">30 Gün (1 Ay)</option>
@@ -536,7 +537,7 @@ export default function AdminPage() {
               </select>
             </div>
 
-            <div style={styles.field}>
+            <div className="rs-admin-field" style={styles.field}>
               <label style={styles.label}>ADET (1 - 500)</label>
               <input
                 type="number"

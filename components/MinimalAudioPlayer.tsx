@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 const AUDIO_SRC = '/assets/audio/chasing-shadows.mp3';
 const DEFAULT_VOLUME = 0.16; // %16 yumuşak arka plan ses yüksekliği
 
 export default function MinimalAudioPlayer() {
+  const pathname = usePathname();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const userPausedRef = useRef<boolean>(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -58,7 +60,10 @@ export default function MinimalAudioPlayer() {
   };
 
   return (
-    <div className="rs-minimal-audio-wrap">
+    <div
+      className="rs-minimal-audio-wrap"
+      data-route={pathname === '/' ? 'home' : 'subpage'}
+    >
       <audio ref={audioRef} src={AUDIO_SRC} preload="auto" loop />
       <button
         type="button"

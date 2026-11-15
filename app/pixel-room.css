@@ -582,33 +582,6 @@
   left: calc(50% - 22px);
 }
 
-@media (max-width: 980px) {
-  .px-bg-walker {
-    transform: scale(0.76);
-    transform-origin: bottom center;
-  }
-
-  .px-thought-bubble.px-chat-bubble-left {
-    width: 144px;
-    max-width: 144px;
-    left: -18px;
-  }
-
-  .px-thought-bubble.px-chat-bubble-right {
-    width: 144px;
-    max-width: 144px;
-    left: 8px;
-  }
-
-  .px-chat-person--left .px-thought-dots {
-    left: calc(50% + 18px);
-  }
-
-  .px-chat-person--right .px-thought-dots {
-    left: calc(50% - 8px);
-  }
-}
-
 /* Pixel Art Thought Bubble — Snugly Seated Just Above Character Heads */
 @keyframes pxThoughtFloat {
   0%,
@@ -1085,15 +1058,20 @@
 
 @media (max-width: 980px) {
   .living-room-shell .bento-pill-nav {
-    top: 12px;
+    top: 10px;
     left: 10px;
     right: 10px;
     height: 48px;
-    padding: 0 12px;
+    padding: 0 10px;
   }
 
   .living-room-shell .bpn-menu {
     display: none;
+  }
+
+  .px-bg-walker {
+    transform: scale(0.76);
+    transform-origin: bottom center;
   }
 
   .px-citizen-mid,
@@ -1105,29 +1083,72 @@
     display: none;
   }
 
-  .px-chat-duo {
-    left: 52%;
-    bottom: 7.5%;
+  .px-citizen-left {
+    left: 9.5%;
+    bottom: 8.5%;
+    transform: scale(0.86);
+    transform-origin: bottom left;
+  }
+
+  .px-citizen-left .px-thought-bubble {
+    left: 14px;
+    width: 134px;
+    max-width: 134px;
+  }
+
+  .px-citizen-left .px-thought-dots {
+    left: calc(50% - 14px);
+  }
+
+  .px-prop-fire-barrel {
+    left: 36.5%;
+    bottom: 8.2%;
     transform: scale(0.84);
     transform-origin: bottom center;
   }
 
-  .px-prop-fire-barrel {
-    left: 38%;
-    bottom: 7.5%;
-    transform: scale(0.85);
-    transform-origin: bottom center;
+  .px-chat-duo {
+    left: auto;
+    right: 9.2%;
+    bottom: 8.5%;
+    gap: 6px;
+    transform: scale(0.80);
+    transform-origin: bottom right;
   }
 
-  .px-citizen-left {
-    left: 6%;
-    bottom: 7.5%;
+  .px-chat-person {
+    width: 86px;
+    flex: 0 0 86px;
   }
 
   .px-thought-bubble {
-    max-width: 155px;
+    max-width: 138px;
     font-size: 9px;
     padding: 5px 8px;
+  }
+
+  /* Stagger chat duo bubbles vertically and keep right bubble flush inside viewport */
+  .px-thought-bubble.px-chat-bubble-left {
+    width: 134px;
+    max-width: 134px;
+    left: -18px;
+    margin-bottom: 38px;
+  }
+
+  .px-thought-bubble.px-chat-bubble-right {
+    width: 134px;
+    max-width: 134px;
+    left: auto;
+    right: 0;
+    margin-bottom: -18px;
+  }
+
+  .px-chat-person--left .px-thought-dots {
+    left: calc(50% + 18px);
+  }
+
+  .px-chat-person--right .px-thought-dots {
+    left: 62%;
   }
 
   .px-blade-directory {
@@ -1146,5 +1167,58 @@
   .px-blade-item:hover,
   .px-blade-item.is-active {
     width: 198px;
+  }
+}
+
+@media (max-width: 420px) {
+  .living-room-shell .bento-pill-nav {
+    padding: 0 8px;
+    gap: 6px;
+  }
+
+  .px-citizen-left {
+    left: 9.5%;
+    bottom: 9%;
+    transform: scale(0.78);
+    transform-origin: bottom left;
+  }
+
+  .px-citizen-left .px-thought-bubble {
+    left: 16px;
+    width: 130px;
+    max-width: 130px;
+  }
+
+  .px-citizen-left .px-thought-dots {
+    left: calc(50% - 16px);
+  }
+
+  .px-prop-fire-barrel {
+    left: 35.5%;
+    bottom: 8.6%;
+    transform: scale(0.74);
+    transform-origin: bottom center;
+  }
+
+  .px-chat-duo {
+    right: 9.5%;
+    bottom: 9%;
+    gap: 2px;
+    transform: scale(0.74);
+    transform-origin: bottom right;
+  }
+
+  .px-thought-bubble.px-chat-bubble-left {
+    width: 130px;
+    max-width: 130px;
+    left: -14px;
+    margin-bottom: 42px;
+  }
+
+  .px-thought-bubble.px-chat-bubble-right {
+    width: 130px;
+    max-width: 130px;
+    right: 0;
+    margin-bottom: -18px;
   }
 }

@@ -301,7 +301,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
       </header>
 
       {/* Mobile Drawer */}
-      <div className={`bpn-mobile-drawer ${mobileMenuOpen ? 'open' : ''}`} style={{ zIndex: 25 }}>
+      <div className={`bpn-mobile-drawer ${mobileMenuOpen ? 'open' : ''}`}>
         <div style={{ padding: '4px 0 8px', borderBottom: '1px solid rgba(240,240,240,0.16)', marginBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'rgba(240,240,240,0.65)', letterSpacing: '0.08em' }}>
             {t.common.langLabel.toUpperCase()}

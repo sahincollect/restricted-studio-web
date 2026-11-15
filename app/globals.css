@@ -2059,16 +2059,37 @@ textarea {
 }
 
 @media (max-width: 520px) {
+  .bpn-brand-group {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+  .bpn-brand {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .bpn-brand-text {
+    min-width: 0;
+    overflow: hidden;
+  }
   .bpn-title {
-    font-size: 9.5px;
-    letter-spacing: 0.08em;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .bpn-trust-mobile {
-    font-size: 6.8px;
-    letter-spacing: 0.04em;
+    font-size: 6.4px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .bpn-actions {
     gap: 4px;
+    flex-shrink: 0;
   }
   .bpn-icon-btn {
     width: 28px;
@@ -2083,6 +2104,25 @@ textarea {
   .nav-mobile-toggle {
     width: 30px;
     height: 30px;
+  }
+  .noir-modal-backdrop {
+    padding: 10px;
+  }
+  .noir-modal-panel {
+    padding: 16px 14px;
+    max-height: calc(100dvh - 20px);
+    box-shadow: 4px 4px 0 var(--crimson-vivid);
+  }
+}
+
+@media (max-width: 420px) {
+  .bpn-itemsatis-label {
+    display: none;
+  }
+  .bpn-itemsatis-btn {
+    width: 28px;
+    padding: 0;
+    justify-content: center;
   }
 }
 
@@ -2226,6 +2266,25 @@ textarea {
   .global-nav .nav-mobile-toggle {
     width: 30px;
     height: 30px;
+  }
+}
+
+@media (max-width: 400px) {
+  .nav-container {
+    padding: 0 8px;
+    gap: 6px;
+  }
+  .nav-brand-logo {
+    width: 22px;
+    height: 22px;
+  }
+  .nav-brand-text {
+    font-size: 9.2px;
+    letter-spacing: 0.03em;
+  }
+  .nav-btn-cart {
+    padding: 0 7px !important;
+    font-size: 10px !important;
   }
 }
 
@@ -4012,6 +4071,9 @@ textarea {
 }
 
 @media (max-width: 900px) {
+  .catalog-layout-wrapper.mobile-drawer-active {
+    z-index: 95;
+  }
   .catalog-layout-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -5158,16 +5220,43 @@ textarea {
 
 @media (max-width: 680px) {
   .status-container {
-    padding: 14px 14px 44px;
-    gap: 18px;
+    padding: 12px 12px 76px;
+    gap: 14px;
   }
   .status-topbar {
-    padding: 12px 14px;
+    padding: 10px 12px;
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
+  }
+  .status-brand-wrap {
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .status-brand-link {
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    min-width: 0;
+  }
+  .status-pill-tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    flex-shrink: 0;
   }
   .status-nav-links {
+    width: 100%;
+    flex-shrink: 1;
+    flex-wrap: wrap;
     justify-content: space-between;
+    gap: 6px;
+  }
+  .status-nav-btn {
+    padding: 5px 8px;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+  .status-nav-primary {
+    padding: 5px 10px;
   }
   .status-nav-hide-sm {
     display: none;
@@ -5175,19 +5264,19 @@ textarea {
   .status-monolith-head {
     flex-direction: column;
     align-items: flex-start;
-    padding: 20px 18px;
+    padding: 16px 14px;
   }
   .status-indicator-cluster {
-    gap: 14px;
+    gap: 12px;
   }
   .status-beacon-assembly {
-    width: 42px;
-    height: 42px;
+    width: 38px;
+    height: 38px;
   }
   .status-uptime-duration-col,
   .status-uptime-ratio-col,
   .status-uptime-track {
-    padding: 16px 18px;
+    padding: 14px 14px;
   }
   .status-duration-sep {
     display: none;
@@ -5196,14 +5285,20 @@ textarea {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     width: 100%;
-    gap: 6px;
+    gap: 5px;
   }
   .status-duration-unit {
     justify-content: center;
-    padding: 8px 4px;
+    padding: 7px 3px;
+  }
+  .status-duration-unit strong {
+    font-size: 17px;
+  }
+  .status-duration-unit span {
+    font-size: 8px;
   }
   .status-row {
-    padding: 14px 18px;
+    padding: 12px 14px;
   }
   .status-latency-cell {
     display: none;
@@ -5945,7 +6040,8 @@ textarea {
 }
 
 .rs-auth-input.has-toggle {
-  padding-right: 72px;
+  padding-right: 80px;
+  text-overflow: ellipsis;
 }
 
 .rs-auth-input:focus {
@@ -6555,23 +6651,78 @@ textarea {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 680px) {
   .rs-auth-shell {
-    padding: 16px;
+    padding: 12px 12px 76px;
+  }
+  .rs-auth-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+  }
+  .rs-auth-brand {
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+  }
+  .rs-auth-nav {
+    width: 100%;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .rs-auth-nav-link {
+    font-size: 10px;
+    padding: 4px 6px;
+    letter-spacing: 0.04em;
   }
   .rs-auth-card {
-    padding: 24px 18px;
+    padding: 20px 16px;
   }
   .rs-portal-header-inner,
   .rs-portal-main {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .rs-portal-main {
+    padding-bottom: 76px;
+  }
+  .rs-portal-trust {
+    display: none;
+  }
+  .rs-portal-header-inner {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    gap: 10px;
+  }
+  .rs-portal-actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .rs-portal-btn-ghost,
+  .rs-portal-btn-admin,
+  .rs-portal-identity {
+    padding: 5px 9px;
+    font-size: 11px;
   }
   .rs-portal-kpi-grid {
     grid-template-columns: 1fr;
   }
   .rs-portal-card {
-    padding: 18px;
+    padding: 16px 14px;
+  }
+  .rs-portal-redeem-input-wrap {
+    min-width: 0;
+    flex: 1 1 100%;
+    width: 100%;
+  }
+  .rs-portal-btn-primary {
+    width: 100%;
+  }
+  .rs-portal-spec-row {
+    flex-wrap: wrap;
+    gap: 6px;
   }
 }
 
@@ -6582,7 +6733,29 @@ textarea {
   position: fixed;
   left: 22px;
   bottom: 22px;
-  z-index: 95;
+  z-index: 55;
+}
+
+@media (max-width: 980px) {
+  .rs-minimal-audio-wrap {
+    left: 10px;
+    bottom: 10px;
+  }
+  .rs-minimal-audio-btn {
+    height: 36px;
+    padding: 0 12px;
+    gap: 7px;
+  }
+  .rs-minimal-audio-wrap[data-route='subpage'] .rs-minimal-audio-btn {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    gap: 0;
+    opacity: 0.78;
+  }
+  .rs-minimal-audio-wrap[data-route='subpage'] .rs-eq-bars {
+    display: none;
+  }
 }
 
 .rs-minimal-audio-btn {
@@ -7408,6 +7581,10 @@ html.is-crt-animating body {
     display: none;
   }
 
+  .rs-about-drawer {
+    z-index: 95;
+  }
+
   .rs-about-hero,
   .rs-about-cards,
   .rs-about-solutions-grid {
@@ -7416,5 +7593,147 @@ html.is-crt-animating body {
 
   .rs-about-body {
     padding: 20px 16px 26px;
+  }
+}
+
+@media (max-width: 680px) {
+  .rs-about-shell {
+    padding: 12px 10px 76px;
+  }
+
+  .rs-about-pill-nav {
+    height: 48px;
+    padding: 0 10px;
+  }
+
+  .rs-about-nav-wrap {
+    margin-bottom: 14px;
+  }
+
+  .rs-about-chrome {
+    padding: 10px 12px;
+  }
+
+  .rs-about-chrome-title {
+    font-size: 10px;
+  }
+
+  .rs-about-body {
+    padding: 16px 14px 22px;
+    gap: 24px;
+  }
+
+  .rs-about-btn-primary,
+  .rs-about-btn-ghost {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    word-break: break-word;
+  }
+
+  .rs-about-table-wrap {
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* /iletisim Mobile Optimization */
+  .rs-contact-header-inner {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .rs-contact-brand-row {
+    justify-content: space-between;
+  }
+
+  .rs-contact-trust,
+  .rs-contact-status-link {
+    display: none !important;
+  }
+
+  .rs-contact-nav {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px !important;
+  }
+
+  .rs-contact-portal-btn {
+    padding: 6px 10px !important;
+    font-size: 10px !important;
+    white-space: nowrap;
+  }
+
+  .rs-contact-main {
+    padding: 14px 10px 76px !important;
+  }
+
+  .rs-contact-bar {
+    padding: 9px 12px !important;
+    gap: 8px !important;
+  }
+
+  .rs-contact-body {
+    padding: 16px 14px !important;
+    gap: 20px !important;
+  }
+
+  .rs-contact-form-col {
+    padding: 14px 12px !important;
+  }
+
+  /* /admin Mobile Optimization */
+  .rs-admin-header-inner {
+    padding: 12px !important;
+    gap: 10px !important;
+    flex-wrap: wrap;
+  }
+
+  .rs-admin-brand {
+    font-size: 11px !important;
+    letter-spacing: 0.05em !important;
+  }
+
+  .rs-admin-actions {
+    gap: 8px !important;
+    margin-left: auto;
+  }
+
+  .rs-admin-btn {
+    white-space: nowrap;
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .rs-admin-main {
+    padding: 16px 12px 76px !important;
+    gap: 16px !important;
+  }
+
+  .rs-admin-auth-card {
+    margin: 16px auto !important;
+    padding: 24px 18px 20px !important;
+  }
+
+  .rs-admin-form-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .rs-admin-field,
+  .rs-admin-field select,
+  .rs-admin-field input {
+    width: 100% !important;
+  }
+
+  /* Catalog Drawer & Modals on Compact Phones */
+  .cart-drawer {
+    padding: 16px 14px;
+  }
+
+  .guide-modal-dialog {
+    padding: 18px 14px;
+    box-shadow: 4px 4px 0 var(--crimson-vivid);
   }
 }
