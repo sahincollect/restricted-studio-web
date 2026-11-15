@@ -18,14 +18,15 @@ interface Snowflake {
 }
 
 /**
- * Minimalist Triadic Noir snowfall overlay across subpages except `/` and `/katalog`.
+ * Minimalist Triadic Noir snowfall overlay across subpages except `/`, `/katalog`, and `/iletisim`.
  * Renders soft archival-chalk (#E6E3DC) particles mixed with subtle
  * 6-point geometric frost hairlines without UI clutter or pointer interference.
  */
 export default function WinterSnow() {
   const pathname = usePathname();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const isSnowDisabled = pathname === '/' || pathname?.startsWith('/katalog');
+  const isSnowDisabled =
+    pathname === '/' || pathname?.startsWith('/katalog') || pathname?.startsWith('/iletisim');
 
   useEffect(() => {
     if (isSnowDisabled) return;

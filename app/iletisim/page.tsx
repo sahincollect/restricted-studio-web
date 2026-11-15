@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import ContactTerminalClient from '@/components/ContactTerminalClient';
 
 export const metadata: Metadata = {
-  title: 'İletişim & E-Posta Terminali | Restricted Studio',
+  title: 'İletişim | Restricted Studio',
   description:
-    'Restricted Studio resmi e-posta iletişim hattı (info@restrictedstudio.shop) ve kurumsal İtemsatış destek terminali.',
+    'Restricted Studio kurumsal iletişim kanalları, toplu lisans talepleri ve teknik destek hattı (info@restrictedstudio.shop).',
   openGraph: {
-    title: 'İletişim & E-Posta Terminali | Restricted Studio',
+    title: 'İletişim | Restricted Studio',
     description:
-      'Restricted Studio resmi e-posta iletişim hattı (info@restrictedstudio.shop) ve kurumsal İtemsatış destek terminali.',
+      'Restricted Studio kurumsal iletişim kanalları, toplu lisans talepleri ve teknik destek hattı (info@restrictedstudio.shop).',
   },
 };
 

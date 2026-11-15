@@ -4,25 +4,216 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/components/I18nProvider';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import type { Locale } from '@/lib/i18n';
 
 const CONTACT_EMAIL = 'info@restrictedstudio.shop';
 const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
 
-const SUBJECT_PRESETS = [
-  'Katalog & Paket Danışmanlığı (100 TL Sabit Fiyat)',
-  '15+ Toplu Alım (%50 İndirim) Talebi',
-  'Teknik Destek & Kurulum Yardımı',
-  'Kurumsal / Özel Proje İşbirliği',
-];
+interface ContactCopy {
+  eyebrow: string;
+  heading: string;
+  lead: string;
+  emailLabel: string;
+  copyBtn: string;
+  copiedBtn: string;
+  storeLabel: string;
+  storeValue: string;
+  storeSub: string;
+  slaLabel: string;
+  slaValue: string;
+  formTitle: string;
+  formSubtitle: string;
+  nameLabel: string;
+  namePlaceholder: string;
+  emailInputLabel: string;
+  emailInputPlaceholder: string;
+  topicLabel: string;
+  customTopicLabel: string;
+  customTopicPlaceholder: string;
+  otherOption: string;
+  topics: string[];
+  messageLabel: string;
+  messagePlaceholder: string;
+  submitBtn: string;
+  dispatchedNote: string;
+  statusLink: string;
+  mailGreeting: string;
+  senderField: string;
+  replyField: string;
+  defaultSubject: string;
+}
+
+const CONTACT_I18N: Record<Locale, ContactCopy> = {
+  tr: {
+    eyebrow: 'KURUMSAL İLETİŞİM',
+    heading: 'Bizimle İletişime Geçin',
+    lead: 'Paket lisansları, 15+ toplu alım süreçleri ve kurumsal teknik destek talepleriniz için resmi iletişim kanallarımız üzerinden ekibimize ulaşabilirsiniz.',
+    emailLabel: 'RESMİ E-POSTA',
+    copyBtn: 'Kopyala',
+    copiedBtn: 'Kopyalandı ✓',
+    storeLabel: 'ONAYLI SATIŞ KANALI',
+    storeValue: 'İtemsatış Resmi Mağazası',
+    storeSub: 'Güvenli ödeme ve doğrulanmış mağaza profili',
+    slaLabel: 'YANIT SÜRESİ',
+    slaValue: 'Ortalama 2 saat içinde (7/24 aktif destek)',
+    formTitle: 'İletişim Formu',
+    formSubtitle: 'Form verileri cihazınızdaki e-posta istemcisi üzerinden resmi adresimize taslak olarak hazırlanır.',
+    nameLabel: 'Ad Soyad / Kurum',
+    namePlaceholder: 'Örn. Ahmet Yılmaz',
+    emailInputLabel: 'E-posta Adresiniz',
+    emailInputPlaceholder: 'ad@alanadi.com',
+    topicLabel: 'Konu',
+    customTopicLabel: 'Konu Başlığı',
+    customTopicPlaceholder: 'Talebinizin konusunu yazın',
+    otherOption: 'Diğer',
+    topics: [
+      'Paket & Katalog Danışmanlığı',
+      'Toplu Alım & %50 İndirim Talebi (15+)',
+      'Teknik Destek & Kurulum',
+      'Kurumsal İş Birliği & Özel Proje',
+    ],
+    messageLabel: 'Mesajınız',
+    messagePlaceholder: 'Talep ettiğiniz paketleri veya projenizle ilgili detayları belirtin...',
+    submitBtn: 'E-posta İstemcisiyle Gönder',
+    dispatchedNote: 'E-posta uygulamanız açıldı. Yönlendirme gerçekleşmezse doğrudan',
+    statusLink: 'Durum',
+    mailGreeting: 'Merhaba Restricted Studio ekibi,',
+    senderField: 'Gönderen',
+    replyField: 'Yanıt Adresi',
+    defaultSubject: 'Restricted Studio Kurumsal İletişim',
+  },
+  en: {
+    eyebrow: 'CORPORATE CONTACT',
+    heading: 'Contact Our Team',
+    lead: 'Reach our team through our official channels for package licensing, 15+ bulk purchasing inquiries, and technical support.',
+    emailLabel: 'OFFICIAL EMAIL',
+    copyBtn: 'Copy',
+    copiedBtn: 'Copied ✓',
+    storeLabel: 'VERIFIED STOREFRONT',
+    storeValue: 'İtemsatış Official Store',
+    storeSub: 'Escrow-backed checkout and verified merchant profile',
+    slaLabel: 'RESPONSE TIME',
+    slaValue: 'Within 2 hours on average (24/7 coverage)',
+    formTitle: 'Send a Message',
+    formSubtitle: 'Prepares a draft directly in your default email application.',
+    nameLabel: 'Name / Organization',
+    namePlaceholder: 'e.g. Alex Morgan',
+    emailInputLabel: 'Your Email',
+    emailInputPlaceholder: 'name@company.com',
+    topicLabel: 'Subject',
+    customTopicLabel: 'Subject Title',
+    customTopicPlaceholder: 'Enter your subject',
+    otherOption: 'Other',
+    topics: [
+      'Catalog & Package Consultation',
+      'Bulk Licensing (15+ Packs · 50% Off)',
+      'Technical Support & Setup',
+      'Enterprise Partnership & Custom Work',
+    ],
+    messageLabel: 'Message',
+    messagePlaceholder: 'Briefly describe the packages or inquiry details...',
+    submitBtn: 'Open in Email Client',
+    dispatchedNote: 'Your email client was launched. If nothing opened, write directly to',
+    statusLink: 'Status',
+    mailGreeting: 'Hello Restricted Studio team,',
+    senderField: 'Sender',
+    replyField: 'Reply-To',
+    defaultSubject: 'Restricted Studio Corporate Inquiry',
+  },
+  ru: {
+    eyebrow: 'КОРПОРАТИВНЫЕ КОНТАКТЫ',
+    heading: 'Связаться с нами',
+    lead: 'Свяжитесь с нашей командой по официальным каналам по вопросам лицензирования, оптовых заказов (15+ со скидкой 50%) и техподдержки.',
+    emailLabel: 'ОФИЦИАЛЬНАЯ ПОЧТА',
+    copyBtn: 'Копировать',
+    copiedBtn: 'Скопировано ✓',
+    storeLabel: 'ОФИЦИАЛЬНЫЙ МАГАЗИН',
+    storeValue: 'Проверенный профиль İtemsatış',
+    storeSub: 'Безопасная оплата и подтверждённый продавец',
+    slaLabel: 'ВРЕМЯ ОТВЕТА',
+    slaValue: 'В среднем до 2 часов (поддержка 24/7)',
+    formTitle: 'Форма обратной связи',
+    formSubtitle: 'Создаёт черновик письма в вашем почтовом клиенте.',
+    nameLabel: 'Имя / Проект',
+    namePlaceholder: 'Напр. Алексей',
+    emailInputLabel: 'Ваш Email',
+    emailInputPlaceholder: 'name@domain.com',
+    topicLabel: 'Тема обращения',
+    customTopicLabel: 'Укажите тему',
+    customTopicPlaceholder: 'Краткая тема запроса',
+    otherOption: 'Другое',
+    topics: [
+      'Консультация по каталогу и пакетам',
+      'Оптовый заказ (15+ пакетов · скидка 50%)',
+      'Техническая поддержка и установка',
+      'Индивидуальный проект и сотрудничество',
+    ],
+    messageLabel: 'Сообщение',
+    messagePlaceholder: 'Опишите интересующие пакеты или детали вашего запроса...',
+    submitBtn: 'Открыть почтовый клиент',
+    dispatchedNote: 'Почтовый клиент запущен. При необходимости напишите напрямую на',
+    statusLink: 'Статус',
+    mailGreeting: 'Здравствуйте, команда Restricted Studio,',
+    senderField: 'Отправитель',
+    replyField: 'Обратный адрес',
+    defaultSubject: 'Запрос в Restricted Studio',
+  },
+  fr: {
+    eyebrow: 'CONTACT ENTREPRISE',
+    heading: 'Contacter notre équipe',
+    lead: 'Contactez notre équipe via nos canaux officiels pour le catalogue, les achats en volume (15+ avec 50 % de remise) et le support technique.',
+    emailLabel: 'E-MAIL OFFICIEL',
+    copyBtn: 'Copier',
+    copiedBtn: 'Copié ✓',
+    storeLabel: 'BOUTIQUE VÉRIFIÉE',
+    storeValue: 'Boutique Officielle İtemsatış',
+    storeSub: 'Paiement sécurisé et profil vendeur certifié',
+    slaLabel: 'DÉLAI DE RÉPONSE',
+    slaValue: 'Sous 2 heures en moyenne (support 24/7)',
+    formTitle: 'Envoyer un message',
+    formSubtitle: 'Prépare un brouillon directement dans votre messagerie par défaut.',
+    nameLabel: 'Nom / Organisation',
+    namePlaceholder: 'Ex. Camille Laurent',
+    emailInputLabel: 'Votre e-mail',
+    emailInputPlaceholder: 'nom@domaine.com',
+    topicLabel: 'Objet',
+    customTopicLabel: 'Précisez l’objet',
+    customTopicPlaceholder: 'Titre de votre demande',
+    otherOption: 'Autre',
+    topics: [
+      'Conseil catalogue & licences',
+      'Achat en volume (15+ packs · -50 %)',
+      'Support technique & installation',
+      'Partenariat & projet sur mesure',
+    ],
+    messageLabel: 'Message',
+    messagePlaceholder: 'Décrivez brièvement les ressources souhaitées ou votre demande...',
+    submitBtn: 'Envoyer via messagerie',
+    dispatchedNote: 'Votre client e-mail a été ouvert. Sinon, écrivez directement à',
+    statusLink: 'Statut',
+    mailGreeting: 'Bonjour l’équipe Restricted Studio,',
+    senderField: 'Expéditeur',
+    replyField: 'Adresse de réponse',
+    defaultSubject: 'Demande entreprise Restricted Studio',
+  },
+};
 
 export default function ContactTerminalClient() {
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
+  const copy = CONTACT_I18N[locale] || CONTACT_I18N.tr;
+
   const [senderName, setSenderName] = useState('');
   const [senderEmail, setSenderEmail] = useState('');
-  const [subject, setSubject] = useState(SUBJECT_PRESETS[0]);
+  const [topicIndex, setTopicIndex] = useState<string>('0');
+  const [customSubject, setCustomSubject] = useState('');
   const [message, setMessage] = useState('');
   const [copied, setCopied] = useState(false);
   const [dispatched, setDispatched] = useState(false);
+
+  const selectedSubject =
+    topicIndex === 'other'
+      ? customSubject.trim() || copy.defaultSubject
+      : copy.topics[Number(topicIndex)] || copy.topics[0];
 
   const handleCopyEmail = async () => {
     try {
@@ -35,12 +226,12 @@ export default function ContactTerminalClient() {
   };
 
   const buildMailtoHref = () => {
-    const cleanSubject = subject.trim() || 'Restricted Studio İletişim Talebi';
+    const cleanSubject = selectedSubject || copy.defaultSubject;
     const bodyLines = [
-      senderName.trim() ? `Gönderen: ${senderName.trim()}` : '',
-      senderEmail.trim() ? `Yanıt Adresi: ${senderEmail.trim()}` : '',
-      senderName.trim() || senderEmail.trim() ? '----------------------------------------' : '',
-      message.trim() || 'Merhaba Restricted Studio ekibi,',
+      senderName.trim() ? `${copy.senderField}: ${senderName.trim()}` : '',
+      senderEmail.trim() ? `${copy.replyField}: ${senderEmail.trim()}` : '',
+      senderName.trim() || senderEmail.trim() ? '---' : '',
+      message.trim() || copy.mailGreeting,
     ].filter(Boolean);
 
     const params = new URLSearchParams({
@@ -57,618 +248,170 @@ export default function ContactTerminalClient() {
   };
 
   return (
-    <div style={styles.shell}>
-      {/* Scanline & Vignette Retro Overlay */}
-      <div style={styles.scanlines} aria-hidden="true" />
-      <div style={styles.ambientGlow} aria-hidden="true" />
+    <div className="rs-contact-shell">
+      <header className="rs-contact-topbar">
+        <div className="rs-contact-header-inner">
+          <Link href="/" className="rs-contact-brand">
+            <img src="/assets/rslogo.jpg" alt="Restricted Studio" width={28} height={28} className="rs-contact-logo" />
+            <span className="rs-contact-brand-name">RESTRICTED STUDIO</span>
+          </Link>
 
-      {/* Top Retro-Noir Navigation Bar */}
-      <header style={styles.header}>
-        <div className="rs-contact-header-inner" style={styles.headerInner}>
-          <div className="rs-contact-brand-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <Link href="/" style={styles.brandLink}>
-              <img src="/assets/rslogo.jpg" alt="Restricted Studio" style={styles.brandLogo} />
-              <span className="brand-logo-shimmer" style={styles.brandText}>
-                RESTRICTED STUDIO
-              </span>
-            </Link>
-            <span className="rs-contact-trust" style={styles.trustTag}>{t.common.itemsatisTrust}</span>
-          </div>
-
-          <nav className="rs-contact-nav" style={styles.headerNav}>
-            <LanguageSwitcher compact />
-            <Link href="/" style={styles.navLink}>
+          <nav className="rs-contact-nav" aria-label={copy.eyebrow}>
+            <Link href="/" className="rs-contact-nav-link">
               {t.common.home}
             </Link>
-            <Link href="/katalog" className="nav-katalog-shimmer" style={styles.navLinkHighlight}>
+            <Link href="/katalog" className="rs-contact-nav-link">
               {t.common.catalog}
             </Link>
-            <Link href="/status" className="rs-contact-status-link" style={styles.navLink}>
-              SİSTEM DURUMU
+            <Link href="/status" className="rs-contact-nav-link rs-contact-status-link">
+              {copy.statusLink}
             </Link>
-            <Link href="/dashboard" className="rs-contact-portal-btn" style={styles.navPortalBtn}>
+            <LanguageSwitcher compact />
+            <Link href="/dashboard" className="rs-contact-portal-btn">
               {t.common.clientPortal} →
             </Link>
           </nav>
         </div>
       </header>
 
-      {/* Main Retro Mail Terminal */}
-      <main className="rs-contact-main" style={styles.main}>
-        <div style={styles.terminalWindow}>
-          {/* Retro Terminal Title Bar */}
-          <div className="rs-contact-bar" style={styles.terminalBar}>
-            <div style={styles.terminalDots}>
-              <span style={{ ...styles.termDot, background: '#e01b24' }} />
-              <span style={{ ...styles.termDot, background: '#e8a848' }} />
-              <span style={{ ...styles.termDot, background: '#4da6e8' }} />
+      <main className="rs-contact-main">
+        <div className="rs-contact-grid">
+          <section className="rs-contact-info" aria-labelledby="contact-page-heading">
+            <div className="rs-contact-eyebrow">
+              <span className="rs-contact-eyebrow-bar" aria-hidden="true" />
+              <span>{copy.eyebrow}</span>
             </div>
-            <div style={styles.terminalTitle}>
-              RS-MAIL // TERMINAL v2.4 — [{CONTACT_EMAIL.toUpperCase()}]
-            </div>
-            <div className="rs-contact-bar-status" style={styles.terminalStatus}>
-              <span style={styles.onlineLed} />
-              <span>HAT AKTİF</span>
-            </div>
-          </div>
 
-          <div className="rs-contact-body" style={styles.terminalBody}>
-            {/* Left Column: Direct Mail Address Card & Retro Telemetry */}
-            <div style={styles.leftCol}>
-              <div style={styles.eyebrowBadge}>
-                <span style={styles.onlineLed} />
-                <span>RESMİ E-POSTA & DESTEK MERKEZİ</span>
-              </div>
+            <h1 id="contact-page-heading" className="rs-contact-title">
+              {copy.heading}
+            </h1>
+            <p className="rs-contact-lead">{copy.lead}</p>
 
-              <h1 style={styles.heading}>İLETİŞİM TERMİNALİ</h1>
-              <p style={styles.lead}>
-                Paket içerikleri, 15+ toplu alım (%50 indirim) sepetleri, lisans teslimatı veya teknik
-                destek talepleriniz için doğrudan resmi e-posta adresimize yazabilirsiniz.
-              </p>
-
-              {/* Direct Email Box with Copy & One-Click Mailto */}
-              <div style={styles.emailHighlightBox}>
-                <div style={styles.emailBoxLabel}>DOĞRUDAN E-POSTA ADRESİ</div>
-                <div style={styles.emailAddressRow}>
-                  <a href={`mailto:${CONTACT_EMAIL}`} style={styles.emailAddressLink}>
+            <dl className="rs-contact-directory">
+              <div className="rs-contact-dir-row">
+                <dt>{copy.emailLabel}</dt>
+                <dd className="rs-contact-email-dd">
+                  <a href={`mailto:${CONTACT_EMAIL}`} className="rs-contact-email-link">
                     {CONTACT_EMAIL}
                   </a>
-                </div>
-                <div style={styles.emailActionRow}>
-                  <button type="button" onClick={handleCopyEmail} style={styles.copyBtn}>
-                    {copied ? '✓ ADRES KOPYALANDI' : '📋 ADRESİ KOPYALA'}
+                  <button type="button" onClick={handleCopyEmail} className="rs-contact-copy-btn">
+                    {copied ? copy.copiedBtn : copy.copyBtn}
                   </button>
-                  <a href={`mailto:${CONTACT_EMAIL}`} style={styles.directMailLink}>
-                    ✉ DOĞRUDAN MAİL UYGULAMASINI AÇ →
-                  </a>
-                </div>
+                </dd>
               </div>
 
-              {/* Channel Specs */}
-              <div className="rs-contact-specs" style={styles.specsGrid}>
-                <div style={styles.specCard}>
-                  <div style={styles.specKey}>ORTALAMA YANIT SÜRESİ</div>
-                  <div style={styles.specVal}>&lt; 2 Saat (7/24 Aktif Nöbet)</div>
-                </div>
-                <div style={styles.specCard}>
-                  <div style={styles.specKey}>KURUMSAL MAĞAZA GÜVENCESİ</div>
-                  <div style={styles.specVal}>
-                    <a
-                      href={ITEMSATIS_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: '#f5ba5b', textDecoration: 'underline' }}
-                    >
-                      İtemsatış Resmi Mağaza ↗
-                    </a>
-                  </div>
-                </div>
+              <div className="rs-contact-dir-row">
+                <dt>{copy.storeLabel}</dt>
+                <dd>
+                  <a
+                    href={ITEMSATIS_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rs-contact-store-link"
+                  >
+                    {copy.storeValue} ↗
+                  </a>
+                  <span className="rs-contact-dir-sub">{copy.storeSub}</span>
+                </dd>
               </div>
+
+              <div className="rs-contact-dir-row">
+                <dt>{copy.slaLabel}</dt>
+                <dd>{copy.slaValue}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section className="rs-contact-card" aria-labelledby="contact-form-heading">
+            <div className="rs-contact-card-head">
+              <h2 id="contact-form-heading" className="rs-contact-form-title">
+                {copy.formTitle}
+              </h2>
+              <p className="rs-contact-form-sub">{copy.formSubtitle}</p>
             </div>
 
-            {/* Right Column: Interactive Retro E-Mail Composer */}
-            <form onSubmit={handleSubmit} className="rs-contact-form-col" style={styles.formCol}>
-              <div style={styles.formHeader}>
-                <span>YENİ MESAJ OLUŞTUR</span>
-                <span style={{ color: '#ff6b75' }}>ALICI: {CONTACT_EMAIL}</span>
-              </div>
-
-              <div className="rs-contact-field-row" style={styles.fieldRow}>
-                <div style={styles.fieldGroup}>
-                  <label htmlFor="contact-name" style={styles.label}>
-                    İSİM / SUNUCU ADI
-                  </label>
+            <form onSubmit={handleSubmit} className="rs-contact-form">
+              <div className="rs-contact-field-row">
+                <div className="rs-contact-field">
+                  <label htmlFor="contact-name">{copy.nameLabel}</label>
                   <input
                     id="contact-name"
                     type="text"
                     value={senderName}
                     onChange={(e) => setSenderName(e.target.value)}
-                    placeholder="Örn: Ahmet / Los Santos RP"
-                    style={styles.input}
+                    placeholder={copy.namePlaceholder}
                   />
                 </div>
 
-                <div style={styles.fieldGroup}>
-                  <label htmlFor="contact-email" style={styles.label}>
-                    YANIT E-POSTA ADRESİNİZ
-                  </label>
+                <div className="rs-contact-field">
+                  <label htmlFor="contact-email">{copy.emailInputLabel}</label>
                   <input
                     id="contact-email"
                     type="email"
                     value={senderEmail}
                     onChange={(e) => setSenderEmail(e.target.value)}
-                    placeholder="ornek@domain.com"
-                    style={styles.input}
+                    placeholder={copy.emailInputPlaceholder}
                   />
                 </div>
               </div>
 
-              <div style={styles.fieldGroup}>
-                <label htmlFor="contact-subject" style={styles.label}>
-                  KONU SEÇİMİ VEYA BAŞLIK
-                </label>
-                <div style={styles.presetChips}>
-                  {SUBJECT_PRESETS.map((preset) => {
-                    const active = subject === preset;
-                    return (
-                      <button
-                        key={preset}
-                        type="button"
-                        onClick={() => setSubject(preset)}
-                        style={{
-                          ...styles.presetChip,
-                          ...(active ? styles.presetChipActive : {}),
-                        }}
-                      >
-                        {preset}
-                      </button>
-                    );
-                  })}
-                </div>
-                <input
-                  id="contact-subject"
-                  type="text"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  style={styles.input}
-                  required
-                />
+              <div className="rs-contact-field">
+                <label htmlFor="contact-topic">{copy.topicLabel}</label>
+                <select
+                  id="contact-topic"
+                  value={topicIndex}
+                  onChange={(e) => setTopicIndex(e.target.value)}
+                >
+                  {copy.topics.map((topic, idx) => (
+                    <option key={topic} value={String(idx)}>
+                      {topic}
+                    </option>
+                  ))}
+                  <option value="other">{copy.otherOption}</option>
+                </select>
               </div>
 
-              <div style={styles.fieldGroup}>
-                <label htmlFor="contact-message" style={styles.label}>
-                  MESAJINIZ
-                </label>
+              {topicIndex === 'other' && (
+                <div className="rs-contact-field">
+                  <label htmlFor="contact-custom-subject">{copy.customTopicLabel}</label>
+                  <input
+                    id="contact-custom-subject"
+                    type="text"
+                    value={customSubject}
+                    onChange={(e) => setCustomSubject(e.target.value)}
+                    placeholder={copy.customTopicPlaceholder}
+                    required
+                  />
+                </div>
+              )}
+
+              <div className="rs-contact-field">
+                <label htmlFor="contact-message">{copy.messageLabel}</label>
                 <textarea
                   id="contact-message"
-                  rows={5}
+                  rows={4}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Talep ettiğiniz paketleri, sorunuzu veya proje detaylarını buraya yazın..."
-                  style={styles.textarea}
+                  placeholder={copy.messagePlaceholder}
                   required
                 />
               </div>
 
-              <div style={styles.formFooter}>
-                <button type="submit" style={styles.submitBtn}>
-                  <span>✉ MESAJI GÖNDER ({CONTACT_EMAIL})</span>
-                  <span>→</span>
-                </button>
+              <button type="submit" className="rs-contact-submit">
+                <span>{copy.submitBtn}</span>
+                <span aria-hidden="true">→</span>
+              </button>
 
-                {dispatched && (
-                  <p style={styles.dispatchNote}>
-                    E-posta istemciniz açıldı. Eğer otomatik açılmadıysa doğrudan{' '}
-                    <strong style={{ color: '#fff' }}>{CONTACT_EMAIL}</strong> adresine mail
-                    gönderebilirsiniz.
-                  </p>
-                )}
-              </div>
+              {dispatched && (
+                <p className="rs-contact-dispatch-note" role="status">
+                  {copy.dispatchedNote}{' '}
+                  <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+                </p>
+              )}
             </form>
-          </div>
+          </section>
         </div>
       </main>
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  shell: {
-    minHeight: '100vh',
-    backgroundColor: '#07080d',
-    color: '#eef1f8',
-    fontFamily: "var(--font-sans, 'Inter', system-ui, sans-serif)",
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column',
-    overflowX: 'hidden',
-    backgroundImage:
-      'radial-gradient(circle at 18% 20%, rgba(224, 27, 36, 0.14) 0%, transparent 38%), radial-gradient(circle at 84% 78%, rgba(232, 168, 72, 0.1) 0%, transparent 36%)',
-  },
-  scanlines: {
-    position: 'fixed',
-    inset: 0,
-    pointerEvents: 'none',
-    zIndex: 2,
-    background:
-      'repeating-linear-gradient(180deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 3px)',
-  },
-  ambientGlow: {
-    position: 'fixed',
-    inset: 0,
-    pointerEvents: 'none',
-    zIndex: 1,
-    boxShadow: 'inset 0 0 120px rgba(0, 0, 0, 0.85)',
-  },
-  header: {
-    position: 'sticky',
-    top: 0,
-    zIndex: 20,
-    backgroundColor: 'rgba(9, 10, 15, 0.92)',
-    backdropFilter: 'blur(12px)',
-    borderBottom: '1.5px solid rgba(224, 27, 36, 0.45)',
-  },
-  headerInner: {
-    maxWidth: '1240px',
-    margin: '0 auto',
-    padding: '14px 24px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '14px',
-    flexWrap: 'wrap',
-  },
-  brandLink: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    textDecoration: 'none',
-  },
-  brandLogo: {
-    width: '30px',
-    height: '30px',
-    borderRadius: '6px',
-    border: '1px solid rgba(255,255,255,0.25)',
-    objectFit: 'cover',
-  },
-  brandText: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '13px',
-    fontWeight: 800,
-    letterSpacing: '0.1em',
-  },
-  trustTag: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '10px',
-    fontWeight: 700,
-    letterSpacing: '0.08em',
-    color: 'rgba(240, 242, 248, 0.65)',
-    borderLeft: '1px solid rgba(255,255,255,0.16)',
-    paddingLeft: '12px',
-  },
-  headerNav: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-    flexWrap: 'wrap',
-  },
-  navLink: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '11.5px',
-    fontWeight: 700,
-    color: 'rgba(240, 242, 248, 0.78)',
-    textDecoration: 'none',
-  },
-  navLinkHighlight: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '11.5px',
-    fontWeight: 800,
-    textDecoration: 'none',
-  },
-  navPortalBtn: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '11px',
-    fontWeight: 800,
-    padding: '7px 14px',
-    borderRadius: '6px',
-    backgroundColor: '#9e111b',
-    border: '1px solid rgba(255, 110, 120, 0.5)',
-    color: '#ffffff',
-    textDecoration: 'none',
-  },
-  main: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '36px 20px 56px',
-    position: 'relative',
-    zIndex: 5,
-  },
-  terminalWindow: {
-    width: '100%',
-    maxWidth: '1120px',
-    backgroundColor: 'rgba(11, 13, 20, 0.95)',
-    border: '2px solid #c92230',
-    boxShadow: '0 0 0 2px #040508, 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 36px rgba(224, 27, 36, 0.22)',
-  },
-  terminalBar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '12px',
-    padding: '10px 16px',
-    background: 'linear-gradient(90deg, #21070b 0%, #3d0b13 50%, #1c070b 100%)',
-    borderBottom: '2px solid #c92230',
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '11px',
-    fontWeight: 800,
-    letterSpacing: '0.08em',
-  },
-  terminalDots: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-  },
-  termDot: {
-    width: '9px',
-    height: '9px',
-    display: 'inline-block',
-    border: '1px solid rgba(0,0,0,0.6)',
-  },
-  terminalTitle: {
-    color: '#ffd6da',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-  terminalStatus: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    color: '#9ef0b8',
-    fontSize: '10px',
-    whiteSpace: 'nowrap',
-    flexShrink: 0,
-  },
-  onlineLed: {
-    width: '7px',
-    height: '7px',
-    backgroundColor: '#38e578',
-    boxShadow: '0 0 8px #38e578',
-    display: 'inline-block',
-  },
-  terminalBody: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
-    gap: '28px',
-    padding: '28px',
-  },
-  leftCol: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '18px',
-  },
-  eyebrowBadge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '8px',
-    alignSelf: 'flex-start',
-    padding: '5px 10px',
-    backgroundColor: 'rgba(224, 27, 36, 0.14)',
-    border: '1px solid rgba(224, 27, 36, 0.5)',
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '10px',
-    fontWeight: 800,
-    letterSpacing: '0.08em',
-    color: '#ff858d',
-  },
-  heading: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: 'clamp(24px, 3vw, 32px)',
-    fontWeight: 900,
-    letterSpacing: '-0.01em',
-    color: '#ffffff',
-    margin: 0,
-  },
-  lead: {
-    fontSize: '14px',
-    lineHeight: 1.65,
-    color: 'rgba(228, 233, 245, 0.78)',
-    margin: 0,
-  },
-  emailHighlightBox: {
-    padding: '18px',
-    backgroundColor: '#07090f',
-    border: '2px solid #e8a848',
-    boxShadow: 'inset 0 0 0 2px #171208, 0 10px 24px rgba(0,0,0,0.65)',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-  },
-  emailBoxLabel: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '10px',
-    fontWeight: 800,
-    letterSpacing: '0.1em',
-    color: '#f5ba5b',
-  },
-  emailAddressRow: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '10px',
-    flexWrap: 'wrap',
-  },
-  emailAddressLink: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: 'clamp(16px, 2.1vw, 22px)',
-    fontWeight: 900,
-    color: '#ffffff',
-    textDecoration: 'none',
-    letterSpacing: '0.02em',
-    wordBreak: 'break-all',
-  },
-  emailActionRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    flexWrap: 'wrap',
-  },
-  copyBtn: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '11px',
-    fontWeight: 800,
-    padding: '8px 12px',
-    backgroundColor: '#241808',
-    border: '1.5px solid #e8a848',
-    color: '#ffd48a',
-    cursor: 'pointer',
-  },
-  directMailLink: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '11px',
-    fontWeight: 800,
-    padding: '8px 12px',
-    backgroundColor: '#8c0c17',
-    border: '1.5px solid #ff5460',
-    color: '#ffffff',
-    textDecoration: 'none',
-  },
-  specsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))',
-    gap: '10px',
-    marginTop: 'auto',
-  },
-  specCard: {
-    padding: '12px 14px',
-    backgroundColor: 'rgba(17, 20, 30, 0.85)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
-  },
-  specKey: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '9.5px',
-    fontWeight: 800,
-    letterSpacing: '0.08em',
-    color: 'rgba(220, 226, 240, 0.58)',
-    marginBottom: '4px',
-  },
-  specVal: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '12px',
-    fontWeight: 700,
-    color: '#eef1f8',
-  },
-  formCol: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '14px',
-    padding: '20px',
-    backgroundColor: '#080a10',
-    border: '1.5px solid rgba(255, 255, 255, 0.14)',
-  },
-  formHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: '8px',
-    paddingBottom: '10px',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '11px',
-    fontWeight: 800,
-    letterSpacing: '0.06em',
-  },
-  fieldRow: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))',
-    gap: '12px',
-  },
-  fieldGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '6px',
-  },
-  label: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '10px',
-    fontWeight: 800,
-    letterSpacing: '0.08em',
-    color: 'rgba(230, 235, 245, 0.78)',
-  },
-  presetChips: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '6px',
-    marginBottom: '4px',
-  },
-  presetChip: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '10px',
-    fontWeight: 700,
-    padding: '5px 8px',
-    backgroundColor: '#111521',
-    border: '1px solid #2b344d',
-    color: '#c7d2eb',
-    cursor: 'pointer',
-    textAlign: 'left',
-  },
-  presetChipActive: {
-    backgroundColor: '#2b0910',
-    borderColor: '#ff4754',
-    color: '#ffffff',
-  },
-  input: {
-    width: '100%',
-    padding: '10px 12px',
-    backgroundColor: '#0d1018',
-    border: '1.5px solid #2c354d',
-    color: '#ffffff',
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '12.5px',
-    outline: 'none',
-  },
-  textarea: {
-    width: '100%',
-    padding: '10px 12px',
-    backgroundColor: '#0d1018',
-    border: '1.5px solid #2c354d',
-    color: '#ffffff',
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '12.5px',
-    lineHeight: 1.55,
-    resize: 'vertical',
-    outline: 'none',
-  },
-  formFooter: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px',
-    marginTop: '4px',
-  },
-  submitBtn: {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '12px 18px',
-    backgroundColor: '#b81422',
-    border: '2px solid #ff6b75',
-    boxShadow: '0 6px 20px rgba(224, 27, 36, 0.4)',
-    color: '#ffffff',
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '12px',
-    fontWeight: 900,
-    letterSpacing: '0.06em',
-    cursor: 'pointer',
-  },
-  dispatchNote: {
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: '11px',
-    color: '#9ef0b8',
-    lineHeight: 1.5,
-    margin: 0,
-  },
-};
