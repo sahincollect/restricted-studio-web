@@ -18,17 +18,17 @@ interface Snowflake {
 }
 
 /**
- * Minimalist Triadic Noir snowfall overlay across all routes.
+ * Minimalist Triadic Noir snowfall overlay across subpages except `/` and `/katalog`.
  * Renders soft archival-chalk (#E6E3DC) particles mixed with subtle
  * 6-point geometric frost hairlines without UI clutter or pointer interference.
  */
 export default function WinterSnow() {
   const pathname = usePathname();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const isHome = pathname === '/';
+  const isSnowDisabled = pathname === '/' || pathname?.startsWith('/katalog');
 
   useEffect(() => {
-    if (isHome) return;
+    if (isSnowDisabled) return;
     if (
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -142,9 +142,9 @@ export default function WinterSnow() {
       window.removeEventListener('resize', syncDimensions);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [isHome]);
+  }, [isSnowDisabled]);
 
-  if (isHome) {
+  if (isSnowDisabled) {
     return null;
   }
 
