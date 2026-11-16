@@ -217,6 +217,9 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
           <Link href="/katalog" className="bpn-link bpn-link-highlight">
             KATALOG
           </Link>
+          <Link href="/lisanslar" className="bpn-link bpn-link-highlight">
+            {t.common.licenses.toLocaleUpperCase('tr')}
+          </Link>
           <button
             type="button"
             className={`bpn-link ${activeModal === 'faq' ? 'is-active' : ''}`}
@@ -318,6 +321,10 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
         </Link>
         <Link href="/katalog" className="bmn-link-btn" style={{ background: '#A50000' }}>
           <span>KATALOG (6.400+)</span>
+          <span>→</span>
+        </Link>
+        <Link href="/lisanslar" className="bmn-link-btn" style={{ borderColor: '#A50000' }}>
+          <span className="nav-katalog-shimmer">{t.common.licenses.toLocaleUpperCase('tr')}</span>
           <span>→</span>
         </Link>
         <button type="button" className="bmn-link-btn" onClick={() => openModal('faq')}>

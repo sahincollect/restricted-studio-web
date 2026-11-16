@@ -26,7 +26,10 @@ export default function WinterSnow() {
   const pathname = usePathname();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isSnowDisabled =
-    pathname === '/' || pathname?.startsWith('/katalog') || pathname?.startsWith('/iletisim');
+    pathname === '/' ||
+    pathname?.startsWith('/katalog') ||
+    pathname?.startsWith('/lisanslar') ||
+    pathname?.startsWith('/iletisim');
 
   useEffect(() => {
     if (isSnowDisabled) return;

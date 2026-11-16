@@ -260,8 +260,11 @@ export default function ContactTerminalClient() {
             <Link href="/" className="rs-contact-nav-link">
               {t.common.home}
             </Link>
-            <Link href="/katalog" className="rs-contact-nav-link">
+            <Link href="/katalog" className="rs-contact-nav-link nav-katalog-shimmer">
               {t.common.catalog}
+            </Link>
+            <Link href="/lisanslar" className="rs-contact-nav-link nav-katalog-shimmer">
+              {t.common.licenses}
             </Link>
             <Link href="/status" className="rs-contact-nav-link rs-contact-status-link">
               {copy.statusLink}

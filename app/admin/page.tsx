@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import TurnstileWidget from '@/components/TurnstileWidget';
+import AdminStoreManager from '@/components/AdminStoreManager';
 
 interface RedeemCode {
   id: string;
@@ -307,6 +308,9 @@ export default function AdminPage() {
             </span>
           </Link>
           <div className="rs-admin-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <Link href="/lisanslar" className="rs-admin-btn" style={styles.backBtn}>
+              Lisans Vitrin
+            </Link>
             <Link href="/dashboard" className="rs-admin-btn" style={styles.backBtn}>
               Müşteri Paneli
             </Link>
@@ -503,6 +507,9 @@ export default function AdminPage() {
             )}
           </div>        ) : (
           <>
+        {/* 0. MAĞAZA İLANLARI & FİYAT YÖNETİMİ */}
+        <AdminStoreManager />
+
         {/* 1. TOPLU KOD ÜRETİCİ */}
         <div style={styles.card}>
           <div style={styles.cardHeader}>

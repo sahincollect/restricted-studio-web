@@ -588,6 +588,13 @@ export default function CatalogPage() {
             >
               {t.common.catalog}
             </Link>
+            <Link
+              href="/lisanslar"
+              className="nav-item nav-katalog-shimmer"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {t.common.licenses}
+            </Link>
             <Link href="/iletisim" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
               İletişim
             </Link>

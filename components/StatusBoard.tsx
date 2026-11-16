@@ -163,8 +163,11 @@ export default function StatusBoard() {
                 <a href={siteLink('/')} className="status-nav-btn">
                   {t.common.home}
                 </a>
-                <a href={siteLink('/katalog')} className="status-nav-btn status-nav-hide-sm">
+                <a href={siteLink('/katalog')} className="status-nav-btn status-nav-hide-sm nav-katalog-shimmer">
                   {t.common.catalog}
+                </a>
+                <a href={siteLink('/lisanslar')} className="status-nav-btn status-nav-hide-sm nav-katalog-shimmer">
+                  {t.common.licenses}
                 </a>
                 <a href={siteLink('/dashboard')} className="status-nav-btn status-nav-primary">
                   {t.common.clientPortal} →
@@ -175,8 +178,11 @@ export default function StatusBoard() {
                 <Link href="/" className="status-nav-btn">
                   {t.common.home}
                 </Link>
-                <Link href="/katalog" className="status-nav-btn status-nav-hide-sm">
+                <Link href="/katalog" className="status-nav-btn status-nav-hide-sm nav-katalog-shimmer">
                   {t.common.catalog}
+                </Link>
+                <Link href="/lisanslar" className="status-nav-btn status-nav-hide-sm nav-katalog-shimmer">
+                  {t.common.licenses}
                 </Link>
                 <Link href="/dashboard" className="status-nav-btn status-nav-primary">
                   {t.common.clientPortal} →

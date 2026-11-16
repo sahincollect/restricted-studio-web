@@ -2,62 +2,10 @@ import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createAdminSupabase } from '@/lib/supabase';
 import { verifyAdminSecret } from '@/lib/admin-secret';
-import {
-  attachAdminElevatedCookies,
-  resolveElevatedAdminSession,
-} from '@/lib/admin-session';
+import { finalizeAdminResponse, verifyAdminAuth } from '@/lib/admin-auth';
 import { guardApiRequest, parseJsonBodySafe } from '@/lib/security-server';
 import { AdminActionSchema } from '@/lib/validation';
 import { fetchAuditLogs, writeAuditLog } from '@/lib/audit-log';
-
-interface AdminAuthContext {
-  authorized: boolean;
-  actorId: string;
-  viaSecretHeader: boolean;
-  rotatedSub?: string;
-  rotatedFamilyId?: string;
-}
-
-async function verifyAdminAuth(request: Request): Promise<AdminAuthContext> {
-  // 1. Zero-Trust MFA-verified elevated session cookie (or rotated refresh)
-  const elevated = await resolveElevatedAdminSession(request);
-  if (elevated.authenticated && elevated.claims) {
-    return {
-      authorized: true,
-      actorId: elevated.claims.sub,
-      viaSecretHeader: false,
-      rotatedSub: elevated.rotatedSub,
-      rotatedFamilyId: elevated.rotatedFamilyId,
-    };
-  }
-
-  // 2. Machine-to-machine CLI header secret (requires ADMIN_SECRET_KEY >= 32 bytes in env)
-  if (verifyAdminSecret(request.headers.get('x-admin-secret'))) {
-    return {
-      authorized: true,
-      actorId: 'cli-admin-secret',
-      viaSecretHeader: true,
-    };
-  }
-
-  return { authorized: false, actorId: 'unauthorized', viaSecretHeader: false };
-}
-
-function finalizeAdminResponse(
-  request: Request,
-  auth: AdminAuthContext,
-  payload: Record<string, any>,
-  status = 200
-) {
-  const res = NextResponse.json(payload, {
-    status,
-    headers: { 'Cache-Control': 'no-store' },
-  });
-  if (auth.rotatedSub) {
-    attachAdminElevatedCookies(request, res, auth.rotatedSub, auth.rotatedFamilyId);
-  }
-  return res;
-}
 
 export async function GET(request: Request) {
   const guard = guardApiRequest(request, 'admin_api');

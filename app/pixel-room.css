@@ -869,6 +869,24 @@
   color: #ffffff;
 }
 
+.living-room-shell .bpn-link.bpn-link-highlight {
+  display: inline-flex;
+}
+
+@media (max-width: 1260px) and (min-width: 981px) {
+  .living-room-shell .bpn-brand-divider,
+  .living-room-shell .bpn-trust-badge {
+    display: none;
+  }
+  .living-room-shell .bpn-menu {
+    gap: 4px;
+  }
+  .living-room-shell .bpn-link {
+    padding: 0 9px;
+    font-size: 11px;
+  }
+}
+
 .living-room-shell .bpn-trust-badge,
 .living-room-shell .bpn-itemsatis-btn,
 .living-room-shell .bpn-portal-btn,

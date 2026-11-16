@@ -51,6 +51,13 @@ export default function DiscordClient() {
             >
               {t.common.catalog}
             </Link>
+            <Link
+              href="/lisanslar"
+              className="nav-katalog-shimmer"
+              style={{ ...styles.navLink, color: undefined, fontWeight: 700 }}
+            >
+              {t.common.licenses}
+            </Link>
             <Link href="/dashboard" style={styles.navPortalBtn}>
               <svg
                 width="13"

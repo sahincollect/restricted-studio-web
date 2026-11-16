@@ -195,5 +195,28 @@ $$;
 revoke all on public.catalog_popularity from anon, authenticated;
 grant select on public.catalog_popularity to anon, authenticated;
 
+-- 9. Mağaza Ürün Fiyat Yönetimi (/lisanslar & /admin)
+create table if not exists public.store_product_prices (
+  product_id    text primary key,
+  custom_price  numeric(10, 2),
+  compare_price numeric(10, 2),
+  hidden        boolean not null default false,
+  note          text,
+  updated_by    text,
+  updated_at    timestamptz not null default now()
+);
+
+alter table public.store_product_prices enable row level security;
+
+drop policy if exists "store_product_prices_select_public" on public.store_product_prices;
+create policy "store_product_prices_select_public"
+  on public.store_product_prices
+  for select
+  to anon, authenticated
+  using (true);
+
+revoke all on public.store_product_prices from anon, authenticated;
+grant select on public.store_product_prices to anon, authenticated;
+
 -- PostgREST şema önbelleğini yenile
 notify pgrst, 'reload schema';

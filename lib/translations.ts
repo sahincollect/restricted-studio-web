@@ -24,6 +24,7 @@ export interface TranslationDictionary {
   common: {
     home: string;
     catalog: string;
+    licenses: string;
     discord: string;
     status: string;
     clientPortal: string;
@@ -471,6 +472,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
     common: {
       home: 'Ana Sayfa',
       catalog: 'Katalog',
+      licenses: 'Lisanslar',
       discord: 'Discord',
       status: 'Durum',
       clientPortal: 'Müşteri Portalı',
@@ -1026,6 +1028,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
     common: {
       home: 'Home',
       catalog: 'Catalog',
+      licenses: 'Licenses',
       discord: 'Discord',
       status: 'Status',
       clientPortal: 'Client Portal',
@@ -1581,6 +1584,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
     common: {
       home: 'Главная',
       catalog: 'Каталог',
+      licenses: 'Лицензии',
       discord: 'Discord',
       status: 'Статус',
       clientPortal: 'Клиентский портал',
@@ -2136,6 +2140,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
     common: {
       home: 'Accueil',
       catalog: 'Catalogue',
+      licenses: 'Licences',
       discord: 'Discord',
       status: 'Statut',
       clientPortal: 'Portail Client',

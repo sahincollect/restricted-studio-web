@@ -36,8 +36,11 @@ export default function AuthPortalShell({
           <Link href="/" className="rs-auth-nav-link">
             {t.auth.backHomeLink}
           </Link>
-          <Link href="/katalog" className="rs-auth-nav-link">
+          <Link href="/katalog" className="rs-auth-nav-link nav-katalog-shimmer">
             {t.auth.catalogLink}
+          </Link>
+          <Link href="/lisanslar" className="rs-auth-nav-link nav-katalog-shimmer">
+            {t.common.licenses}
           </Link>
           <Link href="/status" className="rs-auth-nav-link">
             {t.auth.systemStatusLink}

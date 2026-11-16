@@ -134,3 +134,35 @@ export const AdminActionSchema = z.discriminatedUnion('action', [
     })
     .strict(),
 ]);
+
+const STORE_PRODUCT_ID_RE = /^[a-zA-Z0-9_-]{1,32}$/;
+
+const optionalPriceNumber = z.union([
+  z.null(),
+  z.number().finite().min(0, 'Fiyat 0 veya daha büyük olmalıdır.').max(1_000_000),
+]);
+
+export const StoreAdminActionSchema = z.discriminatedUnion('action', [
+  z
+    .object({
+      action: z.literal('upsert_price'),
+      productId: z.string().trim().regex(STORE_PRODUCT_ID_RE, 'Geçersiz ürün kimliği.'),
+      customPrice: optionalPriceNumber,
+      comparePrice: optionalPriceNumber.optional(),
+      hidden: z.boolean().optional(),
+    })
+    .strict(),
+  z
+    .object({
+      action: z.literal('bulk_adjust'),
+      group: z.enum(['all', 'ai', 'design', 'media', 'software', 'fivem']),
+      mode: z.enum(['percent', 'fixed_delta', 'set_fixed', 'reset']),
+      value: z.number().finite().min(-95).max(100_000).optional(),
+    })
+    .strict(),
+  z
+    .object({
+      action: z.literal('refresh_itemsatis'),
+    })
+    .strict(),
+]);

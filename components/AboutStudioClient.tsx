@@ -87,6 +87,9 @@ export default function AboutStudioClient() {
             <Link href="/katalog" className="bpn-link bpn-link-highlight">
               KATALOG
             </Link>
+            <Link href="/lisanslar" className="bpn-link bpn-link-highlight">
+              {t.common.licenses.toLocaleUpperCase('tr')}
+            </Link>
             <a href="#sss" className="bpn-link">
               SSS
             </a>
@@ -174,6 +177,10 @@ export default function AboutStudioClient() {
           </Link>
           <Link href="/katalog" className="bmn-link-btn rs-about-drawer-catalog">
             <span>KATALOG (6.400+)</span>
+            <span>→</span>
+          </Link>
+          <Link href="/lisanslar" className="bmn-link-btn" style={{ borderColor: '#A50000' }}>
+            <span className="nav-katalog-shimmer">{t.common.licenses.toLocaleUpperCase('tr')}</span>
             <span>→</span>
           </Link>
           <a
