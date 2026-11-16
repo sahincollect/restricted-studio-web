@@ -873,6 +873,19 @@
   display: inline-flex;
 }
 
+/* Pill hover resets `background` shorthand; restore solid crisp ink so text stays visible. */
+.living-room-shell .bpn-link.bpn-link-highlight:hover,
+.living-room-shell .bpn-link.bpn-link-highlight:focus-visible,
+.living-room-shell .bpn-link.bpn-link-highlight.is-active {
+  background-image: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: #ffffff;
+  color: #ffffff;
+  animation: none;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+}
+
 @media (max-width: 1260px) and (min-width: 981px) {
   .living-room-shell .bpn-brand-divider,
   .living-room-shell .bpn-trust-badge {

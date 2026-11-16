@@ -1886,6 +1886,15 @@ textarea {
     border-color: var(--chalk-paper);
     background: var(--crimson-deep);
   }
+  .bmn-link-btn:hover .nav-katalog-shimmer,
+  .bmn-link-btn:focus-visible .nav-katalog-shimmer {
+    background-image: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    -webkit-text-fill-color: #ffffff;
+    color: #ffffff;
+    animation: none;
+  }
 
   /* Locked Mobile Bento Arrangement — ALL fits inside 100dvh cleanly */
   .bento-grid-container {
@@ -4543,7 +4552,7 @@ textarea {
 }
 
 .status-container {
-  max-width: 820px;
+  max-width: 980px;
   margin: 0 auto;
   padding: 28px 20px 64px;
   min-height: 100vh;
@@ -4556,7 +4565,7 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 12px;
   padding: 10px 14px;
   background: rgba(8, 8, 8, 0.92);
   backdrop-filter: blur(10px);
@@ -4569,6 +4578,7 @@ textarea {
   align-items: center;
   gap: 10px;
   min-width: 0;
+  flex-shrink: 0;
 }
 
 .status-brand-link {
@@ -4600,17 +4610,18 @@ textarea {
   border: 1px solid rgba(165, 0, 0, 0.65);
   color: #f0f0f0;
   background: rgba(165, 0, 0, 0.16);
+  white-space: nowrap;
 }
 
 .status-nav-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
 }
 
 .status-nav-btn {
-  padding: 6px 12px;
+  padding: 6px 10px;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
@@ -4618,16 +4629,27 @@ textarea {
   text-transform: uppercase;
   color: rgba(240, 240, 240, 0.78);
   border: 1px solid transparent;
-  background: transparent;
+  background-color: transparent;
   text-decoration: none;
   white-space: nowrap;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .status-nav-btn:hover {
   color: #f0f0f0;
   border-color: rgba(240, 240, 240, 0.24);
-  background: rgba(240, 240, 240, 0.05);
+  background-color: rgba(240, 240, 240, 0.05);
+}
+
+.status-nav-btn.nav-katalog-shimmer:hover,
+.status-nav-btn.nav-katalog-shimmer:focus-visible {
+  background-image: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: #ffffff;
+  color: #ffffff;
+  animation: none;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
 }
 
 .status-nav-primary {
@@ -7435,6 +7457,18 @@ html.is-crt-animating body {
 .rs-about-pill-nav .bpn-link.is-active {
   background: rgba(224, 27, 36, 0.18);
   color: #ffffff;
+}
+
+.rs-about-pill-nav .bpn-link.bpn-link-highlight:hover,
+.rs-about-pill-nav .bpn-link.bpn-link-highlight:focus-visible,
+.rs-about-pill-nav .bpn-link.bpn-link-highlight.is-active {
+  background-image: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: #ffffff;
+  color: #ffffff;
+  animation: none;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
 }
 
 .rs-about-pill-nav .bpn-trust-badge,
