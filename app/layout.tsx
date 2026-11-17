@@ -7,6 +7,7 @@ import MinimalAudioPlayer from '@/components/MinimalAudioPlayer';
 import CrtTransitionProvider from '@/components/CrtTransitionProvider';
 import { I18nProvider } from '@/components/I18nProvider';
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import {
   LOCALE_COOKIE_NAME,
   detectLocaleFromAcceptLanguage,
@@ -189,6 +190,7 @@ export default async function RootLayout({
           </CrtTransitionProvider>
         </I18nProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
