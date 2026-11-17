@@ -415,7 +415,7 @@ export function buildSecurityHeaders(options: {
   const scriptDirectives = [
     "script-src 'self'",
     options.nonce ? `'nonce-${options.nonce}' 'strict-dynamic'` : '',
-    options.isDev ? "'unsafe-eval'" : '',
+    options.isDev ? "'unsafe-eval' https://va.vercel-scripts.com" : '',
     'https://challenges.cloudflare.com',
   ]
     .filter(Boolean)
