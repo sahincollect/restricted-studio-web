@@ -11,9 +11,48 @@ const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
 
 interface CatalogChoice {
   href: string;
-  tag: string;
+  badge: string;
   title: string;
   desc: string;
+  icon: 'code' | 'key' | 'web' | 'bot';
+}
+
+function renderChoiceIcon(icon: CatalogChoice['icon']) {
+  switch (icon) {
+    case 'code':
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <polyline points="16 18 22 12 16 6" />
+          <polyline points="8 6 2 12 8 18" />
+        </svg>
+      );
+    case 'key':
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <circle cx="7.5" cy="15.5" r="4.5" />
+          <path d="M21 2l-9.6 9.6" />
+          <path d="M15.5 7.5l3 3L22 7l-3-3" />
+        </svg>
+      );
+    case 'web':
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="16" rx="2.5" />
+          <line x1="3" y1="9" x2="21" y2="9" />
+          <circle cx="7" cy="6.5" r="0.8" fill="currentColor" />
+          <circle cx="10" cy="6.5" r="0.8" fill="currentColor" />
+        </svg>
+      );
+    case 'bot':
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <rect x="4" y="7" width="16" height="12" rx="3" />
+          <path d="M12 7V3" />
+          <circle cx="9.5" cy="13" r="1.2" fill="currentColor" />
+          <circle cx="14.5" cy="13" r="1.2" fill="currentColor" />
+        </svg>
+      );
+  }
 }
 
 interface NavLabels {
@@ -45,31 +84,35 @@ const NAV_COPY: Record<Locale, NavLabels> = {
     cart: 'Sepet',
     openMenu: 'Menüyü aç',
     closeMenu: 'Menüyü kapat',
-    catalogChoicesTitle: 'İLERLEMEK İSTEDİĞİNİZ ALANI SEÇİN',
+    catalogChoicesTitle: 'KATALOG VE HİZMETLER',
     catalogChoices: [
       {
-        href: '/lisanslar',
-        tag: 'VİTRİN · İTEMSATIŞ',
-        title: 'Lisanslar',
-        desc: 'Dijital yazılım abonelikleri ve mağaza ilanları',
-      },
-      {
         href: '/katalog',
-        tag: '6.446+ AÇIK KAYNAK',
+        badge: '6.446+',
         title: 'FiveM / RedM',
         desc: 'Script, MLO, Araç Paketleri, Kıyafet & Mod arşivi',
+        icon: 'code',
+      },
+      {
+        href: '/lisanslar',
+        badge: '19 İlan',
+        title: 'Lisanslar',
+        desc: 'Yapay zeka, tasarım & medya dijital abonelikleri',
+        icon: 'key',
       },
       {
         href: '/hizmetler/web-kurulum',
-        tag: 'HİZMET · FORM',
+        badge: 'HİZMET',
         title: 'Web Sitesi Kurulum Hizmeti',
-        desc: 'Size özel kurumsal site veya topluluk portalı başvurusu',
+        desc: 'Markaya veya sunucuya özel Next.js site başvurusu',
+        icon: 'web',
       },
       {
         href: '/hizmetler/discord-bot',
-        tag: 'HİZMET · FORM',
+        badge: 'HİZMET',
         title: 'Discord Bot Hizmetleri',
-        desc: 'FiveM/RedM SQL bağlantılı ve özel bot talebi',
+        desc: 'SQL/txAdmin bağlantılı ve özel otomasyon botları',
+        icon: 'bot',
       },
     ],
   },
@@ -85,31 +128,35 @@ const NAV_COPY: Record<Locale, NavLabels> = {
     cart: 'Cart',
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
-    catalogChoicesTitle: 'CHOOSE YOUR DESTINATION',
+    catalogChoicesTitle: 'CATALOG & SERVICES',
     catalogChoices: [
       {
-        href: '/lisanslar',
-        tag: 'SHOWCASE · İTEMSATIŞ',
-        title: 'Licenses',
-        desc: 'Digital subscriptions & verified store listings',
-      },
-      {
         href: '/katalog',
-        tag: '6,446+ OPEN SOURCE',
+        badge: '6,446+',
         title: 'FiveM / RedM',
         desc: 'Scripts, MLO interiors, vehicles & EUP packages',
+        icon: 'code',
+      },
+      {
+        href: '/lisanslar',
+        badge: '19 Packs',
+        title: 'Licenses',
+        desc: 'Verified AI, design & media digital subscriptions',
+        icon: 'key',
       },
       {
         href: '/hizmetler/web-kurulum',
-        tag: 'SERVICE · BRIEF',
+        badge: 'SERVICE',
         title: 'Website Setup Service',
-        desc: 'Request a custom Next.js portal or store build',
+        desc: 'Custom Next.js storefront or community portal brief',
+        icon: 'web',
       },
       {
         href: '/hizmetler/discord-bot',
-        tag: 'SERVICE · BRIEF',
+        badge: 'SERVICE',
         title: 'Discord Bot Services',
-        desc: 'Custom whitelist, ticket & SQL-linked Discord bots',
+        desc: 'Whitelist, ticket & SQL-linked Discord automation',
+        icon: 'bot',
       },
     ],
   },
@@ -125,31 +172,35 @@ const NAV_COPY: Record<Locale, NavLabels> = {
     cart: 'Корзина',
     openMenu: 'Открыть меню',
     closeMenu: 'Закрыть меню',
-    catalogChoicesTitle: 'ВЫБЕРИТЕ НАПРАВЛЕНИЕ',
+    catalogChoicesTitle: 'КАТАЛОГ И УСЛУГИ',
     catalogChoices: [
       {
-        href: '/lisanslar',
-        tag: 'ВИТРИНА · İTEMSATIŞ',
-        title: 'Лицензии',
-        desc: 'Цифровые подписки и проверенные объявления',
-      },
-      {
         href: '/katalog',
-        tag: '6 446+ ПАКЕТОВ',
+        badge: '6 446+',
         title: 'FiveM / RedM',
         desc: 'Скрипты, интерьеры MLO, авто и одежда EUP',
+        icon: 'code',
+      },
+      {
+        href: '/lisanslar',
+        badge: '19',
+        title: 'Лицензии',
+        desc: 'AI-подписки, софт и дизайн-инструменты İtemsatış',
+        icon: 'key',
       },
       {
         href: '/hizmetler/web-kurulum',
-        tag: 'УСЛУГА · ЗАЯВКА',
+        badge: 'УСЛУГА',
         title: 'Создание веб-сайта',
-        desc: 'Индивидуальный сайт или портал под ключ',
+        desc: 'Заявка на разработку сайта или портала под ключ',
+        icon: 'web',
       },
       {
         href: '/hizmetler/discord-bot',
-        tag: 'УСЛУГА · ЗАЯВКА',
+        badge: 'УСЛУГА',
         title: 'Услуги Discord-ботов',
         desc: 'Кастомные боты и интеграция с FiveM/RedM',
+        icon: 'bot',
       },
     ],
   },
@@ -165,31 +216,35 @@ const NAV_COPY: Record<Locale, NavLabels> = {
     cart: 'Panier',
     openMenu: 'Ouvrir le menu',
     closeMenu: 'Fermer le menu',
-    catalogChoicesTitle: 'CHOISISSEZ VOTRE SECTION',
+    catalogChoicesTitle: 'CATALOGUE & SERVICES',
     catalogChoices: [
       {
-        href: '/lisanslar',
-        tag: 'VITRINE · İTEMSATIŞ',
-        title: 'Licences',
-        desc: 'Abonnements numériques & offres vérifiées',
-      },
-      {
         href: '/katalog',
-        tag: '6 446+ OPEN SOURCE',
+        badge: '6 446+',
         title: 'FiveM / RedM',
         desc: 'Scripts, intérieurs MLO, véhicules & tenues EUP',
+        icon: 'code',
+      },
+      {
+        href: '/lisanslar',
+        badge: '19',
+        title: 'Licences',
+        desc: 'Abonnements IA, design & médias vérifiés',
+        icon: 'key',
       },
       {
         href: '/hizmetler/web-kurulum',
-        tag: 'SERVICE · FORMULAIRE',
+        badge: 'SERVICE',
         title: 'Création de Site Web',
-        desc: 'Demande de site sur mesure ou boutique dédiée',
+        desc: 'Demande de site Next.js sur mesure ou vitrine',
+        icon: 'web',
       },
       {
         href: '/hizmetler/discord-bot',
-        tag: 'SERVICE · FORMULAIRE',
+        badge: 'SERVICE',
         title: 'Services Bot Discord',
         desc: 'Bots personnalisés et passerelle FiveM/RedM',
+        icon: 'bot',
       },
     ],
   },
@@ -289,9 +344,14 @@ export default function SiteNavbar({
   const renderChoiceLink = (choice: CatalogChoice, className: string, onClick?: () => void) => {
     const body = (
       <>
+        <span className="st-cat-choice-icon" aria-hidden="true">
+          {renderChoiceIcon(choice.icon)}
+        </span>
         <div className="st-cat-choice-main">
-          <span className="st-cat-choice-tag">{choice.tag}</span>
-          <strong className="st-cat-choice-title">{choice.title}</strong>
+          <div className="st-cat-choice-title-row">
+            <strong className="st-cat-choice-title">{choice.title}</strong>
+            <span className="st-cat-choice-badge">{choice.badge}</span>
+          </div>
           <span className="st-cat-choice-desc">{choice.desc}</span>
         </div>
         <span className="st-cat-choice-arrow" aria-hidden="true">

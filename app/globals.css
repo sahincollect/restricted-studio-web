@@ -361,14 +361,14 @@ img {
   top: calc(100% + 14px);
   left: 50%;
   transform: translateX(-50%);
-  width: 540px;
-  background: #141316;
-  border: 1px solid var(--border-strong);
-  border-radius: 22px;
+  width: 430px;
+  background: #131215;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px 42px 18px 42px;
   padding: 16px;
   box-shadow:
-    0 26px 64px rgba(0, 0, 0, 0.72),
-    0 0 40px rgba(239, 91, 56, 0.08);
+    0 28px 72px rgba(0, 0, 0, 0.82),
+    0 0 42px rgba(239, 91, 56, 0.11);
   z-index: 95;
   animation: dropdownPop 0.18s var(--ease-expo) forwards;
 }
@@ -385,53 +385,92 @@ img {
 }
 
 .st-catalog-dropdown-head {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--accent-coral);
-  padding: 2px 6px 10px;
-  border-bottom: 1px solid var(--border-hairline);
-  margin-bottom: 10px;
-}
-
-.st-catalog-dropdown-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.st-cat-choice-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent-coral);
+  padding: 2px 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 8px;
+}
+
+.st-catalog-dropdown-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.st-cat-choice-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 11px 13px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid transparent;
   transition: all 0.2s var(--ease-expo);
 }
 
 .st-cat-choice-card:hover,
 .st-cat-choice-card.is-current {
-  background: rgba(239, 91, 56, 0.12);
-  border-color: rgba(239, 91, 56, 0.48);
-  transform: translateY(-1px);
+  background: linear-gradient(90deg, rgba(239, 91, 56, 0.14) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border-color: rgba(239, 91, 56, 0.44);
+  transform: translateX(2px);
+}
+
+.st-cat-choice-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--accent-coral);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s var(--ease-expo);
+}
+
+.st-cat-choice-card:hover .st-cat-choice-icon,
+.st-cat-choice-card.is-current .st-cat-choice-icon,
+.st-mobile-subchoice:hover .st-cat-choice-icon,
+.st-mobile-subchoice.is-active .st-cat-choice-icon {
+  background: var(--accent-ember);
+  border-color: var(--accent-ember);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(239, 91, 56, 0.35);
 }
 
 .st-cat-choice-main {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   min-width: 0;
+  flex: 1;
 }
 
-.st-cat-choice-tag {
+.st-cat-choice-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.st-cat-choice-badge {
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  background: rgba(239, 91, 56, 0.14);
+  border: 1px solid rgba(239, 91, 56, 0.28);
   font-family: var(--font-mono);
   font-size: 9.5px;
   font-weight: 700;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.04em;
   color: var(--accent-coral);
 }
 
@@ -444,20 +483,28 @@ img {
 
 .st-cat-choice-desc {
   font-size: 11.5px;
-  line-height: 1.4;
+  line-height: 1.38;
   color: var(--text-muted);
 }
 
 .st-cat-choice-arrow {
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 14px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
 .st-cat-choice-card:hover .st-cat-choice-arrow {
   transform: translateX(3px);
-  color: var(--accent-ember);
+  background: rgba(239, 91, 56, 0.18);
+  color: #ffffff;
 }
 
 .st-nav-right {
