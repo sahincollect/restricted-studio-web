@@ -287,7 +287,7 @@ export default function SiteNavbar({
   useEffect(() => {
     setDrawerOpen(false);
     setCatalogMenuOpen(false);
-    if (current.startsWith('/katalog') || current.startsWith('/hizmetler')) {
+    if (current.startsWith('/katalog') || current.startsWith('/lisanslar') || current.startsWith('/hizmetler')) {
       setMobileCatalogOpen(true);
     }
   }, [pathname, current]);
@@ -315,7 +315,12 @@ export default function SiteNavbar({
   const isActive = (href: string) => {
     if (href === '/') return current === '/';
     if (href === '/katalog') {
-      return current === '/katalog' || current.startsWith('/katalog/') || current.startsWith('/hizmetler/');
+      return (
+        current === '/katalog' ||
+        current.startsWith('/katalog/') ||
+        current === '/lisanslar' ||
+        current.startsWith('/hizmetler/')
+      );
     }
     return current === href || current.startsWith(`${href}/`);
   };
@@ -375,7 +380,6 @@ export default function SiteNavbar({
   };
 
   const plainNavItems: { href: string; label: string; isStatusRoute?: boolean }[] = [
-    { href: '/lisanslar', label: labels.licenses },
     { href: '/hakkimizda', label: labels.about },
     { href: '/status', label: labels.status, isStatusRoute: true },
     { href: '/iletisim', label: labels.contact },
