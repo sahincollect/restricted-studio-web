@@ -21,4 +21,6 @@ test('sitemap.ts and robots.ts define complete canonical routes and sitemap refe
   assert.ok(robotsSrc.includes('/.well-known/security.txt'), 'robots.ts must allow security.txt');
   const secTxt = fs.readFileSync(new URL('../public/.well-known/security.txt', import.meta.url), 'utf8');
   assert.ok(secTxt.includes('mailto:info@restrictedstudio.shop'));
+  const layoutSrc = fs.readFileSync(new URL('../app/layout.tsx', import.meta.url), 'utf8');
+  assert.ok(layoutSrc.includes('ICON_VERSION'), 'layout.tsx must version favicon/icon URLs for Search cache invalidation');
 });

@@ -37,6 +37,8 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 });
 
+const ICON_VERSION = '20261118';
+
 const OG_LOCALE_MAP = {
   tr: 'tr_TR',
   en: 'en_US',
@@ -62,16 +64,16 @@ export async function generateMetadata(): Promise<Metadata> {
     description: m.siteDescription,
     icons: {
       icon: [
-        { url: '/favicon.ico', sizes: 'any' },
-        { url: '/icon-48.png', type: 'image/png', sizes: '48x48' },
-        { url: '/icon-96.png', type: 'image/png', sizes: '96x96' },
-        { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
-        { url: '/icon-512.png', type: 'image/png', sizes: '512x512' },
+        { url: `/favicon.ico?v=${ICON_VERSION}`, sizes: 'any' },
+        { url: `/icon-48.png?v=${ICON_VERSION}`, type: 'image/png', sizes: '48x48' },
+        { url: `/icon-96.png?v=${ICON_VERSION}`, type: 'image/png', sizes: '96x96' },
+        { url: `/icon-192.png?v=${ICON_VERSION}`, type: 'image/png', sizes: '192x192' },
+        { url: `/icon-512.png?v=${ICON_VERSION}`, type: 'image/png', sizes: '512x512' },
       ],
-      shortcut: '/favicon.ico',
-      apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+      shortcut: `/favicon.ico?v=${ICON_VERSION}`,
+      apple: [{ url: `/apple-touch-icon.png?v=${ICON_VERSION}`, sizes: '180x180', type: 'image/png' }],
     },
-    manifest: '/manifest.webmanifest',
+    manifest: `/manifest.webmanifest?v=${ICON_VERSION}`,
     openGraph: {
       type: 'website',
       locale: OG_LOCALE_MAP[locale],
@@ -81,7 +83,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: m.ogDescription,
       images: [
         {
-          url: '/icon-512.png',
+          url: `/icon-512.png?v=${ICON_VERSION}`,
           width: 512,
           height: 512,
           alt: 'Restricted Studio',
@@ -92,7 +94,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary',
       title: m.siteTitle,
       description: m.twitterDescription,
-      images: ['/icon-512.png'],
+      images: [`/icon-512.png?v=${ICON_VERSION}`],
     },
     robots: {
       index: true,
@@ -128,11 +130,11 @@ export default async function RootLayout({
         email: 'info@restrictedstudio.shop',
         logo: {
           '@type': 'ImageObject',
-          url: `${SITE_URL}/icon-512.png`,
+          url: `${SITE_URL}/icon-512.png?v=${ICON_VERSION}`,
           width: 512,
           height: 512,
         },
-        image: `${SITE_URL}/icon-512.png`,
+        image: `${SITE_URL}/icon-512.png?v=${ICON_VERSION}`,
         contactPoint: [
           {
             '@type': 'ContactPoint',
