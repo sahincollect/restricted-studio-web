@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 const SUPABASE_URL =
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://nknscxscbnucqrxqbgfg.supabase.co';
 const SUPABASE_ANON_KEY =
@@ -10,11 +12,14 @@ export async function GET() {
   try {
     const res = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
       headers: { apikey: SUPABASE_ANON_KEY },
-      next: { revalidate: 60 },
+      cache: 'no-store',
       signal: AbortSignal.timeout(3500),
     });
     if (!res.ok) {
-      return NextResponse.json({ google: false, discord: false });
+      return NextResponse.json(
+        { google: false, discord: false },
+        { headers: { 'Cache-Control': 'no-store' } }
+      );
     }
     const json = (await res.json()) as { external?: Record<string, boolean> };
     return NextResponse.json(
@@ -22,9 +27,12 @@ export async function GET() {
         google: Boolean(json?.external?.google),
         discord: Boolean(json?.external?.discord),
       },
-      { headers: { 'Cache-Control': 'public, max-age=60' } }
+      { headers: { 'Cache-Control': 'no-store' } }
     );
   } catch {
-    return NextResponse.json({ google: false, discord: false });
+    return NextResponse.json(
+      { google: false, discord: false },
+      { headers: { 'Cache-Control': 'no-store' } }
+    );
   }
 }
