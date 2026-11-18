@@ -15,7 +15,6 @@ import type { Locale } from '@/lib/i18n';
 interface AccountPortalClientProps {
   initialProfile: UserProfileRecord;
   initialOrders: OrderRecord[];
-  initialIsAdmin: boolean;
   initialLicenseCount: number;
   initialSessionMeta: DashboardSessionMeta;
   initialTab?: 'orders' | 'profile' | 'security';
@@ -333,7 +332,6 @@ export function renderAvatarVisual(avatarUrl: string | null | undefined, display
 export default function AccountPortalClient({
   initialProfile,
   initialOrders,
-  initialIsAdmin,
   initialLicenseCount,
   initialSessionMeta,
   initialTab = 'orders',
@@ -603,11 +601,6 @@ export default function AccountPortalClient({
               <Link href="/dashboard" className="st-pill-btn is-outline is-sm">
                 {ui.licensesShortcut}
               </Link>
-              {initialIsAdmin && (
-                <Link href="/admin" className="st-pill-btn is-ember is-sm">
-                  Admin Paneli →
-                </Link>
-              )}
             </div>
           </section>
 

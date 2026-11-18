@@ -281,11 +281,6 @@ export default function DashboardClient({
               <Link href="/hesabim" className="st-pill-btn is-light is-sm">
                 Hesabım &amp; Teslimat
               </Link>
-              {isAdmin && (
-                <Link href="/admin" className="st-pill-btn is-ember is-sm">
-                  {t.dashboard.adminPanelBtn} →
-                </Link>
-              )}
               <button
                 type="button"
                 onClick={() => void handleLogout('current')}

@@ -24,7 +24,7 @@ export default function robots(): MetadataRoute.Robots {
           '/apple-touch-icon.png',
           '/manifest.webmanifest',
         ],
-        disallow: ['/api/', '/admin', '/dashboard', '/auth/', '/login', '/register'],
+        disallow: ['/api/', '/admin', '/dashboard', '/hesabim', '/siparisler', '/auth/', '/login', '/register'],
       },
       {
         userAgent: ['GPTBot', 'CCBot', 'Bytespider', 'ClaudeBot', 'anthropic-ai', 'Scrapy'],

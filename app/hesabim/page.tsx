@@ -36,7 +36,6 @@ export default async function HesabimPage({
     <AccountPortalClient
       initialProfile={profile}
       initialOrders={orders}
-      initialIsAdmin={session.isAdmin}
       initialLicenseCount={session.licenses.length}
       initialSessionMeta={session.sessionMeta}
       initialTab={initialTab}

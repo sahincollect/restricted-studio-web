@@ -25,7 +25,6 @@ interface FooterCopy {
     contact: string;
   };
   portal: string;
-  admin: string;
   itemsatis: string;
 }
 
@@ -48,7 +47,6 @@ const FOOTER_COPY: Record<Locale, FooterCopy> = {
       contact: 'İletişim',
     },
     portal: 'Müşteri Portalı',
-    admin: 'Yönetici Girişi',
     itemsatis: 'İtemsatış Resmi Mağaza',
   },
   en: {
@@ -69,7 +67,6 @@ const FOOTER_COPY: Record<Locale, FooterCopy> = {
       contact: 'Contact',
     },
     portal: 'Client Portal',
-    admin: 'Admin Access',
     itemsatis: 'İtemsatış Official Store',
   },
   ru: {
@@ -90,7 +87,6 @@ const FOOTER_COPY: Record<Locale, FooterCopy> = {
       contact: 'Контакты',
     },
     portal: 'Портал клиентов',
-    admin: 'Вход для админа',
     itemsatis: 'Магазин İtemsatış',
   },
   fr: {
@@ -111,7 +107,6 @@ const FOOTER_COPY: Record<Locale, FooterCopy> = {
       contact: 'Contact',
     },
     portal: 'Portail client',
-    admin: 'Accès admin',
     itemsatis: 'Boutique İtemsatış',
   },
 };
@@ -131,7 +126,7 @@ export default function SiteFooter({ mainOrigin = '' }: { mainOrigin?: string })
       <Link
         key={href}
         href={href}
-        prefetch={href === '/dashboard' || href === '/admin' ? false : undefined}
+        prefetch={href === '/dashboard' || href === '/hesabim' ? false : undefined}
         className="st-footer-link"
       >
         {label}
@@ -182,10 +177,9 @@ export default function SiteFooter({ mainOrigin = '' }: { mainOrigin?: string })
             >
               {copy.itemsatis} ↗
             </a>
-            {linkOrA('/dashboard', copy.portal)}
+            {linkOrA('/hesabim', copy.portal)}
             {linkOrA('/hizmetler/web-kurulum', locale === 'tr' ? 'Web Kurulum Hizmeti' : locale === 'ru' ? 'Создание сайта' : locale === 'fr' ? 'Création Web' : 'Website Setup')}
             {linkOrA('/hizmetler/discord-bot', locale === 'tr' ? 'Discord Bot Hizmetleri' : locale === 'ru' ? 'Discord-боты' : locale === 'fr' ? 'Bots Discord' : 'Discord Bots')}
-            {linkOrA('/admin', copy.admin)}
           </div>
         </div>
 

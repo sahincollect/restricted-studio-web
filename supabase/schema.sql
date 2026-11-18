@@ -322,5 +322,27 @@ create policy "order_messages_select_own"
 revoke all on public.order_messages from anon, authenticated;
 grant select on public.order_messages to authenticated;
 
+-- 13. Yönetici Operatör Hesapları (/admin çoklu yönetici desteği, yalnızca Service Role)
+create table if not exists public.admin_operators (
+  id            uuid primary key default gen_random_uuid(),
+  username      text not null unique,
+  password_hash text not null,
+  is_active     boolean not null default true,
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
+);
+
+alter table public.admin_operators enable row level security;
+
+drop policy if exists "deny_all_admin_operators" on public.admin_operators;
+create policy "deny_all_admin_operators"
+  on public.admin_operators
+  for all
+  to anon, authenticated
+  using (false)
+  with check (false);
+
+revoke all on public.admin_operators from anon, authenticated;
+
 -- PostgREST şema önbelleğini yenile
 notify pgrst, 'reload schema';

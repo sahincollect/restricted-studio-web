@@ -10,6 +10,7 @@ import {
 import { isSecureRequest } from '@/lib/customer-session';
 import { verifyArgon2idPassword } from '@/lib/password-security';
 import { decryptMfaSecret, encryptMfaSecret } from '@/lib/admin-mfa';
+import { createAdminSupabase } from '@/lib/supabase';
 import { writeAuditLog } from '@/lib/audit-log';
 
 export { ADMIN_COOKIE, ADMIN_PREAUTH_COOKIE, ADMIN_ENROLL_COOKIE, ADMIN_REFRESH_COOKIE };
@@ -108,23 +109,124 @@ function verifyStructuredToken<T extends { v?: number; exp?: number }>(token?: s
   }
 }
 
+interface EnvAdminOperator {
+  username: string;
+  passwordHash: string;
+}
+
+function decodeHashField(rawHash: string): string {
+  const clean = rawHash.trim();
+  if (clean.startsWith('$argon2id$')) return clean;
+  if (clean.startsWith('b64:')) {
+    try {
+      const decoded = Buffer.from(clean.slice(4), 'base64').toString('utf8').trim();
+      if (decoded.startsWith('$argon2id$')) return decoded;
+    } catch {
+      return '';
+    }
+  }
+  return '';
+}
+
+function parseEnvAdminOperators(): EnvAdminOperator[] {
+  const rawJson = process.env.ADMIN_OPERATORS_JSON?.trim();
+  const rawB64 = process.env.ADMIN_OPERATORS_B64?.trim();
+  let jsonStr = rawJson || '';
+  if (!jsonStr && rawB64) {
+    try {
+      jsonStr = Buffer.from(rawB64, 'base64').toString('utf8');
+    } catch {
+      return [];
+    }
+  }
+  if (!jsonStr) return [];
+  try {
+    const parsed = JSON.parse(jsonStr) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    const out: EnvAdminOperator[] = [];
+    for (const item of parsed) {
+      if (
+        item &&
+        typeof item === 'object' &&
+        typeof (item as EnvAdminOperator).username === 'string' &&
+        typeof (item as EnvAdminOperator).passwordHash === 'string'
+      ) {
+        const phc = decodeHashField((item as EnvAdminOperator).passwordHash);
+        if (phc) {
+          out.push({
+            username: (item as EnvAdminOperator).username.trim(),
+            passwordHash: phc,
+          });
+        }
+      }
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
+
 /**
- * Verifies admin username + password against ADMIN_USERNAME and ADMIN_PASSWORD_HASH (Argon2id) or ADMIN_PASSWORD.
+ * Verifies admin username + password against primary env credentials (ADMIN_USERNAME +
+ * ADMIN_PASSWORD_HASH / ADMIN_PASSWORD), ADMIN_OPERATORS_JSON, or Supabase `admin_operators`.
  */
 export async function verifyAdminCredentials(username: string, password: string): Promise<boolean> {
+  if (!sessionSecret()) return false;
+  const cleanUser = username.trim();
+  if (!cleanUser || !password) return false;
+
   const u = process.env.ADMIN_USERNAME;
   const p = process.env.ADMIN_PASSWORD;
   const pHash = process.env.ADMIN_PASSWORD_HASH;
-  if (!u || (!p && !pHash) || !sessionSecret()) return false;
-
-  const userOk = safeEqual(username, u);
-  let passOk = false;
-  if (pHash && pHash.startsWith('$argon2id$')) {
-    passOk = await verifyArgon2idPassword(password, pHash);
-  } else if (p) {
-    passOk = safeEqual(password, p);
+  if (u && (p || pHash)) {
+    const userOk = safeEqual(cleanUser, u);
+    let passOk = false;
+    if (pHash && pHash.startsWith('$argon2id$')) {
+      passOk = await verifyArgon2idPassword(password, pHash);
+    } else if (p) {
+      passOk = safeEqual(password, p);
+    }
+    if (userOk && passOk) return true;
   }
-  return userOk && passOk;
+
+  for (const op of parseEnvAdminOperators()) {
+    if (safeEqual(cleanUser.toLowerCase(), op.username.toLowerCase())) {
+      if (await verifyArgon2idPassword(password, op.passwordHash)) {
+        return true;
+      }
+    }
+  }
+
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const adminSupabase = createAdminSupabase();
+      const { data: rows, error } = await adminSupabase
+        .from('admin_operators')
+        .select('username, password_hash')
+        .ilike('username', cleanUser)
+        .eq('is_active', true)
+        .limit(3);
+
+      if (!error && Array.isArray(rows)) {
+        for (const row of rows) {
+          if (
+            typeof row.username === 'string' &&
+            typeof row.password_hash === 'string' &&
+            safeEqual(cleanUser.toLowerCase(), row.username.toLowerCase()) &&
+            row.password_hash.startsWith('$argon2id$')
+          ) {
+            if (await verifyArgon2idPassword(password, row.password_hash)) {
+              return true;
+            }
+          }
+        }
+      }
+    } catch {
+      // Non-fatal if admin_operators table is not migrated yet
+    }
+  }
+
+  return false;
 }
 
 export function createSessionToken(sub = process.env.ADMIN_USERNAME || 'admin', familyId?: string): string {
