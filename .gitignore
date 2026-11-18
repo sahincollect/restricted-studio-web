@@ -10,3 +10,4 @@ public/*.exe
 private-dist
 .agents/
 .data/
+tsconfig.tsbuildinfo
