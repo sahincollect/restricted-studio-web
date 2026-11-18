@@ -12,6 +12,8 @@ import {
   issueCustomerSession,
   isSecureRequest,
 } from '@/lib/customer-session';
+import { syncProfileFromOAuth } from '@/lib/account-store';
+import { isSafeHttpsUrl } from '@/lib/validation';
 import { writeAuditLog } from '@/lib/audit-log';
 
 const SUPABASE_URL =
@@ -42,7 +44,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const oauthError = searchParams.get('error');
   const code = searchParams.get('code');
-  const nextPath = safeRedirectPath(searchParams.get('next'), '/dashboard');
+  const nextPath = safeRedirectPath(searchParams.get('next'), '/hesabim');
 
   if (oauthError) {
     const mapped = oauthError === 'access_denied' ? 'oauth_denied' : 'oauth_failed';
@@ -72,25 +74,50 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?error=oauth_failed`);
   }
 
-  const hasGoogleIdentity =
-    data.user.app_metadata?.provider === 'google' ||
-    (Array.isArray(data.user.identities) &&
-      data.user.identities.some((ident) => ident.provider === 'google'));
-
-  if (hasGoogleIdentity) {
-    return NextResponse.redirect(`${origin}/login?error=oauth_failed`);
-  }
+  const rawProvider = String(data.user.app_metadata?.provider || 'email').toLowerCase();
+  const oauthProvider: 'google' | 'discord' | 'email' =
+    rawProvider === 'discord' ? 'discord' : rawProvider === 'google' ? 'google' : 'email';
 
   const redirectRes = NextResponse.redirect(`${origin}${nextPath}`);
   redirectRes.headers.set('Cache-Control', 'no-store');
   redirectRes.headers.set('X-Robots-Tag', 'noindex, nofollow');
 
+  const meta = (data.user.user_metadata || {}) as Record<string, unknown>;
+  const customClaims = (meta.custom_claims || {}) as Record<string, unknown>;
+  const rawAvatar =
+    typeof meta.avatar_url === 'string'
+      ? meta.avatar_url
+      : typeof meta.picture === 'string'
+      ? meta.picture
+      : null;
+  const safeAvatar = rawAvatar && isSafeHttpsUrl(rawAvatar) ? rawAvatar : null;
+
   const displayName =
-    data.user.user_metadata?.username ||
-    data.user.user_metadata?.full_name ||
-    data.user.user_metadata?.name ||
+    (typeof meta.username === 'string' && meta.username) ||
+    (typeof customClaims.global_name === 'string' && customClaims.global_name) ||
+    (typeof meta.full_name === 'string' && meta.full_name) ||
+    (typeof meta.name === 'string' && meta.name) ||
     data.user.email?.split('@')[0] ||
     'Müşteri';
+
+  const discordHandle =
+    oauthProvider === 'discord'
+      ? String(meta.full_name || customClaims.username || meta.name || '').slice(0, 64)
+      : '';
+  const discordId =
+    oauthProvider === 'discord' && typeof meta.provider_id === 'string'
+      ? meta.provider_id.slice(0, 48)
+      : null;
+
+  await syncProfileFromOAuth({
+    userId: data.user.id,
+    email: data.user.email,
+    provider: oauthProvider,
+    displayName,
+    avatarUrl: safeAvatar,
+    discordHandle,
+    discordId,
+  });
 
   // Issue hardened short-lived access + rotating refresh HttpOnly cookies
   await issueCustomerSession(request, redirectRes, {

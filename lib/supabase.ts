@@ -48,12 +48,27 @@ export function resolveLoginIdentifier(identifier: string): string {
   return `${safeUsername}@restrictedstudio.com`;
 }
 
-// Eski .local hesapları için geriye dönük uyumluluk
+// Eski .local hesapları ve kayıt sonrası @kullanici.restrictedstudio.shop hesapları için çoklu çözümleme
 export function resolveLegacyLoginIdentifier(identifier: string): string {
   const clean = String(identifier || '').trim().toLowerCase();
   if (!clean || clean.includes('@')) return '';
   const safeUsername = normalizeUsername(clean);
   return `${safeUsername}@restrictedstudio.local`;
+}
+
+export function resolveLoginCandidates(identifier: string): string[] {
+  const clean = String(identifier || '').trim().toLowerCase();
+  if (!clean) return [];
+  if (clean.includes('@')) return [clean];
+  const safeUsername = normalizeUsername(clean);
+  if (!safeUsername) return [];
+  return Array.from(
+    new Set([
+      `${safeUsername}@kullanici.restrictedstudio.shop`,
+      `${safeUsername}@restrictedstudio.com`,
+      `${safeUsername}@restrictedstudio.local`,
+    ])
+  );
 }
 
 // 4. Yönetici kontrolü.

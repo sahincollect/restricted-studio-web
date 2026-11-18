@@ -278,6 +278,9 @@ export default function DashboardClient({
             </div>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
+              <Link href="/hesabim" className="st-pill-btn is-light is-sm">
+                Hesabım &amp; Teslimat
+              </Link>
               {isAdmin && (
                 <Link href="/admin" className="st-pill-btn is-ember is-sm">
                   {t.dashboard.adminPanelBtn} →

@@ -7,6 +7,12 @@ import { useI18n } from '@/components/I18nProvider';
 import SiteNavbar from '@/components/SiteNavbar';
 import SiteFooter from '@/components/SiteFooter';
 import { HeroPrismBackdrop } from '@/components/StudioReveal';
+import {
+  requestShopierCheckout,
+  SHOPIER_UI_COPY,
+  ShopierCheckoutStatusBox,
+  type ShopierCheckoutOrderSummary,
+} from '@/components/ShopierCheckoutBox';
 import { INTERACTIVE_I18N } from '@/lib/interactive-i18n';
 import {
   analyzeCatalogItem,
@@ -210,6 +216,12 @@ export default function CatalogClient({
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartHydrated, setCartHydrated] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [shopierLoading, setShopierLoading] = useState(false);
+  const [shopierNote, setShopierNote] = useState('');
+  const [shopierRequiresAuth, setShopierRequiresAuth] = useState(false);
+  const [shopierError, setShopierError] = useState<string | null>(null);
+  const [shopierOrder, setShopierOrder] = useState<ShopierCheckoutOrderSummary | null>(null);
+  const shopierT = SHOPIER_UI_COPY[locale] || SHOPIER_UI_COPY.tr;
 
   // Sync URL params, load full compacted catalog index asynchronously, and fetch live click counts
   useEffect(() => {
@@ -618,6 +630,39 @@ export default function CatalogClient({
     setTimeout(() => {
       window.open(ITEMSATIS_URL, '_blank', 'noopener,noreferrer');
     }, 700);
+  };
+
+  const handleShopierCheckout = async () => {
+    if (cart.length === 0 || shopierLoading) return;
+    setShopierLoading(true);
+    setShopierRequiresAuth(false);
+    setShopierError(null);
+    setShopierOrder(null);
+
+    const res = await requestShopierCheckout({
+      source: 'catalog',
+      itemIds: cart.map((c) => c.id),
+      note: shopierNote.trim() || undefined,
+    });
+
+    setShopierLoading(false);
+
+    if (!res.ok) {
+      if (res.requiresAuth) {
+        setShopierRequiresAuth(true);
+      } else {
+        setShopierError(res.message);
+      }
+      return;
+    }
+
+    setShopierOrder(res.order);
+    triggerToast(`${shopierT.readyTitle} (${res.order.referenceCode})`);
+    try {
+      window.open(res.order.checkoutUrl, '_blank', 'noopener,noreferrer');
+    } catch {
+      // popup blocked; CTA button remains visible in drawer
+    }
   };
 
   const displayedTotalLabelCount =
@@ -1233,9 +1278,44 @@ export default function CatalogClient({
                   <span>{formatNumber(finalTotal)} TL</span>
                 </div>
 
-                <button type="button" className="st-pill-btn is-ember is-full" onClick={handleCheckout}>
-                  <ItemsatisLogo variant="icon" width={18} height={18} />
-                  <span>{t.catalog.checkoutBtn}</span>
+                <input
+                  type="text"
+                  value={shopierNote}
+                  onChange={(e) => setShopierNote(e.target.value)}
+                  placeholder={shopierT.notePlaceholder}
+                  maxLength={200}
+                  className="st-input"
+                  style={{ fontSize: '12.5px', padding: '9px 12px' }}
+                  aria-label={shopierT.notePlaceholder}
+                />
+
+                <p className="rs-shopier-sla-inline">{shopierT.slaNotice}</p>
+
+                <ShopierCheckoutStatusBox
+                  locale={locale}
+                  redirectPath="/katalog"
+                  requiresAuth={shopierRequiresAuth}
+                  errorMessage={shopierError}
+                  createdOrder={shopierOrder}
+                  onClear={() => {
+                    setShopierRequiresAuth(false);
+                    setShopierError(null);
+                    setShopierOrder(null);
+                  }}
+                />
+
+                <button
+                  type="button"
+                  className="st-pill-btn is-ember is-full"
+                  onClick={() => void handleShopierCheckout()}
+                  disabled={shopierLoading}
+                >
+                  <span>{shopierLoading ? shopierT.creatingListing : shopierT.payWithShopier}</span>
+                </button>
+
+                <button type="button" className="st-pill-btn is-light is-full" onClick={handleCheckout}>
+                  <ItemsatisLogo variant="icon" width={16} height={16} />
+                  <span>{shopierT.altItemsatis}</span>
                 </button>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-muted)' }}>

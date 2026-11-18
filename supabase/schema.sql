@@ -218,5 +218,109 @@ create policy "store_product_prices_select_public"
 revoke all on public.store_product_prices from anon, authenticated;
 grant select on public.store_product_prices to anon, authenticated;
 
+-- 10. Müşteri Profilleri & Avatar / Sosyal Bağlantılar (/hesabim)
+create table if not exists public.user_profiles (
+  user_id          uuid primary key references auth.users(id) on delete cascade,
+  display_name     text not null,
+  username         text,
+  avatar_url       text,
+  discord_handle   text,
+  discord_id       text,
+  auth_providers   text[] not null default '{}',
+  server_name      text,
+  bio              text,
+  preferred_locale text not null default 'tr',
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now()
+);
+
+alter table public.user_profiles enable row level security;
+
+drop policy if exists "user_profiles_select_own" on public.user_profiles;
+create policy "user_profiles_select_own"
+  on public.user_profiles
+  for select
+  to authenticated
+  using (auth.uid() = user_id);
+
+revoke all on public.user_profiles from anon, authenticated;
+grant select on public.user_profiles to authenticated;
+
+-- 11. Shopier Siparişleri & Dijital Teslimat Kayıtları (/hesabim & /admin)
+create table if not exists public.orders (
+  id                   uuid primary key default gen_random_uuid(),
+  reference_code       text not null unique,
+  user_id              uuid not null references auth.users(id) on delete cascade,
+  buyer_email          text,
+  buyer_name           text,
+  source               text not null default 'catalog',
+  payment_provider     text not null default 'shopier',
+  title                text not null,
+  items                jsonb not null default '[]'::jsonb,
+  currency             text not null default 'TRY',
+  total_amount         numeric(10, 2) not null,
+  status               text not null default 'pending_payment',
+  shopier_product_id   text,
+  shopier_checkout_url text,
+  shopier_order_id     text,
+  delivery_sla_note    text not null,
+  delivery_payload     jsonb,
+  paid_at              timestamptz,
+  delivered_at         timestamptz,
+  created_at           timestamptz not null default now(),
+  updated_at           timestamptz not null default now()
+);
+
+create index if not exists orders_user_created_idx on public.orders (user_id, created_at desc);
+create index if not exists orders_status_created_idx on public.orders (status, created_at desc);
+create index if not exists orders_shopier_product_idx on public.orders (shopier_product_id);
+
+alter table public.orders enable row level security;
+
+drop policy if exists "orders_select_own" on public.orders;
+create policy "orders_select_own"
+  on public.orders
+  for select
+  to authenticated
+  using (auth.uid() = user_id);
+
+revoke all on public.orders from anon, authenticated;
+grant select on public.orders to authenticated;
+
+-- 12. Kişiye Özel Sipariş & Ürün Teslimat Sohbeti (1-1 Private Delivery Chat)
+create table if not exists public.order_messages (
+  id              uuid primary key default gen_random_uuid(),
+  order_id        uuid not null references public.orders(id) on delete cascade,
+  reference_code  text not null,
+  sender_user_id  uuid references auth.users(id) on delete set null,
+  sender_role     text not null,
+  sender_name     text not null,
+  sender_avatar   text,
+  message_type    text not null default 'text',
+  body            text not null,
+  attachment_meta jsonb,
+  created_at      timestamptz not null default now()
+);
+
+create index if not exists order_messages_order_idx on public.order_messages (order_id, created_at asc);
+create index if not exists order_messages_ref_idx on public.order_messages (reference_code, created_at asc);
+
+alter table public.order_messages enable row level security;
+
+drop policy if exists "order_messages_select_own" on public.order_messages;
+create policy "order_messages_select_own"
+  on public.order_messages
+  for select
+  to authenticated
+  using (
+    exists (
+      select 1 from public.orders o
+      where o.id = order_id and o.user_id = auth.uid()
+    )
+  );
+
+revoke all on public.order_messages from anon, authenticated;
+grant select on public.order_messages to authenticated;
+
 -- PostgREST şema önbelleğini yenile
 notify pgrst, 'reload schema';

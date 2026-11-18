@@ -7,6 +7,12 @@ import { useI18n } from '@/components/I18nProvider';
 import SiteNavbar from '@/components/SiteNavbar';
 import SiteFooter from '@/components/SiteFooter';
 import { HeroPrismBackdrop } from '@/components/StudioReveal';
+import {
+  requestShopierCheckout,
+  SHOPIER_UI_COPY,
+  ShopierCheckoutStatusBox,
+  type ShopierCheckoutOrderSummary,
+} from '@/components/ShopierCheckoutBox';
 import type { Locale } from '@/lib/i18n';
 import type { StoreProductGroup } from '@/lib/itemsatis-store';
 
@@ -231,11 +237,53 @@ function formatDescriptionLines(text: string): string[] {
 export default function StoreLicensesClient({ initialItems }: StoreLicensesClientProps) {
   const { locale, t, formatNumber } = useI18n();
   const copy = STORE_I18N[locale] || STORE_I18N.tr;
+  const shopierT = SHOPIER_UI_COPY[locale] || SHOPIER_UI_COPY.tr;
 
   const [group, setGroup] = useState<GroupFilter>('all');
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortKey>('default');
   const [selectedItem, setSelectedItem] = useState<PublicStoreProduct | null>(null);
+  const [shopierLoadingId, setShopierLoadingId] = useState<string | null>(null);
+  const [shopierNote, setShopierNote] = useState('');
+  const [shopierRequiresAuth, setShopierRequiresAuth] = useState(false);
+  const [shopierError, setShopierError] = useState<string | null>(null);
+  const [shopierOrder, setShopierOrder] = useState<ShopierCheckoutOrderSummary | null>(null);
+
+  const clearShopierStatus = () => {
+    setShopierRequiresAuth(false);
+    setShopierError(null);
+    setShopierOrder(null);
+  };
+
+  const handleShopierStoreBuy = async (item: PublicStoreProduct, customNote?: string) => {
+    setShopierLoadingId(item.id);
+    setShopierRequiresAuth(false);
+    setShopierError(null);
+    setShopierOrder(null);
+    const res = await requestShopierCheckout({
+      source: 'store',
+      productId: item.id,
+      quantity: 1,
+      note: customNote?.trim() || undefined,
+    });
+    setShopierLoadingId(null);
+
+    if (!res.ok) {
+      if (res.requiresAuth) {
+        setShopierRequiresAuth(true);
+      } else {
+        setShopierError(res.message);
+      }
+      return;
+    }
+
+    setShopierOrder(res.order);
+    try {
+      window.open(res.order.checkoutUrl, '_blank', 'noopener,noreferrer');
+    } catch {
+      // ignore popup block; card CTA stays visible
+    }
+  };
 
   const groupCounts = useMemo(() => {
     const counts: Record<GroupFilter, number> = {
@@ -300,6 +348,10 @@ export default function StoreLicensesClient({ initialItems }: StoreLicensesClien
               <div className="st-stat-chip">
                 <span className="st-stat-chip-val">{copy.badgeEscrowVal}</span>
                 <span className="st-stat-chip-lbl">{copy.badgeEscrow}</span>
+              </div>
+              <div className="st-stat-chip">
+                <span className="st-stat-chip-val">2 Sa</span>
+                <span className="st-stat-chip-lbl">{shopierT.slaShortBadge}</span>
               </div>
               <a
                 href={ITEMSATIS_PROFILE_URL}
@@ -449,6 +501,15 @@ export default function StoreLicensesClient({ initialItems }: StoreLicensesClien
                       </div>
 
                       <div className="rs-store-card-actions">
+                        <button
+                          type="button"
+                          onClick={() => void handleShopierStoreBuy(item)}
+                          disabled={shopierLoadingId === item.id}
+                          className="st-pill-btn is-ember is-sm"
+                          style={{ padding: '8px 12px' }}
+                        >
+                          {shopierLoadingId === item.id ? '...' : shopierT.payShort}
+                        </button>
                         <a
                           href={item.itemsatisUrl}
                           target="_blank"
@@ -456,11 +517,14 @@ export default function StoreLicensesClient({ initialItems }: StoreLicensesClien
                           className="st-pill-btn is-light is-sm"
                           style={{ padding: '8px 12px' }}
                         >
-                          {copy.buyNow} ↗
+                          İtemsatış ↗
                         </a>
                         <button
                           type="button"
-                          onClick={() => setSelectedItem(item)}
+                          onClick={() => {
+                            clearShopierStatus();
+                            setSelectedItem(item);
+                          }}
                           className="st-pill-btn is-outline is-sm"
                           style={{ padding: '8px 12px' }}
                         >
@@ -566,21 +630,79 @@ export default function StoreLicensesClient({ initialItems }: StoreLicensesClien
               </div>
             </div>
 
-            <div style={{ marginTop: '18px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <p className="rs-shopier-sla-inline" style={{ marginTop: '12px' }}>
+              {shopierT.slaNotice}
+            </p>
+
+            <input
+              type="text"
+              value={shopierNote}
+              onChange={(e) => setShopierNote(e.target.value)}
+              placeholder={shopierT.notePlaceholder}
+              maxLength={200}
+              className="st-input"
+              style={{ marginTop: '10px', fontSize: '12.5px', padding: '9px 12px' }}
+              aria-label={shopierT.notePlaceholder}
+            />
+
+            <div style={{ marginTop: '12px' }}>
+              <ShopierCheckoutStatusBox
+                locale={locale}
+                redirectPath="/lisanslar"
+                requiresAuth={shopierRequiresAuth}
+                errorMessage={shopierError}
+                createdOrder={shopierOrder}
+                onClear={clearShopierStatus}
+              />
+            </div>
+
+            <div style={{ marginTop: '16px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => void handleShopierStoreBuy(selectedItem, shopierNote)}
+                disabled={shopierLoadingId === selectedItem.id}
+                className="st-pill-btn is-ember"
+                style={{ flex: 1 }}
+              >
+                <span>
+                  {shopierLoadingId === selectedItem.id
+                    ? shopierT.creatingListing
+                    : shopierT.payWithShopier}
+                </span>
+              </button>
               <a
                 href={selectedItem.itemsatisUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="st-pill-btn is-light"
-                style={{ flex: 1 }}
               >
                 <ItemsatisLogo variant="icon" width={15} height={15} />
-                <span>{copy.modalBuyBtn}</span>
+                <span>İtemsatış ↗</span>
               </a>
               <Link href="/iletisim" className="st-pill-btn is-outline">
                 {copy.modalContactBtn}
               </Link>
             </div>
+          </div>
+        </div>
+      )}
+
+      {!selectedItem && (shopierRequiresAuth || shopierError || shopierOrder) && (
+        <div
+          className="st-modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          onClick={clearShopierStatus}
+        >
+          <div className="st-modal-card" style={{ maxWidth: '480px' }} onClick={(e) => e.stopPropagation()}>
+            <ShopierCheckoutStatusBox
+              locale={locale}
+              redirectPath="/lisanslar"
+              requiresAuth={shopierRequiresAuth}
+              errorMessage={shopierError}
+              createdOrder={shopierOrder}
+              onClear={clearShopierStatus}
+            />
           </div>
         </div>
       )}

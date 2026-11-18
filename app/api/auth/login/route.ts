@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAdminSupabase, createClientSupabase, resolveLegacyLoginIdentifier, resolveLoginIdentifier } from '@/lib/supabase';
+import { createAdminSupabase, createClientSupabase, resolveLoginCandidates } from '@/lib/supabase';
 import { guardApiRequest, parseJsonBodySafe, verifyTurnstileToken } from '@/lib/security-server';
 import { CustomerLoginSchema } from '@/lib/validation';
 import {
@@ -54,9 +54,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const primaryEmail = resolveLoginIdentifier(identifier);
-    const legacyEmail = resolveLegacyLoginIdentifier(identifier);
-    const candidateEmails = primaryEmail === legacyEmail ? [primaryEmail] : [primaryEmail, legacyEmail];
+    const candidateEmails = resolveLoginCandidates(identifier);
 
     let authenticatedUser: { id: string; email?: string; user_metadata?: Record<string, any> } | null = null;
     const supabase = createClientSupabase();

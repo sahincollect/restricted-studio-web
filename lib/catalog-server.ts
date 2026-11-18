@@ -89,6 +89,26 @@ export function getCompactCatalogJson(): string {
   return cachedCompactJson;
 }
 
+let cachedIdMap: Map<string, CatalogRecord> | null = null;
+
+export function getCatalogItemsByIds(ids: string[]): CatalogRecord[] {
+  if (!cachedIdMap) {
+    cachedIdMap = new Map(catalogRecords.map((item) => [item.id, item]));
+  }
+  const out: CatalogRecord[] = [];
+  const seen = new Set<string>();
+  for (const rawId of ids) {
+    const clean = String(rawId || '').trim();
+    if (!clean || seen.has(clean)) continue;
+    const hit = cachedIdMap.get(clean);
+    if (hit) {
+      seen.add(clean);
+      out.push(hit);
+    }
+  }
+  return out;
+}
+
 export function getInitialCatalogSlice(options: {
   q?: string;
   category?: string;

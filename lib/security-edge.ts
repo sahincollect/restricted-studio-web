@@ -312,6 +312,9 @@ export type RateLimitTier =
   | 'auth_forgot'
   | 'auth_refresh'
   | 'redeem'
+  | 'shopier_checkout'
+  | 'order_chat'
+  | 'account_update'
   | 'service_request'
   | 'verify_client'
   | 'download'
@@ -329,6 +332,9 @@ const TIER_LIMITS: Record<RateLimitTier, { windowMs: number; max: number }> = {
   auth_forgot: { windowMs: 15 * 60 * 1000, max: 5 },
   auth_refresh: { windowMs: 5 * 60 * 1000, max: 30 },
   redeem: { windowMs: 10 * 60 * 1000, max: 10 },
+  shopier_checkout: { windowMs: 10 * 60 * 1000, max: 10 },
+  order_chat: { windowMs: 5 * 60 * 1000, max: 45 },
+  account_update: { windowMs: 5 * 60 * 1000, max: 20 },
   service_request: { windowMs: 10 * 60 * 1000, max: 6 },
   verify_client: { windowMs: 5 * 60 * 1000, max: 20 },
   download: { windowMs: 5 * 60 * 1000, max: 15 },

@@ -103,6 +103,8 @@ export async function middleware(request: NextRequest) {
     isApi ||
     isAdminPath ||
     path.startsWith('/dashboard') ||
+    path.startsWith('/hesabim') ||
+    path.startsWith('/siparisler') ||
     path.startsWith('/auth') ||
     path === '/login' ||
     path === '/register';
@@ -230,18 +232,23 @@ export async function middleware(request: NextRequest) {
       );
     }
 
-    // 6. Customer Page Access Gate (/dashboard, /login, /register) using HttpOnly cookies only
+    // 6. Customer Page Access Gate (/dashboard, /hesabim, /siparisler, /login, /register) using HttpOnly cookies only
     const isPublicCatalogFeed = path === '/api/catalog/items' && request.method === 'GET';
     const isPortalNoStore =
       (isApi && !isPublicCatalogFeed) ||
       isAdminPath ||
       path.startsWith('/dashboard') ||
+      path.startsWith('/hesabim') ||
+      path.startsWith('/siparisler') ||
       path === '/login' ||
       path === '/register' ||
       path.startsWith('/auth');
     let clearStaleOnNext = false;
 
-    if (path.startsWith('/dashboard') || path === '/login' || path === '/register') {
+    const isProtectedCustomerPage =
+      path.startsWith('/dashboard') || path.startsWith('/hesabim') || path.startsWith('/siparisler');
+
+    if (isProtectedCustomerPage || path === '/login' || path === '/register') {
       const accessCookie = request.cookies.get(CUSTOMER_ACCESS_COOKIE)?.value;
       const refreshCookie = request.cookies.get(CUSTOMER_REFRESH_COOKIE)?.value;
       const accessCheck = await verifyCustomerAccessCookieEdge(accessCookie);
@@ -250,9 +257,9 @@ export async function middleware(request: NextRequest) {
         : await verifyCustomerRefreshCookieEdge(refreshCookie);
       const clearSessionRequested = request.nextUrl.searchParams.get('clear_session') === '1';
 
-      if (path.startsWith('/dashboard') && !accessCheck.valid && !refreshCheck.valid) {
+      if (isProtectedCustomerPage && !accessCheck.valid && !refreshCheck.valid) {
         const redirectUrl = buildSameOriginUrl(request, '/login');
-        redirectUrl.searchParams.set('redirect', safeRedirectPath(path, '/dashboard'));
+        redirectUrl.searchParams.set('redirect', safeRedirectPath(`${path}${search}`, '/dashboard'));
         const redirectRes = NextResponse.redirect(redirectUrl, 307);
         expireCustomerCookies(redirectRes, request);
         return applyResponseHeaders(redirectRes, request, secHeaders, false, true);
@@ -262,7 +269,7 @@ export async function middleware(request: NextRequest) {
         clearStaleOnNext = true;
       } else if ((path === '/login' || path === '/register') && accessCheck.valid) {
         return applyResponseHeaders(
-          NextResponse.redirect(buildSameOriginUrl(request, '/dashboard'), 307),
+          NextResponse.redirect(buildSameOriginUrl(request, '/hesabim'), 307),
           request,
           secHeaders,
           false,

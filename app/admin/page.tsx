@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import TurnstileWidget from '@/components/TurnstileWidget';
 import AdminStoreManager from '@/components/AdminStoreManager';
+import AdminOrdersManager from '@/components/AdminOrdersManager';
 
 interface RedeemCode {
   id: string;
@@ -515,6 +516,9 @@ export default function AdminPage() {
           <>
         {/* 0. MAĞAZA İLANLARI & FİYAT YÖNETİMİ */}
         <AdminStoreManager />
+
+        {/* 0.5 SİPARİŞLER & ÖZEL TESLİMAT SOHBETİ */}
+        <AdminOrdersManager />
 
         {/* 1. TOPLU KOD ÜRETİCİ */}
         <div style={styles.card}>

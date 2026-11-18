@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import AuthPortalShell from '@/components/AuthPortalShell';
 import TurnstileWidget from '@/components/TurnstileWidget';
+import OAuthButtons from '@/components/OAuthButtons';
 import { useI18n } from '@/components/I18nProvider';
 
 function sanitizeLocalRedirect(raw: string | null): string {
@@ -36,10 +37,14 @@ function LoginFormContent() {
   const redirectTarget = sanitizeLocalRedirect(searchParams.get('redirect'));
 
   useEffect(() => {
-    const errParam = searchParams.get('error') as keyof typeof t.auth.loginErrors | null;
+    const rawError = searchParams.get('error');
+    const errParam = rawError as keyof typeof t.auth.loginErrors | null;
     const reasonParam = searchParams.get('reason') as keyof typeof t.auth.loginErrors | null;
 
-    if (errParam && t.auth.loginErrors[errParam]) {
+    if (rawError === 'oauth_not_configured') {
+      const prov = searchParams.get('provider') === 'discord' ? 'Discord' : 'Google';
+      setError(`${prov} OAuth sağlayıcısı henüz Supabase üzerinde etkinleştirilmemiş.`);
+    } else if (errParam && t.auth.loginErrors[errParam]) {
       setError(t.auth.loginErrors[errParam]);
     } else if (reasonParam && t.auth.loginErrors[reasonParam]) {
       setInfoMessage(t.auth.loginErrors[reasonParam]);
@@ -287,6 +292,13 @@ function LoginFormContent() {
             <span className="rs-auth-divider-text">{t.auth.orDivider}</span>
             <div className="rs-auth-divider-line" />
           </div>
+
+          <OAuthButtons
+            redirectTo={(() => {
+              const r = searchParams.get('redirect');
+              return r && r.startsWith('/') && !r.startsWith('//') ? r : '/hesabim';
+            })()}
+          />
 
           <button
             type="button"

@@ -251,6 +251,43 @@ const NAV_COPY: Record<Locale, NavLabels> = {
   },
 };
 
+const ACCOUNT_NAV_COPY: Record<
+  Locale,
+  {
+    account: string;
+    guest: string;
+    ordersBadge: (n: number) => string;
+  }
+> = {
+  tr: {
+    account: 'Hesabım & Teslimat',
+    guest: 'Misafir Hesabım',
+    ordersBadge: (n) => `${n} aktif sipariş`,
+  },
+  en: {
+    account: 'My Account & Delivery',
+    guest: 'Guest Account',
+    ordersBadge: (n) => `${n} active orders`,
+  },
+  ru: {
+    account: 'Аккаунт и доставка',
+    guest: 'Гостевой вход',
+    ordersBadge: (n) => `Активных заказов: ${n}`,
+  },
+  fr: {
+    account: 'Mon compte & Livraison',
+    guest: 'Compte invité',
+    ordersBadge: (n) => `${n} commande(s) active(s)`,
+  },
+};
+
+const NAV_AVATAR_PRESETS: Record<string, string> = {
+  'preset:ember': 'linear-gradient(135deg,#ef5b38,#8f2612)',
+  'preset:crimson': 'linear-gradient(135deg,#A50000,#3d0808)',
+  'preset:obsidian': 'linear-gradient(135deg,#27272a,#09090b)',
+  'preset:minimal': 'linear-gradient(135deg,#1f2937,#0f172a)',
+};
+
 export interface SiteNavbarProps {
   activePath?:
     | '/'
@@ -260,6 +297,8 @@ export interface SiteNavbarProps {
     | '/status'
     | '/iletisim'
     | '/dashboard'
+    | '/hesabim'
+    | '/siparisler'
     | '/login'
     | '/hizmetler/web-kurulum'
     | '/hizmetler/discord-bot'
@@ -267,6 +306,14 @@ export interface SiteNavbarProps {
   mainOrigin?: string;
   cartCount?: number;
   onCartOpen?: () => void;
+}
+
+interface AccountNavSummary {
+  authenticated: boolean;
+  displayName?: string;
+  avatarUrl?: string;
+  isGuest?: boolean;
+  pendingOrdersCount?: number;
 }
 
 export default function SiteNavbar({
@@ -278,9 +325,11 @@ export default function SiteNavbar({
   const pathname = usePathname();
   const { locale, t } = useI18n();
   const labels = NAV_COPY[locale] || NAV_COPY.tr;
+  const accountCopy = ACCOUNT_NAV_COPY[locale] || ACCOUNT_NAV_COPY.tr;
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [catalogMenuOpen, setCatalogMenuOpen] = useState(false);
   const [mobileCatalogOpen, setMobileCatalogOpen] = useState(false);
+  const [accountSummary, setAccountSummary] = useState<AccountNavSummary | null>(null);
   const catalogDropRef = useRef<HTMLDivElement | null>(null);
 
   const current = activePath || pathname || '/';
@@ -313,6 +362,28 @@ export default function SiteNavbar({
       document.removeEventListener('mousedown', onOutsideClick);
     };
   }, []);
+
+  useEffect(() => {
+    if (mainOrigin) return;
+    let cancelled = false;
+    fetch('/api/account?summary=1', { cache: 'no-store', credentials: 'same-origin' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data && data.authenticated) {
+          setAccountSummary({
+            authenticated: true,
+            displayName: data.profile?.displayName || 'Üye',
+            avatarUrl: data.profile?.avatarUrl || 'preset:ember',
+            isGuest: Boolean(data.profile?.isGuest),
+            pendingOrdersCount: Number(data.pendingOrdersCount || 0),
+          });
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [mainOrigin, pathname]);
 
   const isActive = (href: string) => {
     if (href === '/') return current === '/';
@@ -581,10 +652,10 @@ export default function SiteNavbar({
 
               {mainOrigin ? (
                 <a
-                  href={siteLink('/dashboard')}
+                  href={siteLink('/hesabim')}
                   className="st-circle-btn"
-                  title={labels.portal}
-                  aria-label={labels.portal}
+                  title={accountCopy.account}
+                  aria-label={accountCopy.account}
                 >
                   <svg
                     width="15"
@@ -599,13 +670,66 @@ export default function SiteNavbar({
                     <path d="M20 21a8 8 0 0 0-16 0" />
                   </svg>
                 </a>
+              ) : accountSummary?.authenticated ? (
+                <Link
+                  href="/hesabim"
+                  prefetch={false}
+                  className="st-circle-btn is-account-active"
+                  title={`${accountSummary.displayName || accountCopy.account}${
+                    accountSummary.pendingOrdersCount
+                      ? ` · ${accountCopy.ordersBadge(accountSummary.pendingOrdersCount)}`
+                      : ''
+                  }`}
+                  aria-label={accountCopy.account}
+                >
+                  {accountSummary.avatarUrl &&
+                  (accountSummary.avatarUrl.startsWith('https://') ||
+                    accountSummary.avatarUrl.startsWith('data:image/')) ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={accountSummary.avatarUrl}
+                      alt={accountSummary.displayName || accountCopy.account}
+                      width={34}
+                      height={34}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '999px',
+                        objectFit: 'cover',
+                        display: 'block',
+                      }}
+                    />
+                  ) : (
+                    <span
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '999px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 700,
+                        fontSize: '12px',
+                        color: '#fff',
+                        background:
+                          NAV_AVATAR_PRESETS[accountSummary.avatarUrl || 'preset:ember'] ||
+                          NAV_AVATAR_PRESETS['preset:ember'],
+                      }}
+                    >
+                      {(accountSummary.displayName || 'R').slice(0, 1).toUpperCase()}
+                    </span>
+                  )}
+                  {(accountSummary.pendingOrdersCount ?? 0) > 0 && (
+                    <span className="st-account-order-dot" aria-hidden="true" />
+                  )}
+                </Link>
               ) : (
                 <Link
-                  href="/dashboard"
+                  href="/hesabim"
                   prefetch={false}
                   className="st-circle-btn"
-                  title={labels.portal}
-                  aria-label={labels.portal}
+                  title={accountCopy.account}
+                  aria-label={accountCopy.account}
                 >
                   <svg
                     width="15"
@@ -715,8 +839,31 @@ export default function SiteNavbar({
 
             {mainOrigin ? (
               <a
-                href={siteLink('/dashboard')}
+                href={siteLink('/hesabim')}
                 className="st-pill-btn is-ember is-full"
+                onClick={() => setDrawerOpen(false)}
+              >
+                {accountCopy.account} →
+              </a>
+            ) : (
+              <Link
+                href="/hesabim"
+                prefetch={false}
+                className="st-pill-btn is-ember is-full"
+                onClick={() => setDrawerOpen(false)}
+              >
+                {accountCopy.account}
+                {(accountSummary?.pendingOrdersCount ?? 0) > 0
+                  ? ` (${accountSummary?.pendingOrdersCount})`
+                  : ''}{' '}
+                →
+              </Link>
+            )}
+
+            {mainOrigin ? (
+              <a
+                href={siteLink('/dashboard')}
+                className="st-pill-btn is-outline is-full"
                 onClick={() => setDrawerOpen(false)}
               >
                 {labels.portal} →
@@ -725,7 +872,7 @@ export default function SiteNavbar({
               <Link
                 href="/dashboard"
                 prefetch={false}
-                className="st-pill-btn is-ember is-full"
+                className="st-pill-btn is-outline is-full"
                 onClick={() => setDrawerOpen(false)}
               >
                 {labels.portal} →

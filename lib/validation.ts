@@ -242,3 +242,156 @@ export const ServiceRequestSchema = z
     website_url: honeypotField,
   })
   .strict();
+
+export function isSafeHttpsUrl(raw: unknown): boolean {
+  if (typeof raw !== 'string') return false;
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed.length > 512) return false;
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== 'https:') return false;
+    const host = parsed.hostname.toLowerCase();
+    if (
+      host === 'localhost' ||
+      host === '127.0.0.1' ||
+      host.startsWith('10.') ||
+      host.startsWith('192.168.') ||
+      host.startsWith('169.254.') ||
+      host.endsWith('.local')
+    ) {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function validateAvatarInput(
+  raw: unknown
+): { ok: true; value: string | null } | { ok: false; message: string } {
+  if (raw === null || raw === undefined) return { ok: true, value: null };
+  if (typeof raw !== 'string') return { ok: false, message: 'Geçersiz profil resmi biçimi.' };
+  const trimmed = raw.trim();
+  if (!trimmed) return { ok: true, value: null };
+
+  if (/^preset:(obsidian|ember|crimson|minimal)$/i.test(trimmed)) {
+    return { ok: true, value: trimmed.toLowerCase() };
+  }
+
+  if (isSafeHttpsUrl(trimmed)) {
+    return { ok: true, value: trimmed };
+  }
+
+  const m = trimmed.match(/^data:image\/(png|jpeg|jpg|webp);base64,([A-Za-z0-9+/=]+)$/);
+  if (!m) {
+    return { ok: false, message: 'Profil resmi yalnızca PNG, JPG veya WEBP biçiminde olabilir.' };
+  }
+
+  const base64 = m[2];
+  if (base64.length > 360_000) {
+    return { ok: false, message: 'Profil resmi en fazla 256 KB boyutunda olabilir.' };
+  }
+
+  try {
+    const buf = Buffer.from(base64, 'base64');
+    if (buf.length < 12 || buf.length > 262_144) {
+      return { ok: false, message: 'Profil resmi dosya boyutu sınırlar dışında.' };
+    }
+    const isPng = buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47;
+    const isJpeg = buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff;
+    const isWebp =
+      buf.slice(0, 4).toString('ascii') === 'RIFF' && buf.slice(8, 12).toString('ascii') === 'WEBP';
+
+    if (!isPng && !isJpeg && !isWebp) {
+      return { ok: false, message: 'Geçersiz veya bozuk görsel dosyası (imza doğrulanamadı).' };
+    }
+    const mime = isPng ? 'image/png' : isJpeg ? 'image/jpeg' : 'image/webp';
+    return { ok: true, value: `data:${mime};base64,${base64}` };
+  } catch {
+    return { ok: false, message: 'Profil resmi işlenemedi.' };
+  }
+}
+
+export const ShopierCheckoutSchema = z.discriminatedUnion('source', [
+  z
+    .object({
+      source: z.literal('catalog'),
+      itemIds: z
+        .array(z.string().trim().regex(/^RS-CAT-\d{4,6}$/, 'Geçersiz katalog öğe kodu.'))
+        .min(1, 'Sepetinizde en az 1 ürün bulunmalıdır.')
+        .max(200, 'Tek siparişte en fazla 200 modül seçebilirsiniz.'),
+      note: z.string().trim().max(400).optional().default(''),
+    })
+    .strict(),
+  z
+    .object({
+      source: z.literal('store'),
+      productId: z.string().trim().regex(STORE_PRODUCT_ID_RE, 'Geçersiz mağaza ürün kimliği.'),
+      quantity: z.number().int().min(1).max(10).optional().default(1),
+      note: z.string().trim().max(400).optional().default(''),
+    })
+    .strict(),
+]);
+
+export const OrderMessageSchema = z
+  .object({
+    body: z
+      .string()
+      .trim()
+      .min(1, 'Mesaj boş olamaz.')
+      .max(1500, 'Mesaj en fazla 1500 karakter olabilir.'),
+  })
+  .strict();
+
+export const AdminOrderActionSchema = z.discriminatedUnion('mode', [
+  z
+    .object({
+      mode: z.literal('reply'),
+      body: z.string().trim().min(1, 'Mesaj metni gereklidir.').max(2000),
+      nextStatus: z.enum(['pending_payment', 'paid', 'preparing', 'delivered', 'cancelled']).optional(),
+    })
+    .strict(),
+  z
+    .object({
+      mode: z.literal('deliver'),
+      licenseCode: z.string().trim().max(240).optional().default(''),
+      downloadUrl: z.string().trim().max(512).optional().default(''),
+      instructions: z
+        .string()
+        .trim()
+        .min(3, 'Teslimat açıklaması veya kurulum notu giriniz.')
+        .max(2500),
+    })
+    .strict(),
+]);
+
+export const ProfileUpdateSchema = z
+  .object({
+    displayName: z
+      .string()
+      .trim()
+      .min(2, 'Görünen ad en az 2 karakter olmalıdır.')
+      .max(48, 'Görünen ad en fazla 48 karakter olabilir.'),
+    username: z
+      .string()
+      .trim()
+      .regex(USERNAME_RE, 'Kullanıcı adı 3–40 karakter (harf, rakam, ., _, -) olmalıdır.')
+      .optional(),
+    discordHandle: z.string().trim().max(64).optional().default(''),
+    serverName: z.string().trim().max(80).optional().default(''),
+    bio: z.string().trim().max(240).optional().default(''),
+    preferredLocale: z.enum(['tr', 'en', 'ru', 'fr']).optional(),
+    avatarUrl: z.union([z.string().max(400_000), z.null()]).optional(),
+  })
+  .strict();
+
+export const PasswordChangeSchema = z
+  .object({
+    currentPassword: z.string().max(128).optional().default(''),
+    newPassword: z
+      .string()
+      .min(8, 'Yeni şifre en az 8 karakter olmalıdır.')
+      .max(128, 'Yeni şifre en fazla 128 karakter olabilir.'),
+  })
+  .strict();

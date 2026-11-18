@@ -4,6 +4,7 @@ import { Suspense, useMemo, useState } from 'react';
 import Link from 'next/link';
 import AuthPortalShell from '@/components/AuthPortalShell';
 import TurnstileWidget from '@/components/TurnstileWidget';
+import OAuthButtons from '@/components/OAuthButtons';
 import { useI18n } from '@/components/I18nProvider';
 import { LEGAL_FORM_COPY } from '@/lib/legal-docs';
 
@@ -287,6 +288,8 @@ function RegisterFormContent() {
         <span className="rs-auth-divider-text">{t.auth.orDivider}</span>
         <div className="rs-auth-divider-line" />
       </div>
+
+      <OAuthButtons redirectTo="/hesabim" />
 
       <button
         type="button"

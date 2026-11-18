@@ -84,7 +84,7 @@ const TR_DOCS: Record<LegalDocSlug, LegalDocument> = {
         heading: '1. Gizlilik ve Veri Minimizasyonu İlkesi',
         paragraphs: [
           'Platformumuz yalnızca hizmetin çalışması için zorunlu olan verileri toplar. Katalog incelemek veya açık vitrin sayfalarını gezmek için hesap açmanız zorunlu değildir.',
-          'Sitemiz üzerinden doğrudan kredi kartı, banka kartı veya ödeme aracı bilgisi toplanmaz; dijital ilan satın alımları dış ödeme güvencesi sağlayan İtemsatış (itemsatis.com/p/saintstudio) üzerinden yürütülür.',
+          'Sitemiz üzerinden doğrudan kredi kartı veya banka kartı numarası toplanmaz ya da saklanmaz; dijital sipariş tahsilatları PCI-DSS lisanslı Shopier ödeme altyapısı (sipariş referansına özel otomatik ilan) veya dış ödeme güvencesi sağlayan İtemsatış (itemsatis.com/p/saintstudio) üzerinden yürütülür.',
         ],
       },
       {
@@ -93,16 +93,16 @@ const TR_DOCS: Record<LegalDocSlug, LegalDocument> = {
           'Kullanıcı ve işlem güvenliği için kod tabanımızda uygulanan başlıca teknik kontroller şunlardır:',
         ],
         bullets: [
-          'Parolalar düz metin olarak saklanmaz; bellek-sert Argon2id algoritması ile özetlenir.',
+          'Parolalar düz metin olarak saklanmaz; bellek-sert Argon2id algoritması ile özetlenir. Google OAuth ve Discord OAuth girişleri PKCE akışı ile doğrulanır.',
           'Oturum çerezleri HttpOnly, SameSite ve HTTPS ortamında Secure bayraklarıyla korunur.',
           'Tüm yanıtlar istek bazlı tek kullanımlık nonce içeren Content-Security-Policy (CSP) ve HSTS başlıklarıyla sunulur.',
-          'Hizmet talep formları HTML kaçış temizliği, uzunluk/biçim doğrulaması (Zod), honeypot tuzakları ve hız sınırlaması ile korunur.',
+          'Kişiye özel 1-1 teslimat sohbet odaları hesap sahipliği doğrulamasıyla (BOLA koruması) ve profil görselleri sunucu taraflı MIME/boyut kontrolüyle korunur.',
         ],
       },
       {
         heading: '3. Üçüncü Taraf Bağlantılar ve Dış Platformlar',
         paragraphs: [
-          'Sitemizden İtemsatış resmi mağaza profiline yönlendirilen bağlantılarda işlem güvenliği ve ödeme gizliliği İtemsatış platformunun kendi gizlilik ve kullanıcı sözleşmesi hükümlerine tabidir.',
+          'Shopier ödeme sayfaları, Google/Discord OAuth kimlik sağlayıcıları ve İtemsatış mağaza bağlantıları üzerinden yürütülen işlemlerde ilgili platformların kendi gizlilik ve güvenlik sözleşmeleri geçerlidir.',
           'Performans izleme için kullanılan Vercel Analytics ve Vercel Speed Insights araçları bireysel kimlik profillemesi yapmadan teknik gecikme ve sayfa metriklerini ölçer.',
         ],
       },
@@ -211,20 +211,20 @@ const TR_DOCS: Record<LegalDocSlug, LegalDocument> = {
     eyebrow: 'SİPARİŞ AKIŞI, DİJİTAL TESLİMAT VE CAYMA İSTİSNALARI',
     title: 'Dijital Teslimat, İade ve Hizmet Koşulları',
     summary:
-      'Katalog paketleri, İtemsatış dijital lisansları ve özel web/bot geliştirme hizmetleri için teslimat yöntemini ve iade kurallarını açıklar.',
+      'Katalog paketleri, Shopier referanslı ödeme akışı, İtemsatış dijital lisansları ve özel web/bot geliştirme hizmetleri için teslimat süresini ve iade kurallarını açıklar.',
     updatedAt: LAST_UPDATED_LABEL.tr,
     sections: [
       {
         heading: '1. Ödeme ve Satın Alma Akışı',
         paragraphs: [
-          'restrictedstudio.shop web sitesi üzerinden doğrudan kredi kartı tahsilatı yapılmaz. Katalog arşivi seçim listesi ve İtemsatış vitrin bağlantıları sizi İtemsatış resmi mağaza kanalına yönlendirir; ödeme güvencesi İtemsatış alıcı koruma sistemi altında gerçekleşir.',
+          'restrictedstudio.shop sunucularında doğrudan kart bilgisi toplanmaz. Katalog ve Lisanslar sayfalarındaki Shopier ödeme seçeneğinde siparişinize özel benzersiz referans numarasıyla (RS-ORD-...) otomatik Shopier dijital ilanı açılır; dilerseniz İtemsatış resmi mağaza kanalından da işlem yapabilirsiniz.',
           '/hizmetler/web-kurulum ve /hizmetler/discord-bot sayfaları bir ön teklif ve teknik talep formu niteliğindedir; ücret, süre ve kapsam yazılı mutabakat sağlanmadan işleme alınmaz.',
         ],
       },
       {
-        heading: '2. Teslimat Koşulları',
+        heading: '2. Teslimat Süresi ve Yöntemi',
         paragraphs: [
-          'Katalogda seçilen paketler sabit 100 TL (16+ adet toplu alımda %50 indirimli 50 TL) birim fiyatıyla İtemsatış üzerinden sipariş sonrası eğitim ve yerel geliştirme incelemesine yönelik dijital teknik arşiv dosyaları olarak teslim edilir.',
+          'Ürünlerimiz ortalama 2 saat içerisinde, Hesabım (/hesabim) panelinizdeki kişiye özel 1-1 teslimat sohbet odası ve sabitlenen Teslimat Kasası (lisans anahtarı, kurulum paketi ve indirme bağlantısı) üzerinden teslim edilmektedir. Yoğunluk vb. durumlarda teslimat süresi 6 ila 24 saate uzayabilmektedir.',
           'Özel web sitesi kurulumu ve Discord bot geliştirme işlerinde teslim süresi proje kapsamına göre yazılı olarak kararlaştırılır (genellikle web projeleri 3–14 gün, Discord botları 2–7 gün).',
         ],
       },
@@ -232,7 +232,7 @@ const TR_DOCS: Record<LegalDocSlug, LegalDocument> = {
         heading: '3. İade ve Cayma Hakkı İstisnaları',
         paragraphs: [
           '6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği Md. 15/1-(ğ) uyarınca elektronik ortamda anında ifa edilen gayri maddi mallar (dijital teknik inceleme scriptleri, indirilebilir arşiv paketleri, aktivasyon/lisans kodları) ile tüketicinin özel talepleri doğrultusunda hazırlanan özel yazılımlarda teslimat gerçekleştirildikten sonra cayma/iade hakkı uygulanmaz.',
-          'Bununla birlikte, teslim edilen dosya bozuksa, ilan açıklamasıyla uyuşmuyorsa veya aktivasyon kodu çalışmıyorsa tarafımıza bildirildiği anda ücretsiz telafi, değişim veya teknik düzeltme sağlanır; çözülemeyen teknik aksaklıklarda İtemsatış iade prosedürü işletilir.',
+          'Bununla birlikte, teslim edilen dosya bozuksa, ilan açıklamasıyla uyuşmuyorsa veya aktivasyon kodu çalışmıyorsa 1-1 teslimat sohbetiniz üzerinden bildirdiğiniz anda ücretsiz telafi, değişim veya teknik düzeltme sağlanır; çözülemeyen teknik aksaklıklarda Shopier/İtemsatış iade prosedürü işletilir.',
         ],
       },
     ],
@@ -314,7 +314,7 @@ const EN_DOCS: Record<LegalDocSlug, LegalDocument> = {
         heading: '1. Privacy & Data Minimization Principle',
         paragraphs: [
           'Restricted Studio collects only data technically required for platform operation. Browsing public showcase pages and searching the catalog requires no user account.',
-          'We do not collect, process, or store credit card or banking details directly on restrictedstudio.shop; external checkout occurs exclusively under buyer escrow protections on İtemsatış (itemsatis.com/p/saintstudio).',
+          'We do not collect or store card or banking details directly on restrictedstudio.shop; digital checkouts execute via PCI-DSS licensed Shopier (auto-generated reference listing RS-ORD-...) or İtemsatış buyer escrow (itemsatis.com/p/saintstudio).',
         ],
       },
       {
@@ -323,16 +323,16 @@ const EN_DOCS: Record<LegalDocSlug, LegalDocument> = {
           'Key engineering safeguards enforced across our application stack include:',
         ],
         bullets: [
-          'Passwords are never stored in plaintext and are hashed using memory-hard Argon2id.',
+          'Passwords are never stored in plaintext and are hashed using Argon2id; Google OAuth and Discord OAuth use strict PKCE authorization flows.',
           'Authentication tokens are transmitted via HttpOnly, SameSite, and HTTPS Secure cookies.',
           'Responses enforce per-request nonce Content-Security-Policy (CSP) and HTTP Strict Transport Security (HSTS).',
-          'All public inquiry forms enforce HTML entity escaping, strict Zod schema validation, honeypot traps, and IP rate-limiting.',
+          'Private 1-on-1 order delivery chat rooms enforce strict ownership checks (BOLA mitigation), while profile avatars validate MIME magic bytes and file limits server-side.',
         ],
       },
       {
         heading: '3. Third-Party Links & External Platforms',
         paragraphs: [
-          'When following links from restrictedstudio.shop to the İtemsatış official storefront, payment processing and checkout privacy are governed by İtemsatış’s own privacy policy and user agreement.',
+          'Checkouts processed through Shopier or İtemsatış and identity logins via Google/Discord are governed by the respective provider’s privacy and security policies.',
           'Vercel Analytics and Vercel Speed Insights measure aggregate technical latency and web vitals without cross-site advertising cookies or individual identity profiling.',
         ],
       },
@@ -441,20 +441,20 @@ const EN_DOCS: Record<LegalDocSlug, LegalDocument> = {
     eyebrow: 'DIGITAL DELIVERY, ESCROW FLOW & REFUND RULES',
     title: 'Digital Delivery, Service & Refund Policy',
     summary:
-      'Explains external checkout via İtemsatış, digital delivery standards for study/development archives and custom builds, and statutory digital goods refund exceptions.',
+      'Explains Shopier reference-tracked checkout, İtemsatış escrow flow, 2-hour average digital delivery timelines, and statutory digital refund exceptions.',
     updatedAt: LAST_UPDATED_LABEL.en,
     sections: [
       {
         heading: '1. Payment & Purchase Flow',
         paragraphs: [
-          'restrictedstudio.shop does not process direct card payments. Catalog basket selections and store listings direct you to the official İtemsatış storefront, where checkout occurs under İtemsatış buyer protection escrow.',
+          'restrictedstudio.shop never stores raw payment cards. Selecting Shopier automatically generates a single-order tracked digital listing bound to a unique reference code (RS-ORD-...); customers may also pay via our official İtemsatış storefront.',
           'The /hizmetler/web-kurulum and /hizmetler/discord-bot pages act solely as technical scoping and quotation forms; no fee or project schedule takes effect without written confirmation.',
         ],
       },
       {
-        heading: '2. Digital Delivery Terms',
+        heading: '2. Digital Delivery Terms & Turnaround SLA',
         paragraphs: [
-          'Catalog selections are priced at a flat 100 TL per unit (50% bulk discount to 50 TL for 16+ modules) and delivered post-order via İtemsatış as digital technical inspection and local development archive packages.',
+          'Our products are delivered within 2 hours on average via your private 1-on-1 delivery chat room and pinned Delivery Vault under My Account (/hesabim). Depending on order volume, delivery may extend to 6–24 hours.',
           'Delivery timelines for custom web platforms (typically 3–14 days) and Discord bots (typically 2–7 days) are agreed in writing per project scope.',
         ],
       },
@@ -462,7 +462,7 @@ const EN_DOCS: Record<LegalDocSlug, LegalDocument> = {
         heading: '3. Digital Withdrawal Exceptions & Technical Remediation',
         paragraphs: [
           'Pursuant to Turkish Consumer Protection Law No. 6502 and Distance Contracts Regulation Art. 15/1-(ğ), digital intangible goods delivered electronically with immediate performance (technical study scripts, downloadable archive bundles, activation/license keys) and bespoke software built to client specifications are non-refundable once delivered.',
-          'However, if any delivered archive is corrupted, fails to match its listing description, or an activation token does not function, free technical remediation, file replacement, or correction is provided promptly—and where unresolvable, the İtemsatış refund procedure applies.',
+          'However, if any delivered archive is corrupted, fails to match its listing description, or an activation token does not function, free technical remediation, file replacement, or correction is provided promptly inside your 1-on-1 order chat—and where unresolvable, Shopier/İtemsatış refund procedures apply.',
         ],
       },
     ],
@@ -544,7 +544,7 @@ const RU_DOCS: Record<LegalDocSlug, LegalDocument> = {
         heading: '1. Принцип конфиденциальности и минимизации',
         paragraphs: [
           'Платформа собирает только данные, технически необходимые для работы сервисов. Для просмотра витрины и каталога регистрация не требуется.',
-          'Банковские карты и платёжные реквизиты на restrictedstudio.shop не собираются; оплата заказов проходит исключительно через внешнюю площадку İtemsatış (itemsatis.com/p/saintstudio) под защитой покупателя.',
+          'Банковские карты на restrictedstudio.shop не хранятся; оплата проходит через лицензированный шлюз Shopier (индивидуальный лот заказа RS-ORD-...) либо через площадку İtemsatış (itemsatis.com/p/saintstudio).',
         ],
       },
       {
@@ -553,16 +553,16 @@ const RU_DOCS: Record<LegalDocSlug, LegalDocument> = {
           'На уровне кода и сетевой архитектуры платформы применяются следующие механизмы безопасности:',
         ],
         bullets: [
-          'Пароли не хранятся в открытом виде и хешируются алгоритмом Argon2id.',
+          'Пароли не хранятся в открытом виде и хешируются алгоритмом Argon2id; вход через Google и Discord защищён протоколом PKCE.',
           'Сессионные cookie защищены флагами HttpOnly, SameSite и Secure по протоколу HTTPS.',
           'Все ответы сервера содержат заголовки HSTS и строгий Content-Security-Policy (CSP) с одноразовым nonce.',
-          'Формы заявок защищены экранированием HTML, строгой валидацией схем (Zod), скрытыми ловушками honeypot и ограничением частоты запросов.',
+          'Личные чаты выдачи 1-на-1 проверяют владельца заказа (защита от BOLA), а изображения профиля проходят серверную проверку MIME и размера.',
         ],
       },
       {
         heading: '3. Сторонние ссылки и внешние сервисы',
         paragraphs: [
-          'При переходе на официальный профиль магазина İtemsatış обработка платежей и конфиденциальность регулируются правилами платформы İtemsatış.',
+          'При оплате через Shopier или İtemsatış и авторизации через Google/Discord обработка данных регулируется политиками конфиденциальности соответствующих провайдеров.',
           'Инструменты Vercel Analytics и Vercel Speed Insights фиксируют только агрегированные метрики производительности без рекламного профилирования личности.',
         ],
       },
@@ -671,20 +671,20 @@ const RU_DOCS: Record<LegalDocSlug, LegalDocument> = {
     eyebrow: 'ЦИФРОВАЯ ДОСТАВКА, СДЕЛКИ ЧЕРЕЗ İTEMSATIŞ И ВОЗВРАТ',
     title: 'Условия цифровой доставки, услуг и возврата',
     summary:
-      'Описывает оформление заказов через İtemsatış, стандарты передачи учебных/тестовых цифровых архивов, разработку сайтов/ботов и исключения для цифровых товаров.',
+      'Описывает оформление заказов через Shopier с уникальным номером и через İtemsatış, стандарты выдачи в течение 2 часов (6–24 ч при нагрузке) и правила возврата.',
     updatedAt: LAST_UPDATED_LABEL.ru,
     sections: [
       {
         heading: '1. Оплата и порядок оформления заказа',
         paragraphs: [
-          'На сайте restrictedstudio.shop прямой приём банковских карт не ведётся. Списки каталога и витрины направляют вас в официальный магазин на площадке İtemsatış, где расчёты защищены системой гаранта сделок İtemsatış.',
+          'Сайт restrictedstudio.shop не хранит реквизиты банковских карт. При оплате через Shopier автоматически создаётся индивидуальный цифровой лот с уникальным номером (RS-ORD-...); также доступен заказ через официальный магазин İtemsatış.',
           'Формы на страницах /hizmetler/web-kurulum и /hizmetler/discord-bot предназначены для технического расчёта и согласования; стоимость и сроки фиксируются только после письменного подтверждения.',
         ],
       },
       {
-        heading: '2. Условия цифровой передачи',
+        heading: '2. Сроки и способ цифровой передачи',
         paragraphs: [
-          'Позиции каталога предлагаются по фиксированной цене 100 TL за модуль (со скидкой 50% — по 50 TL при заказе от 16 позиций) и передаются через İtemsatış в виде цифровых архивов для технического анализа и локального тестирования.',
+          'Наши продукты доставляются в среднем в течение 2 часов через персональный чат заказа 1-на-1 и закреплённое хранилище выдачи в разделе «Аккаунт» (/hesabim). При высокой нагрузке срок доставки может увеличиться до 6–24 часов.',
           'Сроки индивидуальной разработки веб-проектов (обычно 3–14 дней) и Discord-ботов (обычно 2–7 дней) согласовываются письменно согласно техническому заданию.',
         ],
       },
@@ -692,7 +692,7 @@ const RU_DOCS: Record<LegalDocSlug, LegalDocument> = {
         heading: '3. Исключения права на возврат и техническая замена',
         paragraphs: [
           'В соответствии со ст. 15/1-(ğ) Положения о дистанционных договорах к Закону о защите прав потребителей № 6502 цифровые нематериальные продукты с мгновенной электронной поставкой (технические учебные скрипты, скачиваемые архивные пакеты, ключи активации), а также индивидуально разработанное ПО после передачи возврату не подлежат.',
-          'Однако при повреждении архива, несоответствии описанию или нерабочем ключе активации мы бесплатно исправляем ошибку или предоставляем замену; при невозможности технического решения применяется процедура возврата через İtemsatış.',
+          'Однако при повреждении архива, несоответствии описанию или нерабочем ключе активации мы бесплатно исправляем ошибку или предоставляем замену прямо в вашем чате заказа; при невозможности решения применяется процедура возврата через Shopier или İtemsatış.',
         ],
       },
     ],
@@ -774,7 +774,7 @@ const FR_DOCS: Record<LegalDocSlug, LegalDocument> = {
         heading: '1. Confidentialité et minimisation des données',
         paragraphs: [
           'Notre plateforme collecte uniquement les données strictement nécessaires à son fonctionnement. Aucune inscription n’est requise pour consulter les pages publiques ou parcourir le catalogue.',
-          'Aucune coordonnée bancaire n’est collectée sur restrictedstudio.shop ; le règlement des licences et modules s’effectue exclusivement via İtemsatış (itemsatis.com/p/saintstudio) sous sa protection acheteur.',
+          'Aucune donnée bancaire n’est stockée sur restrictedstudio.shop ; le règlement passe par Shopier (annonce dédiée liée à la référence RS-ORD-...) ou via İtemsatış (itemsatis.com/p/saintstudio).',
         ],
       },
       {
@@ -783,16 +783,16 @@ const FR_DOCS: Record<LegalDocSlug, LegalDocument> = {
           'Principales protections déployées au sein de l’architecture applicative :',
         ],
         bullets: [
-          'Les mots de passe ne sont jamais conservés en clair et sont hachés via Argon2id.',
+          'Les mots de passe sont hachés via Argon2id ; les connexions Google OAuth et Discord OAuth utilisent le flux PKCE.',
           'Les cookies de session utilisent les attributs HttpOnly, SameSite et Secure sous HTTPS.',
           'Les réponses appliquent une politique Content-Security-Policy (CSP) avec nonce unique par requête et HSTS.',
-          'Les formulaires publics intègrent échappement HTML, validation stricte Zod, champ piège honeypot et limitation de débit.',
+          'Les salons privés de livraison 1-à-1 vérifient strictement la propriété de la commande (protection BOLA) et les avatars subissent un contrôle serveur MIME et de taille.',
         ],
       },
       {
         heading: '3. Liens tiers et plateformes externes',
         paragraphs: [
-          'Lors de la redirection vers la boutique officielle İtemsatış, la sécurité des paiements et la confidentialité relèvent des conditions propres à İtemsatış.',
+          'Les transactions sur Shopier ou İtemsatış ainsi que les connexions Google/Discord relèvent des politiques de confidentialité respectives de ces prestataires.',
           'Les mesures Vercel Analytics et Vercel Speed Insights évaluent la latence technique sans profilage publicitaire individuel.',
         ],
       },
@@ -901,20 +901,20 @@ const FR_DOCS: Record<LegalDocSlug, LegalDocument> = {
     eyebrow: 'LIVRAISON NUMÉRIQUE & CONDITIONS DE REMBOURSEMENT',
     title: 'Conditions de livraison numérique, services et remboursement',
     summary:
-      'Précise le parcours externe sécurisé via İtemsatış, les modalités de remise des archives techniques d’étude locale, les devis web/bot et les exceptions légales de rétractation.',
+      'Précise le paiement Shopier avec suivi de référence et le parcours İtemsatış, le délai moyen de livraison de 2 heures (6 à 24 h en forte affluence) et les règles de rétractation.',
     updatedAt: LAST_UPDATED_LABEL.fr,
     sections: [
       {
         heading: '1. Paiement et parcours de commande',
         paragraphs: [
-          'Aucune transaction par carte bancaire n’est effectuée directement sur restrictedstudio.shop. Les sélections du catalogue orientent vers la boutique officielle İtemsatış, couverte par le mécanisme de protection acheteur İtemsatış.',
+          'Aucune coordonnée de carte bancaire n’est enregistrée sur restrictedstudio.shop. Le bouton Shopier génère automatiquement une annonce dédiée avec référence unique (RS-ORD-...) ; la boutique İtemsatış reste également disponible.',
           'Les pages /hizmetler/web-kurulum et /hizmetler/discord-bot constituent des formulaires de demande de devis technique ; aucun engagement financier ni calendrier n’est validé sans accord écrit préalable.',
         ],
       },
       {
-        heading: '2. Modalités de livraison numérique',
+        heading: '2. Délais et modalités de livraison numérique',
         paragraphs: [
-          'Les modules sélectionnés au catalogue sont proposés au tarif unitaire de 100 TL (50 % de remise soit 50 TL dès 16 unités) et remis après commande sur İtemsatış sous forme d’archives numériques destinées à l’analyse technique et aux tests en développement local.',
+          'Nos produits sont livrés sous 2 heures en moyenne dans votre salon de livraison privé 1-à-1 et coffre-fort dédié sous Mon compte (/hesabim). En période de forte affluence, la livraison peut s’étendre à 6 à 24 heures.',
           'Les délais des développements sur mesure (généralement 3 à 14 jours pour le web, 2 à 7 jours pour les bots Discord) sont convenus par écrit selon le cahier des charges.',
         ],
       },
@@ -922,7 +922,7 @@ const FR_DOCS: Record<LegalDocSlug, LegalDocument> = {
         heading: '3. Exceptions au droit de rétractation et assistance technique',
         paragraphs: [
           'Conformément à l’art. 15/1-(ğ) du règlement turc sur les contrats à distance (loi n° 6502), les contenus numériques immatériels exécutés immédiatement après livraison électronique (scripts d’étude technique, archives téléchargeables, clés d’activation) ainsi que les logiciels sur mesure ne sont pas remboursables après remise.',
-          'Toutefois, si un fichier livré est corrompu, non conforme à l’annonce ou qu’une clé ne s’active pas, un remplacement, correctif ou dépannage gratuit est assuré sans délai, ou la procédure de remboursement İtemsatış est appliquée.',
+          'Toutefois, si un fichier livré est corrompu, non conforme à l’annonce ou qu’une clé ne s’active pas, un remplacement, correctif ou dépannage gratuit est assuré via votre salon de commande, ou la procédure de remboursement Shopier/İtemsatış s’applique.',
         ],
       },
     ],
