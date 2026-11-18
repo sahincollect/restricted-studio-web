@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AuthPortalShell from '@/components/AuthPortalShell';
 import TurnstileWidget from '@/components/TurnstileWidget';
 import { useI18n } from '@/components/I18nProvider';
+import { LEGAL_FORM_COPY } from '@/lib/legal-docs';
 
 function evaluatePasswordScore(pw: string): number {
   if (!pw) return 0;
@@ -17,12 +18,14 @@ function evaluatePasswordScore(pw: string): number {
 }
 
 function RegisterFormContent() {
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
+  const legalCopy = LEGAL_FORM_COPY[locale] || LEGAL_FORM_COPY.tr;
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [legalAccepted, setLegalAccepted] = useState(false);
   const [honeypot, setHoneypot] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileReset, setTurnstileReset] = useState(0);
@@ -96,6 +99,12 @@ function RegisterFormContent() {
       return;
     }
 
+    if (!legalAccepted) {
+      setError(legalCopy.registerConsentErr);
+      setLoading(false);
+      return;
+    }
+
     try {
       const apiRes = await fetch('/api/auth/register', {
         method: 'POST',
@@ -104,6 +113,7 @@ function RegisterFormContent() {
         body: JSON.stringify({
           identifier: cleanInput,
           password,
+          kvkkAccepted: true,
           turnstileToken,
           website_url: honeypot,
         }),
@@ -244,6 +254,26 @@ function RegisterFormContent() {
             </button>
           </div>
         </div>
+
+        <label className="st-consent-check">
+          <input
+            type="checkbox"
+            checked={legalAccepted}
+            onChange={(e) => setLegalAccepted(e.target.checked)}
+            required
+          />
+          <span>
+            {legalCopy.registerConsentPrefix}
+            <Link href="/yasal/kvkk" className="st-cookie-link">
+              {legalCopy.kvkkLink}
+            </Link>
+            {' & '}
+            <Link href="/yasal/kullanim-kosullari" className="st-cookie-link">
+              {legalCopy.termsLink}
+            </Link>
+            {legalCopy.registerConsentSuffix}
+          </span>
+        </label>
 
         <TurnstileWidget onToken={setTurnstileToken} resetSignal={turnstileReset} />
 

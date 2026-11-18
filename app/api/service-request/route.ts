@@ -26,6 +26,7 @@ function buildEmailHtml(params: {
   selectedFeatures: string[];
   details: string;
   locale: string;
+  kvkkAccepted?: boolean;
 }): string {
   const rows: Array<[string, string]> = [
     ['Başvuru Kodu', params.requestId],
@@ -40,6 +41,7 @@ function buildEmailHtml(params: {
     ['Hedef Teslim Süresi', params.timeline],
     ['Ek Modüller', params.selectedFeatures.length > 0 ? params.selectedFeatures.join(', ') : 'Standart kapsam'],
     ['Arayüz Dili', params.locale.toUpperCase()],
+    ['KVKK & Gizlilik Onayı', params.kvkkAccepted ? 'Onaylandı' : 'Belirtilmedi'],
   ];
 
   const rowsHtml = rows
@@ -167,6 +169,7 @@ export async function POST(request: Request) {
           selectedFeatures,
           details,
           locale: data.locale,
+          kvkkAccepted: data.kvkkAccepted,
         }),
         text: textBody,
       }),

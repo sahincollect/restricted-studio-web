@@ -1,12 +1,13 @@
 import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/site-config';
+import { LEGAL_DOC_ORDER } from '@/lib/legal-docs';
 
 export const dynamic = 'force-static';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
 
-  return [
+  const coreEntries: MetadataRoute.Sitemap = [
     {
       url: `${SITE_URL}/`,
       lastModified,
@@ -56,4 +57,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
   ];
+
+  const legalEntries: MetadataRoute.Sitemap = LEGAL_DOC_ORDER.map((slug) => ({
+    url: `${SITE_URL}/yasal/${slug}`,
+    lastModified,
+    changeFrequency: 'monthly',
+    priority: 0.4,
+  }));
+
+  return [...coreEntries, ...legalEntries];
 }

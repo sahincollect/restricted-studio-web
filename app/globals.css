@@ -1490,8 +1490,8 @@ img {
 
 .st-footer-inner {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 0.8fr));
-  gap: 36px;
+  grid-template-columns: minmax(0, 1.35fr) repeat(3, minmax(0, 0.72fr));
+  gap: 32px;
 }
 
 .st-footer-logo-row {
@@ -3153,6 +3153,146 @@ img {
   color: var(--accent-coral);
 }
 
+/* Legal Documents (/yasal/*), Form Consents & Cookie Notice Banner */
+.st-legal-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.st-legal-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: 24px;
+  align-items: start;
+}
+
+.st-legal-layout > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.st-legal-doc-card {
+  min-width: 0;
+  max-width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-hairline);
+  border-radius: 20px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.st-legal-doc-card .st-compare-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.st-legal-doc-card .st-table th,
+.st-legal-doc-card .st-table td {
+  padding: 12px 14px;
+  overflow-wrap: anywhere;
+}
+
+.st-legal-section {
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.st-legal-h2 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.st-legal-p {
+  font-size: 13.5px;
+  line-height: 1.72;
+  color: var(--text-secondary);
+}
+
+.st-legal-ul {
+  list-style: disc;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+.st-consent-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.st-consent-check input[type='checkbox'] {
+  margin-top: 3px;
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent-ember);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.st-cookie-link {
+  color: var(--accent-coral);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.st-cookie-link:hover {
+  color: #ffffff;
+}
+
+.st-cookie-banner {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  left: 18px;
+  max-width: 540px;
+  margin-left: auto;
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 16px;
+  border-radius: 18px;
+  background: rgba(18, 17, 20, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 20px 54px rgba(0, 0, 0, 0.65);
+}
+
+body.has-catalog-cart .st-cookie-banner {
+  bottom: 92px;
+}
+
+.st-cookie-text {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.st-cookie-btn {
+  flex-shrink: 0;
+}
+
 /* Netflix-Style Pure Black + Minimalist GPU-Composited Claw Intro (exact pençe.png contours) */
 .rs-claw-intro {
   position: fixed;
@@ -3288,6 +3428,10 @@ img {
     gap: 16px;
   }
 
+  .st-footer-inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .rs-store-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -3351,6 +3495,10 @@ img {
   .rs-portal-kpi-grid {
     grid-template-columns: 1fr;
   }
+
+  .st-legal-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 720px) {
@@ -3409,6 +3557,51 @@ img {
   .st-compare-table-wrap .st-table td {
     padding: 9px 7px;
     font-size: 11px;
+  }
+
+  .st-legal-doc-card {
+    padding: 18px 16px;
+    border-radius: 18px;
+  }
+
+  .st-legal-doc-card .st-compare-table-wrap {
+    border-radius: 14px;
+    overflow-x: visible;
+  }
+
+  .st-legal-doc-card .st-table,
+  .st-legal-doc-card .st-table tbody,
+  .st-legal-doc-card .st-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .st-legal-doc-card .st-table thead {
+    display: none;
+  }
+
+  .st-legal-doc-card .st-table tr {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-hairline);
+  }
+
+  .st-legal-doc-card .st-table tr:last-child {
+    border-bottom: none;
+  }
+
+  .st-legal-doc-card .st-table td {
+    display: block;
+    width: 100%;
+    padding: 3px 0;
+    border-bottom: none;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .st-legal-doc-card .st-table td:first-child {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 2px;
   }
 
   .st-status-idx-col {
@@ -3498,6 +3691,20 @@ img {
     bottom: 16px;
     border-radius: 20px;
     padding: 10px 14px;
+  }
+
+  .st-legal-doc-card {
+    padding: 20px 16px;
+  }
+
+  .st-cookie-banner {
+    right: 12px;
+    left: 12px;
+    bottom: 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px;
   }
 }
 

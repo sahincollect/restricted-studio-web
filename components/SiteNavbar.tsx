@@ -262,7 +262,8 @@ export interface SiteNavbarProps {
     | '/dashboard'
     | '/login'
     | '/hizmetler/web-kurulum'
-    | '/hizmetler/discord-bot';
+    | '/hizmetler/discord-bot'
+    | `/yasal/${string}`;
   mainOrigin?: string;
   cartCount?: number;
   onCartOpen?: () => void;

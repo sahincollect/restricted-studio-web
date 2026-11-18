@@ -17,10 +17,14 @@ test('sitemap.ts and robots.ts define complete canonical routes and sitemap refe
   for (const route of ['/', '/katalog', '/lisanslar', '/hizmetler/web-kurulum', '/hizmetler/discord-bot', '/hakkimizda', '/status', '/iletisim']) {
     assert.ok(sitemapSrc.includes(route), `sitemap.ts missing route: ${route}`);
   }
+  assert.ok(sitemapSrc.includes('/yasal/'), 'sitemap.ts must include legal routes');
   assert.ok(robotsSrc.includes('/sitemap.xml'), 'robots.ts must expose sitemap.xml');
+  assert.ok(robotsSrc.includes('/yasal/'), 'robots.ts must allow /yasal/ routes');
   assert.ok(robotsSrc.includes('/.well-known/security.txt'), 'robots.ts must allow security.txt');
   const secTxt = fs.readFileSync(new URL('../public/.well-known/security.txt', import.meta.url), 'utf8');
   assert.ok(secTxt.includes('mailto:info@restrictedstudio.shop'));
   const layoutSrc = fs.readFileSync(new URL('../app/layout.tsx', import.meta.url), 'utf8');
   assert.ok(layoutSrc.includes('ICON_VERSION'), 'layout.tsx must version favicon/icon URLs for Search cache invalidation');
+  const legalSrc = fs.readFileSync(new URL('../lib/legal-docs.ts', import.meta.url), 'utf8');
+  assert.equal(/mersis|vergi dairesi\s*:/i.test(legalSrc), false, 'legal-docs.ts must not contain placeholder corporate imprint fields');
 });

@@ -45,6 +45,10 @@ export const CustomerRegisterSchema = z
       .string()
       .min(8, 'Şifre en az 8 karakter olmalıdır.')
       .max(128, 'Şifre en fazla 128 karakter olabilir.'),
+    kvkkAccepted: z
+      .boolean()
+      .refine((v) => v === true, { message: 'KVKK ve Kullanım Koşulları onayı gereklidir.' })
+      .optional(),
     turnstileToken: turnstileField,
     website_url: honeypotField,
   })
@@ -230,6 +234,10 @@ export const ServiceRequestSchema = z
       .min(10, 'Lütfen proje detaylarını en az 10 karakter ile açıklayın.')
       .max(2500, 'Proje açıklaması en fazla 2500 karakter olabilir.'),
     locale: z.enum(['tr', 'en', 'ru', 'fr']).optional().default('tr'),
+    kvkkAccepted: z
+      .boolean()
+      .refine((v) => v === true, { message: 'KVKK Aydınlatma Metni onayı gereklidir.' })
+      .optional(),
     turnstileToken: turnstileField,
     website_url: honeypotField,
   })

@@ -4,6 +4,7 @@ import { cookies, headers } from 'next/headers';
 import './globals.css';
 import CursorSpotlight from '@/components/CursorSpotlight';
 import BearClawIntro from '@/components/BearClawIntro';
+import CookieNoticeBanner from '@/components/CookieNoticeBanner';
 import { I18nProvider } from '@/components/I18nProvider';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -182,6 +183,7 @@ export default async function RootLayout({
           initialDetectedFromHeader={initialDetectedFromHeader}
         >
           {children}
+          <CookieNoticeBanner />
         </I18nProvider>
         <Analytics />
         <SpeedInsights />

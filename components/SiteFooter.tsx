@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useI18n } from '@/components/I18nProvider';
+import { getLegalNavItems } from '@/lib/legal-docs';
 import type { Locale } from '@/lib/i18n';
 
 const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
@@ -12,6 +13,7 @@ interface FooterCopy {
   tagline: string;
   explore: string;
   channels: string;
+  legalCol: string;
   legal: string;
   disclaimer: string;
   nav: {
@@ -33,6 +35,7 @@ const FOOTER_COPY: Record<Locale, FooterCopy> = {
       'Açık kaynak FiveM altyapıları, 6.446+ doğrulanmış modüler paket ve İtemsatış güvenceli dijital lisans platformu.',
     explore: 'SAYFALAR',
     channels: 'RESMİ KANALLAR',
+    legalCol: 'YASAL & POLİTİKALAR',
     legal: '© 2026 Restricted Studio. Tüm hakları saklıdır.',
     disclaimer:
       'FiveM® ve Rockstar Games® ile resmi bir bağlantısı yoktur; tüm yazılım paketleri ve lisanslar bağımsız geliştirici stüdyosu tarafından sunulmaktadır.',
@@ -53,6 +56,7 @@ const FOOTER_COPY: Record<Locale, FooterCopy> = {
       'Open-source FiveM architectures, 6,446+ verified modules, and digital software licensing backed by İtemsatış escrow.',
     explore: 'PAGES',
     channels: 'OFFICIAL CHANNELS',
+    legalCol: 'LEGAL & POLICIES',
     legal: '© 2026 Restricted Studio. All rights reserved.',
     disclaimer:
       'Not affiliated with FiveM® or Rockstar Games®; all software packages and licenses are independently distributed.',
@@ -73,6 +77,7 @@ const FOOTER_COPY: Record<Locale, FooterCopy> = {
       'Инфраструктуры FiveM с открытым исходным кодом, более 6 446 модулей и цифровые лицензии через İtemsatış.',
     explore: 'РАЗДЕЛЫ',
     channels: 'КАНАЛЫ СВЯЗИ',
+    legalCol: 'ПРАВОВЫЕ ДОКУМЕНТЫ',
     legal: '© 2026 Restricted Studio. Все права защищены.',
     disclaimer:
       'Не связано с FiveM® или Rockstar Games®; все модули и лицензии распространяются независимо.',
@@ -93,6 +98,7 @@ const FOOTER_COPY: Record<Locale, FooterCopy> = {
       'Architectures FiveM open-source, plus de 6 446 modules vérifiés et licences numériques sécurisées via İtemsatış.',
     explore: 'PAGES',
     channels: 'CANAUX OFFICIELS',
+    legalCol: 'MENTIONS & POLITIQUES',
     legal: '© 2026 Restricted Studio. Tous droits réservés.',
     disclaimer:
       'Sans affiliation officielle avec FiveM® ou Rockstar Games®; tous les scripts et licences sont distribués de manière indépendante.',
@@ -113,6 +119,7 @@ const FOOTER_COPY: Record<Locale, FooterCopy> = {
 export default function SiteFooter({ mainOrigin = '' }: { mainOrigin?: string }) {
   const { locale } = useI18n();
   const copy = FOOTER_COPY[locale] || FOOTER_COPY.tr;
+  const legalItems = getLegalNavItems(locale);
   const siteLink = (path: string) => (mainOrigin ? `${mainOrigin}${path}` : path);
 
   const linkOrA = (href: string, label: string, isStatusRoute?: boolean) =>
@@ -179,6 +186,13 @@ export default function SiteFooter({ mainOrigin = '' }: { mainOrigin?: string })
             {linkOrA('/hizmetler/web-kurulum', locale === 'tr' ? 'Web Kurulum Hizmeti' : locale === 'ru' ? 'Создание сайта' : locale === 'fr' ? 'Création Web' : 'Website Setup')}
             {linkOrA('/hizmetler/discord-bot', locale === 'tr' ? 'Discord Bot Hizmetleri' : locale === 'ru' ? 'Discord-боты' : locale === 'fr' ? 'Bots Discord' : 'Discord Bots')}
             {linkOrA('/admin', copy.admin)}
+          </div>
+        </div>
+
+        <div className="st-footer-col">
+          <div className="st-footer-col-title">{copy.legalCol}</div>
+          <div className="st-footer-links">
+            {legalItems.map((item) => linkOrA(item.href, item.label))}
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ import SiteNavbar from '@/components/SiteNavbar';
 import SiteFooter from '@/components/SiteFooter';
 import { HeroPrismBackdrop } from '@/components/StudioReveal';
 import TurnstileWidget from '@/components/TurnstileWidget';
+import { LEGAL_FORM_COPY } from '@/lib/legal-docs';
 import type { Locale } from '@/lib/i18n';
 
 export type ServiceKind = 'web-kurulum' | 'discord-bot';
@@ -590,9 +591,11 @@ export default function ServiceRequestPageClient({ serviceType }: { serviceType:
   const [budget, setBudget] = useState(copy.budgets[1] || copy.budgets[0]);
   const [timeline, setTimeline] = useState(copy.timelines[1] || copy.timelines[0]);
   const [details, setDetails] = useState('');
+  const [kvkkAccepted, setKvkkAccepted] = useState(false);
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileResetSignal, setTurnstileResetSignal] = useState(0);
+  const legalCopy = LEGAL_FORM_COPY[locale] || LEGAL_FORM_COPY.tr;
 
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -614,6 +617,10 @@ export default function ServiceRequestPageClient({ serviceType }: { serviceType:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+    if (!kvkkAccepted) {
+      setErrorMsg(legalCopy.serviceConsentErr);
+      return;
+    }
     setSubmitting(true);
 
     try {
@@ -632,6 +639,7 @@ export default function ServiceRequestPageClient({ serviceType }: { serviceType:
           timeline,
           details,
           locale,
+          kvkkAccepted: true,
           website_url: websiteUrl,
           turnstileToken,
         }),
@@ -665,6 +673,7 @@ export default function ServiceRequestPageClient({ serviceType }: { serviceType:
     setProjectScope('');
     setSelectedFeatures([]);
     setDetails('');
+    setKvkkAccepted(false);
     setTurnstileResetSignal((n) => n + 1);
   };
 
@@ -989,6 +998,26 @@ export default function ServiceRequestPageClient({ serviceType }: { serviceType:
                     required
                   />
                 </div>
+
+                <label className="st-consent-check">
+                  <input
+                    type="checkbox"
+                    checked={kvkkAccepted}
+                    onChange={(e) => setKvkkAccepted(e.target.checked)}
+                    required
+                  />
+                  <span>
+                    {legalCopy.serviceConsentPrefix}
+                    <Link href="/yasal/kvkk" className="st-cookie-link">
+                      {legalCopy.kvkkLink}
+                    </Link>
+                    {' & '}
+                    <Link href="/yasal/gizlilik" className="st-cookie-link">
+                      {legalCopy.privacyLink}
+                    </Link>
+                    {legalCopy.serviceConsentSuffix}
+                  </span>
+                </label>
 
                 <TurnstileWidget onToken={setTurnstileToken} resetSignal={turnstileResetSignal} />
 

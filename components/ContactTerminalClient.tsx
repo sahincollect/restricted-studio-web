@@ -6,6 +6,7 @@ import { useI18n } from '@/components/I18nProvider';
 import SiteNavbar from '@/components/SiteNavbar';
 import SiteFooter from '@/components/SiteFooter';
 import { HeroPrismBackdrop } from '@/components/StudioReveal';
+import { LEGAL_FORM_COPY } from '@/lib/legal-docs';
 import type { Locale } from '@/lib/i18n';
 
 const CONTACT_EMAIL = 'info@restrictedstudio.shop';
@@ -448,6 +449,18 @@ export default function ContactTerminalClient() {
               <button type="submit" className="st-pill-btn is-light is-full">
                 {copy.submitBtn} →
               </button>
+
+              <p style={{ fontSize: '11.5px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                {(LEGAL_FORM_COPY[locale] || LEGAL_FORM_COPY.tr).contactMailNotePrefix}
+                <Link href="/yasal/kvkk" className="st-cookie-link">
+                  {(LEGAL_FORM_COPY[locale] || LEGAL_FORM_COPY.tr).kvkkLink}
+                </Link>
+                {' & '}
+                <Link href="/yasal/gizlilik" className="st-cookie-link">
+                  {(LEGAL_FORM_COPY[locale] || LEGAL_FORM_COPY.tr).privacyLink}
+                </Link>
+                {(LEGAL_FORM_COPY[locale] || LEGAL_FORM_COPY.tr).contactMailNoteSuffix}
+              </p>
             </form>
 
             {dispatched && (

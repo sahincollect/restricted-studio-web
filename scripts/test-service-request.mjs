@@ -60,4 +60,16 @@ test('ServiceRequestSchema rejects invalid emails, short details, and populated 
     website_url: 'http://spam.example.com',
   });
   assert.equal(botHoneypot.success, false);
+
+  const rejectedConsent = ServiceRequestSchema.safeParse({
+    serviceType: 'web-kurulum',
+    fullName: 'Test User',
+    email: 'test@example.com',
+    packageTier: 'Kurumsal Site',
+    budget: '5.000 TL',
+    timeline: '1 Hafta',
+    details: 'Kurumsal site icin talep gonderiyorum.',
+    kvkkAccepted: false,
+  });
+  assert.equal(rejectedConsent.success, false);
 });
