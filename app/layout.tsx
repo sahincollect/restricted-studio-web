@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { cookies, headers } from 'next/headers';
 import './globals.css';
 import CursorSpotlight from '@/components/CursorSpotlight';
+import BearClawIntro from '@/components/BearClawIntro';
 import { I18nProvider } from '@/components/I18nProvider';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -141,6 +142,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="studio-root-body">
+        <BearClawIntro />
         <CursorSpotlight />
         <I18nProvider
           initialLocale={locale}

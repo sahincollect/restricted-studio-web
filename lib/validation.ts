@@ -166,3 +166,71 @@ export const StoreAdminActionSchema = z.discriminatedUnion('action', [
     })
     .strict(),
 ]);
+
+/**
+ * Escapes HTML special characters for safe server-side transactional email templates.
+ */
+export function escapeHtml(input: unknown): string {
+  return String(input ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+export const ServiceRequestSchema = z
+  .object({
+    serviceType: z.enum(['web-kurulum', 'discord-bot']),
+    fullName: z
+      .string()
+      .trim()
+      .min(2, 'Ad Soyad / Kurum adı en az 2 karakter olmalıdır.')
+      .max(100, 'Ad Soyad / Kurum adı en fazla 100 karakter olabilir.'),
+    email: z
+      .string()
+      .trim()
+      .max(120, 'E-posta adresi en fazla 120 karakter olabilir.')
+      .refine((v) => EMAIL_RE.test(v), { message: 'Geçerli bir e-posta adresi giriniz.' }),
+    discordHandle: z
+      .string()
+      .trim()
+      .max(80, 'Discord bilgisi en fazla 80 karakter olabilir.')
+      .optional()
+      .default(''),
+    packageTier: z
+      .string()
+      .trim()
+      .min(2, 'Lütfen bir hizmet paketi seçiniz.')
+      .max(100, 'Paket seçimi geçersiz.'),
+    budget: z
+      .string()
+      .trim()
+      .min(2, 'Lütfen tahmini bütçe aralığı seçiniz.')
+      .max(80, 'Bütçe alanı en fazla 80 karakter olabilir.'),
+    timeline: z
+      .string()
+      .trim()
+      .min(2, 'Lütfen hedef teslim süresini seçiniz.')
+      .max(80, 'Teslim süresi en fazla 80 karakter olabilir.'),
+    projectScope: z
+      .string()
+      .trim()
+      .max(140, 'Alan adı veya sunucu bilgisi en fazla 140 karakter olabilir.')
+      .optional()
+      .default(''),
+    selectedFeatures: z
+      .array(z.string().trim().min(1).max(80))
+      .max(12, 'En fazla 12 ek modül seçebilirsiniz.')
+      .optional()
+      .default([]),
+    details: z
+      .string()
+      .trim()
+      .min(10, 'Lütfen proje detaylarını en az 10 karakter ile açıklayın.')
+      .max(2500, 'Proje açıklaması en fazla 2500 karakter olabilir.'),
+    locale: z.enum(['tr', 'en', 'ru', 'fr']).optional().default('tr'),
+    turnstileToken: turnstileField,
+    website_url: honeypotField,
+  })
+  .strict();

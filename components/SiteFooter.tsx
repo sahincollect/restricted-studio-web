@@ -169,6 +169,8 @@ export default function SiteFooter({ mainOrigin = '' }: { mainOrigin?: string })
               {copy.itemsatis} ↗
             </a>
             {linkOrA('/dashboard', copy.portal)}
+            {linkOrA('/hizmetler/web-kurulum', locale === 'tr' ? 'Web Kurulum Hizmeti' : locale === 'ru' ? 'Создание сайта' : locale === 'fr' ? 'Création Web' : 'Website Setup')}
+            {linkOrA('/hizmetler/discord-bot', locale === 'tr' ? 'Discord Bot Hizmetleri' : locale === 'ru' ? 'Discord-боты' : locale === 'fr' ? 'Bots Discord' : 'Discord Bots')}
             {linkOrA('/admin', copy.admin)}
           </div>
         </div>

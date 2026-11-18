@@ -312,6 +312,7 @@ export type RateLimitTier =
   | 'auth_forgot'
   | 'auth_refresh'
   | 'redeem'
+  | 'service_request'
   | 'verify_client'
   | 'download'
   | 'api_default'
@@ -328,11 +329,12 @@ const TIER_LIMITS: Record<RateLimitTier, { windowMs: number; max: number }> = {
   auth_forgot: { windowMs: 15 * 60 * 1000, max: 5 },
   auth_refresh: { windowMs: 5 * 60 * 1000, max: 30 },
   redeem: { windowMs: 10 * 60 * 1000, max: 10 },
+  service_request: { windowMs: 10 * 60 * 1000, max: 6 },
   verify_client: { windowMs: 5 * 60 * 1000, max: 20 },
   download: { windowMs: 5 * 60 * 1000, max: 15 },
-  api_default: { windowMs: 60 * 1000, max: 60 },
-  page_catalog: { windowMs: 60 * 1000, max: 60 },
-  page_general: { windowMs: 60 * 1000, max: 120 },
+  api_default: { windowMs: 60 * 1000, max: 120 },
+  page_catalog: { windowMs: 60 * 1000, max: 90 },
+  page_general: { windowMs: 60 * 1000, max: 360 },
 };
 
 interface RateBucket {
