@@ -124,7 +124,7 @@ const HOME_COPY: Record<Locale, HomeLocaleCopy> = {
       {
         key: 'licenses',
         title: 'Dijital Lisanslar',
-        count: '82+ İlan',
+        count: '17+ İlan',
         desc: 'İtemsatış resmi mağazamız üzerinden ChatGPT, Gemini, Canva ve yazılım lisanslarında anında teslimat.',
         href: '/lisanslar',
         icon: 'key',
@@ -218,7 +218,7 @@ const HOME_COPY: Record<Locale, HomeLocaleCopy> = {
       {
         key: 'licenses',
         title: 'Digital Licenses',
-        count: '82+ Listings',
+        count: '17+ Listings',
         desc: 'Official İtemsatış storefront featuring AI subscriptions, design tools, and software keys.',
         href: '/lisanslar',
         icon: 'key',
@@ -312,7 +312,7 @@ const HOME_COPY: Record<Locale, HomeLocaleCopy> = {
       {
         key: 'licenses',
         title: 'Цифровые лицензии',
-        count: '82+ товара',
+        count: '17+ товара',
         desc: 'AI-подписки, софт и ключи через официальную витрину İtemsatış.',
         href: '/lisanslar',
         icon: 'key',
@@ -406,7 +406,7 @@ const HOME_COPY: Record<Locale, HomeLocaleCopy> = {
       {
         key: 'licenses',
         title: 'Licences Numériques',
-        count: '82+ Offres',
+        count: '17+ Offres',
         desc: 'Boutique officielle İtemsatış pour outils IA, design et logiciels.',
         href: '/lisanslar',
         icon: 'key',

@@ -295,11 +295,13 @@ export default function AdminStoreManager() {
             className="rs-admin-store-input"
             aria-label="Toplu grup seçimi"
           >
-            {Object.entries(GROUP_LABELS).map(([k, label]) => (
-              <option key={k} value={k}>
-                {label}
-              </option>
-            ))}
+            {Object.entries(GROUP_LABELS)
+              .filter(([k]) => k !== 'fivem' && k !== 'software')
+              .map(([k, label]) => (
+                <option key={k} value={k}>
+                  {label}
+                </option>
+              ))}
           </select>
 
           <select

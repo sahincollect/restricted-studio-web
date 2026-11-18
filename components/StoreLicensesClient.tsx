@@ -318,19 +318,21 @@ export default function StoreLicensesClient({ initialItems }: StoreLicensesClien
         <section className="st-container" style={{ paddingBottom: '80px' }}>
           <div className="rs-store-controls">
             <div className="rs-store-groups" role="tablist">
-              {(['all', 'ai', 'design', 'media', 'software', 'fivem'] as GroupFilter[]).map((key) => (
-                <button
-                  key={key}
-                  type="button"
-                  role="tab"
-                  aria-selected={group === key}
-                  className={`st-filter-pill ${group === key ? 'is-active' : ''}`}
-                  onClick={() => setGroup(key)}
-                >
-                  <span>{copy.groups[key]}</span>{' '}
-                  <span style={{ opacity: 0.68 }}>({formatNumber(groupCounts[key])})</span>
-                </button>
-              ))}
+              {(['all', 'ai', 'design', 'media', 'software', 'fivem'] as GroupFilter[])
+                .filter((key) => key === 'all' || groupCounts[key] > 0)
+                .map((key) => (
+                  <button
+                    key={key}
+                    type="button"
+                    role="tab"
+                    aria-selected={group === key}
+                    className={`st-filter-pill ${group === key ? 'is-active' : ''}`}
+                    onClick={() => setGroup(key)}
+                  >
+                    <span>{copy.groups[key]}</span>{' '}
+                    <span style={{ opacity: 0.68 }}>({formatNumber(groupCounts[key])})</span>
+                  </button>
+                ))}
             </div>
 
             <div className="rs-store-search-sort">

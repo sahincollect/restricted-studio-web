@@ -26,6 +26,14 @@ const SAINTSTUDIO_PROFILE_URL = 'https://www.itemsatis.com/p/saintstudio';
 const SAINTSTUDIO_POSTS_URL = 'https://www.itemsatis.com/api/profilePosts';
 const SAINTSTUDIO_USER_ID = '1923977';
 const CACHE_TTL_MS = 5 * 60 * 1000;
+export const MAX_LICENSE_LISTINGS = 19;
+
+/**
+ * Restricts /lisanslar to the top 19 digital subscriptions & licenses (excluding FiveM scripts).
+ */
+export function filterLicenseCatalogItems(items: ItemsatisProductItem[]): ItemsatisProductItem[] {
+  return items.slice(0, MAX_LICENSE_LISTINGS).filter((item) => item.group !== 'fivem');
+}
 
 const NAMED_ENTITIES: Record<string, string> = {
   amp: '&',
@@ -148,7 +156,7 @@ async function pullLiveFromItemsatis(): Promise<ItemsatisProductItem[] | null> {
     const cookieHeader = rawCookies.map((c) => c.split(';')[0]).filter(Boolean).join('; ');
 
     const posts: RawProfilePost[] = [];
-    for (let page = 1; page <= 12; page++) {
+    for (let page = 1; page <= 2; page++) {
       const res = await fetch(SAINTSTUDIO_POSTS_URL, {
         method: 'POST',
         headers: {
@@ -216,23 +224,25 @@ async function pullLiveFromItemsatis(): Promise<ItemsatisProductItem[] | null> {
       });
     }
 
-    return normalized.length > 0 ? normalized : null;
+    const filtered = filterLicenseCatalogItems(normalized);
+    return filtered.length > 0 ? filtered : null;
   } catch {
     return null;
   }
 }
 
 export function getSnapshotItemsatisListings(): ItemsatisFetchResult {
+  const items = filterLicenseCatalogItems((snapshotData.items || []) as ItemsatisProductItem[]);
   return {
-    items: (snapshotData.items || []) as ItemsatisProductItem[],
+    items,
     syncedAt: snapshotData.syncedAt || new Date().toISOString(),
     source: 'snapshot',
   };
 }
 
 /**
- * Retrieves listings from the saintstudio İtemsatış profile with a 5-minute memory cache
- * and guaranteed static-snapshot fallback when upstream is throttled or offline.
+ * Retrieves the top digital license listings from the saintstudio İtemsatış profile
+ * (first 19 non-FiveM listings) with a 5-minute memory cache and snapshot fallback.
  */
 export async function fetchItemsatisListings(options?: {
   forceRefresh?: boolean;
@@ -242,7 +252,7 @@ export async function fetchItemsatisListings(options?: {
 
   if (!options?.forceRefresh && cached && now - cached.fetchedAtMs < CACHE_TTL_MS) {
     return {
-      items: cached.items,
+      items: filterLicenseCatalogItems(cached.items),
       syncedAt: cached.syncedAt,
       source: 'cache',
     };
@@ -265,7 +275,7 @@ export async function fetchItemsatisListings(options?: {
 
   if (cached && cached.items.length > 0) {
     return {
-      items: cached.items,
+      items: filterLicenseCatalogItems(cached.items),
       syncedAt: cached.syncedAt,
       source: 'cache',
     };
