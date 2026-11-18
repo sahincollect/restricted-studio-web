@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { cookies, headers } from 'next/headers';
 import './globals.css';
 import CursorSpotlight from '@/components/CursorSpotlight';
-import MinimalAudioPlayer from '@/components/MinimalAudioPlayer';
 import { I18nProvider } from '@/components/I18nProvider';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -147,7 +146,6 @@ export default async function RootLayout({
           initialLocale={locale}
           initialDetectedFromHeader={initialDetectedFromHeader}
         >
-          <MinimalAudioPlayer />
           {children}
         </I18nProvider>
         <Analytics />
