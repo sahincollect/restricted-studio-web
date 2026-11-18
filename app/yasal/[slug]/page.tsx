@@ -6,9 +6,9 @@ import JsonLd from '@/components/JsonLd';
 import { LOCALE_COOKIE_NAME, resolveRequestLocale } from '@/lib/i18n';
 import {
   LEGAL_DOC_ORDER,
-  getLegalDocument,
   type LegalDocSlug,
 } from '@/lib/legal-docs';
+import { getLegalDocument } from '@/lib/legal-doc-content';
 import { SITE_URL, canonicalUrl } from '@/lib/site-config';
 
 export const dynamicParams = false;

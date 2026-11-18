@@ -1,22 +1,20 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import SiteNavbar from '@/components/SiteNavbar';
 import SiteFooter from '@/components/SiteFooter';
 import { HeroPrismBackdrop } from '@/components/StudioReveal';
 import { useI18n } from '@/components/I18nProvider';
-import {
-  COOKIE_INVENTORY,
-  getLegalDocument,
-  getLegalNavItems,
-  type LegalDocSlug,
-} from '@/lib/legal-docs';
+import { getLegalNavItems, type LegalDocSlug } from '@/lib/legal-docs';
+import { COOKIE_INVENTORY, getLegalDocument } from '@/lib/legal-doc-content';
 import type { Locale } from '@/lib/i18n';
 
 const LEGAL_UI_COPY: Record<
   Locale,
   {
+    navAriaLabel: string;
+    cookieTableHeading: string;
     tableName: string;
     tableStorage: string;
     tablePurpose: string;
@@ -28,6 +26,8 @@ const LEGAL_UI_COPY: Record<
   }
 > = {
   tr: {
+    navAriaLabel: 'Yasal Belgeler',
+    cookieTableHeading: '3. Kullanılan Çerez ve Depolama Envanteri',
     tableName: 'Anahtar Adı',
     tableStorage: 'Tür',
     tablePurpose: 'Kullanım Amacı',
@@ -39,6 +39,8 @@ const LEGAL_UI_COPY: Record<
     contactCta: 'İletişim Sayfası',
   },
   en: {
+    navAriaLabel: 'Legal Documents',
+    cookieTableHeading: '3. Cookie & Browser Storage Inventory',
     tableName: 'Key Name',
     tableStorage: 'Storage',
     tablePurpose: 'Purpose',
@@ -46,10 +48,12 @@ const LEGAL_UI_COPY: Record<
     tableType: 'Category',
     contactTitle: 'Privacy & Takedown Requests',
     contactDesc:
-      'For data access, deletion requests, or DMCA/copyright notices, please reach us directly via email.',
+      'For data access, deletion requests, or Law No. 5846 / DMCA copyright notices, please reach us directly via email.',
     contactCta: 'Contact Page',
   },
   ru: {
+    navAriaLabel: 'Правовые документы',
+    cookieTableHeading: '3. Используемые Cookie и хранилище',
     tableName: 'Имя ключа',
     tableStorage: 'Хранилище',
     tablePurpose: 'Назначение',
@@ -61,6 +65,8 @@ const LEGAL_UI_COPY: Record<
     contactCta: 'Контакты',
   },
   fr: {
+    navAriaLabel: 'Documents légaux',
+    cookieTableHeading: '3. Inventaire des Cookies et du Stockage Local',
     tableName: 'Identifiant',
     tableStorage: 'Stockage',
     tablePurpose: 'Finalité',
@@ -68,7 +74,7 @@ const LEGAL_UI_COPY: Record<
     tableType: 'Catégorie',
     contactTitle: 'Demandes Données & DMCA',
     contactDesc:
-      'Pour toute demande d’accès, de suppression ou de retrait de droits d’auteur, contactez-nous par e-mail.',
+      'Pour toute demande d’accès, de suppression ou de retrait au titre des droits d’auteur, contactez-nous par e-mail.',
     contactCta: 'Page Contact',
   },
 };
@@ -78,6 +84,12 @@ export default function LegalDocumentClient({ slug }: { slug: LegalDocSlug }) {
   const doc = getLegalDocument(locale, slug);
   const navItems = getLegalNavItems(locale);
   const ui = LEGAL_UI_COPY[locale] || LEGAL_UI_COPY.tr;
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.title = `${doc.title} | Restricted Studio`;
+    }
+  }, [doc.title]);
 
   return (
     <div className="st-page-shell">
@@ -110,7 +122,7 @@ export default function LegalDocumentClient({ slug }: { slug: LegalDocSlug }) {
 
         <section className="st-section" style={{ paddingTop: '8px' }}>
           <div className="st-container">
-            <nav className="st-legal-tabs" aria-label="Yasal Belgeler">
+            <nav className="st-legal-tabs" aria-label={ui.navAriaLabel}>
               {navItems.map((item) => (
                 <Link
                   key={item.slug}
@@ -144,7 +156,7 @@ export default function LegalDocumentClient({ slug }: { slug: LegalDocSlug }) {
 
                 {slug === 'cerez' && (
                   <article className="st-legal-section">
-                    <h2 className="st-legal-h2">3. Kullanılan Çerez ve Depolama Envanteri</h2>
+                    <h2 className="st-legal-h2">{ui.cookieTableHeading}</h2>
                     <div className="st-compare-table-wrap" style={{ marginTop: '14px' }}>
                       <table className="st-table">
                         <thead>
@@ -162,7 +174,7 @@ export default function LegalDocumentClient({ slug }: { slug: LegalDocSlug }) {
                               <td style={{ fontFamily: 'var(--font-mono)', color: '#ffffff', fontWeight: 600 }}>
                                 {row.name}
                               </td>
-                              <td>{row.storage}</td>
+                              <td>{row.storage[locale] || row.storage.tr}</td>
                               <td>{row.purpose[locale] || row.purpose.tr}</td>
                               <td>{row.duration[locale] || row.duration.tr}</td>
                               <td style={{ color: 'var(--accent-coral)' }}>
