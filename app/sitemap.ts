@@ -1,51 +1,57 @@
 import type { MetadataRoute } from 'next';
-
-const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://restrictedstudio.shop').replace(/\/+$/, '');
+import { SITE_URL } from '@/lib/site-config';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  const lastModified = new Date();
+
   return [
     {
-      url: `${baseUrl}/`,
-      lastModified: now,
+      url: `${SITE_URL}/`,
+      lastModified,
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/katalog`,
-      lastModified: now,
+      url: `${SITE_URL}/katalog`,
+      lastModified,
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/lisanslar`,
-      lastModified: now,
+      url: `${SITE_URL}/lisanslar`,
+      lastModified,
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/hizmetler/web-kurulum`,
-      lastModified: now,
+      url: `${SITE_URL}/hizmetler/web-kurulum`,
+      lastModified,
       changeFrequency: 'weekly',
       priority: 0.85,
     },
     {
-      url: `${baseUrl}/hizmetler/discord-bot`,
-      lastModified: now,
+      url: `${SITE_URL}/hizmetler/discord-bot`,
+      lastModified,
       changeFrequency: 'weekly',
       priority: 0.85,
     },
     {
-      url: `${baseUrl}/iletisim`,
-      lastModified: now,
+      url: `${SITE_URL}/hakkimizda`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/status`,
+      lastModified,
+      changeFrequency: 'hourly',
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/iletisim`,
+      lastModified,
       changeFrequency: 'monthly',
       priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/status`,
-      lastModified: now,
-      changeFrequency: 'always',
-      priority: 0.8,
     },
   ];
 }

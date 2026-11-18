@@ -2,17 +2,22 @@ import type { Metadata } from 'next';
 import { fetchItemsatisListings } from '@/lib/itemsatis-store';
 import { mergeStoreProducts, readStorePriceOverrides } from '@/lib/store-pricing';
 import StoreLicensesClient, { type PublicStoreProduct } from '@/components/StoreLicensesClient';
+import { canonicalUrl } from '@/lib/site-config';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Dijital Lisanslar & Özel İlanlar | Restricted Studio',
+  title: 'Dijital Lisanslar & Özel İlanlar',
   description:
     'ChatGPT Plus, Gemini Pro, Canva, CapCut Pro, Office/Windows lisansları ve Restricted Studio resmi İtemsatış vitrinindeki tüm aktif ilanlar.',
+  alternates: {
+    canonical: canonicalUrl('/lisanslar'),
+  },
   openGraph: {
     title: 'Dijital Lisanslar & Özel İlanlar | Restricted Studio',
     description:
       'ChatGPT Plus, Gemini Pro, Canva, CapCut Pro, Office/Windows lisansları ve Restricted Studio resmi İtemsatış vitrinindeki tüm aktif ilanlar.',
+    url: canonicalUrl('/lisanslar'),
   },
 };
 

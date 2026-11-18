@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import TurnstileWidget from '@/components/TurnstileWidget';
 import AdminStoreManager from '@/components/AdminStoreManager';
 
@@ -302,11 +303,12 @@ export default function AdminPage() {
       <header style={styles.header}>
         <div className="rs-admin-header-inner" style={styles.headerInner}>
           <Link href="/" className="rs-admin-brand" style={styles.logo}>
-            <img
+            <Image
               src="/assets/newlogo.png"
               alt="Restricted Studio"
               width={28}
               height={28}
+              sizes="28px"
               style={{ borderRadius: '8px', objectFit: 'cover' }}
             />
             <span>RESTRICTED STUDIO · ADMIN</span>

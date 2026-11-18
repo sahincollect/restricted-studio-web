@@ -17,6 +17,7 @@ import {
   verifyCustomerAccessCookieEdge,
   verifyCustomerRefreshCookieEdge,
 } from '@/lib/security-edge';
+import { SITE_URL } from '@/lib/site-config';
 
 function buildSecHeadersForRequest(request: NextRequest, noIndex: boolean, nonce: string): Record<string, string> {
   const proto = (request.headers.get('x-forwarded-proto') || request.nextUrl.protocol.replace(':', '')).toLowerCase();
@@ -53,7 +54,8 @@ function applyResponseHeaders(
   request: NextRequest,
   secHeaders: Record<string, string>,
   isApi: boolean,
-  noStore = false
+  noStore = false,
+  allowPublicCache = false
 ): NextResponse {
   for (const [k, v] of Object.entries(secHeaders)) {
     response.headers.set(k, v);
@@ -63,7 +65,7 @@ function applyResponseHeaders(
     for (const [k, v] of Object.entries(cors)) {
       response.headers.set(k, v);
     }
-    if (!response.headers.has('Cache-Control')) {
+    if (!allowPublicCache && !response.headers.has('Cache-Control')) {
       response.headers.set('Cache-Control', 'no-store');
     }
   }
@@ -213,8 +215,9 @@ export async function middleware(request: NextRequest) {
     }
 
     // 6. Customer Page Access Gate (/dashboard, /login, /register) using HttpOnly cookies only
+    const isPublicCatalogFeed = path === '/api/catalog/items' && request.method === 'GET';
     const isPortalNoStore =
-      isApi ||
+      (isApi && !isPublicCatalogFeed) ||
       isAdminPath ||
       path.startsWith('/dashboard') ||
       path === '/login' ||
@@ -286,9 +289,8 @@ export async function middleware(request: NextRequest) {
         );
       }
       if (!isLocalHostRequest(request)) {
-        const mainSiteBase = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.restrictedstudio.shop').replace(/\/+$/, '');
         return applyResponseHeaders(
-          NextResponse.redirect(`${mainSiteBase}${path}${search}`, 307),
+          NextResponse.redirect(`${SITE_URL}${path}${search}`, 307),
           request,
           secHeaders,
           false
@@ -304,7 +306,7 @@ export async function middleware(request: NextRequest) {
     if (clearStaleOnNext) {
       expireCustomerCookies(response, request);
     }
-    return applyResponseHeaders(response, request, secHeaders, isApi, isPortalNoStore);
+    return applyResponseHeaders(response, request, secHeaders, isApi, isPortalNoStore, isPublicCatalogFeed);
   } catch {
     return applyResponseHeaders(NextResponse.next(), request, secHeaders, isApi);
   }

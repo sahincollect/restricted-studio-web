@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useI18n } from '@/components/I18nProvider';
 import type { Locale } from '@/lib/i18n';
 
@@ -130,11 +131,12 @@ export default function SiteFooter({ mainOrigin = '' }: { mainOrigin?: string })
       <div className="st-container st-footer-inner">
         <div className="st-footer-brand-col">
           <div className="st-footer-logo-row">
-            <img
+            <Image
               src="/assets/newlogo.png"
               alt="Restricted Studio"
               width={36}
               height={36}
+              sizes="36px"
               className="st-brand-mark"
             />
             <span className="st-footer-brand-title">RESTRICTED STUDIO</span>

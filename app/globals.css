@@ -34,9 +34,9 @@
   --radius-card: 20px;
   --radius-pill: 999px;
 
-  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: var(--font-jakarta), var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: var(--font-jakarta), var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --ease-expo: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -844,7 +844,7 @@ img {
   margin-left: -290px;
   animation: prismBreath 9s ease-in-out infinite;
   will-change: transform, opacity;
-  filter: blur(0.3px);
+  backface-visibility: hidden;
 }
 
 .st-prism-bar {
@@ -3153,7 +3153,7 @@ img {
   color: var(--accent-coral);
 }
 
-/* Netflix-Style Pure Black + Glowing Claw Intro (exact pençe.png silhouette, once every 6h) */
+/* Netflix-Style Pure Black + Minimalist GPU-Composited Claw Intro (exact pençe.png contours) */
 .rs-claw-intro {
   position: fixed;
   inset: 0;
@@ -3163,12 +3163,15 @@ img {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  contain: strict;
   cursor: pointer;
   will-change: opacity;
+  transform: translateZ(0);
 }
 
 .rs-claw-intro.is-diving {
-  animation: clawBackdropFade 0.9s cubic-bezier(0.55, 0, 0.15, 1) forwards;
+  pointer-events: none;
+  animation: clawBackdropFade 0.58s cubic-bezier(0.32, 0, 0.18, 1) forwards;
 }
 
 .rs-claw-stage {
@@ -3176,37 +3179,38 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  transform-origin: 51% 52%;
+  transform-origin: 50% 51%;
   will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
 }
 
 .rs-claw-intro.is-diving .rs-claw-stage {
-  animation: clawDiveThrough 0.9s cubic-bezier(0.65, 0, 0.16, 1) forwards;
+  animation: clawDiveThrough 0.58s cubic-bezier(0.32, 0, 0.18, 1) forwards;
 }
 
 .rs-claw-aura {
   position: absolute;
-  width: 440px;
-  height: 460px;
+  width: 380px;
+  height: 380px;
   border-radius: 50%;
   background: radial-gradient(
-    ellipse 54% 60% at 50% 50%,
-    rgba(255, 36, 18, 0.34) 0%,
-    rgba(239, 91, 56, 0.15) 42%,
+    ellipse 52% 54% at 50% 50%,
+    rgba(239, 91, 56, 0.22) 0%,
+    rgba(201, 24, 16, 0.08) 44%,
     rgba(0, 0, 0, 0) 74%
   );
-  filter: blur(26px);
   pointer-events: none;
-  animation: clawGlowPulse 1.15s ease-out forwards;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  animation: clawGlowPulse 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .rs-claw-stack {
   position: relative;
-  width: min(360px, 78vw);
+  width: min(296px, 68vw);
   aspect-ratio: 342 / 372;
-  filter: drop-shadow(0 0 18px rgba(255, 40, 22, 0.88))
-    drop-shadow(0 0 48px rgba(239, 91, 56, 0.56));
-  animation: clawGlowPulseFilter 0.85s ease-in-out 0.3s infinite alternate;
+  transform: translateZ(0);
 }
 
 .rs-claw-layer {
@@ -3215,71 +3219,51 @@ img {
   width: 100%;
   height: 100%;
   overflow: visible;
-  clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%);
-  animation: clawSlashWipe 0.42s cubic-bezier(0.16, 0.92, 0.28, 1) forwards;
+  opacity: 0;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  animation: clawSlashGlide 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .rs-claw-delay-0 {
-  animation-delay: 0.04s;
+  animation-delay: 0.02s;
 }
 .rs-claw-delay-1 {
-  animation-delay: 0.16s;
+  animation-delay: 0.09s;
 }
 .rs-claw-delay-2 {
-  animation-delay: 0.28s;
+  animation-delay: 0.16s;
 }
 
-@keyframes clawSlashWipe {
+@keyframes clawSlashGlide {
   0% {
-    clip-path: polygon(32% -10%, 118% -10%, 118% -8%, 32% -8%);
-    opacity: 0.35;
-  }
-  18% {
-    opacity: 1;
+    opacity: 0;
+    transform: translate3d(14px, -18px, 0) scale3d(0.92, 0.92, 1);
   }
   100% {
-    clip-path: polygon(-25% -10%, 125% -10%, 125% 118%, -25% 118%);
     opacity: 1;
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
   }
 }
 
 @keyframes clawGlowPulse {
   0% {
-    opacity: 0.05;
-    transform: scale(0.75);
-  }
-  55% {
-    opacity: 0.96;
-    transform: scale(1.06);
+    opacity: 0;
+    transform: scale3d(0.84, 0.84, 1);
   }
   100% {
-    opacity: 0.86;
-    transform: scale(1);
-  }
-}
-
-@keyframes clawGlowPulseFilter {
-  from {
-    filter: drop-shadow(0 0 14px rgba(255, 36, 20, 0.82))
-      drop-shadow(0 0 40px rgba(239, 91, 56, 0.5));
-  }
-  to {
-    filter: drop-shadow(0 0 26px rgba(255, 76, 44, 0.98))
-      drop-shadow(0 0 68px rgba(239, 91, 56, 0.78));
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
   }
 }
 
 @keyframes clawDiveThrough {
   0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  38% {
-    transform: scale(3.2);
+    transform: scale3d(1, 1, 1);
     opacity: 1;
   }
   100% {
-    transform: scale(24);
+    transform: scale3d(5.2, 5.2, 1);
     opacity: 0;
   }
 }
@@ -3288,12 +3272,11 @@ img {
   0% {
     opacity: 1;
   }
-  48% {
-    opacity: 0.95;
+  35% {
+    opacity: 0.85;
   }
   100% {
     opacity: 0;
-    pointer-events: none;
   }
 }
 
@@ -3520,8 +3503,16 @@ img {
 
 @media (prefers-reduced-motion: reduce) {
   .st-prism-cluster,
-  .st-eyebrow-dot {
+  .st-eyebrow-dot,
+  .rs-claw-layer,
+  .rs-claw-aura,
+  .rs-claw-stage,
+  .rs-claw-intro.is-diving {
     animation: none;
+  }
+
+  .rs-claw-layer {
+    opacity: 1;
   }
 
   .st-reveal {

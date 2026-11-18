@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 
 interface ItemsatisLogoProps {
   variant?: 'full' | 'icon' | 'white-svg' | 'badge';
@@ -17,13 +18,19 @@ export default function ItemsatisLogo({
   className = '',
   style = {},
 }: ItemsatisLogoProps) {
+  const numericWidth = typeof width === 'number' ? width : Number.parseInt(String(width || ''), 10);
+  const numericHeight = typeof height === 'number' ? height : Number.parseInt(String(height || ''), 10);
+
   if (variant === 'icon') {
+    const w = Number.isFinite(numericWidth) && numericWidth > 0 ? numericWidth : 24;
+    const h = Number.isFinite(numericHeight) && numericHeight > 0 ? numericHeight : 24;
     return (
-      <img
+      <Image
         src="/assets/itemsatis-icon.png"
         alt="İtemsatış"
-        width={width || 24}
-        height={height || 24}
+        width={w}
+        height={h}
+        sizes={`${Math.max(w, 24)}px`}
         className={`itemsatis-brand-icon ${className}`}
         style={{
           display: 'inline-block',
@@ -54,11 +61,12 @@ export default function ItemsatisLogo({
           ...style,
         }}
       >
-        <img
+        <Image
           src="/assets/itemsatis-icon.png"
           alt=""
           width={14}
           height={14}
+          sizes="14px"
           style={{ borderRadius: '3px' }}
         />
         <span>İtemsatış Resmi Mağaza</span>
@@ -84,13 +92,15 @@ export default function ItemsatisLogo({
     );
   }
 
-  // Default 'full' variant: official transparent lockup (emblem + text)
+  const fullW = Number.isFinite(numericWidth) && numericWidth > 0 ? numericWidth : 110;
+  const fullH = Number.isFinite(numericHeight) && numericHeight > 0 ? numericHeight : 24;
   return (
-    <img
+    <Image
       src="/assets/itemsatis-logo.png"
       alt="İtemsatış"
-      width={width || 110}
-      height={height || 24}
+      width={fullW}
+      height={fullH}
+      sizes={`${fullW}px`}
       className={`itemsatis-brand-logo ${className}`}
       style={{
         display: 'inline-block',

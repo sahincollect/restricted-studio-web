@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from 'next/font/google';
 import { cookies, headers } from 'next/headers';
 import './globals.css';
 import CursorSpotlight from '@/components/CursorSpotlight';
@@ -13,11 +14,28 @@ import {
   resolveRequestLocale,
 } from '@/lib/i18n';
 import { TRANSLATIONS } from '@/lib/translations';
+import { SITE_URL } from '@/lib/site-config';
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.restrictedstudio.shop').replace(
-  /\/+$/,
-  ''
-);
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-jakarta',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
+});
 
 const OG_LOCALE_MAP = {
   tr: 'tr_TR',
@@ -36,7 +54,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const m = TRANSLATIONS[locale].meta;
 
   return {
-    metadataBase: new URL(siteUrl),
+    metadataBase: new URL(SITE_URL),
     title: {
       default: m.siteTitle,
       template: '%s | Restricted Studio',
@@ -57,7 +75,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: 'website',
       locale: OG_LOCALE_MAP[locale],
-      url: siteUrl,
+      url: SITE_URL,
       siteName: 'Restricted Studio',
       title: m.siteTitle,
       description: m.ogDescription,
@@ -104,37 +122,35 @@ export default async function RootLayout({
     '@graph': [
       {
         '@type': 'Organization',
-        '@id': `${siteUrl}/#organization`,
+        '@id': `${SITE_URL}/#organization`,
         name: 'Restricted Studio',
-        url: siteUrl,
+        url: SITE_URL,
         logo: {
           '@type': 'ImageObject',
-          url: `${siteUrl}/icon-512.png`,
+          url: `${SITE_URL}/icon-512.png`,
           width: 512,
           height: 512,
         },
-        image: `${siteUrl}/icon-512.png`,
+        image: `${SITE_URL}/icon-512.png`,
         sameAs: ['https://www.itemsatis.com/p/saintstudio'],
       },
       {
         '@type': 'WebSite',
-        '@id': `${siteUrl}/#website`,
-        url: siteUrl,
+        '@id': `${SITE_URL}/#website`,
+        url: SITE_URL,
         name: 'Restricted Studio',
-        publisher: { '@id': `${siteUrl}/#organization` },
+        publisher: { '@id': `${SITE_URL}/#organization` },
       },
     ],
   };
 
   return (
-    <html lang={locale} data-csp-nonce={nonce ? 'active' : 'off'}>
+    <html
+      lang={locale}
+      className={`${plusJakarta.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      data-csp-nonce={nonce ? 'active' : 'off'}
+    >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
         <script
           type="application/ld+json"
           nonce={nonce}

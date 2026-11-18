@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useI18n } from '@/components/I18nProvider';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -392,22 +393,26 @@ export default function SiteNavbar({
           <div className="st-nav-left">
             {mainOrigin ? (
               <a href={siteLink('/')} className="st-brand-link" aria-label={`Restricted Studio ${labels.home}`}>
-                <img
+                <Image
                   src="/assets/newlogo.png"
                   alt="Restricted Studio"
                   width={34}
                   height={34}
+                  sizes="34px"
+                  priority
                   className="st-brand-mark"
                 />
                 <span className="st-brand-name">RESTRICTED STUDIO</span>
               </a>
             ) : (
               <Link href="/" className="st-brand-link" aria-label={`Restricted Studio ${labels.home}`}>
-                <img
+                <Image
                   src="/assets/newlogo.png"
                   alt="Restricted Studio"
                   width={34}
                   height={34}
+                  sizes="34px"
+                  priority
                   className="st-brand-mark"
                 />
                 <span className="st-brand-name">RESTRICTED STUDIO</span>
@@ -563,11 +568,12 @@ export default function SiteNavbar({
                 title={labels.itemsatis}
                 aria-label={labels.itemsatis}
               >
-                <img
+                <Image
                   src="/assets/itemsatis-icon.png"
                   alt="İtemsatış"
                   width={18}
                   height={18}
+                  sizes="18px"
                   style={{ borderRadius: '4px', objectFit: 'contain' }}
                 />
               </a>

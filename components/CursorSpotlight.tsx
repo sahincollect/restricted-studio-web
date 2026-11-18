@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 /**
  * Tracks cursor movement with requestAnimationFrame throttling to power
- * Triadic Noir crimson optical spotlight hairlines across `.spotlight-surface` cards.
+ * optical spotlight hairlines strictly on the currently hovered `.spotlight-surface`.
  */
 export default function CursorSpotlight() {
   useEffect(() => {
@@ -15,60 +15,56 @@ export default function CursorSpotlight() {
     let rafId = 0;
     let lastX = -9999;
     let lastY = -9999;
-    let needsUpdate = false;
-    const touched = new Set<HTMLElement>();
+    let pendingTarget: HTMLElement | null = null;
+    let activeSurface: HTMLElement | null = null;
 
-    const updateSurfaces = () => {
+    const clearActive = () => {
+      if (activeSurface) {
+        activeSurface.style.setProperty('--spot-active', '0');
+        activeSurface = null;
+      }
+    };
+
+    const flush = () => {
       rafId = 0;
-      if (!needsUpdate) return;
-      needsUpdate = false;
+      const surface = pendingTarget;
 
-      const elements = document.querySelectorAll<HTMLElement>('.spotlight-surface');
-      elements.forEach((el) => {
-        const rect = el.getBoundingClientRect();
-        const pad = 160;
-        const near =
-          lastX >= rect.left - pad &&
-          lastX <= rect.right + pad &&
-          lastY >= rect.top - pad &&
-          lastY <= rect.bottom + pad;
+      if (activeSurface && activeSurface !== surface) {
+        activeSurface.style.setProperty('--spot-active', '0');
+      }
 
-        if (near) {
-          const lx = lastX - rect.left;
-          const ly = lastY - rect.top;
-          el.style.setProperty('--spot-x', `${lx.toFixed(1)}px`);
-          el.style.setProperty('--spot-y', `${ly.toFixed(1)}px`);
-          el.style.setProperty('--spot-active', '1');
-          touched.add(el);
-        } else if (touched.has(el)) {
-          el.style.setProperty('--spot-active', '0');
-          touched.delete(el);
-        }
-      });
+      if (!surface || !surface.isConnected) {
+        activeSurface = null;
+        return;
+      }
+
+      const rect = surface.getBoundingClientRect();
+      surface.style.setProperty('--spot-x', `${(lastX - rect.left).toFixed(1)}px`);
+      surface.style.setProperty('--spot-y', `${(lastY - rect.top).toFixed(1)}px`);
+      surface.style.setProperty('--spot-active', '1');
+      activeSurface = surface;
     };
 
     const onPointerMove = (e: PointerEvent) => {
       lastX = e.clientX;
       lastY = e.clientY;
-      needsUpdate = true;
+      pendingTarget =
+        e.target instanceof Element
+          ? e.target.closest<HTMLElement>('.spotlight-surface')
+          : null;
       if (!rafId) {
-        rafId = window.requestAnimationFrame(updateSurfaces);
+        rafId = window.requestAnimationFrame(flush);
       }
     };
 
-    const onPointerLeaveWindow = () => {
-      touched.forEach((el) => el.style.setProperty('--spot-active', '0'));
-      touched.clear();
-    };
-
     window.addEventListener('pointermove', onPointerMove, { passive: true });
-    document.addEventListener('mouseleave', onPointerLeaveWindow, { passive: true });
+    document.addEventListener('mouseleave', clearActive, { passive: true });
 
     return () => {
       if (rafId) window.cancelAnimationFrame(rafId);
       window.removeEventListener('pointermove', onPointerMove);
-      document.removeEventListener('mouseleave', onPointerLeaveWindow);
-      touched.forEach((el) => el.style.setProperty('--spot-active', '0'));
+      document.removeEventListener('mouseleave', clearActive);
+      clearActive();
     };
   }, []);
 

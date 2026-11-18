@@ -22,6 +22,10 @@ export default function BearClawIntro() {
       forcePreview = false;
     }
 
+    if (!forcePreview && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
     let shouldPlay = forcePreview;
     if (!forcePreview) {
       try {
@@ -48,11 +52,11 @@ export default function BearClawIntro() {
 
     const diveTimer = window.setTimeout(() => {
       setPhase('dive');
-    }, 1250);
+    }, 680);
 
     const doneTimer = window.setTimeout(() => {
       setPhase('idle');
-    }, 2150);
+    }, 1280);
 
     return () => {
       window.clearTimeout(diveTimer);
@@ -82,36 +86,28 @@ export default function BearClawIntro() {
               xmlns="http://www.w3.org/2000/svg"
             >
               <defs>
-                <linearGradient id={`rsClawGrad${idx}`} x1="88%" y1="4%" x2="12%" y2="96%">
-                  <stop offset="0%" stopColor="#ff6640" />
-                  <stop offset="28%" stopColor="#ff1e12" />
-                  <stop offset="72%" stopColor="#d40606" />
-                  <stop offset="100%" stopColor="#850000" />
+                <linearGradient id={`rsClawGrad${idx}`} x1="88%" y1="6%" x2="14%" y2="94%">
+                  <stop offset="0%" stopColor="#ff7a56" />
+                  <stop offset="34%" stopColor="#ef5b38" />
+                  <stop offset="76%" stopColor="#c91810" />
+                  <stop offset="100%" stopColor="#6f0906" />
                 </linearGradient>
-                <filter id={`rsClawGlow${idx}`} x="-45%" y="-45%" width="190%" height="190%">
-                  <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blurOuter" />
-                  <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blurInner" />
-                  <feMerge>
-                    <feMergeNode in="blurOuter" />
-                    <feMergeNode in="blurInner" />
-                  </feMerge>
-                </filter>
               </defs>
 
               <path
                 d={d}
-                fill="#ff2414"
-                fillRule="evenodd"
-                opacity="0.92"
-                filter={`url(#rsClawGlow${idx})`}
+                fill="none"
+                stroke="rgba(239, 91, 56, 0.16)"
+                strokeWidth="4.5"
+                strokeLinejoin="round"
               />
               <path
                 d={d}
                 fill={`url(#rsClawGrad${idx})`}
                 fillRule="evenodd"
-                stroke="#ff7856"
-                strokeWidth="0.95"
-                strokeOpacity="0.65"
+                stroke="rgba(255, 142, 108, 0.45)"
+                strokeWidth="0.65"
+                strokeLinejoin="round"
               />
             </svg>
           ))}

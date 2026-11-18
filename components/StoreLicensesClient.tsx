@@ -398,7 +398,14 @@ export default function StoreLicensesClient({ initialItems }: StoreLicensesClien
                   <article key={item.id} className="rs-store-card spotlight-surface">
                     <div className="rs-store-thumb" onClick={() => setSelectedItem(item)}>
                       {item.imageUrl ? (
-                        <img src={item.imageUrl} alt={item.title} loading="lazy" />
+                        <img
+                          src={item.imageUrl}
+                          alt={item.title}
+                          loading="lazy"
+                          decoding="async"
+                          width={360}
+                          height={225}
+                        />
                       ) : (
                         <div
                           style={{

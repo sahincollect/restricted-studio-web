@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { SITE_URL } from '@/lib/site-config';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -8,7 +9,10 @@ export default function robots(): MetadataRoute.Robots {
         allow: [
           '/',
           '/katalog',
-          '/discord',
+          '/lisanslar',
+          '/hizmetler/',
+          '/hakkimizda',
+          '/iletisim',
           '/status',
           '/favicon.ico',
           '/icon-48.png',
@@ -25,5 +29,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: '/',
       },
     ],
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }

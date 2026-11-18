@@ -1,9 +1,15 @@
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { verifyServerDashboardSession } from '@/lib/customer-session';
 import DashboardClient from '@/components/DashboardClient';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+
+export const metadata: Metadata = {
+  title: 'Müşteri Portalı',
+  robots: { index: false, follow: false },
+};
 
 export default async function DashboardPage() {
   const session = await verifyServerDashboardSession();

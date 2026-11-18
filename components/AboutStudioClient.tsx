@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import catalogStats from '@/lib/catalog-stats.json';
 import { useI18n } from '@/components/I18nProvider';
 import SiteNavbar from '@/components/SiteNavbar';
@@ -71,9 +72,12 @@ export default function AboutStudioClient() {
             <StudioReveal>
               <div className="st-asym-split-card">
                 <div className="st-split-visual" style={{ padding: '24px', alignItems: 'flex-end' }}>
-                  <img
+                  <Image
                     src="/assets/studio-work-visual.jpg"
                     alt="Restricted Studio"
+                    fill
+                    priority
+                    sizes="(max-width: 960px) 100vw, 520px"
                     className="st-split-visual-img"
                   />
                   <div className="st-split-visual-scrim" aria-hidden="true" />
