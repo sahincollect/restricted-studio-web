@@ -27,4 +27,8 @@ test('sitemap.ts and robots.ts define complete canonical routes and sitemap refe
   assert.ok(layoutSrc.includes('ICON_VERSION'), 'layout.tsx must version favicon/icon URLs for Search cache invalidation');
   const legalSrc = fs.readFileSync(new URL('../lib/legal-docs.ts', import.meta.url), 'utf8');
   assert.equal(/mersis|vergi dairesi\s*:/i.test(legalSrc), false, 'legal-docs.ts must not contain placeholder corporate imprint fields');
+  assert.ok(legalSrc.includes('yerel geliştirme/test'), 'terms must state educational / local sandbox scope');
+  assert.ok(legalSrc.includes('rücu etme'), 'terms must state user indemnification / recourse clause');
+  assert.ok(legalSrc.includes('OLDUĞU GİBİ'), 'terms must include AS-IS liability disclaimer');
+  assert.equal(/\bleak(ed|s)?\b/i.test(legalSrc), false, 'legal-docs.ts must not contain self-incriminating terminology');
 });

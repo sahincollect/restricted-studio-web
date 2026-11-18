@@ -173,41 +173,63 @@ const TR_DOCS: Record<LegalDocSlug, LegalDocument> = {
     slug: 'kullanim-kosullari',
     href: '/yasal/kullanim-kosullari',
     navLabel: 'Kullanım Koşulları & DMCA',
-    eyebrow: 'PLATFORM KURALLARI VE FİKRİ MÜLKİYET BİLDİRİMİ',
-    title: 'Kullanım Koşulları ve Fikri Mülkiyet (DMCA)',
+    eyebrow: 'EĞİTİM / AR-GE KAPSAMI, SORUMLULUK SINIRI VE FİKRİ MÜLKİYET',
+    title: 'Kullanım Koşulları, Sorumluluk Reddi ve DMCA',
     summary:
-      'Web sitesi kullanım sınırlarını, yazılım teslim standartlarını, ticari marka ayrımını ve telif hakkı bildirim (Uyar-Kaldır) sürecini düzenler.',
+      'Sunulan teknik kaynakların eğitim ve yerel geliştirme kapsamını, art niyetli/yetkisiz kullanımda münhasır kullanıcı sorumluluğunu, rücu şartlarını ve FSEK/DMCA Uyar-Kaldır sürecini düzenler.',
     updatedAt: LAST_UPDATED_LABEL.tr,
     sections: [
       {
-        heading: '1. Hizmet Kapsamı ve Yasaklı Kullanım',
+        heading: '1. Hizmetin Amacı: Eğitim, Teknik İnceleme ve Yerel Geliştirme (Sandbox)',
         paragraphs: [
-          'Site içeriğini otomatik araçlarla toplu çekmek (scraping), rate-limit veya Cloudflare güvenlik bariyerlerini aşmaya çalışmak, sahte/spam form göndermek ve yetkisiz erişim denemelerinde bulunmak kesinlikle yasaktır.',
-          'Kural ihlalinde bulunan IP adresleri güvenlik duvarı kurallarıyla engellenebilir.',
+          'restrictedstudio.shop ve bağlı katalog kanalları üzerinden erişime sunulan veya teknik destek kapsamında incelenen kod örnekleri, yapılandırma arşivleri ve uyumluluk referansları münhasıran yazılım eğitimi, mimari inceleme, hata ayıklama (debugging) ve izole yerel geliştirme/test (localhost / staging) süreçleri için sunulmaktadır.',
+          'Bu platform üzerinden sağlanan hiçbir teknik doküman veya arşiv paketi; üçüncü kişilere ait lisanslama mekanizmalarını devre dışı bırakma, ticari canlı (production) sunucu işletme, yeniden satma veya kamuya açık şekilde yeniden dağıtma izni teşkil etmez.',
         ],
       },
       {
-        heading: '2. Ticari Marka ve Ekosistem Bağımsızlığı',
+        heading: '2. Kullanıcının Orijinal Lisans Doğrulama ve Uyumluluk Yükümlülüğü',
+        paragraphs: [
+          'Platformda yer alan herhangi bir teknik bileşeni, betiği veya yapılandırmayı yerel eğitim/test ortamının dışına taşıyan, canlı (public/production) bir sunucuya kuran ya da ticari projelerinde kullanan kişi; ilgili yazılımın fikri mülkiyet statüsünü, üçüncü kişi telif haklarını ve Cfx.re® / FiveM® / Rockstar Games® hizmet şartlarına uyumluluğunu bizzat doğrulamakla yükümlüdür.',
+          'Üçüncü kişi geliştiricilere veya hak sahiplerine ait haklarla korunan bileşenlerin canlı ortamda kullanılması hedefleniyorsa, kurulum öncesinde doğrudan ilgili eser sahibinden veya yetkili dağıtım kanalından geçerli bir kullanım lisansı temin edilmesi zorunludur.',
+        ],
+      },
+      {
+        heading: '3. Art Niyetli Kullanım Yasağı, Münhasır Kullanıcı Sorumluluğu ve Rücu',
+        paragraphs: [
+          'Sunulan kaynakların veya platform altyapısının art niyetli amaçlarla (zararlı kod/backdoor enjeksiyonu, üçüncü kişi sistemlerine veya oyun sunucularına yetkisiz müdahale, güvenlik açığı istismarı, haksız ticari kazanç, telif hakkı ihlali veya yasa dışı faaliyetler) kullanılması kesinlikle yasaktır.',
+          'Kullanıcının işbu kullanım sınırlarını aşması, eğitim/test kapsamı dışına çıkarak canlı ortamda izinsiz kullanım gerçekleştirmesi veya kötü niyetli fiillerde bulunması halinde doğabilecek tüm hukuki, idari ve cezai sorumluluk (5846 sayılı FSEK, 5237 sayılı TCK ve 6098 sayılı TBK hükümleri uyarınca üçüncü kişi tazminat talepleri, idari para cezaları, vekâlet ücretleri ve sunucu/platform yaptırımları dâhil) münhasıran ilgili kullanıcıya aittir.',
+          'Kullanıcının eylemleri nedeniyle Restricted Studio’ya yöneltilebilecek her türlü üçüncü kişi talebinde, davada veya idari yaptırımda Restricted Studio uğradığı tüm doğrudan ve dolaylı zararları faizi ve fer’ileriyle birlikte sorumlu kullanıcıya rücu etme (tazmin ettirme) ile ilgili hesap/erişim yetkilerini derhal feshetme hakkını saklı tutar.',
+        ],
+      },
+      {
+        heading: '4. "Olduğu Gibi" (AS-IS) Sunum ve Sorumluluğun Sınırlandırılması',
+        paragraphs: [
+          'Platformdaki arşiv referansları, örnek kodlar ve teknik açıklamalar; ticarete elverişlilik, belirli bir canlı sunucu amacına uygunluk, kesintisiz çalışma veya üçüncü kişi güncellemeleriyle sürekli uyum dâhil olmak üzere açık ya da zımni hiçbir garanti verilmeksizin "OLDUĞU GİBİ" (AS-IS) ve "MEVCUT HALİYLE" (AS-AVAILABLE) sağlanır.',
+          'Yürürlükteki emredici hukuk kurallarının izin verdiği azami ölçüde; kullanıcı sunucu ortamındaki (hosting, FiveM artifact sürümü, veritabanı, txAdmin veya üçüncü taraf bağımlılıklar) çakışmalardan, veri kayıplarından, kullanıcı müdahalelerinden, hesap/sunucu askıya almalarından veya dolaylı/müspet/menfi zararlardan Restricted Studio sorumlu tutulamaz.',
+        ],
+      },
+      {
+        heading: '5. Platform Güvenliği ve Yasaklı Erişim',
+        paragraphs: [
+          'Site içeriğini otomatik araçlarla toplu çekmek (scraping), rate-limit veya Cloudflare/Turnstile güvenlik bariyerlerini aşmaya çalışmak, sahte/spam form göndermek ve yetkisiz erişim denemelerinde bulunmak yasaktır. İhlal tespit edilen IP adresleri güvenlik duvarı kurallarıyla engellenebilir ve erişim kayıtları adli/idari makam taleplerinde muhafaza edilebilir.',
+        ],
+      },
+      {
+        heading: '6. Ticari Marka ve Ekosistem Bağımsızlığı',
         paragraphs: [
           'Restricted Studio bağımsız bir yazılım geliştirme ekibidir. FiveM®, Cfx.re® ve Rockstar Games® ile herhangi bir resmi ortaklık, sponsorluk veya onay ilişkisi bulunmamaktadır. Söz konusu markalar ilgili hak sahiplerinin tescilli değerleridir.',
         ],
       },
       {
-        heading: '3. Fikri Mülkiyet İhlali & Uyar-Kaldır (DMCA) Prosedürü',
+        heading: '7. Fikri Mülkiyet Bildirimi & Hızlı Uyar-Kaldır (5846 FSEK / DMCA)',
         paragraphs: [
-          'Katalog listelerinde veya mağaza vitrininde size ait telif hakkı veya lisans hakkını ihlal ettiğini düşündüğünüz bir içerik bulunması halinde aşağıdaki bilgilerle info@restrictedstudio.shop adresine bildirimde bulunabilirsiniz:',
+          'Katalog listelerinde veya platform sayfalarında hak sahibi olduğunuz bir eserin izinsiz listelendiğini veya telif/lisans hakkınızı ihlal ettiğini değerlendirmeniz halinde, iyi niyetli bildirim ve hızlı kaldırma süreci için aşağıdaki bilgilerle doğrudan info@restrictedstudio.shop adresine başvurabilirsiniz:',
         ],
         bullets: [
-          'Hak sahibi veya yetkili temsilcinin kimlik ve iletişim bilgileri.',
-          'İhlale konu eserin özgün tanımı ve sitemizdeki tam sayfa/paket adı veya kodu (ör. RS-CAT-XXXX).',
-          'Bildirimin doğruluğuna dair beyanınız.',
-          'Doğrulanabilir hak sahipliği bildirimi ulaştığında ilgili kayıt incelenerek makul en kısa sürede yayından kaldırılır.',
-        ],
-      },
-      {
-        heading: '4. Sorumluluk Sınırı',
-        paragraphs: [
-          'Açık kaynak paketler veya özel geliştirilen yazılımlar teslim sonrası kullanıcı sunucu ortamında (hosting, FiveM artifact sürümü, üçüncü taraf bağımlılıklar) çalıştırılır. Üçüncü taraf sunucu yapılandırmalarından veya sonradan yapılan kod müdahalelerinden doğan dolaylı kesintilerden Restricted Studio sorumlu tutulamaz.',
+          'Hak sahibi veya yetkili temsilcinin kimlik, unvan ve doğrulanabilir iletişim bilgileri.',
+          'İhlale konu eserin özgün tanımı, sahiplik kanıtı ve sitemizdeki tam sayfa/paket adı veya kodu (ör. RS-CAT-XXXX).',
+          'Şikâyete konu içeriğin yetkisiz kullanımına ilişkin iyi niyetli doğruluk beyanı.',
+          'Doğrulanabilir hak sahipliği bildirimi ulaştığında ilgili kayıt öncelikli olarak incelenir ve makul en kısa sürede yayından kaldırılır.',
         ],
       },
     ],
@@ -232,14 +254,14 @@ const TR_DOCS: Record<LegalDocSlug, LegalDocument> = {
       {
         heading: '2. Teslimat Koşulları',
         paragraphs: [
-          'Katalogda seçilen paketler sabit 100 TL (16+ adet toplu alımda %50 indirimli 50 TL) birim fiyatıyla İtemsatış üzerinden sipariş sonrası doğrulanmış açık kaynak dosyaları olarak teslim edilir.',
+          'Katalogda seçilen paketler sabit 100 TL (16+ adet toplu alımda %50 indirimli 50 TL) birim fiyatıyla İtemsatış üzerinden sipariş sonrası eğitim ve yerel geliştirme incelemesine yönelik dijital teknik arşiv dosyaları olarak teslim edilir.',
           'Özel web sitesi kurulumu ve Discord bot geliştirme işlerinde teslim süresi proje kapsamına göre yazılı olarak kararlaştırılır (genellikle web projeleri 3–14 gün, Discord botları 2–7 gün).',
         ],
       },
       {
         heading: '3. İade ve Cayma Hakkı İstisnaları',
         paragraphs: [
-          '6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği Md. 15/1-(ğ) uyarınca elektronik ortamda anında ifa edilen gayri maddi mallar (açık kaynak scriptler, indirilebilir paketler, aktivasyon/lisans kodları) ile tüketicinin özel talepleri doğrultusunda hazırlanan özel yazılımlarda teslimat gerçekleştirildikten sonra cayma/iade hakkı uygulanmaz.',
+          '6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği Md. 15/1-(ğ) uyarınca elektronik ortamda anında ifa edilen gayri maddi mallar (dijital teknik inceleme scriptleri, indirilebilir arşiv paketleri, aktivasyon/lisans kodları) ile tüketicinin özel talepleri doğrultusunda hazırlanan özel yazılımlarda teslimat gerçekleştirildikten sonra cayma/iade hakkı uygulanmaz.',
           'Bununla birlikte, teslim edilen dosya bozuksa, ilan açıklamasıyla uyuşmuyorsa veya aktivasyon kodu çalışmıyorsa tarafımıza bildirildiği anda ücretsiz telafi, değişim veya teknik düzeltme sağlanır; çözülemeyen teknik aksaklıklarda İtemsatış iade prosedürü işletilir.',
         ],
       },
@@ -273,10 +295,10 @@ function buildLocalizedFallback(locale: Exclude<Locale, 'tr'>): Record<LegalDocS
       },
       'kullanim-kosullari': {
         navLabel: 'Terms & DMCA',
-        eyebrow: 'TERMS OF USE & INTELLECTUAL PROPERTY',
-        title: 'Terms of Use & Notice-and-Takedown (DMCA)',
+        eyebrow: 'EDUCATIONAL / SANDBOX SCOPE, LIABILITY & IP',
+        title: 'Terms of Use, Disclaimer & DMCA',
         summary:
-          'Acceptable platform use, trademark independence (FiveM® / Rockstar Games®), and copyright takedown procedure.',
+          'Defines educational and local development testing boundaries, sole user liability & indemnification for misuse or unauthorized deployment, AS-IS disclaimers, and DMCA notice-and-takedown.',
       },
       'teslimat-ve-iade': {
         navLabel: 'Delivery & Refunds',
@@ -310,10 +332,10 @@ function buildLocalizedFallback(locale: Exclude<Locale, 'tr'>): Record<LegalDocS
       },
       'kullanim-kosullari': {
         navLabel: 'Условия & DMCA',
-        eyebrow: 'ПРАВИЛА ИСПОЛЬЗОВАНИЯ И ИНТЕЛЛЕКТУАЛЬНАЯ СОБСТВЕННОСТЬ',
-        title: 'Условия использования и DMCA',
+        eyebrow: 'ОБРАЗОВАТЕЛЬНЫЕ ЦЕЛИ, ОТВЕТСТВЕННОСТЬ И DMCA',
+        title: 'Условия использования, отказ от гарантий и DMCA',
         summary:
-          'Правила платформы, независимость от FiveM® / Rockstar Games® и порядок рассмотрения правообладательских обращений.',
+          'Ограничение использования рамками обучения и локальной разработки, исключительная ответственность пользователя за неправомерное применение, отказ от гарантий AS-IS и порядок DMCA.',
       },
       'teslimat-ve-iade': {
         navLabel: 'Доставка и возврат',
@@ -347,10 +369,10 @@ function buildLocalizedFallback(locale: Exclude<Locale, 'tr'>): Record<LegalDocS
       },
       'kullanim-kosullari': {
         navLabel: 'Conditions & DMCA',
-        eyebrow: 'CONDITIONS D’UTILISATION & PROPRIÉTÉ INTELLECTUELLE',
-        title: 'Conditions d’utilisation et procédure DMCA',
+        eyebrow: 'CADRE ÉDUCATIF, RESPONSABILITÉ & PROPRIÉTÉ INTELLECTUELLE',
+        title: 'Conditions d’utilisation, exclusion de garantie et DMCA',
         summary:
-          'Règles d’accès, indépendance vis-à-vis de FiveM® / Rockstar Games® et signalement de droits via info@restrictedstudio.shop.',
+          'Usage strictement limité à l’étude et au développement local, responsabilité exclusive et indemnisation par l’utilisateur en cas d’usage abusif, clause AS-IS et procédure DMCA.',
       },
       'teslimat-ve-iade': {
         navLabel: 'Livraison & Retours',
