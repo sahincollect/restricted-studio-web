@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { fetchItemsatisListings } from '@/lib/itemsatis-store';
 import { mergeStoreProducts, readStorePriceOverrides } from '@/lib/store-pricing';
 import StoreLicensesClient, { type PublicStoreProduct } from '@/components/StoreLicensesClient';
-import { canonicalUrl } from '@/lib/site-config';
+import JsonLd from '@/components/JsonLd';
+import { SITE_URL, canonicalUrl } from '@/lib/site-config';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,11 +45,36 @@ export default async function LisanslarPage() {
       featured: item.featured,
     }));
 
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        '@id': `${canonicalUrl('/lisanslar')}#webpage`,
+        url: canonicalUrl('/lisanslar'),
+        name: 'Dijital Lisanslar & Özel İlanlar | Restricted Studio',
+        isPartOf: { '@id': `${SITE_URL}/#website` },
+        numberOfItems: publicItems.length,
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: canonicalUrl('/') },
+          { '@type': 'ListItem', position: 2, name: 'Katalog', item: canonicalUrl('/katalog') },
+          { '@type': 'ListItem', position: 3, name: 'Lisanslar', item: canonicalUrl('/lisanslar') },
+        ],
+      },
+    ],
+  };
+
   return (
-    <StoreLicensesClient
-      initialItems={publicItems}
-      syncedAt={feed.syncedAt}
-      feedSource={feed.source}
-    />
+    <>
+      <JsonLd data={structuredData} />
+      <StoreLicensesClient
+        initialItems={publicItems}
+        syncedAt={feed.syncedAt}
+        feedSource={feed.source}
+      />
+    </>
   );
 }

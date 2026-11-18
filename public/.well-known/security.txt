@@ -1,0 +1,4 @@
+Contact: mailto:info@restrictedstudio.shop
+Expires: 2027-11-18T23:59:59.000Z
+Preferred-Languages: tr, en, ru, fr
+Canonical: https://www.restrictedstudio.shop/.well-known/security.txt

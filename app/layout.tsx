@@ -125,6 +125,7 @@ export default async function RootLayout({
         '@id': `${SITE_URL}/#organization`,
         name: 'Restricted Studio',
         url: SITE_URL,
+        email: 'info@restrictedstudio.shop',
         logo: {
           '@type': 'ImageObject',
           url: `${SITE_URL}/icon-512.png`,
@@ -132,6 +133,15 @@ export default async function RootLayout({
           height: 512,
         },
         image: `${SITE_URL}/icon-512.png`,
+        contactPoint: [
+          {
+            '@type': 'ContactPoint',
+            contactType: 'customer support',
+            email: 'info@restrictedstudio.shop',
+            url: `${SITE_URL}/iletisim`,
+            availableLanguage: ['Turkish', 'English', 'Russian', 'French'],
+          },
+        ],
         sameAs: ['https://www.itemsatis.com/p/saintstudio'],
       },
       {
@@ -140,6 +150,11 @@ export default async function RootLayout({
         url: SITE_URL,
         name: 'Restricted Studio',
         publisher: { '@id': `${SITE_URL}/#organization` },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: `${SITE_URL}/katalog?q={search_term_string}`,
+          'query-input': 'required name=search_term_string',
+        },
       },
     ],
   };

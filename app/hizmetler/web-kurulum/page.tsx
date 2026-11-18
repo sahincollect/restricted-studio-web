@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ServiceRequestPageClient from '@/components/ServiceRequestPageClient';
-import { canonicalUrl } from '@/lib/site-config';
+import JsonLd from '@/components/JsonLd';
+import { SITE_URL, canonicalUrl } from '@/lib/site-config';
 
 export const metadata: Metadata = {
   title: 'Web Sitesi Kurulum Hizmeti',
@@ -18,5 +19,30 @@ export const metadata: Metadata = {
 };
 
 export default function WebKurulumPage() {
-  return <ServiceRequestPageClient serviceType="web-kurulum" />;
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Service',
+        name: 'Web Sitesi Kurulum Hizmeti',
+        serviceType: 'Web Design and Full-Stack Setup',
+        provider: { '@id': `${SITE_URL}/#organization` },
+        url: canonicalUrl('/hizmetler/web-kurulum'),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: canonicalUrl('/') },
+          { '@type': 'ListItem', position: 2, name: 'Web Sitesi Kurulum Hizmeti', item: canonicalUrl('/hizmetler/web-kurulum') },
+        ],
+      },
+    ],
+  };
+
+  return (
+    <>
+      <JsonLd data={structuredData} />
+      <ServiceRequestPageClient serviceType="web-kurulum" />
+    </>
+  );
 }

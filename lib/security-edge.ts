@@ -426,7 +426,6 @@ export function buildSecurityHeaders(options: {
   const styleElem = [
     "style-src 'self'",
     options.nonce ? `'nonce-${options.nonce}'` : '',
-    'https://fonts.googleapis.com',
   ]
     .filter(Boolean)
     .join(' ');
@@ -436,7 +435,7 @@ export function buildSecurityHeaders(options: {
     scriptDirectives,
     styleElem,
     "style-src-attr 'unsafe-inline'",
-    "font-src 'self' https://fonts.gstatic.com data:",
+    "font-src 'self' data:",
     "img-src 'self' data: blob: https:",
     "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com",
     "frame-src 'self' https://challenges.cloudflare.com",

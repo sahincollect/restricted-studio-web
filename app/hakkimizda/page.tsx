@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import AboutStudioClient from '@/components/AboutStudioClient';
-import { canonicalUrl } from '@/lib/site-config';
+import JsonLd from '@/components/JsonLd';
+import { SITE_URL, canonicalUrl } from '@/lib/site-config';
 
 export const metadata: Metadata = {
   title: 'Hakkımızda — Stüdyo & Mühendislik Dosyası',
@@ -18,5 +19,29 @@ export const metadata: Metadata = {
 };
 
 export default function HakkimizdaPage() {
-  return <AboutStudioClient />;
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'AboutPage',
+        url: canonicalUrl('/hakkimizda'),
+        isPartOf: { '@id': `${SITE_URL}/#website` },
+        mainEntity: { '@id': `${SITE_URL}/#organization` },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: canonicalUrl('/') },
+          { '@type': 'ListItem', position: 2, name: 'Hakkımızda', item: canonicalUrl('/hakkimizda') },
+        ],
+      },
+    ],
+  };
+
+  return (
+    <>
+      <JsonLd data={structuredData} />
+      <AboutStudioClient />
+    </>
+  );
 }

@@ -1,0 +1,14 @@
+import { headers } from 'next/headers';
+
+export default async function JsonLd({ data }: { data: Record<string, unknown> }) {
+  const requestHeaders = await headers();
+  const nonce = requestHeaders.get('x-nonce') || undefined;
+
+  return (
+    <script
+      type="application/ld+json"
+      nonce={nonce}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}

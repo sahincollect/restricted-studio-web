@@ -121,7 +121,12 @@ export default function SiteFooter({ mainOrigin = '' }: { mainOrigin?: string })
         {label}
       </a>
     ) : (
-      <Link key={href} href={href} className="st-footer-link">
+      <Link
+        key={href}
+        href={href}
+        prefetch={href === '/dashboard' || href === '/admin' ? false : undefined}
+        className="st-footer-link"
+      >
         {label}
       </Link>
     );

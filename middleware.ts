@@ -31,6 +31,22 @@ function isSecureEdgeCookie(request: NextRequest): boolean {
   return proto === 'https' && !isLocalHostRequest(request);
 }
 
+function buildSameOriginUrl(request: NextRequest, pathname: string): URL {
+  const hostHeader = (request.headers.get('x-forwarded-host') || request.headers.get('host') || '').trim();
+  const proto = (request.headers.get('x-forwarded-proto') || request.nextUrl.protocol.replace(':', '') || 'http')
+    .split(',')[0]
+    .trim()
+    .toLowerCase();
+  if (hostHeader) {
+    try {
+      return new URL(pathname, `${proto}://${hostHeader.split(',')[0].trim()}`);
+    } catch {
+      // Fallback below
+    }
+  }
+  return new URL(pathname, request.url);
+}
+
 function expireCustomerCookies(response: NextResponse, request: NextRequest): void {
   const secure = isSecureEdgeCookie(request);
   response.cookies.set(CUSTOMER_ACCESS_COOKIE, '', {
@@ -235,7 +251,7 @@ export async function middleware(request: NextRequest) {
       const clearSessionRequested = request.nextUrl.searchParams.get('clear_session') === '1';
 
       if (path.startsWith('/dashboard') && !accessCheck.valid && !refreshCheck.valid) {
-        const redirectUrl = new URL('/login', request.url);
+        const redirectUrl = buildSameOriginUrl(request, '/login');
         redirectUrl.searchParams.set('redirect', safeRedirectPath(path, '/dashboard'));
         const redirectRes = NextResponse.redirect(redirectUrl, 307);
         expireCustomerCookies(redirectRes, request);
@@ -246,7 +262,7 @@ export async function middleware(request: NextRequest) {
         clearStaleOnNext = true;
       } else if ((path === '/login' || path === '/register') && accessCheck.valid) {
         return applyResponseHeaders(
-          NextResponse.redirect(new URL('/dashboard', request.url), 307),
+          NextResponse.redirect(buildSameOriginUrl(request, '/dashboard'), 307),
           request,
           secHeaders,
           false,
@@ -314,6 +330,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|_vercel|favicon\\.ico|icon-.*\\.png|apple-touch-icon\\.png|manifest\\.webmanifest|assets/|robots\\.txt|sitemap\\.xml).*)',
+    '/((?!_next/static|_next/image|_vercel|\\.well-known/|favicon\\.ico|icon-.*\\.png|apple-touch-icon\\.png|manifest\\.webmanifest|assets/|robots\\.txt|sitemap\\.xml).*)',
   ],
 };

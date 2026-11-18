@@ -601,6 +601,7 @@ export default function SiteNavbar({
               ) : (
                 <Link
                   href="/dashboard"
+                  prefetch={false}
                   className="st-circle-btn"
                   title={labels.portal}
                   aria-label={labels.portal}
@@ -722,6 +723,7 @@ export default function SiteNavbar({
             ) : (
               <Link
                 href="/dashboard"
+                prefetch={false}
                 className="st-pill-btn is-ember is-full"
                 onClick={() => setDrawerOpen(false)}
               >

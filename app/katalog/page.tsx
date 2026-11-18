@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import CatalogClient from '@/components/CatalogClient';
+import JsonLd from '@/components/JsonLd';
 import { getInitialCatalogSlice } from '@/lib/catalog-server';
-import { canonicalUrl } from '@/lib/site-config';
+import { SITE_URL, canonicalUrl } from '@/lib/site-config';
 
 export const metadata: Metadata = {
   title: 'FiveM & RedM Katalog Arşivi',
@@ -35,14 +36,38 @@ export default async function KatalogPage({
     limit: 64,
   });
 
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        '@id': `${canonicalUrl('/katalog')}#webpage`,
+        url: canonicalUrl('/katalog'),
+        name: 'FiveM & RedM Katalog Arşivi | Restricted Studio',
+        isPartOf: { '@id': `${SITE_URL}/#website` },
+        numberOfItems: totalCount,
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: canonicalUrl('/') },
+          { '@type': 'ListItem', position: 2, name: 'Katalog', item: canonicalUrl('/katalog') },
+        ],
+      },
+    ],
+  };
+
   return (
-    <CatalogClient
-      initialItems={initialItems}
-      totalCatalogCount={totalCount}
-      initialCategoryCounts={categoryCounts}
-      initialQuery={q}
-      initialCategory={category}
-      initialView={view}
-    />
+    <>
+      <JsonLd data={structuredData} />
+      <CatalogClient
+        initialItems={initialItems}
+        totalCatalogCount={totalCount}
+        initialCategoryCounts={categoryCounts}
+        initialQuery={q}
+        initialCategory={category}
+        initialView={view}
+      />
+    </>
   );
 }

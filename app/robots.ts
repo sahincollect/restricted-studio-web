@@ -14,6 +14,7 @@ export default function robots(): MetadataRoute.Robots {
           '/hakkimizda',
           '/iletisim',
           '/status',
+          '/.well-known/security.txt',
           '/favicon.ico',
           '/icon-48.png',
           '/icon-96.png',
