@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import ShopierLogo from '@/components/ShopierLogo';
 import type { Locale } from '@/lib/i18n';
 
 export const SHOPIER_UI_COPY: Record<
@@ -269,9 +270,10 @@ export function ShopierCheckoutStatusBox({
             href={createdOrder.checkoutUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="st-pill-btn is-ember is-sm is-full"
+            className="st-pill-btn is-shopier is-sm is-full"
           >
-            {copy.openPaymentBtn} ↗
+            <ShopierLogo width={16} height={16} />
+            <span>{copy.openPaymentBtn} ↗</span>
           </a>
           <Link href={createdOrder.chatUrl} className="st-pill-btn is-light is-sm is-full">
             {copy.openChatBtn} →

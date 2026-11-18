@@ -256,27 +256,47 @@ const ACCOUNT_NAV_COPY: Record<
   {
     account: string;
     guest: string;
+    loginBtn: string;
+    viewProfile: string;
+    logout: string;
+    loggingOut: string;
     ordersBadge: (n: number) => string;
   }
 > = {
   tr: {
-    account: 'Hesabım & Teslimat',
-    guest: 'Misafir Hesabım',
+    account: 'Hesabım',
+    guest: 'Misafir Hesap',
+    loginBtn: 'Giriş Yap / Hesap',
+    viewProfile: 'Profili Gör',
+    logout: 'Çıkış',
+    loggingOut: 'Çıkış yapılıyor...',
     ordersBadge: (n) => `${n} aktif sipariş`,
   },
   en: {
-    account: 'My Account & Delivery',
+    account: 'My Account',
     guest: 'Guest Account',
+    loginBtn: 'Sign In / Account',
+    viewProfile: 'View Profile',
+    logout: 'Sign Out',
+    loggingOut: 'Signing out...',
     ordersBadge: (n) => `${n} active orders`,
   },
   ru: {
-    account: 'Аккаунт и доставка',
-    guest: 'Гостевой вход',
+    account: 'Аккаунт',
+    guest: 'Гость',
+    loginBtn: 'Войти / Аккаунт',
+    viewProfile: 'Открыть профиль',
+    logout: 'Выйти',
+    loggingOut: 'Выход...',
     ordersBadge: (n) => `Активных заказов: ${n}`,
   },
   fr: {
-    account: 'Mon compte & Livraison',
+    account: 'Mon compte',
     guest: 'Compte invité',
+    loginBtn: 'Connexion / Compte',
+    viewProfile: 'Voir le profil',
+    logout: 'Déconnexion',
+    loggingOut: 'Déconnexion...',
     ordersBadge: (n) => `${n} commande(s) active(s)`,
   },
 };
@@ -329,8 +349,12 @@ export default function SiteNavbar({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [catalogMenuOpen, setCatalogMenuOpen] = useState(false);
   const [mobileCatalogOpen, setMobileCatalogOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [mobileAccountOpen, setMobileAccountOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [accountSummary, setAccountSummary] = useState<AccountNavSummary | null>(null);
   const catalogDropRef = useRef<HTMLDivElement | null>(null);
+  const accountDropRef = useRef<HTMLDivElement | null>(null);
 
   const current = activePath || pathname || '/';
   const siteLink = (path: string) => (mainOrigin ? `${mainOrigin}${path}` : path);
@@ -338,6 +362,8 @@ export default function SiteNavbar({
   useEffect(() => {
     setDrawerOpen(false);
     setCatalogMenuOpen(false);
+    setAccountMenuOpen(false);
+    setMobileAccountOpen(false);
     if (current.startsWith('/katalog') || current.startsWith('/lisanslar') || current.startsWith('/hizmetler')) {
       setMobileCatalogOpen(true);
     }
@@ -348,11 +374,15 @@ export default function SiteNavbar({
       if (e.key === 'Escape') {
         setDrawerOpen(false);
         setCatalogMenuOpen(false);
+        setAccountMenuOpen(false);
       }
     };
     const onOutsideClick = (e: MouseEvent) => {
       if (catalogDropRef.current && !catalogDropRef.current.contains(e.target as Node)) {
         setCatalogMenuOpen(false);
+      }
+      if (accountDropRef.current && !accountDropRef.current.contains(e.target as Node)) {
+        setAccountMenuOpen(false);
       }
     };
     window.addEventListener('keydown', onKey);
@@ -362,6 +392,35 @@ export default function SiteNavbar({
       document.removeEventListener('mousedown', onOutsideClick);
     };
   }, []);
+
+  const handleAccountLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ scope: 'current' }),
+      });
+    } catch {
+      // ignore network error; proceed to clear UI state
+    }
+    setAccountSummary({ authenticated: false });
+    setAccountMenuOpen(false);
+    setMobileAccountOpen(false);
+    setDrawerOpen(false);
+    setLoggingOut(false);
+    if (
+      current.startsWith('/hesabim') ||
+      current.startsWith('/dashboard') ||
+      current.startsWith('/siparisler')
+    ) {
+      window.location.replace('/login?clear_session=1');
+    } else {
+      window.location.reload();
+    }
+  };
 
   useEffect(() => {
     if (mainOrigin) return;
@@ -671,65 +730,106 @@ export default function SiteNavbar({
                   </svg>
                 </a>
               ) : accountSummary?.authenticated ? (
-                <Link
-                  href="/hesabim"
-                  prefetch={false}
-                  className="st-circle-btn is-account-active"
-                  title={`${accountSummary.displayName || accountCopy.account}${
-                    accountSummary.pendingOrdersCount
-                      ? ` · ${accountCopy.ordersBadge(accountSummary.pendingOrdersCount)}`
-                      : ''
-                  }`}
-                  aria-label={accountCopy.account}
-                >
-                  {accountSummary.avatarUrl &&
-                  (accountSummary.avatarUrl.startsWith('https://') ||
-                    accountSummary.avatarUrl.startsWith('data:image/')) ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={accountSummary.avatarUrl}
-                      alt={accountSummary.displayName || accountCopy.account}
-                      width={34}
-                      height={34}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        borderRadius: '999px',
-                        objectFit: 'cover',
-                        display: 'block',
-                      }}
-                    />
-                  ) : (
-                    <span
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        borderRadius: '999px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 700,
-                        fontSize: '12px',
-                        color: '#fff',
-                        background:
-                          NAV_AVATAR_PRESETS[accountSummary.avatarUrl || 'preset:ember'] ||
-                          NAV_AVATAR_PRESETS['preset:ember'],
-                      }}
-                    >
-                      {(accountSummary.displayName || 'R').slice(0, 1).toUpperCase()}
-                    </span>
+                <div className="st-nav-account-wrap" ref={accountDropRef}>
+                  <button
+                    type="button"
+                    onClick={() => setAccountMenuOpen((prev) => !prev)}
+                    className="st-circle-btn is-account-active"
+                    title={`${accountSummary.displayName || accountCopy.account}${
+                      accountSummary.pendingOrdersCount
+                        ? ` · ${accountCopy.ordersBadge(accountSummary.pendingOrdersCount)}`
+                        : ''
+                    }`}
+                    aria-label={accountCopy.account}
+                    aria-expanded={accountMenuOpen}
+                    aria-haspopup="menu"
+                  >
+                    {accountSummary.avatarUrl &&
+                    (accountSummary.avatarUrl.startsWith('https://') ||
+                      accountSummary.avatarUrl.startsWith('data:image/')) ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={accountSummary.avatarUrl}
+                        alt={accountSummary.displayName || accountCopy.account}
+                        width={34}
+                        height={34}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: '999px',
+                          objectFit: 'cover',
+                          display: 'block',
+                        }}
+                      />
+                    ) : (
+                      <span
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: '999px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 700,
+                          fontSize: '12px',
+                          color: '#fff',
+                          background:
+                            NAV_AVATAR_PRESETS[accountSummary.avatarUrl || 'preset:ember'] ||
+                            NAV_AVATAR_PRESETS['preset:ember'],
+                        }}
+                      >
+                        {(accountSummary.displayName || 'R').slice(0, 1).toUpperCase()}
+                      </span>
+                    )}
+                    {(accountSummary.pendingOrdersCount ?? 0) > 0 && (
+                      <span className="st-account-order-dot" aria-hidden="true" />
+                    )}
+                  </button>
+
+                  {accountMenuOpen && (
+                    <div className="st-account-dropdown" role="menu" aria-label={accountCopy.account}>
+                      <div className="st-account-drop-head">
+                        <strong className="st-account-drop-name">
+                          {accountSummary.displayName || accountCopy.account}
+                        </strong>
+                        {(accountSummary.pendingOrdersCount ?? 0) > 0 && (
+                          <span className="st-account-drop-badge">
+                            {accountCopy.ordersBadge(accountSummary.pendingOrdersCount || 0)}
+                          </span>
+                        )}
+                      </div>
+
+                      <Link
+                        href="/hesabim"
+                        prefetch={false}
+                        role="menuitem"
+                        className="st-account-drop-item"
+                        onClick={() => setAccountMenuOpen(false)}
+                      >
+                        <span>{accountCopy.viewProfile}</span>
+                        <span aria-hidden="true">→</span>
+                      </Link>
+
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => void handleAccountLogout()}
+                        disabled={loggingOut}
+                        className="st-account-drop-item is-danger"
+                      >
+                        <span>{loggingOut ? accountCopy.loggingOut : accountCopy.logout}</span>
+                        <span aria-hidden="true">↗</span>
+                      </button>
+                    </div>
                   )}
-                  {(accountSummary.pendingOrdersCount ?? 0) > 0 && (
-                    <span className="st-account-order-dot" aria-hidden="true" />
-                  )}
-                </Link>
+                </div>
               ) : (
                 <Link
-                  href="/hesabim"
+                  href="/login"
                   prefetch={false}
                   className="st-circle-btn"
-                  title={accountCopy.account}
-                  aria-label={accountCopy.account}
+                  title={accountCopy.loginBtn}
+                  aria-label={accountCopy.loginBtn}
                 >
                   <svg
                     width="15"
@@ -845,37 +945,54 @@ export default function SiteNavbar({
               >
                 {accountCopy.account} →
               </a>
+            ) : accountSummary?.authenticated ? (
+              <div className="st-mobile-account-box">
+                <button
+                  type="button"
+                  className="st-pill-btn is-ember is-full st-mobile-account-trigger"
+                  onClick={() => setMobileAccountOpen((p) => !p)}
+                  aria-expanded={mobileAccountOpen}
+                >
+                  <span>
+                    {accountSummary.displayName || accountCopy.account}
+                    {(accountSummary.pendingOrdersCount ?? 0) > 0
+                      ? ` (${accountSummary.pendingOrdersCount})`
+                      : ''}
+                  </span>
+                  <span aria-hidden="true">{mobileAccountOpen ? '−' : '▾'}</span>
+                </button>
+
+                {mobileAccountOpen && (
+                  <div className="st-mobile-account-submenu">
+                    <Link
+                      href="/hesabim"
+                      prefetch={false}
+                      className="st-account-drop-item"
+                      onClick={() => setDrawerOpen(false)}
+                    >
+                      <span>{accountCopy.viewProfile}</span>
+                      <span aria-hidden="true">→</span>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => void handleAccountLogout()}
+                      disabled={loggingOut}
+                      className="st-account-drop-item is-danger"
+                    >
+                      <span>{loggingOut ? accountCopy.loggingOut : accountCopy.logout}</span>
+                      <span aria-hidden="true">↗</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <Link
-                href="/hesabim"
+                href="/login"
                 prefetch={false}
                 className="st-pill-btn is-ember is-full"
                 onClick={() => setDrawerOpen(false)}
               >
-                {accountCopy.account}
-                {(accountSummary?.pendingOrdersCount ?? 0) > 0
-                  ? ` (${accountSummary?.pendingOrdersCount})`
-                  : ''}{' '}
-                →
-              </Link>
-            )}
-
-            {mainOrigin ? (
-              <a
-                href={siteLink('/dashboard')}
-                className="st-pill-btn is-outline is-full"
-                onClick={() => setDrawerOpen(false)}
-              >
-                {labels.portal} →
-              </a>
-            ) : (
-              <Link
-                href="/dashboard"
-                prefetch={false}
-                className="st-pill-btn is-outline is-full"
-                onClick={() => setDrawerOpen(false)}
-              >
-                {labels.portal} →
+                {accountCopy.loginBtn} →
               </Link>
             )}
 
@@ -883,9 +1000,17 @@ export default function SiteNavbar({
               href={ITEMSATIS_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="st-pill-btn is-outline is-full"
+              className="st-pill-btn is-itemsatis is-full"
             >
-              {labels.itemsatis} ↗
+              <Image
+                src="/assets/itemsatis-icon.png"
+                alt="İtemsatış"
+                width={16}
+                height={16}
+                sizes="16px"
+                style={{ borderRadius: '4px', objectFit: 'contain' }}
+              />
+              <span>{labels.itemsatis} ↗</span>
             </a>
           </div>
         </div>

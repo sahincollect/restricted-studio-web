@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link';
 import SiteNavbar from '@/components/SiteNavbar';
 import SiteFooter from '@/components/SiteFooter';
+import ShopierLogo from '@/components/ShopierLogo';
 import { HeroPrismBackdrop } from '@/components/StudioReveal';
 import { useI18n } from '@/components/I18nProvider';
 import type { DashboardSessionMeta } from '@/lib/customer-session';
@@ -610,6 +611,53 @@ export default function AccountPortalClient({
             </div>
           </section>
 
+          <section className="rs-acct-overview-grid" aria-label="Account summary">
+            <button
+              type="button"
+              onClick={() => {
+                setTab('orders');
+                setNotice(null);
+              }}
+              className={`rs-acct-overview-card ${tab === 'orders' ? 'is-active' : ''}`}
+            >
+              <span className="rs-acct-ov-kicker">{ui.tabOrders}</span>
+              <strong className="rs-acct-ov-val">
+                {orders.filter((o) => o.status !== 'delivered' && o.status !== 'cancelled').length} / {orders.length}
+              </strong>
+              <span className="rs-acct-ov-meta">2s – 24s SLA · 1-1</span>
+            </button>
+
+            <Link href="/dashboard" className="rs-acct-overview-card">
+              <span className="rs-acct-ov-kicker">{ui.licensesShortcut}</span>
+              <strong className="rs-acct-ov-val">{initialLicenseCount}</strong>
+              <span className="rs-acct-ov-meta">R-AI &amp; HWID →</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => {
+                setTab('profile');
+                setNotice(null);
+              }}
+              className={`rs-acct-overview-card ${tab === 'profile' || tab === 'security' ? 'is-active' : ''}`}
+            >
+              <span className="rs-acct-ov-kicker">{ui.tabProfile}</span>
+              <strong className="rs-acct-ov-val">
+                {(profile.authProviders || []).length}{' '}
+                {locale === 'en'
+                  ? 'Providers'
+                  : locale === 'ru'
+                  ? 'Канал.'
+                  : locale === 'fr'
+                  ? 'Canaux'
+                  : 'Kanal'}
+              </strong>
+              <span className="rs-acct-ov-meta">
+                {profile.discordHandle || profile.serverName || ui.tabSecurity}
+              </span>
+            </button>
+          </section>
+
           <nav className="st-legal-tabs" aria-label={ui.title}>
             <button
               type="button"
@@ -727,9 +775,10 @@ export default function AccountPortalClient({
                               href={activeOrder.shopierCheckoutUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="st-pill-btn is-ember is-sm"
+                              className="st-pill-btn is-shopier is-sm"
                             >
-                              {ui.payShopierBtn}
+                              <ShopierLogo width={15} height={15} />
+                              <span>{ui.payShopierBtn}</span>
                             </a>
                             <button
                               type="button"

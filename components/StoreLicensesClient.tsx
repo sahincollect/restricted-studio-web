@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import ItemsatisLogo from '@/components/ItemsatisLogo';
+import ShopierLogo from '@/components/ShopierLogo';
 import { useI18n } from '@/components/I18nProvider';
 import SiteNavbar from '@/components/SiteNavbar';
 import SiteFooter from '@/components/SiteFooter';
@@ -357,7 +358,7 @@ export default function StoreLicensesClient({ initialItems }: StoreLicensesClien
                 href={ITEMSATIS_PROFILE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="st-pill-btn is-ember is-sm"
+                className="st-pill-btn is-itemsatis is-sm"
                 style={{ alignSelf: 'center' }}
               >
                 <ItemsatisLogo variant="icon" width={15} height={15} />
@@ -505,19 +506,21 @@ export default function StoreLicensesClient({ initialItems }: StoreLicensesClien
                           type="button"
                           onClick={() => void handleShopierStoreBuy(item)}
                           disabled={shopierLoadingId === item.id}
-                          className="st-pill-btn is-ember is-sm"
+                          className="st-pill-btn is-shopier is-sm"
                           style={{ padding: '8px 12px' }}
                         >
-                          {shopierLoadingId === item.id ? '...' : shopierT.payShort}
+                          <ShopierLogo width={14} height={14} />
+                          <span>{shopierLoadingId === item.id ? '...' : shopierT.payShort}</span>
                         </button>
                         <a
                           href={item.itemsatisUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="st-pill-btn is-light is-sm"
+                          className="st-pill-btn is-itemsatis is-sm"
                           style={{ padding: '8px 12px' }}
                         >
-                          İtemsatış ↗
+                          <ItemsatisLogo variant="icon" width={14} height={14} />
+                          <span>İtemsatış ↗</span>
                         </a>
                         <button
                           type="button"
@@ -661,9 +664,10 @@ export default function StoreLicensesClient({ initialItems }: StoreLicensesClien
                 type="button"
                 onClick={() => void handleShopierStoreBuy(selectedItem, shopierNote)}
                 disabled={shopierLoadingId === selectedItem.id}
-                className="st-pill-btn is-ember"
+                className="st-pill-btn is-shopier"
                 style={{ flex: 1 }}
               >
+                <ShopierLogo width={16} height={16} />
                 <span>
                   {shopierLoadingId === selectedItem.id
                     ? shopierT.creatingListing
@@ -674,9 +678,9 @@ export default function StoreLicensesClient({ initialItems }: StoreLicensesClien
                 href={selectedItem.itemsatisUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="st-pill-btn is-light"
+                className="st-pill-btn is-itemsatis"
               >
-                <ItemsatisLogo variant="icon" width={15} height={15} />
+                <ItemsatisLogo variant="icon" width={16} height={16} />
                 <span>İtemsatış ↗</span>
               </a>
               <Link href="/iletisim" className="st-pill-btn is-outline">

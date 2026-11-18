@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import ItemsatisLogo from '@/components/ItemsatisLogo';
+import ShopierLogo from '@/components/ShopierLogo';
 import { useI18n } from '@/components/I18nProvider';
 import SiteNavbar from '@/components/SiteNavbar';
 import SiteFooter from '@/components/SiteFooter';
@@ -1229,16 +1230,7 @@ export default function CatalogClient({
                 cart.map((item, idx) => (
                   <div
                     key={item.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: '10px',
-                      padding: '10px 12px',
-                      borderRadius: '14px',
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1px solid var(--border-hairline)',
-                    }}
+                    className="st-drawer-item"
                   >
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontSize: '13px', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -1262,7 +1254,7 @@ export default function CatalogClient({
             </div>
 
             {cart.length > 0 && (
-              <div style={{ padding: '18px 22px', borderTop: '1px solid var(--border-hairline)', background: '#0f0e11', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div className="st-drawer-footer">
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--text-secondary)' }}>
                   <span>{t.catalog.summaryCountLabel}</span>
                   <span>{t.catalog.summaryCountVal(cart.length)}</span>
@@ -1306,15 +1298,16 @@ export default function CatalogClient({
 
                 <button
                   type="button"
-                  className="st-pill-btn is-ember is-full"
+                  className="st-pill-btn is-shopier is-full"
                   onClick={() => void handleShopierCheckout()}
                   disabled={shopierLoading}
                 >
+                  <ShopierLogo width={18} height={18} />
                   <span>{shopierLoading ? shopierT.creatingListing : shopierT.payWithShopier}</span>
                 </button>
 
-                <button type="button" className="st-pill-btn is-light is-full" onClick={handleCheckout}>
-                  <ItemsatisLogo variant="icon" width={16} height={16} />
+                <button type="button" className="st-pill-btn is-itemsatis is-full" onClick={handleCheckout}>
+                  <ItemsatisLogo variant="icon" width={18} height={18} />
                   <span>{shopierT.altItemsatis}</span>
                 </button>
 
