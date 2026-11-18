@@ -3,7 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/components/I18nProvider';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
+import SiteNavbar from '@/components/SiteNavbar';
+import SiteFooter from '@/components/SiteFooter';
+import { HeroPrismBackdrop } from '@/components/StudioReveal';
 import type { Locale } from '@/lib/i18n';
 
 const CONTACT_EMAIL = 'info@restrictedstudio.shop';
@@ -199,7 +201,7 @@ const CONTACT_I18N: Record<Locale, ContactCopy> = {
 };
 
 export default function ContactTerminalClient() {
-  const { locale, t } = useI18n();
+  const { locale } = useI18n();
   const copy = CONTACT_I18N[locale] || CONTACT_I18N.tr;
 
   const [senderName, setSenderName] = useState('');
@@ -248,122 +250,160 @@ export default function ContactTerminalClient() {
   };
 
   return (
-    <div className="rs-contact-shell">
-      <header className="rs-contact-topbar">
-        <div className="rs-contact-header-inner">
-          <Link href="/" className="rs-contact-brand">
-            <img src="/assets/rslogo.jpg" alt="Restricted Studio" width={28} height={28} className="rs-contact-logo" />
-            <span className="rs-contact-brand-name">RESTRICTED STUDIO</span>
-          </Link>
+    <div className="st-page-shell">
+      <SiteNavbar activePath="/iletisim" />
 
-          <nav className="rs-contact-nav" aria-label={copy.eyebrow}>
-            <Link href="/" className="rs-contact-nav-link">
-              {t.common.home}
-            </Link>
-            <Link href="/katalog" className="rs-contact-nav-link nav-katalog-shimmer">
-              {t.common.catalog}
-            </Link>
-            <Link href="/lisanslar" className="rs-contact-nav-link nav-katalog-shimmer">
-              {t.common.licenses}
-            </Link>
-            <Link href="/status" className="rs-contact-nav-link rs-contact-status-link">
-              {copy.statusLink}
-            </Link>
-            <LanguageSwitcher compact />
-            <Link href="/dashboard" className="rs-contact-portal-btn">
-              {t.common.clientPortal} →
-            </Link>
-          </nav>
-        </div>
-      </header>
-
-      <main className="rs-contact-main">
-        <div className="rs-contact-grid">
-          <section className="rs-contact-info" aria-labelledby="contact-page-heading">
-            <div className="rs-contact-eyebrow">
-              <span className="rs-contact-eyebrow-bar" aria-hidden="true" />
-              <span>{copy.eyebrow}</span>
+      <main className="st-main">
+        <section className="st-subhero" style={{ overflow: 'hidden' }}>
+          <HeroPrismBackdrop />
+          <div className="st-container st-subhero-box">
+            <div>
+              <div className="st-eyebrow">
+                <span className="st-eyebrow-dot" aria-hidden="true" />
+                <span>{copy.eyebrow}</span>
+              </div>
+              <h1 className="st-subhero-title">{copy.heading}</h1>
+              <p className="st-subhero-desc">{copy.lead}</p>
             </div>
 
-            <h1 id="contact-page-heading" className="rs-contact-title">
-              {copy.heading}
-            </h1>
-            <p className="rs-contact-lead">{copy.lead}</p>
-
-            <dl className="rs-contact-directory">
-              <div className="rs-contact-dir-row">
-                <dt>{copy.emailLabel}</dt>
-                <dd className="rs-contact-email-dd">
-                  <a href={`mailto:${CONTACT_EMAIL}`} className="rs-contact-email-link">
-                    {CONTACT_EMAIL}
-                  </a>
-                  <button type="button" onClick={handleCopyEmail} className="rs-contact-copy-btn">
-                    {copied ? copy.copiedBtn : copy.copyBtn}
-                  </button>
-                </dd>
+            <div className="st-subhero-stats">
+              <div className="st-stat-chip is-light">
+                <span className="st-stat-chip-val">7/24</span>
+                <span className="st-stat-chip-lbl">{copy.slaLabel}</span>
               </div>
+              <Link href="/status" className="st-stat-chip">
+                <span className="st-stat-chip-val" style={{ color: 'var(--accent-coral)' }}>
+                  %100
+                </span>
+                <span className="st-stat-chip-lbl">{copy.statusLink} →</span>
+              </Link>
+            </div>
+          </div>
+        </section>
 
-              <div className="rs-contact-dir-row">
-                <dt>{copy.storeLabel}</dt>
-                <dd>
-                  <a
-                    href={ITEMSATIS_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rs-contact-store-link"
-                  >
-                    {copy.storeValue} ↗
-                  </a>
-                  <span className="rs-contact-dir-sub">{copy.storeSub}</span>
-                </dd>
-              </div>
-
-              <div className="rs-contact-dir-row">
-                <dt>{copy.slaLabel}</dt>
-                <dd>{copy.slaValue}</dd>
-              </div>
-            </dl>
-          </section>
-
-          <section className="rs-contact-card" aria-labelledby="contact-form-heading">
-            <div className="rs-contact-card-head">
-              <h2 id="contact-form-heading" className="rs-contact-form-title">
-                {copy.formTitle}
-              </h2>
-              <p className="rs-contact-form-sub">{copy.formSubtitle}</p>
+        <section className="st-container st-contact-grid">
+          {/* Left Asymmetric Light Channel Card */}
+          <aside className="st-contact-light-card">
+            <div className="st-contact-channel">
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '10.5px',
+                  fontWeight: 700,
+                  color: '#c83918',
+                  letterSpacing: '0.08em',
+                }}
+              >
+                {copy.emailLabel}
+              </span>
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                style={{ fontSize: '15px', fontWeight: 700, color: '#111113', wordBreak: 'break-all' }}
+              >
+                {CONTACT_EMAIL}
+              </a>
+              <button
+                type="button"
+                onClick={handleCopyEmail}
+                className="st-pill-btn is-dark is-sm"
+                style={{ alignSelf: 'flex-start', marginTop: '6px' }}
+              >
+                {copied ? copy.copiedBtn : copy.copyBtn}
+              </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="rs-contact-form">
-              <div className="rs-contact-field-row">
-                <div className="rs-contact-field">
-                  <label htmlFor="contact-name">{copy.nameLabel}</label>
-                  <input
-                    id="contact-name"
-                    type="text"
-                    value={senderName}
-                    onChange={(e) => setSenderName(e.target.value)}
-                    placeholder={copy.namePlaceholder}
-                  />
-                </div>
+            <div className="st-contact-channel">
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '10.5px',
+                  fontWeight: 700,
+                  color: '#c83918',
+                  letterSpacing: '0.08em',
+                }}
+              >
+                {copy.storeLabel}
+              </span>
+              <a
+                href={ITEMSATIS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: '15px', fontWeight: 700, color: '#111113' }}
+              >
+                {copy.storeValue} ↗
+              </a>
+              <span style={{ fontSize: '12.5px', color: 'var(--text-dark-muted)' }}>
+                {copy.storeSub}
+              </span>
+            </div>
 
-                <div className="rs-contact-field">
-                  <label htmlFor="contact-email">{copy.emailInputLabel}</label>
-                  <input
-                    id="contact-email"
-                    type="email"
-                    value={senderEmail}
-                    onChange={(e) => setSenderEmail(e.target.value)}
-                    placeholder={copy.emailInputPlaceholder}
-                  />
-                </div>
+            <div className="st-contact-channel">
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '10.5px',
+                  fontWeight: 700,
+                  color: '#c83918',
+                  letterSpacing: '0.08em',
+                }}
+              >
+                {copy.slaLabel}
+              </span>
+              <span style={{ fontSize: '14px', fontWeight: 600, color: '#111113' }}>
+                {copy.slaValue}
+              </span>
+            </div>
+          </aside>
+
+          {/* Right Form */}
+          <div className="st-contact-form-card spotlight-surface">
+            <h2 style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-0.02em' }}>
+              {copy.formTitle}
+            </h2>
+            <p style={{ marginTop: '6px', marginBottom: '22px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+              {copy.formSubtitle}
+            </p>
+
+            <form onSubmit={handleSubmit}>
+              <div className="st-field-group">
+                <label htmlFor="contact-name" className="st-field-label">
+                  {copy.nameLabel}
+                </label>
+                <input
+                  id="contact-name"
+                  type="text"
+                  value={senderName}
+                  onChange={(e) => setSenderName(e.target.value)}
+                  placeholder={copy.namePlaceholder}
+                  className="st-input"
+                  required
+                />
               </div>
 
-              <div className="rs-contact-field">
-                <label htmlFor="contact-topic">{copy.topicLabel}</label>
+              <div className="st-field-group">
+                <label htmlFor="contact-email" className="st-field-label">
+                  {copy.emailInputLabel}
+                </label>
+                <input
+                  id="contact-email"
+                  type="email"
+                  value={senderEmail}
+                  onChange={(e) => setSenderEmail(e.target.value)}
+                  placeholder={copy.emailInputPlaceholder}
+                  className="st-input"
+                  required
+                />
+              </div>
+
+              <div className="st-field-group">
+                <label htmlFor="contact-topic" className="st-field-label">
+                  {copy.topicLabel}
+                </label>
                 <select
                   id="contact-topic"
                   value={topicIndex}
                   onChange={(e) => setTopicIndex(e.target.value)}
+                  className="st-select"
                 >
                   {copy.topics.map((topic, idx) => (
                     <option key={topic} value={String(idx)}>
@@ -375,46 +415,56 @@ export default function ContactTerminalClient() {
               </div>
 
               {topicIndex === 'other' && (
-                <div className="rs-contact-field">
-                  <label htmlFor="contact-custom-subject">{copy.customTopicLabel}</label>
+                <div className="st-field-group">
+                  <label htmlFor="contact-custom-subject" className="st-field-label">
+                    {copy.customTopicLabel}
+                  </label>
                   <input
                     id="contact-custom-subject"
                     type="text"
                     value={customSubject}
                     onChange={(e) => setCustomSubject(e.target.value)}
                     placeholder={copy.customTopicPlaceholder}
-                    required
+                    className="st-input"
                   />
                 </div>
               )}
 
-              <div className="rs-contact-field">
-                <label htmlFor="contact-message">{copy.messageLabel}</label>
+              <div className="st-field-group">
+                <label htmlFor="contact-msg" className="st-field-label">
+                  {copy.messageLabel}
+                </label>
                 <textarea
-                  id="contact-message"
-                  rows={4}
+                  id="contact-msg"
+                  rows={5}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder={copy.messagePlaceholder}
+                  className="st-textarea"
                   required
                 />
               </div>
 
-              <button type="submit" className="rs-contact-submit">
-                <span>{copy.submitBtn}</span>
-                <span aria-hidden="true">→</span>
+              <button type="submit" className="st-pill-btn is-light is-full">
+                {copy.submitBtn} →
               </button>
-
-              {dispatched && (
-                <p className="rs-contact-dispatch-note" role="status">
-                  {copy.dispatchedNote}{' '}
-                  <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
-                </p>
-              )}
             </form>
-          </section>
-        </div>
+
+            {dispatched && (
+              <div className="rs-auth-alert is-info" style={{ marginTop: '16px' }}>
+                <span>
+                  {copy.dispatchedNote}{' '}
+                  <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: 'var(--accent-coral)', fontWeight: 600 }}>
+                    {CONTACT_EMAIL}
+                  </a>
+                </span>
+              </div>
+            )}
+          </div>
+        </section>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

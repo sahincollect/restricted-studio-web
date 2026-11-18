@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useI18n } from '@/components/I18nProvider';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
+import SiteNavbar from '@/components/SiteNavbar';
+import SiteFooter from '@/components/SiteFooter';
+import { HeroPrismBackdrop } from '@/components/StudioReveal';
 import type {
   ComponentHealthState,
   PublicServiceId,
@@ -109,7 +110,6 @@ export default function StatusBoard() {
   const activeStatus: ComponentHealthState = data ? data.status : 'operational';
   const heroState = loading ? 'loading' : fetchError ? 'outage' : activeStatus;
   const currentLabels = t.statusPage.states[activeStatus];
-  const siteLink = (path: string) => (mainOrigin ? `${mainOrigin}${path}` : path);
 
   const services = data?.services || [];
   const operationalCount = services.filter((s) => s.status === 'operational').length;
@@ -134,333 +134,236 @@ export default function StatusBoard() {
   const ratio30d = data?.uptime?.ratio30d ?? '99.98%';
   const ratio90d = data?.uptime?.ratio90d ?? '99.98%';
 
+  const stateClass =
+    heroState === 'outage' ? 'is-outage' : heroState === 'degraded' ? 'is-degraded' : 'is-operational';
+
   return (
-    <div className="status-page-shell">
-      <div className="noir-subpage-sky" aria-hidden="true" />
-      <div className="status-grid-veil" aria-hidden="true" />
+    <div className="st-page-shell">
+      <SiteNavbar activePath="/status" mainOrigin={mainOrigin} />
 
-      <div className="noir-subpage-content status-container">
-        <header className="status-topbar">
-          <div className="status-brand-wrap">
-            {mainOrigin ? (
-              <a href={siteLink('/')} className="status-brand-link">
-                <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="status-brand-logo" />
-                <span className="brand-logo-shimmer">RESTRICTED STUDIO</span>
-              </a>
-            ) : (
-              <Link href="/" className="status-brand-link">
-                <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="status-brand-logo" />
-                <span className="brand-logo-shimmer">RESTRICTED STUDIO</span>
-              </Link>
-            )}
-            <span className="status-pill-tag">{t.statusPage.pillTag}</span>
-          </div>
-
-          <nav className="status-nav-links" aria-label={t.statusPage.navAria}>
-            <LanguageSwitcher compact />
-            {mainOrigin ? (
-              <>
-                <a href={siteLink('/')} className="status-nav-btn">
-                  {t.common.home}
-                </a>
-                <a href={siteLink('/katalog')} className="status-nav-btn status-nav-hide-sm nav-katalog-shimmer">
-                  {t.common.catalog}
-                </a>
-                <a href={siteLink('/lisanslar')} className="status-nav-btn status-nav-hide-sm nav-katalog-shimmer">
-                  {t.common.licenses}
-                </a>
-                <a href={siteLink('/dashboard')} className="status-nav-btn status-nav-primary">
-                  {t.common.clientPortal} →
-                </a>
-              </>
-            ) : (
-              <>
-                <Link href="/" className="status-nav-btn">
-                  {t.common.home}
-                </Link>
-                <Link href="/katalog" className="status-nav-btn status-nav-hide-sm nav-katalog-shimmer">
-                  {t.common.catalog}
-                </Link>
-                <Link href="/lisanslar" className="status-nav-btn status-nav-hide-sm nav-katalog-shimmer">
-                  {t.common.licenses}
-                </Link>
-                <Link href="/dashboard" className="status-nav-btn status-nav-primary">
-                  {t.common.clientPortal} →
-                </Link>
-              </>
-            )}
-          </nav>
-        </header>
-
-        <main className="status-main">
-          {/* Primary Minimalist Status & Uptime Monolith */}
-          <section className="status-monolith" data-state={heroState} aria-live="polite">
-            <div className="status-monolith-head">
-              <div className="status-indicator-cluster">
-                <div className="status-beacon-assembly" data-state={heroState} aria-hidden="true">
-                  <span className="status-beacon-ring" />
-                  <span className="status-beacon-cross status-beacon-cross-h" />
-                  <span className="status-beacon-cross status-beacon-cross-v" />
-                  <span className="status-beacon-core" />
+      <main className="st-main">
+        <section className="st-subhero" style={{ overflow: 'hidden' }}>
+          <HeroPrismBackdrop />
+          <div className="st-container" style={{ position: 'relative', zIndex: 2 }}>
+            <div className={`st-status-hero ${stateClass}`} aria-live="polite">
+              <div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center', marginBottom: '12px' }}>
+                  <span className={`st-status-pill ${stateClass}`}>
+                    <span className="st-eyebrow-dot" style={{ background: 'currentColor' }} aria-hidden="true" />
+                    {statusTagText}
+                  </span>
+                  {data?.responseTimeMs !== undefined && (
+                    <span className="st-area-count-pill">PING · {data.responseTimeMs} MS</span>
+                  )}
                 </div>
 
-                <div className="status-headline-block">
-                  <div className="status-eyebrow-row">
-                    <span className="status-live-badge" data-state={heroState}>
-                      <span className="status-live-dot" aria-hidden="true" />
-                      {statusTagText}
-                    </span>
-                    {data?.responseTimeMs !== undefined && (
-                      <span className="status-ping-tag">PING // {data.responseTimeMs} MS</span>
-                    )}
-                  </div>
-
-                  <h1 className="status-hero-title">
-                    {loading
-                      ? t.statusPage.loadingHeadline
-                      : fetchError
-                      ? t.statusPage.errorHeadline
-                      : currentLabels.headline}
-                  </h1>
-                </div>
+                <h1 className="st-subhero-title" style={{ fontSize: 'clamp(26px, 3.2vw, 38px)' }}>
+                  {loading
+                    ? t.statusPage.loadingHeadline
+                    : fetchError
+                    ? t.statusPage.errorHeadline
+                    : currentLabels.headline}
+                </h1>
+                <p style={{ marginTop: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                  {data
+                    ? `${t.statusPage.lastCheckedPrefix} ${formatTime(data.checkedAt)} · ${countdown}s`
+                    : t.statusPage.verifyingLive}
+                </p>
               </div>
 
               <button
                 type="button"
                 onClick={() => runHealthCheck(true)}
                 disabled={refreshing}
-                className="status-refresh-btn"
+                className="st-pill-btn is-light is-sm"
                 aria-label={t.statusPage.checkNowBtn}
               >
-                <svg
-                  width="13"
-                  height="13"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="square"
-                  strokeLinejoin="miter"
-                  className={refreshing ? 'status-spin' : undefined}
-                  aria-hidden="true"
-                >
-                  <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-                  <path d="M21 3v5h-5" />
-                </svg>
-                <span>{refreshing ? t.statusPage.checkingBtn : t.statusPage.checkNowBtn}</span>
+                {refreshing ? t.statusPage.checkingBtn : t.statusPage.checkNowBtn}
               </button>
             </div>
 
-            {/* Uptime Duration & Percentage Readout */}
-            <div className="status-uptime-showcase">
-              <div className="status-uptime-duration-col">
-                <span className="status-meta-label">{t.statusPage.uptimeDurationLabel}</span>
-                <div className="status-duration-grid" data-state={heroState}>
-                  <div className="status-duration-unit">
-                    <strong>{loading && !data ? '--' : duration.days}</strong>
-                    <span>{t.statusPage.daysUnit}</span>
-                  </div>
-                  <span className="status-duration-sep" aria-hidden="true">:</span>
-                  <div className="status-duration-unit">
-                    <strong>{loading && !data ? '--' : duration.hours}</strong>
-                    <span>{t.statusPage.hoursUnit}</span>
-                  </div>
-                  <span className="status-duration-sep" aria-hidden="true">:</span>
-                  <div className="status-duration-unit">
-                    <strong>{loading && !data ? '--' : duration.minutes}</strong>
-                    <span>{t.statusPage.minutesUnit}</span>
-                  </div>
-                  <span className="status-duration-sep" aria-hidden="true">:</span>
-                  <div className="status-duration-unit">
-                    <strong>{loading && !data ? '--' : duration.seconds}</strong>
-                    <span>{t.statusPage.secondsUnit}</span>
-                  </div>
-                </div>
+            {/* Uptime KPI Metrics */}
+            <div className="st-status-metrics">
+              <div className="st-stat-chip is-light">
+                <span className="st-stat-chip-val">
+                  {loading && !data ? '--' : `${duration.days}g ${duration.hours}:${duration.minutes}:${duration.seconds}`}
+                </span>
+                <span className="st-stat-chip-lbl">{t.statusPage.uptimeDurationLabel}</span>
               </div>
-
-              <div className="status-uptime-ratio-col">
-                <div className="status-ratio-primary">
-                  <span className="status-meta-label">{t.statusPage.uptimeRatioLabel}</span>
-                  <strong className="status-ratio-big">{loading && !data ? '—' : ratio90d}</strong>
-                </div>
-
-                <div className="status-ratio-pills">
-                  <div className="status-ratio-mini">
-                    <span>{t.statusPage.ratio24h}</span>
-                    <strong>{loading && !data ? '—' : ratio24h}</strong>
-                  </div>
-                  <div className="status-ratio-mini">
-                    <span>{t.statusPage.ratio7d}</span>
-                    <strong>{loading && !data ? '—' : ratio7d}</strong>
-                  </div>
-                  <div className="status-ratio-mini">
-                    <span>{t.statusPage.ratio30d}</span>
-                    <strong>{loading && !data ? '—' : ratio30d}</strong>
-                  </div>
-                </div>
+              <div className="st-stat-chip">
+                <span className="st-stat-chip-val">{loading && !data ? '—' : ratio24h}</span>
+                <span className="st-stat-chip-lbl">{t.statusPage.ratio24h}</span>
+              </div>
+              <div className="st-stat-chip">
+                <span className="st-stat-chip-val">{loading && !data ? '—' : ratio30d}</span>
+                <span className="st-stat-chip-lbl">{t.statusPage.ratio30d}</span>
+              </div>
+              <div className="st-stat-chip">
+                <span className="st-stat-chip-val" style={{ color: 'var(--accent-coral)' }}>
+                  {loading && !data ? '—' : ratio90d}
+                </span>
+                <span className="st-stat-chip-lbl">{t.statusPage.uptimeRatioLabel}</span>
               </div>
             </div>
 
-            {/* 60-Segment Architectural Uptime Timeline */}
-            <div className="status-uptime-track">
-              <div className="status-uptime-bars" role="img" aria-label={t.statusPage.uptimeRatioLabel}>
+            {/* 60-tick Bar Timeline */}
+            <div className="st-sidebar-card" style={{ marginTop: '18px' }}>
+              <div className="st-status-ticks" role="img" aria-label={t.statusPage.uptimeRatioLabel}>
                 {FALLBACK_TICK_INDICES.map((idx) => {
                   const isTail = idx >= UPTIME_BAR_COUNT - 2;
-                  const barState =
-                    loading && !data
-                      ? 'loading'
-                      : isTail && heroState !== 'operational'
-                      ? heroState
-                      : 'operational';
-                  return <span key={idx} className="status-uptime-bar" data-state={barState} />;
+                  const tickState =
+                    loading && !data ? 'operational' : isTail && heroState !== 'operational' ? heroState : 'operational';
+                  return (
+                    <span
+                      key={idx}
+                      className={`st-status-tick ${
+                        tickState === 'outage' ? 'is-down' : tickState === 'degraded' ? 'is-degraded' : ''
+                      }`}
+                    />
+                  );
                 })}
               </div>
-              <div className="status-uptime-axis">
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '8px',
+                  fontSize: '11.5px',
+                  color: 'var(--text-muted)',
+                }}
+              >
                 <span>{t.statusPage.timelineStart}</span>
-                <span className="status-axis-center">
-                  <span className="status-axis-dot" data-state={heroState} aria-hidden="true" />
-                  {fetchError ? fetchError : t.statusPage.continuousActiveLabel}
-                </span>
+                <span>{fetchError ? fetchError : t.statusPage.continuousActiveLabel}</span>
                 <span>{t.statusPage.timelineToday}</span>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* Minimalist Service Telemetry Matrix */}
-          <section className="status-panel" aria-label={t.statusPage.servicesTitle}>
-            <div className="status-panel-head">
-              <h2>{t.statusPage.servicesTitle}</h2>
+        {/* Services Table */}
+        <section className="st-container" style={{ paddingBottom: '64px' }}>
+          <div className="st-compare-table-wrap">
+            <div
+              style={{
+                padding: '18px 20px',
+                borderBottom: '1px solid var(--border-hairline)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '12px',
+                flexWrap: 'wrap',
+              }}
+            >
+              <h2 style={{ fontSize: '17px', fontWeight: 600 }}>{t.statusPage.servicesTitle}</h2>
               {data && (
-                <span className="status-count-pill">
+                <span className="st-area-count-pill">
                   {operationalCount}/{services.length} {statusTagText}
                 </span>
               )}
             </div>
 
-            <div className="status-list">
-              {loading && services.length === 0
-                ? DEFAULT_SERVICE_IDS.map((id, idx) => (
-                    <div key={id} className="status-row status-row-skeleton">
-                      <span className="status-row-left">
-                        <span className="status-row-index">0{idx + 1}</span>
-                        <span className="status-dot-sm" data-state="loading" />
-                        <span className="status-service-name">{t.statusPage.serviceNames[id]}</span>
-                      </span>
-                      <span className="status-skeleton-pill" aria-hidden="true" />
-                    </div>
-                  ))
-                : services.map((svc, idx) => {
-                    const stateLabel = t.statusPage.states[svc.status].label;
-                    const displayName = t.statusPage.serviceNames[svc.id] ?? svc.id;
-                    return (
-                      <div key={svc.id} className="status-row">
-                        <div className="status-row-left">
-                          <span className="status-row-index">0{idx + 1}</span>
-                          <span className="status-dot-sm" data-state={svc.status} aria-hidden="true" />
-                          <span className="status-service-name">{displayName}</span>
-                        </div>
-
-                        <div className="status-row-right">
-                          <span className="status-metric-cell" title={t.statusPage.uptimeRatioLabel}>
+            <table className="st-table">
+              <tbody>
+                {loading && services.length === 0
+                  ? DEFAULT_SERVICE_IDS.map((id, idx) => (
+                      <tr key={id}>
+                        <td className="st-status-idx-col" style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>0{idx + 1}</td>
+                        <td style={{ fontWeight: 600 }}>{t.statusPage.serviceNames[id]}</td>
+                        <td style={{ color: 'var(--text-muted)' }}>—</td>
+                      </tr>
+                    ))
+                  : services.map((svc, idx) => {
+                      const svcClass =
+                        svc.status === 'outage'
+                          ? 'is-outage'
+                          : svc.status === 'degraded'
+                          ? 'is-degraded'
+                          : 'is-operational';
+                      return (
+                        <tr key={svc.id}>
+                          <td className="st-status-idx-col" style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', width: '56px' }}>
+                            0{idx + 1}
+                          </td>
+                          <td style={{ fontWeight: 600 }}>{t.statusPage.serviceNames[svc.id] ?? svc.id}</td>
+                          <td style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
                             {svc.uptimeRatio}
-                          </span>
-                          <span className="status-metric-cell status-latency-cell" title={t.statusPage.latencyLabel}>
+                          </td>
+                          <td style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
                             {svc.latencyMs} ms
-                          </span>
-                          <span className="status-state-pill" data-state={svc.status}>
-                            {stateLabel}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-            </div>
-          </section>
+                          </td>
+                          <td style={{ textAlign: 'right' }}>
+                            <span className={`st-status-pill ${svcClass}`}>
+                              {t.statusPage.states[svc.status].label}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+              </tbody>
+            </table>
+          </div>
 
           {degradedOrOutage.length > 0 && (
-            <section className="status-incident-alert" aria-label={t.statusPage.incidentDetected}>
-              <div className="status-incident-head">{t.statusPage.incidentDetected}</div>
-              <ul className="status-incident-list">
-                {degradedOrOutage.map((s) => (
-                  <li key={s.id}>
-                    <span>{t.statusPage.serviceNames[s.id] ?? s.id}</span>
-                    <span className="status-state-pill" data-state={s.status}>
-                      {t.statusPage.states[s.status].label}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            <div className="rs-auth-alert is-error" style={{ marginTop: '18px' }}>
+              <div>
+                <strong>{t.statusPage.incidentDetected}</strong>
+                <div style={{ marginTop: '4px', fontSize: '12.5px' }}>
+                  {degradedOrOutage.map((s) => t.statusPage.serviceNames[s.id] ?? s.id).join(', ')}
+                </div>
+              </div>
+            </div>
           )}
 
-          {/* Optional UptimeRobot Monitor Breakdown */}
           {data?.historicalMonitoring && data.monitors.length > 0 && (
-            <section className="status-panel" aria-label={t.statusPage.historicalTitle}>
-              <div className="status-panel-head">
-                <h2>{t.statusPage.historicalTitle}</h2>
-              </div>
-
-              <div className="status-monitors-grid">
+            <div style={{ marginTop: '24px' }}>
+              <h2 style={{ fontSize: '17px', fontWeight: 600, marginBottom: '14px' }}>
+                {t.statusPage.historicalTitle}
+              </h2>
+              <div className="st-areas-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
                 {data.monitors.map((mon) => (
-                  <div key={mon.name} className="status-monitor-card">
-                    <div className="status-monitor-head">
-                      <span className="status-monitor-name">{mon.name}</span>
-                      <span className="status-state-pill" data-state={mon.status}>
+                  <div key={mon.name} className="st-sidebar-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                      <strong style={{ fontSize: '14px' }}>{mon.name}</strong>
+                      <span className={`st-status-pill is-${mon.status}`}>
                         {t.statusPage.states[mon.status].label}
                       </span>
                     </div>
-                    <div className="status-ratios">
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+                        gap: '8px',
+                        fontSize: '11.5px',
+                        color: 'var(--text-secondary)',
+                      }}
+                    >
                       <div>
-                        <span>{t.statusPage.ratio24h}</span>
+                        <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>{t.statusPage.ratio24h}</div>
                         <strong>{mon.uptime24h || '—'}</strong>
                       </div>
                       <div>
-                        <span>{t.statusPage.ratio7d}</span>
+                        <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>{t.statusPage.ratio7d}</div>
                         <strong>{mon.uptime7d || '—'}</strong>
                       </div>
                       <div>
-                        <span>{t.statusPage.ratio30d}</span>
+                        <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>{t.statusPage.ratio30d}</div>
                         <strong>{mon.uptime30d || '—'}</strong>
                       </div>
                       <div>
-                        <span>{t.statusPage.ratio90d}</span>
+                        <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>{t.statusPage.ratio90d}</div>
                         <strong>{mon.uptime90d || '—'}</strong>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
-            </section>
+            </div>
           )}
-        </main>
+        </section>
+      </main>
 
-        <footer className="status-footer">
-          <div className="status-footer-meta">
-            <span>{t.statusPage.footerBrand}</span>
-            <span className="status-footer-sep" aria-hidden="true">//</span>
-            <span>
-              {data
-                ? `${t.statusPage.lastCheckedPrefix} ${formatTime(data.checkedAt)} · ${countdown}s`
-                : t.statusPage.verifyingLive}
-            </span>
-          </div>
-          <div className="status-footer-links">
-            {mainOrigin ? (
-              <>
-                <a href={siteLink('/')}>{t.common.home}</a>
-                <a href={siteLink('/katalog')}>{t.common.catalog}</a>
-                <a href={siteLink('/iletisim')}>İletişim</a>
-              </>
-            ) : (
-              <>
-                <Link href="/">{t.common.home}</Link>
-                <Link href="/katalog">{t.common.catalog}</Link>
-                <Link href="/iletisim">İletişim</Link>
-              </>
-            )}
-          </div>
-        </footer>
-      </div>
+      <SiteFooter mainOrigin={mainOrigin} />
     </div>
   );
 }

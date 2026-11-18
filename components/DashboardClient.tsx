@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/components/I18nProvider';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
+import SiteNavbar from '@/components/SiteNavbar';
+import SiteFooter from '@/components/SiteFooter';
+import { HeroPrismBackdrop } from '@/components/StudioReveal';
 import type { DashboardLicenseRow, DashboardSessionMeta } from '@/lib/customer-session';
 
 interface DashboardUser {
@@ -155,7 +157,7 @@ export default function DashboardClient({
         setRedeemCode(clip.trim().toUpperCase());
       }
     } catch {
-      // Clipboard read requires user gesture permission; ignore denial silently
+      // Clipboard denied silently
     }
   };
 
@@ -197,7 +199,7 @@ export default function DashboardClient({
         body: JSON.stringify({ scope }),
       });
     } catch {
-      // Clear local navigation regardless of network glitch
+      // Ignore network glitch on logout
     }
     setSessionInvalid(true);
     window.location.replace('/login?clear_session=1');
@@ -211,7 +213,7 @@ export default function DashboardClient({
         setCopiedId((prev) => (prev === id ? null : prev));
       }, 1800);
     } catch {
-      // Ignore clipboard write restrictions
+      // Ignore clipboard restriction
     }
   };
 
@@ -257,432 +259,298 @@ export default function DashboardClient({
 
   return (
     <div className="rs-portal-shell">
-      <header className="rs-portal-header">
-        <div className="rs-portal-header-inner">
-          <div className="rs-portal-brand-group">
-            <Link href="/" className="rs-auth-brand">
-              <span className="rs-auth-brand-mark" aria-hidden="true" />
-              <span className="brand-logo-shimmer">RESTRICTED STUDIO</span>
-            </Link>
-            <span className="rs-portal-trust">{t.common.itemsatisTrust}</span>
-          </div>
+      <SiteNavbar activePath="/dashboard" />
 
-          <div className="rs-portal-actions">
-            <LanguageSwitcher compact />
+      <div style={{ position: 'relative', flex: 1 }}>
+        <HeroPrismBackdrop />
 
-            <Link href="/katalog" className="rs-portal-btn-ghost">
-              {t.dashboard.catalogLink}
-            </Link>
-
-            {isAdmin && (
-              <Link href="/admin" className="rs-portal-btn-admin">
-                {t.dashboard.adminPanelBtn}
-              </Link>
-            )}
-
-            <span className="rs-portal-identity" title={user.email || user.name}>
-              <span className="rs-portal-identity-dot" aria-hidden="true" />
-              <span>{formatDisplayIdentity(user)}</span>
-            </span>
-
-            <button
-              type="button"
-              onClick={() => void handleLogout('current')}
-              disabled={logoutMode !== null}
-              className="rs-portal-btn-ghost"
-            >
-              {t.dashboard.logoutBtn}
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="rs-portal-main">
-        <section className="rs-portal-hero">
-          <div>
-            <h1 className="rs-portal-h1">{t.dashboard.pageTitle}</h1>
-            <p className="rs-portal-sub">{t.dashboard.pageSubtitle}</p>
-          </div>
-        </section>
-
-        <section className="rs-portal-kpi-grid" aria-label="Account telemetry">
-          <div className="rs-portal-kpi is-highlight">
-            <span className="rs-portal-kpi-label">{t.dashboard.kpiActiveLicenses}</span>
-            <strong className="rs-portal-kpi-value">{metrics.activeCount}</strong>
-            <span className="rs-portal-kpi-meta">/ {metrics.totalCount}</span>
-          </div>
-
-          <div className="rs-portal-kpi">
-            <span className="rs-portal-kpi-label">{t.dashboard.kpiStationStatus}</span>
-            <strong className="rs-portal-kpi-value">
-              {metrics.stationUnlocked ? t.dashboard.stationReady : t.dashboard.stationLocked}
-            </strong>
-            <span className="rs-portal-kpi-meta">Win x64 • R-AI</span>
-          </div>
-
-          <div className="rs-portal-kpi">
-            <span className="rs-portal-kpi-label">{t.dashboard.kpiHwidStatus}</span>
-            <strong className="rs-portal-kpi-value">
-              {metrics.boundCount > 0 ? t.dashboard.hwidBound : t.dashboard.hwidUnbound}
-            </strong>
-            <span className="rs-portal-kpi-meta">
-              {metrics.boundCount} / {metrics.totalCount}
-            </span>
-          </div>
-
-          <div className="rs-portal-kpi">
-            <span className="rs-portal-kpi-label">{t.dashboard.kpiSessionPosture}</span>
-            <strong className="rs-portal-kpi-value">{t.dashboard.sessionProtected}</strong>
-            <span className="rs-portal-kpi-meta">
-              FID #{initialSessionMeta.familyId.slice(0, 8)}
-            </span>
-          </div>
-        </section>
-
-        <div className="rs-portal-bento">
-          <div className="rs-portal-col">
-            {/* Activation Terminal */}
-            <section className="rs-portal-card" aria-labelledby="redeem-card-title">
-              <div className="rs-portal-card-head">
-                <div className="rs-portal-card-title-group">
-                  <div className="rs-portal-icon-box" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F0F0F0" strokeWidth="2">
-                      <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h2 id="redeem-card-title" className="rs-portal-card-title">
-                      {t.dashboard.redeemTitle}
-                    </h2>
-                    <p className="rs-portal-card-sub">{t.dashboard.redeemSubtitle}</p>
-                  </div>
-                </div>
+        <main className="rs-portal-main" style={{ position: 'relative', zIndex: 2 }}>
+          <section className="st-subhero-box">
+            <div>
+              <div className="st-eyebrow">
+                <span className="st-eyebrow-dot" aria-hidden="true" />
+                <span>{formatDisplayIdentity(user)}</span>
               </div>
+              <h1 className="st-subhero-title" style={{ fontSize: 'clamp(26px, 3vw, 38px)' }}>
+                {t.dashboard.pageTitle}
+              </h1>
+              <p className="st-subhero-desc">{t.dashboard.pageSubtitle}</p>
+            </div>
 
-              {statusMessage && (
-                <div
-                  className={`rs-auth-alert ${statusMessage.type === 'error' ? 'is-error' : 'is-info'}`}
-                  role={statusMessage.type === 'error' ? 'alert' : 'status'}
-                >
-                  <span>{statusMessage.text}</span>
-                </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
+              {isAdmin && (
+                <Link href="/admin" className="st-pill-btn is-ember is-sm">
+                  {t.dashboard.adminPanelBtn} →
+                </Link>
               )}
+              <button
+                type="button"
+                onClick={() => void handleLogout('current')}
+                disabled={logoutMode !== null}
+                className="st-pill-btn is-outline is-sm"
+              >
+                {t.dashboard.logoutBtn}
+              </button>
+            </div>
+          </section>
 
-              <form onSubmit={handleRedeem} className="rs-portal-redeem-row">
-                <div className="rs-portal-redeem-input-wrap">
-                  <input
-                    type="text"
-                    value={redeemCode}
-                    onChange={(e) => setRedeemCode(e.target.value.toUpperCase())}
-                    placeholder={t.dashboard.redeemPlaceholder}
-                    className="rs-portal-redeem-input"
-                    spellCheck={false}
-                    autoComplete="off"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => void handlePasteCode()}
-                    className="rs-portal-paste-btn"
-                  >
-                    {t.dashboard.pasteBtn}
-                  </button>
+          <section className="rs-portal-kpi-grid" aria-label="Account telemetry">
+            <div className="rs-portal-kpi is-highlight">
+              <span className="rs-portal-kpi-label">{t.dashboard.kpiActiveLicenses}</span>
+              <strong className="rs-portal-kpi-value">
+                {metrics.activeCount} / {metrics.totalCount}
+              </strong>
+              <span className="rs-portal-kpi-meta">{t.common.itemsatisTrust}</span>
+            </div>
+
+            <div className="rs-portal-kpi">
+              <span className="rs-portal-kpi-label">{t.dashboard.kpiStationStatus}</span>
+              <strong className="rs-portal-kpi-value">
+                {metrics.stationUnlocked ? t.dashboard.stationReady : t.dashboard.stationLocked}
+              </strong>
+              <span className="rs-portal-kpi-meta">Win x64 • R-AI</span>
+            </div>
+
+            <div className="rs-portal-kpi">
+              <span className="rs-portal-kpi-label">{t.dashboard.kpiSessionPosture}</span>
+              <strong className="rs-portal-kpi-value">{t.dashboard.sessionProtected}</strong>
+              <span className="rs-portal-kpi-meta">FID #{initialSessionMeta.familyId.slice(0, 8)}</span>
+            </div>
+          </section>
+
+          <div className="rs-portal-grid-2">
+            {/* Activation & Licenses Column */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              <section className="rs-portal-panel spotlight-surface" aria-labelledby="redeem-card-title">
+                <div>
+                  <h2 id="redeem-card-title" style={{ fontSize: '18px', fontWeight: 600 }}>
+                    {t.dashboard.redeemTitle}
+                  </h2>
+                  <p style={{ marginTop: '4px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                    {t.dashboard.redeemSubtitle}
+                  </p>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={redeemLoading || !redeemCode.trim()}
-                  className="rs-portal-btn-primary"
-                >
-                  {redeemLoading ? t.dashboard.redeemLoadingBtn : t.dashboard.redeemSubmitBtn}
-                </button>
-              </form>
-            </section>
-
-            {/* Licenses & Hardware Telemetry */}
-            <section className="rs-portal-card" aria-labelledby="licenses-card-title">
-              <div className="rs-portal-card-head">
-                <div className="rs-portal-card-title-group">
-                  <div className="rs-portal-icon-box" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F0F0F0" strokeWidth="2">
-                      <rect x="2" y="3" width="20" height="14" rx="1" />
-                      <line x1="8" y1="21" x2="16" y2="21" />
-                      <line x1="12" y1="17" x2="12" y2="21" />
-                    </svg>
+                {statusMessage && (
+                  <div
+                    className={`rs-auth-alert ${statusMessage.type === 'error' ? 'is-error' : 'is-info'}`}
+                    role={statusMessage.type === 'error' ? 'alert' : 'status'}
+                  >
+                    <span>{statusMessage.text}</span>
                   </div>
+                )}
+
+                <form onSubmit={handleRedeem} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <input
+                      type="text"
+                      value={redeemCode}
+                      onChange={(e) => setRedeemCode(e.target.value.toUpperCase())}
+                      placeholder={t.dashboard.redeemPlaceholder}
+                      className="st-input"
+                      style={{ flex: 1, minWidth: '180px', fontFamily: 'var(--font-mono)' }}
+                      spellCheck={false}
+                      autoComplete="off"
+                    />
+                    <button type="button" onClick={() => void handlePasteCode()} className="st-pill-btn is-outline is-sm">
+                      {t.dashboard.pasteBtn}
+                    </button>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={redeemLoading || !redeemCode.trim()}
+                    className="st-pill-btn is-light"
+                  >
+                    {redeemLoading ? t.dashboard.redeemLoadingBtn : t.dashboard.redeemSubmitBtn}
+                  </button>
+                </form>
+              </section>
+
+              <section className="rs-portal-panel spotlight-surface" aria-labelledby="licenses-card-title">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                   <div>
-                    <h2 id="licenses-card-title" className="rs-portal-card-title">
+                    <h2 id="licenses-card-title" style={{ fontSize: '18px', fontWeight: 600 }}>
                       {t.dashboard.licensesTitle}
                     </h2>
-                    <p className="rs-portal-card-sub">{t.dashboard.licensesSubtitle}</p>
+                    <p style={{ marginTop: '2px', fontSize: '12.5px', color: 'var(--text-secondary)' }}>
+                      {t.dashboard.licensesSubtitle}
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    {(['all', 'active', 'expired'] as LicenseFilter[]).map((key) => (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => setFilter(key)}
+                        className={`st-filter-pill ${filter === key ? 'is-active' : ''}`}
+                        style={{ padding: '5px 11px', fontSize: '11.5px' }}
+                      >
+                        {key === 'all'
+                          ? t.dashboard.filterAll
+                          : key === 'active'
+                          ? t.dashboard.filterActive
+                          : t.dashboard.filterExpired}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                <div className="rs-portal-filters" role="group" aria-label="License filter">
-                  {(['all', 'active', 'expired'] as LicenseFilter[]).map((key) => (
-                    <button
-                      key={key}
-                      type="button"
-                      onClick={() => setFilter(key)}
-                      className={`rs-portal-filter-btn ${filter === key ? 'is-active' : ''}`}
-                    >
-                      {key === 'all'
-                        ? t.dashboard.filterAll
-                        : key === 'active'
-                        ? t.dashboard.filterActive
-                        : t.dashboard.filterExpired}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {filteredLicenses.length === 0 ? (
-                <div
-                  style={{
-                    textAlign: 'center',
-                    padding: '34px 18px',
-                    backgroundColor: '#0e0e11',
-                    border: '1.5px dashed rgba(240, 240, 240, 0.28)',
-                    color: 'rgba(240, 240, 240, 0.72)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '6px',
-                  }}
-                >
-                  <strong style={{ color: '#F0F0F0', fontSize: '14px' }}>
-                    {t.dashboard.emptyLicensesTitle}
-                  </strong>
-                  <span style={{ fontSize: '12.5px' }}>{t.dashboard.emptyLicensesHint}</span>
-                </div>
-              ) : (
-                <div className="rs-portal-table-wrap">
-                  <table className="rs-portal-table">
-                    <thead>
-                      <tr>
-                        <th>{t.dashboard.thProduct}</th>
-                        <th>{t.dashboard.thStatus}</th>
-                        <th>{t.dashboard.thRemaining}</th>
-                        <th>{t.dashboard.thHwid}</th>
-                        <th>{t.dashboard.thExpires}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredLicenses.map((lic) => {
-                        const remDays = calculateRemainingDays(lic.expires_at);
-                        const isExpired = remDays <= 0 || lic.status !== 'active';
-                        const isBanned = lic.status === 'banned';
-
-                        return (
-                          <tr key={lic.id}>
-                            <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
-                              {lic.product_name}
-                            </td>
-                            <td>
-                              <span
-                                style={{
-                                  display: 'inline-block',
-                                  fontSize: '11px',
-                                  fontWeight: 700,
-                                  padding: '3px 8px',
-                                  border: '1px solid #F0F0F0',
-                                  backgroundColor: isBanned
-                                    ? '#3b0202'
-                                    : isExpired
-                                    ? '#141418'
-                                    : '#F0F0F0',
-                                  color: isBanned || isExpired ? '#F0F0F0' : '#080808',
-                                }}
-                              >
-                                {isBanned
-                                  ? t.dashboard.statusSuspended
-                                  : isExpired
-                                  ? t.dashboard.statusExpired
-                                  : t.dashboard.statusActive}
-                              </span>
-                            </td>
-                            <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
-                              {remDays} {t.dashboard.daysSuffix}
-                            </td>
-                            <td>
-                              {lic.hwid ? (
-                                <button
-                                  type="button"
-                                  onClick={() => void handleCopyHwid(lic.id, lic.hwid!)}
-                                  className="rs-portal-hwid-btn"
-                                  title={lic.hwid}
-                                >
-                                  <span>
-                                    {lic.hwid.length > 14 ? `${lic.hwid.slice(0, 14)}…` : lic.hwid}
-                                  </span>
-                                  <span style={{ color: '#A50000' }}>
-                                    {copiedId === lic.id ? t.dashboard.copiedBtn : t.dashboard.copyHwidBtn}
-                                  </span>
-                                </button>
-                              ) : (
-                                <span
-                                  style={{
-                                    fontFamily: 'var(--font-mono)',
-                                    fontSize: '12px',
-                                    color: 'rgba(240, 240, 240, 0.56)',
-                                  }}
-                                >
-                                  {t.dashboard.hwidPending}
-                                </span>
-                              )}
-                            </td>
-                            <td
-                              style={{
-                                fontFamily: 'var(--font-mono)',
-                                fontSize: '12px',
-                                color: 'rgba(240, 240, 240, 0.72)',
-                              }}
-                            >
-                              {formatDate(lic.expires_at)}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </section>
-          </div>
-
-          <aside className="rs-portal-col">
-            {/* R-AI Workstation Download Card */}
-            <section className="rs-portal-card" aria-labelledby="station-card-title">
-              <div className="rs-portal-card-head">
-                <div className="rs-portal-card-title-group">
-                  <div className="rs-portal-icon-box" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F0F0F0" strokeWidth="2">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                      <polyline points="7 10 12 15 17 10" />
-                      <line x1="12" y1="15" x2="12" y2="3" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h2 id="station-card-title" className="rs-portal-card-title">
-                      {t.dashboard.stationTitle}
-                    </h2>
-                    <p className="rs-portal-card-sub">{t.dashboard.stationSubtitle}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rs-portal-spec-list">
-                <div className="rs-portal-spec-row">
-                  <span className="rs-portal-spec-key">{t.dashboard.thStatus}</span>
-                  <span
-                    className="rs-portal-spec-val"
+                {filteredLicenses.length === 0 ? (
+                  <div
                     style={{
-                      color: metrics.stationUnlocked ? '#F0F0F0' : '#A50000',
+                      padding: '28px 16px',
+                      borderRadius: '16px',
+                      border: '1px dashed var(--border-strong)',
+                      textAlign: 'center',
+                      color: 'var(--text-secondary)',
+                      fontSize: '13px',
                     }}
                   >
-                    {metrics.stationUnlocked
-                      ? t.dashboard.licenseActiveBadge
-                      : t.dashboard.licenseMissingBadge}
-                  </span>
-                </div>
-                <div className="rs-portal-spec-row">
-                  <span className="rs-portal-spec-key">BINARY</span>
-                  <span className="rs-portal-spec-val">Restricted_Studio_Setup.exe</span>
-                </div>
-                <div className="rs-portal-spec-row">
-                  <span className="rs-portal-spec-key">TARGET</span>
-                  <span className="rs-portal-spec-val">Windows 10/11 x64</span>
-                </div>
-              </div>
-
-              <p
-                style={{
-                  fontSize: '12.5px',
-                  lineHeight: 1.5,
-                  color: 'rgba(240, 240, 240, 0.72)',
-                  marginBottom: '16px',
-                }}
-              >
-                {metrics.stationUnlocked
-                  ? t.dashboard.downloadActiveNotice
-                  : t.dashboard.downloadLockedNotice}
-              </p>
-
-              <button
-                type="button"
-                onClick={() => void handleDownload()}
-                disabled={!metrics.stationUnlocked || downloadLoading}
-                className="rs-portal-btn-primary"
-                style={{ width: '100%' }}
-              >
-                {downloadLoading
-                  ? t.dashboard.downloadPreparingBtn
-                  : metrics.stationUnlocked
-                  ? t.dashboard.downloadBtn
-                  : t.dashboard.downloadLockedBtn}
-              </button>
-            </section>
-
-            {/* Session & Security Posture Card */}
-            <section className="rs-portal-card" aria-labelledby="security-card-title">
-              <div className="rs-portal-card-head">
-                <div className="rs-portal-card-title-group">
-                  <div className="rs-portal-icon-box" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F0F0F0" strokeWidth="2">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                    </svg>
+                    <strong style={{ display: 'block', color: '#ffffff', marginBottom: '4px' }}>
+                      {t.dashboard.emptyLicensesTitle}
+                    </strong>
+                    <span>{t.dashboard.emptyLicensesHint}</span>
                   </div>
-                  <div>
-                    <h2 id="security-card-title" className="rs-portal-card-title">
-                      {t.dashboard.securityModuleTitle}
-                    </h2>
-                    <p className="rs-portal-card-sub">{t.dashboard.securityModuleSubtitle}</p>
+                ) : (
+                  <div className="rs-portal-license-list">
+                    {filteredLicenses.map((lic) => {
+                      const remDays = calculateRemainingDays(lic.expires_at);
+                      const isExpired = remDays <= 0 || lic.status !== 'active';
+                      const isBanned = lic.status === 'banned';
+
+                      return (
+                        <div key={lic.id} className="rs-portal-license-card">
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                            <strong style={{ fontFamily: 'var(--font-mono)', fontSize: '14px' }}>
+                              {lic.product_name}
+                            </strong>
+                            <span className={`st-status-pill ${isBanned || isExpired ? 'is-outage' : 'is-operational'}`}>
+                              {isBanned
+                                ? t.dashboard.statusSuspended
+                                : isExpired
+                                ? t.dashboard.statusExpired
+                                : t.dashboard.statusActive}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                            {remDays} {t.dashboard.daysSuffix} · {formatDate(lic.expires_at)}
+                          </div>
+                          <div>
+                            {lic.hwid ? (
+                              <button
+                                type="button"
+                                onClick={() => void handleCopyHwid(lic.id, lic.hwid!)}
+                                className="st-filter-pill"
+                                style={{ fontFamily: 'var(--font-mono)', fontSize: '11px' }}
+                                title={lic.hwid}
+                              >
+                                {lic.hwid.slice(0, 14)}… ({copiedId === lic.id ? t.dashboard.copiedBtn : t.dashboard.copyHwidBtn})
+                              </button>
+                            ) : (
+                              <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                                {t.dashboard.hwidPending}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+            </div>
+
+            {/* Download & Security Posture Column */}
+            <aside style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              <section className="rs-portal-panel spotlight-surface" aria-labelledby="station-card-title">
+                <div>
+                  <h2 id="station-card-title" style={{ fontSize: '18px', fontWeight: 600 }}>
+                    {t.dashboard.stationTitle}
+                  </h2>
+                  <p style={{ marginTop: '4px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                    {t.dashboard.stationSubtitle}
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12.5px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>{t.dashboard.thStatus}</span>
+                    <strong style={{ color: metrics.stationUnlocked ? '#4ade80' : 'var(--accent-coral)' }}>
+                      {metrics.stationUnlocked ? t.dashboard.licenseActiveBadge : t.dashboard.licenseMissingBadge}
+                    </strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>BINARY</span>
+                    <span style={{ fontFamily: 'var(--font-mono)' }}>Restricted_Studio_Setup.exe</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>TARGET</span>
+                    <span>Windows 10/11 x64</span>
                   </div>
                 </div>
-              </div>
 
-              <div className="rs-portal-spec-list">
-                <div className="rs-portal-spec-row">
-                  <span className="rs-portal-spec-key">{t.dashboard.accountModeLabel}</span>
-                  <span className="rs-portal-spec-val">
-                    {initialSessionMeta.isGuest
-                      ? t.dashboard.guestMode
-                      : t.dashboard.registeredMode}
-                  </span>
-                </div>
-                <div className="rs-portal-spec-row">
-                  <span className="rs-portal-spec-key">{t.dashboard.sessionFamilyLabel}</span>
-                  <span className="rs-portal-spec-val">
-                    {initialSessionMeta.familyId.slice(0, 14)}…
-                  </span>
-                </div>
-                <div className="rs-portal-spec-row">
-                  <span className="rs-portal-spec-key">{t.dashboard.tokenShieldLabel}</span>
-                  <span className="rs-portal-spec-val">{t.dashboard.tokenShieldValue}</span>
-                </div>
-              </div>
+                <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: 1.55 }}>
+                  {metrics.stationUnlocked ? t.dashboard.downloadActiveNotice : t.dashboard.downloadLockedNotice}
+                </p>
 
-              <p
-                style={{
-                  fontSize: '12px',
-                  lineHeight: 1.5,
-                  color: 'rgba(240, 240, 240, 0.65)',
-                  marginBottom: '14px',
-                }}
-              >
-                {t.dashboard.revokeAllHint}
-              </p>
+                <button
+                  type="button"
+                  onClick={() => void handleDownload()}
+                  disabled={!metrics.stationUnlocked || downloadLoading}
+                  className="st-pill-btn is-ember is-full"
+                >
+                  {downloadLoading
+                    ? t.dashboard.downloadPreparingBtn
+                    : metrics.stationUnlocked
+                    ? t.dashboard.downloadBtn
+                    : t.dashboard.downloadLockedBtn}
+                </button>
+              </section>
 
-              <button
-                type="button"
-                onClick={() => void handleLogout('all')}
-                disabled={logoutMode !== null}
-                className="rs-portal-btn-danger-outline"
-              >
-                {logoutMode === 'all' ? t.dashboard.loggingOutAllBtn : t.dashboard.logoutAllBtn}
-              </button>
-            </section>
-          </aside>
-        </div>
-      </main>
+              <section className="rs-portal-panel spotlight-surface" aria-labelledby="security-card-title">
+                <div>
+                  <h2 id="security-card-title" style={{ fontSize: '18px', fontWeight: 600 }}>
+                    {t.dashboard.securityModuleTitle}
+                  </h2>
+                  <p style={{ marginTop: '4px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                    {t.dashboard.securityModuleSubtitle}
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12.5px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>{t.dashboard.accountModeLabel}</span>
+                    <span>{initialSessionMeta.isGuest ? t.dashboard.guestMode : t.dashboard.registeredMode}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>{t.dashboard.sessionFamilyLabel}</span>
+                    <span style={{ fontFamily: 'var(--font-mono)' }}>{initialSessionMeta.familyId.slice(0, 14)}…</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>{t.dashboard.tokenShieldLabel}</span>
+                    <span>{t.dashboard.tokenShieldValue}</span>
+                  </div>
+                </div>
+
+                <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                  {t.dashboard.revokeAllHint}
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => void handleLogout('all')}
+                  disabled={logoutMode !== null}
+                  className="st-pill-btn is-outline is-full"
+                >
+                  {logoutMode === 'all' ? t.dashboard.loggingOutAllBtn : t.dashboard.logoutAllBtn}
+                </button>
+              </section>
+            </aside>
+          </div>
+        </main>
+      </div>
+
+      <SiteFooter />
     </div>
   );
 }

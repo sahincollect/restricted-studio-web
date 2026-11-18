@@ -1,1 +1,1 @@
-export { default } from '@/components/PixelNoirRoomHomePage';
+export { default } from '@/components/StudioHomeClient';

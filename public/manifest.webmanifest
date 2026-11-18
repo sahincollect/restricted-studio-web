@@ -1,11 +1,11 @@
 {
   "name": "Restricted Studio",
   "short_name": "Restricted",
-  "description": "FiveM Software, Scripts, MLO & Infrastructure Engineering",
+  "description": "FiveM Open-Source Software, Scripts, MLO & Digital Licensing Engineering",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#050507",
-  "theme_color": "#e6192b",
+  "background_color": "#0d0c0d",
+  "theme_color": "#ef5b38",
   "icons": [
     {
       "src": "/icon-48.png",

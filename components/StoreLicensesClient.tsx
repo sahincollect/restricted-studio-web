@@ -3,8 +3,10 @@
 import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import ItemsatisLogo from '@/components/ItemsatisLogo';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useI18n } from '@/components/I18nProvider';
+import SiteNavbar from '@/components/SiteNavbar';
+import SiteFooter from '@/components/SiteFooter';
+import { HeroPrismBackdrop } from '@/components/StudioReveal';
 import type { Locale } from '@/lib/i18n';
 import type { StoreProductGroup } from '@/lib/itemsatis-store';
 
@@ -60,15 +62,13 @@ interface StoreCopy {
   modalCategory: string;
   modalDelivery: string;
   modalPrice: string;
-  navAbout: string;
-  navContact: string;
   showingCount: (n: number) => string;
 }
 
 const STORE_I18N: Record<Locale, StoreCopy> = {
   tr: {
     eyebrow: 'İTEMSATIŞ RESMİ MAĞAZA VİTRİNİ',
-    heroTitle: 'DİJİTAL LİSANSLAR & ÖZEL İLANLAR',
+    heroTitle: 'Dijital Lisanslar & Özel İlanlar',
     heroDesc:
       'Yapay zeka abonelikleri, tasarım & video araçları, yazılım lisansları ve özel geliştirici paketleri İtemsatış mağaza güvencesiyle listelenir.',
     badgeListings: 'Aktif İlan',
@@ -76,8 +76,8 @@ const STORE_I18N: Record<Locale, StoreCopy> = {
     badgeEscrowVal: 'İtemsatış',
     badgePrice: 'Teslimat',
     badgePriceVal: '7/24 Aktif',
-    profileBtn: "İtemsatış Profili",
-    searchPlaceholder: 'Ürün veya kategori ara (ChatGPT, Canva, CapCut, Gabz...)',
+    profileBtn: 'İtemsatış Profili',
+    searchPlaceholder: 'Ürün veya kategori ara (ChatGPT, Canva, CapCut...)',
     sortDefault: 'Mağaza Sırası',
     sortPriceAsc: 'Fiyat: Artan',
     sortPriceDesc: 'Fiyat: Azalan',
@@ -100,13 +100,11 @@ const STORE_I18N: Record<Locale, StoreCopy> = {
     modalCategory: 'Kategori',
     modalDelivery: 'Teslimat Tipi',
     modalPrice: 'Güncel Fiyat',
-    navAbout: 'Hakkımızda',
-    navContact: 'İletişim',
     showingCount: (n) => `${n} ürün listeleniyor`,
   },
   en: {
     eyebrow: 'OFFICIAL ITEMSATIS STOREFRONT',
-    heroTitle: 'DIGITAL LICENSES & STORE LISTINGS',
+    heroTitle: 'Digital Licenses & Store Listings',
     heroDesc:
       'AI subscriptions, creative & video tools, software licenses, and curated developer bundles backed by official Itemsatis escrow.',
     badgeListings: 'Active Listings',
@@ -138,13 +136,11 @@ const STORE_I18N: Record<Locale, StoreCopy> = {
     modalCategory: 'Category',
     modalDelivery: 'Listing Type',
     modalPrice: 'Current Price',
-    navAbout: 'About',
-    navContact: 'Contact',
     showingCount: (n) => `Showing ${n} listings`,
   },
   ru: {
     eyebrow: 'ОФИЦИАЛЬНАЯ ВИТРИНА ITEMSATIS',
-    heroTitle: 'ЦИФРОВЫЕ ЛИЦЕНЗИИ И ТОВАРЫ',
+    heroTitle: 'Цифровые лицензии и товары',
     heroDesc:
       'Подписки на ИИ, инструменты дизайна и видео, лицензии ПО и специальные наборы с защитой сделок через официальный магазин Itemsatis.',
     badgeListings: 'Активных лотов',
@@ -176,13 +172,11 @@ const STORE_I18N: Record<Locale, StoreCopy> = {
     modalCategory: 'Категория',
     modalDelivery: 'Тип выдачи',
     modalPrice: 'Актуальная цена',
-    navAbout: 'О нас',
-    navContact: 'Контакты',
     showingCount: (n) => `Показано товаров: ${n}`,
   },
   fr: {
     eyebrow: 'VITRINE OFFICIELLE ITEMSATIS',
-    heroTitle: 'LICENCES NUMÉRIQUES & OFFRES',
+    heroTitle: 'Licences numériques & offres',
     heroDesc:
       'Abonnements IA, outils créatifs & vidéo, licences logicielles et packs développeurs garantis via notre boutique officielle Itemsatis.',
     badgeListings: 'Annonces actives',
@@ -214,8 +208,6 @@ const STORE_I18N: Record<Locale, StoreCopy> = {
     modalCategory: 'Catégorie',
     modalDelivery: 'Type d’offre',
     modalPrice: 'Prix actuel',
-    navAbout: 'À propos',
-    navContact: 'Contact',
     showingCount: (n) => `${n} offres affichées`,
   },
 };
@@ -236,13 +228,10 @@ function formatDescriptionLines(text: string): string[] {
     .filter(Boolean);
 }
 
-export default function StoreLicensesClient({
-  initialItems,
-}: StoreLicensesClientProps) {
+export default function StoreLicensesClient({ initialItems }: StoreLicensesClientProps) {
   const { locale, t, formatNumber } = useI18n();
   const copy = STORE_I18N[locale] || STORE_I18N.tr;
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [group, setGroup] = useState<GroupFilter>('all');
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortKey>('default');
@@ -287,383 +276,299 @@ export default function StoreLicensesClient({
   }, [initialItems, group, search, sort]);
 
   return (
-    <div className="rs-store-page">
-      <header className="global-nav">
-        <div className="nav-container">
-          <div className="nav-brand-wrap">
-            <Link href="/" className="nav-brand" aria-label={`Restricted Studio ${t.common.home}`}>
-              <img src="/assets/rslogo.jpg" alt="Restricted Studio" className="nav-brand-logo" />
-              <span className="nav-brand-text">RESTRICTED STUDIO</span>
-            </Link>
-            <a
-              href={ITEMSATIS_PROFILE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="nav-brand-trust"
-              title={t.common.itemsatisOfficialStore}
-            >
-              <ItemsatisLogo variant="icon" width={12} height={12} />
-              <span>{t.common.itemsatisTrust}</span>
-            </a>
-          </div>
+    <div className="st-page-shell">
+      <SiteNavbar activePath="/lisanslar" />
 
-          <nav className={`nav-menu ${mobileMenuOpen ? 'open' : ''}`} aria-label={copy.eyebrow}>
-            <Link href="/" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
-              {t.common.home}
-            </Link>
-            <Link
-              href="/katalog"
-              className="nav-item nav-katalog-shimmer"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {t.common.catalog}
-            </Link>
-            <Link
-              href="/lisanslar"
-              className="nav-item nav-item-active nav-katalog-shimmer"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {t.common.licenses}
-            </Link>
-            <Link href="/hakkimizda" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
-              {copy.navAbout}
-            </Link>
-            <Link href="/iletisim" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
-              {copy.navContact}
-            </Link>
-
-            <div className="nav-mobile-actions">
-              <div style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'rgba(240,240,240,0.65)' }}>
-                  {t.common.langLabel.toUpperCase()}
-                </span>
-                <LanguageSwitcher compact />
+      <main className="st-main">
+        <section className="st-subhero" style={{ overflow: 'hidden' }}>
+          <HeroPrismBackdrop />
+          <div className="st-container st-subhero-box">
+            <div>
+              <div className="st-eyebrow">
+                <span className="st-eyebrow-dot" aria-hidden="true" />
+                <span>{copy.eyebrow}</span>
               </div>
-              <Link
-                href="/katalog"
-                className="btn btn-full"
-                style={{ background: '#080808', color: '#F0F0F0', border: '1.5px solid #F0F0F0', marginBottom: '8px' }}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t.common.catalog}
-              </Link>
-              <Link
-                href="/dashboard"
-                className="btn btn-full"
-                style={{ background: '#080808', color: '#F0F0F0', border: '1.5px solid #F0F0F0', marginBottom: '8px' }}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t.common.clientPortal}
-              </Link>
+              <h1 className="st-subhero-title">{copy.heroTitle}</h1>
+              <p className="st-subhero-desc">{copy.heroDesc}</p>
+            </div>
+
+            <div className="st-subhero-stats">
+              <div className="st-stat-chip is-light">
+                <span className="st-stat-chip-val">{formatNumber(initialItems.length)}</span>
+                <span className="st-stat-chip-lbl">{copy.badgeListings}</span>
+              </div>
+              <div className="st-stat-chip">
+                <span className="st-stat-chip-val">{copy.badgeEscrowVal}</span>
+                <span className="st-stat-chip-lbl">{copy.badgeEscrow}</span>
+              </div>
               <a
                 href={ITEMSATIS_PROFILE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-itemsatis btn-full"
-                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                className="st-pill-btn is-ember is-sm"
+                style={{ alignSelf: 'center' }}
               >
-                <ItemsatisLogo variant="icon" width={18} height={18} />
-                <span>{t.catalog.mobileItemsatis}</span>
-              </a>
-            </div>
-          </nav>
-
-          <div className="nav-cta-group">
-            <LanguageSwitcher compact className="bpn-lang-desktop" />
-
-            <a
-              href={ITEMSATIS_PROFILE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="nav-btn-itemsatis"
-              title={t.common.itemsatisStore}
-              aria-label={t.common.itemsatisStore}
-            >
-              <ItemsatisLogo variant="icon" width={15} height={15} />
-              <span>{t.common.itemsatisShort}</span>
-            </a>
-
-            <Link href="/dashboard" className="nav-btn-portal">
-              <span>{t.common.clientPortal}</span>
-            </Link>
-
-            <button
-              type="button"
-              className={`nav-mobile-toggle ${mobileMenuOpen ? 'active' : ''}`}
-              aria-label={t.common.openMenu}
-              aria-expanded={mobileMenuOpen}
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
-            >
-              <span />
-              <span />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <section className="catalog-hero-strip">
-        <div className="container catalog-hero-strip-inner">
-          <div className="chs-left">
-            <div className="chs-pill">
-              <span className="chs-dot" aria-hidden="true" />
-              <span>{copy.eyebrow}</span>
-            </div>
-            <h1 className="chs-title">{copy.heroTitle}</h1>
-            <p className="chs-desc">{copy.heroDesc}</p>
-          </div>
-
-          <div className="chs-right">
-            <div className="chs-badges-row">
-              <div className="chs-badge-item">
-                <span className="chs-badge-num">{formatNumber(initialItems.length)}</span>
-                <span className="chs-badge-lbl">{copy.badgeListings}</span>
-              </div>
-              <div className="chs-badge-item">
-                <span className="chs-badge-num">{copy.badgeEscrowVal}</span>
-                <span className="chs-badge-lbl">{copy.badgeEscrow}</span>
-              </div>
-              <div className="chs-badge-item">
-                <span className="chs-badge-num">{copy.badgePriceVal}</span>
-                <span className="chs-badge-lbl">{copy.badgePrice}</span>
-              </div>
-            </div>
-
-            <div className="chs-actions">
-              <a
-                href={ITEMSATIS_PROFILE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="chs-guide-btn"
-                style={{ textDecoration: 'none' }}
-              >
-                <ItemsatisLogo variant="icon" width={14} height={14} />
+                <ItemsatisLogo variant="icon" width={15} height={15} />
                 <span>{copy.profileBtn} ↗</span>
               </a>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <main className="container rs-store-main">
-        <div className="rs-store-toolbar">
-          <div className="rs-store-groups" role="tablist" aria-label={copy.groups.all}>
-            {(['all', 'ai', 'design', 'media', 'software', 'fivem'] as GroupFilter[]).map((key) => (
-              <button
-                key={key}
-                type="button"
-                role="tab"
-                aria-selected={group === key}
-                className={`rs-store-group-pill ${group === key ? 'is-active' : ''}`}
-                onClick={() => setGroup(key)}
-              >
-                <span>{copy.groups[key]}</span>
-                <span className="rs-store-group-count">{formatNumber(groupCounts[key])}</span>
-              </button>
-            ))}
-          </div>
-
+        <section className="st-container" style={{ paddingBottom: '80px' }}>
           <div className="rs-store-controls">
-            <div className="rs-store-search-wrap">
+            <div className="rs-store-groups" role="tablist">
+              {(['all', 'ai', 'design', 'media', 'software', 'fivem'] as GroupFilter[]).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  aria-selected={group === key}
+                  className={`st-filter-pill ${group === key ? 'is-active' : ''}`}
+                  onClick={() => setGroup(key)}
+                >
+                  <span>{copy.groups[key]}</span>{' '}
+                  <span style={{ opacity: 0.68 }}>({formatNumber(groupCounts[key])})</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="rs-store-search-sort">
               <input
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={copy.searchPlaceholder}
-                className="rs-store-search"
+                className="st-input"
                 aria-label={copy.searchPlaceholder}
               />
+
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value as SortKey)}
+                className="st-select"
+                aria-label={copy.sortDefault}
+              >
+                <option value="default">{copy.sortDefault}</option>
+                <option value="price-asc">{copy.sortPriceAsc}</option>
+                <option value="price-desc">{copy.sortPriceDesc}</option>
+                <option value="name-asc">{copy.sortNameAsc}</option>
+              </select>
             </div>
-
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortKey)}
-              className="rs-store-sort"
-              aria-label={copy.sortDefault}
-            >
-              <option value="default">{copy.sortDefault}</option>
-              <option value="price-asc">{copy.sortPriceAsc}</option>
-              <option value="price-desc">{copy.sortPriceDesc}</option>
-              <option value="name-asc">{copy.sortNameAsc}</option>
-            </select>
           </div>
-        </div>
 
-        <div className="rs-store-meta-bar">
-          <span>{copy.showingCount(filteredItems.length)}</span>
-        </div>
-
-        {filteredItems.length === 0 ? (
-          <div className="rs-store-empty">
-            <h2>{copy.emptyTitle}</h2>
-            <p>{copy.emptyDesc}</p>
-            <button
-              type="button"
-              onClick={() => {
-                setGroup('all');
-                setSearch('');
-              }}
-              className="rs-store-buy-btn"
-            >
-              {copy.resetFilter}
-            </button>
+          <div style={{ marginTop: '14px', fontSize: '12.5px', color: 'var(--text-muted)' }}>
+            {copy.showingCount(filteredItems.length)}
           </div>
-        ) : (
-          <div className="rs-store-grid">
-            {filteredItems.map((item) => {
-              const hasDiscount =
-                typeof item.comparePrice === 'number' && item.comparePrice > item.price;
-              const shortDesc = formatDescriptionLines(item.description).slice(0, 2).join(' · ');
 
-              return (
-                <article key={item.id} className="rs-store-card spotlight-surface">
-                  <div
-                    className="rs-store-card-clickable"
-                    onClick={() => setSelectedItem(item)}
-                  >
-                    <div className="rs-store-media">
+          {filteredItems.length === 0 ? (
+            <div
+              className="st-area-card"
+              style={{ marginTop: '24px', alignItems: 'center', textAlign: 'center', padding: '48px 24px' }}
+            >
+              <h2 style={{ fontSize: '20px', fontWeight: 600 }}>{copy.emptyTitle}</h2>
+              <p style={{ marginTop: '8px', color: 'var(--text-secondary)', fontSize: '13.5px' }}>
+                {copy.emptyDesc}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setGroup('all');
+                  setSearch('');
+                }}
+                className="st-pill-btn is-light is-sm"
+                style={{ marginTop: '18px' }}
+              >
+                {copy.resetFilter}
+              </button>
+            </div>
+          ) : (
+            <div className="rs-store-grid">
+              {filteredItems.map((item) => {
+                const hasDiscount =
+                  typeof item.comparePrice === 'number' && item.comparePrice > item.price;
+                const discountPct =
+                  hasDiscount && item.comparePrice
+                    ? Math.round(((item.comparePrice - item.price) / item.comparePrice) * 100)
+                    : 0;
+
+                return (
+                  <article key={item.id} className="rs-store-card spotlight-surface">
+                    <div className="rs-store-thumb" onClick={() => setSelectedItem(item)}>
                       {item.imageUrl ? (
-                        <img
-                          src={item.imageUrl}
-                          alt={item.title}
-                          loading="lazy"
-                          className="rs-store-img"
-                        />
+                        <img src={item.imageUrl} alt={item.title} loading="lazy" />
                       ) : (
-                        <div className="rs-store-img-placeholder">RESTRICTED STUDIO</div>
+                        <div
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontFamily: 'var(--font-mono)',
+                            fontSize: '11px',
+                            color: 'var(--text-muted)',
+                          }}
+                        >
+                          RESTRICTED STUDIO
+                        </div>
                       )}
-                      <span className="rs-store-cat-badge">{item.categoryName}</span>
+                      {discountPct > 0 && (
+                        <span className="rs-store-discount-pill">-%{discountPct}</span>
+                      )}
                     </div>
 
-                    <div className="rs-store-body">
-                      <h2 className="rs-store-title" title={item.title}>
+                    <div className="rs-store-card-body">
+                      <div className="rs-store-cat">{item.categoryName}</div>
+                      <h2
+                        className="rs-store-card-title"
+                        title={item.title}
+                        onClick={() => setSelectedItem(item)}
+                      >
                         {item.title}
                       </h2>
-                      <p className="rs-store-desc">{shortDesc || item.typeName}</p>
-                    </div>
-                  </div>
 
-                  <div className="rs-store-footer">
-                    <div className="rs-store-price-wrap">
-                      {hasDiscount && item.comparePrice !== null && (
-                        <s className="rs-store-price-old">
-                          {formatTryPrice(item.comparePrice, formatNumber)}
-                        </s>
-                      )}
-                      <span className="rs-store-price-now">
-                        {formatTryPrice(item.price, formatNumber)}
-                      </span>
-                    </div>
+                      <div className="rs-store-price-row">
+                        <span className="rs-store-price">
+                          {formatTryPrice(item.price, formatNumber)}
+                        </span>
+                        {hasDiscount && item.comparePrice !== null && (
+                          <span className="rs-store-compare">
+                            {formatTryPrice(item.comparePrice, formatNumber)}
+                          </span>
+                        )}
+                      </div>
 
-                    <div className="rs-store-actions">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedItem(item)}
-                        className="rs-store-inspect-btn"
-                      >
-                        {copy.inspect}
-                      </button>
-                      <a
-                        href={item.itemsatisUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="rs-store-buy-btn"
-                      >
-                        <span>{copy.buyNow}</span>
-                        <span aria-hidden="true">↗</span>
-                      </a>
+                      <div className="rs-store-card-actions">
+                        <a
+                          href={item.itemsatisUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="st-pill-btn is-light is-sm"
+                          style={{ padding: '8px 12px' }}
+                        >
+                          {copy.buyNow} ↗
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedItem(item)}
+                          className="st-pill-btn is-outline is-sm"
+                          style={{ padding: '8px 12px' }}
+                        >
+                          {copy.inspect}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        )}
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
       </main>
 
-      <footer className="site-footer rs-store-footer-wrap">
-        <div className="container">
-          <div className="footer-legal" style={{ borderTop: 0, paddingTop: 0 }}>
-            <p>{t.catalog.footerCopyright}</p>
-            <p className="footer-note">{t.catalog.footerDisclaimer}</p>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
 
       {selectedItem && (
         <div
-          className="guide-modal-overlay"
+          className="st-modal-backdrop"
           role="dialog"
           aria-modal="true"
           aria-labelledby="rs-store-modal-title"
           onClick={() => setSelectedItem(null)}
         >
-          <div
-            className="guide-modal-dialog catalog-preview-dialog"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={() => setSelectedItem(null)}
-              className="guide-modal-close"
-              aria-label={t.common.close}
-            >
-              ✕
-            </button>
+          <div className="st-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+              <span className="rs-store-cat">{selectedItem.categoryName}</span>
+              <button
+                type="button"
+                onClick={() => setSelectedItem(null)}
+                className="st-circle-btn"
+                aria-label={t.common.close}
+                style={{ width: '30px', height: '30px' }}
+              >
+                ✕
+              </button>
+            </div>
 
             {selectedItem.imageUrl && (
-              <div className="cpm-cover-wrap">
+              <div
+                style={{
+                  marginTop: '14px',
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  aspectRatio: '16 / 9',
+                  background: '#0b0a0c',
+                }}
+              >
                 <img
                   src={selectedItem.imageUrl}
                   alt={selectedItem.title}
-                  className="cpm-cover-img"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
               </div>
             )}
 
-            <div className="cpm-badge-row">
-              <span className="cpm-kicker">{selectedItem.categoryName}</span>
-            </div>
-
-            <h2 id="rs-store-modal-title" className="cpm-title">
+            <h2
+              id="rs-store-modal-title"
+              style={{ marginTop: '18px', fontSize: '20px', fontWeight: 700, lineHeight: 1.3 }}
+            >
               {selectedItem.title}
             </h2>
 
-            <div className="rs-store-modal-desc">
+            <div
+              style={{
+                marginTop: '12px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '6px',
+                fontSize: '13px',
+                color: 'var(--text-secondary)',
+                lineHeight: 1.6,
+              }}
+            >
               {formatDescriptionLines(selectedItem.description).map((line, idx) => (
                 <p key={idx}>{line}</p>
               ))}
             </div>
 
-            <dl className="catalog-preview-meta">
-              <div className="cpm-meta-cell">
-                <dt>{copy.modalCategory}</dt>
-                <dd>{selectedItem.categoryName}</dd>
+            <div
+              style={{
+                marginTop: '18px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                gap: '10px',
+                padding: '14px',
+                borderRadius: '16px',
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid var(--border-hairline)',
+                fontSize: '12.5px',
+              }}
+            >
+              <div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '11px' }}>{copy.modalCategory}</div>
+                <div style={{ fontWeight: 600 }}>{selectedItem.categoryName}</div>
               </div>
-              <div className="cpm-meta-cell">
-                <dt>{copy.modalDelivery}</dt>
-                <dd>{selectedItem.typeName}</dd>
+              <div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '11px' }}>{copy.modalPrice}</div>
+                <div style={{ fontWeight: 700, color: 'var(--accent-coral)' }}>
+                  {formatTryPrice(selectedItem.price, formatNumber)}
+                </div>
               </div>
-              <div className="cpm-meta-cell">
-                <dt>{copy.modalPrice}</dt>
-                <dd>{formatTryPrice(selectedItem.price, formatNumber)}</dd>
-              </div>
-              <div className="cpm-meta-cell">
-                <dt>{copy.badgeEscrow}</dt>
-                <dd>İtemsatış / Restricted Studio</dd>
-              </div>
-            </dl>
+            </div>
 
-            <div className="cpm-actions">
+            <div style={{ marginTop: '18px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               <a
                 href={selectedItem.itemsatisUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rs-store-modal-cta"
+                className="st-pill-btn is-light"
+                style={{ flex: 1 }}
               >
-                <ItemsatisLogo variant="icon" width={16} height={16} />
+                <ItemsatisLogo variant="icon" width={15} height={15} />
                 <span>{copy.modalBuyBtn}</span>
               </a>
-              <Link href="/iletisim" className="cpm-discord-btn">
+              <Link href="/iletisim" className="st-pill-btn is-outline">
                 {copy.modalContactBtn}
               </Link>
             </div>
