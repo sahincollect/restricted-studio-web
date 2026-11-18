@@ -575,7 +575,7 @@ export default function AccountPortalClient({
     <div className="rs-portal-shell">
       <SiteNavbar activePath="/hesabim" />
 
-      <div style={{ position: 'relative', flex: 1 }}>
+      <div style={{ position: 'relative', flex: 1, minWidth: 0, overflowX: 'clip' }}>
         <HeroPrismBackdrop />
 
         <main className="rs-portal-main" style={{ position: 'relative', zIndex: 2 }}>

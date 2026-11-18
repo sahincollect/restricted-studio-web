@@ -2687,6 +2687,7 @@ img {
   flex: 1 0 auto;
   width: 100%;
   max-width: 1180px;
+  min-width: 0;
   margin: 0 auto;
   padding: 36px 24px 72px;
   display: flex;
@@ -3575,6 +3576,9 @@ body.has-catalog-cart .st-cookie-banner {
   justify-content: space-between;
   align-items: center;
   gap: 18px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   padding: 20px 24px;
   border-radius: 22px;
   background: var(--bg-surface);
@@ -3585,15 +3589,33 @@ body.has-catalog-cart .st-cookie-banner {
   display: flex;
   align-items: center;
   gap: 16px;
+  flex: 1 1 280px;
   min-width: 0;
+  max-width: 100%;
+}
+
+.rs-acct-identity > div {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
 }
 
 .rs-acct-meta-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 4px 8px;
   margin-top: 6px;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.rs-acct-meta-row > span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .rs-acct-actions {
@@ -4254,8 +4276,21 @@ body.has-catalog-cart .st-cookie-banner {
     grid-column: auto;
   }
 
+  .rs-portal-main {
+    padding: 22px 16px 56px;
+  }
+
   .rs-acct-header {
     padding: 16px;
+  }
+
+  .rs-acct-identity {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .rs-acct-meta-row {
+    font-size: 12px;
   }
 
   .rs-chat-composer {
