@@ -3307,7 +3307,20 @@ img {
   color: #ffffff;
   font-size: 13.5px;
   outline: none;
+  color-scheme: dark;
   transition: border-color 150ms ease, background 150ms ease;
+}
+
+.rs-admin-input:-webkit-autofill,
+.rs-admin-input:-webkit-autofill:hover,
+.rs-admin-input:-webkit-autofill:focus,
+.rs-admin-input:-webkit-autofill:active {
+  -webkit-text-fill-color: #ffffff;
+  -webkit-box-shadow: 0 0 0 1000px #121116 inset;
+  box-shadow: 0 0 0 1000px #121116 inset;
+  caret-color: #ffffff;
+  border-color: rgba(239, 91, 56, 0.45);
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 .rs-admin-input:focus,

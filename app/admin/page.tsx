@@ -512,7 +512,7 @@ export default function AdminPage() {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       autoComplete="username"
-                      placeholder="RESTRICTED"
+                      placeholder="Yönetici kullanıcı adı"
                       autoFocus
                       required
                       className="rs-admin-input"
