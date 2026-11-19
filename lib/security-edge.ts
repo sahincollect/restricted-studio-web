@@ -323,8 +323,8 @@ export type RateLimitTier =
   | 'page_general';
 
 const TIER_LIMITS: Record<RateLimitTier, { windowMs: number; max: number }> = {
-  admin_login: { windowMs: 15 * 60 * 1000, max: 5 },
-  admin_mfa: { windowMs: 15 * 60 * 1000, max: 8 },
+  admin_login: { windowMs: 15 * 60 * 1000, max: 15 },
+  admin_mfa: { windowMs: 15 * 60 * 1000, max: 15 },
   admin_api: { windowMs: 60 * 1000, max: 60 },
   auth_login: { windowMs: 15 * 60 * 1000, max: 12 },
   auth_anonymous: { windowMs: 15 * 60 * 1000, max: 5 },
