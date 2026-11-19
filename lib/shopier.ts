@@ -110,7 +110,7 @@ export async function createDynamicShopierListing(params: {
         customListing: true,
         customNote: `Referans: ${params.referenceCode}${
           params.buyerLabel ? ` | Müşteri: ${params.buyerLabel.slice(0, 48)}` : ''
-        } — Ödeme sonrası restrictedstudio.shop/hesabim üzerinden teslimat sohbetinizi takip edin.`,
+        } — 15 dk içinde ödenmezse otomatik iptal edilir. Ödeme sonrası restrictedstudio.shop/hesabim üzerinden takip edin.`,
       }),
       cache: 'no-store',
       signal: AbortSignal.timeout(10_000),
@@ -148,9 +148,11 @@ export async function createDynamicShopierListing(params: {
   }
 }
 
-export async function deleteDynamicShopierListing(productId: string): Promise<boolean> {
+export async function deleteDynamicShopierListingResult(
+  productId: string
+): Promise<{ ok: boolean; status: number; alreadyDeleted?: boolean }> {
   const token = getShopierToken();
-  if (!token || !productId) return false;
+  if (!token || !productId) return { ok: false, status: 400 };
   try {
     const res = await fetch(`${SHOPIER_API_BASE}/products/${encodeURIComponent(productId)}`, {
       method: 'DELETE',
@@ -158,15 +160,25 @@ export async function deleteDynamicShopierListing(productId: string): Promise<bo
       cache: 'no-store',
       signal: AbortSignal.timeout(6000),
     });
-    return res.ok;
+    if (res.status === 404) {
+      return { ok: true, status: 404, alreadyDeleted: true };
+    }
+    return { ok: res.ok, status: res.status };
   } catch {
-    return false;
+    return { ok: false, status: 0 };
   }
 }
 
-export async function fetchShopierOrders(limit = 50): Promise<ShopierOrderRecord[]> {
+export async function deleteDynamicShopierListing(productId: string): Promise<boolean> {
+  const res = await deleteDynamicShopierListingResult(productId);
+  return res.ok;
+}
+
+export async function fetchShopierOrdersSafe(
+  limit = 50
+): Promise<{ ok: boolean; orders: ShopierOrderRecord[] }> {
   const token = getShopierToken();
-  if (!token) return [];
+  if (!token) return { ok: false, orders: [] };
   try {
     const cleanLimit = Math.max(1, Math.min(50, Math.floor(limit)));
     const res = await fetch(
@@ -177,12 +189,17 @@ export async function fetchShopierOrders(limit = 50): Promise<ShopierOrderRecord
         signal: AbortSignal.timeout(8000),
       }
     );
-    if (!res.ok) return [];
+    if (!res.ok) return { ok: false, orders: [] };
     const data = await res.json();
-    return Array.isArray(data) ? (data as ShopierOrderRecord[]) : [];
+    return { ok: true, orders: Array.isArray(data) ? (data as ShopierOrderRecord[]) : [] };
   } catch {
-    return [];
+    return { ok: false, orders: [] };
   }
+}
+
+export async function fetchShopierOrders(limit = 50): Promise<ShopierOrderRecord[]> {
+  const res = await fetchShopierOrdersSafe(limit);
+  return res.orders;
 }
 
 export async function markShopierOrderFulfilled(

@@ -12,8 +12,10 @@ import { mergeStoreProducts, readStorePriceOverrides } from '@/lib/store-pricing
 import { createDynamicShopierListing, deleteDynamicShopierListing } from '@/lib/shopier';
 import {
   appendOrderMessage,
+  cleanupExpiredPendingShopierOrders,
   createOrderWithWelcomeMessage,
   DELIVERY_SLA_NOTICE_TR,
+  SHOPIER_LISTING_TTL_MINUTES,
   generateOrderReferenceCode,
   type OrderLineItem,
 } from '@/lib/orders-store';
@@ -142,12 +144,14 @@ export async function POST(request: Request) {
     ].join('\n');
   }
 
+  await cleanupExpiredPendingShopierOrders({ request }).catch(() => undefined);
+
   const referenceCode = generateOrderReferenceCode();
   const buyerLabel = session.user.name || session.user.email || session.user.id;
   const listingRes = await createDynamicShopierListing({
     referenceCode,
     title: orderTitle,
-    description: `Sipariş Ref: ${referenceCode}\n${descriptionText}`,
+    description: `Sipariş Ref: ${referenceCode}\nBu özel ödeme bağlantısı ${SHOPIER_LISTING_TTL_MINUTES} dakika boyunca geçerlidir.\n${descriptionText}`,
     amountTry: totalAmount,
     imageUrl: mediaImageUrl,
     buyerLabel,
@@ -215,6 +219,8 @@ export async function POST(request: Request) {
       success: true,
       order: created.order,
       checkoutUrl: listingRes.checkoutUrl,
+      expiresAt: created.order.expiresAt,
+      ttlMinutes: SHOPIER_LISTING_TTL_MINUTES,
       chatUrl: `/hesabim?tab=orders&ref=${encodeURIComponent(referenceCode)}`,
       slaNotice: DELIVERY_SLA_NOTICE_TR,
     },

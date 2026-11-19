@@ -8,6 +8,14 @@ import {
   matchShopierOrderToInternal,
   verifyShopierWebhookSignature,
 } from '../lib/orders-pure.ts';
+import {
+  SHOPIER_LISTING_TTL_MINUTES,
+  SHOPIER_LISTING_TTL_MS,
+  computeOrderExpiresAtIso,
+  formatCountdownMmSs,
+  getOrderRemainingSeconds,
+  isPendingShopierOrderExpired,
+} from '../lib/order-timer.ts';
 
 test('validateAvatarInput enforces presets, HTTPS URLs, magic bytes, and size limits', () => {
   assert.deepEqual(validateAvatarInput('preset:Ember'), { ok: true, value: 'preset:ember' });
@@ -137,4 +145,44 @@ test('verifyShopierWebhookSignature fails closed without secret and validates HM
   } else {
     process.env.SHOPIER_WEBHOOK_TOKEN = prev;
   }
+});
+
+test('15-minute Shopier listing expiry helpers detect unpaid timeouts accurately', () => {
+  assert.equal(SHOPIER_LISTING_TTL_MINUTES, 15);
+  assert.equal(SHOPIER_LISTING_TTL_MS, 15 * 60 * 1000);
+
+  const createdIso = '2026-11-19T01:00:00.000Z';
+  const expectedExpIso = '2026-11-19T01:15:00.000Z';
+  assert.equal(computeOrderExpiresAtIso(createdIso), expectedExpIso);
+
+  const pendingOrder = {
+    status: 'pending_payment',
+    paymentProvider: 'shopier',
+    createdAt: createdIso,
+    expiresAt: expectedExpIso,
+  };
+
+  const before14m59s = Date.parse(createdIso) + 14 * 60 * 1000 + 59 * 1000;
+  const exact15m00s = Date.parse(createdIso) + 15 * 60 * 1000;
+
+  assert.equal(isPendingShopierOrderExpired(pendingOrder, before14m59s), false);
+  assert.equal(getOrderRemainingSeconds(pendingOrder, before14m59s), 1);
+  assert.equal(formatCountdownMmSs(899), '14:59');
+
+  assert.equal(isPendingShopierOrderExpired(pendingOrder, exact15m00s), true);
+  assert.equal(getOrderRemainingSeconds(pendingOrder, exact15m00s), 0);
+  assert.equal(formatCountdownMmSs(0), '00:00');
+
+  assert.equal(
+    isPendingShopierOrderExpired({ ...pendingOrder, status: 'preparing' }, exact15m00s),
+    false
+  );
+  assert.equal(
+    isPendingShopierOrderExpired({ ...pendingOrder, status: 'cancelled' }, exact15m00s),
+    false
+  );
+  assert.equal(
+    isPendingShopierOrderExpired({ ...pendingOrder, paymentProvider: 'itemsatis' }, exact15m00s),
+    false
+  );
 });

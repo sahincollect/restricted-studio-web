@@ -10,6 +10,7 @@ import { useI18n } from '@/components/I18nProvider';
 import type { DashboardSessionMeta } from '@/lib/customer-session';
 import type { UserProfileRecord } from '@/lib/account-store';
 import type { OrderMessageRecord, OrderRecord, OrderStatus } from '@/lib/orders-store';
+import { formatCountdownMmSs, getOrderRemainingSeconds } from '@/lib/order-timer';
 import type { Locale } from '@/lib/i18n';
 
 interface AccountPortalClientProps {
@@ -82,6 +83,7 @@ const ACCT_UI: Record<
     goCatalog: string;
     goLicenses: string;
     payShopierBtn: string;
+    paymentWindowLbl: string;
     verifyPayBtn: string;
     verifyingPayBtn: string;
     vaultTitle: string;
@@ -128,6 +130,7 @@ const ACCT_UI: Record<
     goCatalog: 'Kataloğu İncele',
     goLicenses: 'Lisans Vitrini',
     payShopierBtn: "Shopier'de Öde ↗",
+    paymentWindowLbl: 'Kalan Süre',
     verifyPayBtn: 'Ödemeyi Kontrol Et',
     verifyingPayBtn: 'Kontrol Ediliyor...',
     vaultTitle: 'TESLİMAT KASASI (KURUMSAL TESLİM)',
@@ -173,6 +176,7 @@ const ACCT_UI: Record<
     goCatalog: 'Browse Catalog',
     goLicenses: 'License Store',
     payShopierBtn: 'Pay on Shopier ↗',
+    paymentWindowLbl: 'Expires in',
     verifyPayBtn: 'Verify Payment',
     verifyingPayBtn: 'Checking...',
     vaultTitle: 'DIGITAL DELIVERY VAULT',
@@ -218,6 +222,7 @@ const ACCT_UI: Record<
     goCatalog: 'В каталог',
     goLicenses: 'Магазин лицензий',
     payShopierBtn: 'Оплатить в Shopier ↗',
+    paymentWindowLbl: 'Осталось',
     verifyPayBtn: 'Проверить оплату',
     verifyingPayBtn: 'Проверка...',
     vaultTitle: 'ХРАНИЛИЩЕ ВЫДАЧИ',
@@ -263,6 +268,7 @@ const ACCT_UI: Record<
     goCatalog: 'Voir le catalogue',
     goLicenses: 'Boutique Licences',
     payShopierBtn: 'Payer sur Shopier ↗',
+    paymentWindowLbl: 'Expire dans',
     verifyPayBtn: 'Vérifier le paiement',
     verifyingPayBtn: 'Vérification...',
     vaultTitle: 'COFFRE DE LIVRAISON',
@@ -359,6 +365,8 @@ export default function AccountPortalClient({
   const [chatText, setChatText] = useState('');
   const [chatSending, setChatSending] = useState(false);
   const [verifyingPay, setVerifyingPay] = useState(false);
+  const [pendingRemainingSecs, setPendingRemainingSecs] = useState<number>(900);
+  const autoExpiredVerifyRef = useRef<string | null>(null);
 
   // Profile form
   const [displayName, setDisplayName] = useState(initialProfile.displayName);
@@ -447,7 +455,7 @@ export default function AccountPortalClient({
     }
   };
 
-  const handleVerifyPayment = async () => {
+  const handleVerifyPayment = useCallback(async () => {
     if (!selectedRef || verifyingPay) return;
     setVerifyingPay(true);
     setNotice(null);
@@ -471,7 +479,24 @@ export default function AccountPortalClient({
     } finally {
       setVerifyingPay(false);
     }
-  };
+  }, [selectedRef, verifyingPay]);
+
+  useEffect(() => {
+    if (!activeOrder || activeOrder.status !== 'pending_payment' || activeOrder.paymentProvider !== 'shopier') {
+      return;
+    }
+    const tick = () => {
+      const secs = getOrderRemainingSeconds(activeOrder);
+      setPendingRemainingSecs(secs);
+      if (secs === 0 && autoExpiredVerifyRef.current !== activeOrder.referenceCode) {
+        autoExpiredVerifyRef.current = activeOrder.referenceCode;
+        void handleVerifyPayment();
+      }
+    };
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, [activeOrder, handleVerifyPayment]);
 
   const handleAvatarFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -761,18 +786,25 @@ export default function AccountPortalClient({
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
                         {activeOrder.status === 'pending_payment' && activeOrder.shopierCheckoutUrl && (
                           <>
-                            <a
-                              href={activeOrder.shopierCheckoutUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="st-pill-btn is-shopier is-sm"
-                            >
-                              <ShopierLogo width={15} height={15} />
-                              <span>{ui.payShopierBtn}</span>
-                            </a>
+                            {activeOrder.paymentProvider === 'shopier' && (
+                              <span className="rs-status-badge is-warn">
+                                {ui.paymentWindowLbl}: {formatCountdownMmSs(pendingRemainingSecs)}
+                              </span>
+                            )}
+                            {pendingRemainingSecs > 0 && (
+                              <a
+                                href={activeOrder.shopierCheckoutUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="st-pill-btn is-shopier is-sm"
+                              >
+                                <ShopierLogo width={15} height={15} />
+                                <span>{ui.payShopierBtn}</span>
+                              </a>
+                            )}
                             <button
                               type="button"
                               onClick={() => void handleVerifyPayment()}

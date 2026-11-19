@@ -5,7 +5,12 @@ import {
   clearCustomerSessionCookies,
   resolveCustomerSession,
 } from '@/lib/customer-session';
-import { listOrdersForUser, reconcilePendingOrdersWithShopier } from '@/lib/orders-store';
+import {
+  cleanupExpiredPendingShopierOrders,
+  isPendingShopierOrderExpired,
+  listOrdersForUser,
+  reconcilePendingOrdersWithShopier,
+} from '@/lib/orders-store';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,11 +29,23 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(request.url);
+  await cleanupExpiredPendingShopierOrders({ request }).catch(() => undefined);
   let orders = await listOrdersForUser(session.user.id);
 
+  if (orders.some((o) => isPendingShopierOrderExpired(o))) {
+    const cleanMine = await cleanupExpiredPendingShopierOrders({
+      force: true,
+      candidateOrders: orders,
+      request,
+    });
+    if (cleanMine.cancelledRefs.length > 0 || cleanMine.promotedRefs.length > 0) {
+      orders = await listOrdersForUser(session.user.id);
+    }
+  }
+
   if (url.searchParams.get('sync') === '1' && orders.some((o) => o.status === 'pending_payment')) {
-    const reconciled = await reconcilePendingOrdersWithShopier(orders);
-    if (reconciled.matchedRefs.length > 0) {
+    const reconciled = await reconcilePendingOrdersWithShopier(orders, request);
+    if (reconciled.matchedRefs.length > 0 || reconciled.expiredCancelledRefs.length > 0) {
       orders = await listOrdersForUser(session.user.id);
     }
   }

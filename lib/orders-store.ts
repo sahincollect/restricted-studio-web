@@ -2,7 +2,20 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createAdminSupabase } from '@/lib/supabase';
-import { fetchShopierOrders, markShopierOrderFulfilled, type ShopierOrderRecord } from '@/lib/shopier';
+import {
+  deleteDynamicShopierListingResult,
+  fetchShopierOrdersSafe,
+  isShopierConfigured,
+  markShopierOrderFulfilled,
+  type ShopierOrderRecord,
+} from '@/lib/shopier';
+import { writeAuditLog } from '@/lib/audit-log';
+import {
+  SHOPIER_LISTING_TTL_MINUTES,
+  SHOPIER_LISTING_TTL_MS,
+  computeOrderExpiresAtIso,
+  isPendingShopierOrderExpired,
+} from '@/lib/order-timer';
 import {
   DELIVERY_SLA_NOTICE_TR,
   generateOrderReferenceCode,
@@ -15,8 +28,12 @@ import {
 } from '@/lib/orders-pure';
 
 export {
+  SHOPIER_LISTING_TTL_MINUTES,
+  SHOPIER_LISTING_TTL_MS,
   DELIVERY_SLA_NOTICE_TR,
+  computeOrderExpiresAtIso,
   generateOrderReferenceCode,
+  isPendingShopierOrderExpired,
   matchShopierOrderToInternal,
   type DeliveryPayload,
   type OrderLineItem,
@@ -66,6 +83,7 @@ async function writeLocalOrdersState(state: LocalOrdersDiskState): Promise<void>
 }
 
 function mapDbOrder(row: Record<string, any>): OrderRecord {
+  const createdAt = String(row.created_at);
   return {
     id: String(row.id),
     referenceCode: String(row.reference_code),
@@ -86,8 +104,9 @@ function mapDbOrder(row: Record<string, any>): OrderRecord {
     deliveryPayload: (row.delivery_payload as DeliveryPayload | null) ?? null,
     paidAt: row.paid_at ? String(row.paid_at) : null,
     deliveredAt: row.delivered_at ? String(row.delivered_at) : null,
-    createdAt: String(row.created_at),
-    updatedAt: String(row.updated_at || row.created_at),
+    expiresAt: computeOrderExpiresAtIso(createdAt),
+    createdAt,
+    updatedAt: String(row.updated_at || createdAt),
   };
 }
 
@@ -142,6 +161,7 @@ export async function createOrderWithWelcomeMessage(params: {
     deliveryPayload: null,
     paidAt: null,
     deliveredAt: null,
+    expiresAt: computeOrderExpiresAtIso(nowIso),
     createdAt: nowIso,
     updatedAt: nowIso,
   };
@@ -155,7 +175,7 @@ export async function createOrderWithWelcomeMessage(params: {
     senderName: 'Restricted Studio Teslimat Masası',
     senderAvatar: '/assets/newlogo.png',
     messageType: 'status_update',
-    body: `Sipariş kaydınız (${params.referenceCode}) oluşturuldu. Shopier güvenli ödeme sayfasından ödemenizi tamamladığınızda sistem ödemenizi doğrulayıp teslimat sürecini başlatacaktır. ${DELIVERY_SLA_NOTICE_TR}`,
+    body: `Sipariş kaydınız (${params.referenceCode}) oluşturuldu. Referanslı Shopier ödeme ilanı ${SHOPIER_LISTING_TTL_MINUTES} dakika boyunca aktiftir; bu süre içinde satın alım yapılmazsa ilan otomatik kaldırılır. Ödeme tamamlandığında teslimat süreci başlatılacaktır. ${DELIVERY_SLA_NOTICE_TR}`,
     attachmentMeta: null,
     createdAt: nowIso,
   };
@@ -417,49 +437,317 @@ export async function updateOrderStatusAndDelivery(params: {
   return updated;
 }
 
-/**
- * Reconciles pending internal orders against live Shopier `GET /v1/orders` API.
- */
-export async function reconcilePendingOrdersWithShopier(
-  candidateOrders?: OrderRecord[]
-): Promise<{ checked: number; matchedRefs: string[] }> {
-  const shopierOrders = await fetchShopierOrders(50);
-  if (shopierOrders.length === 0) {
-    return { checked: 0, matchedRefs: [] };
+async function claimPendingOrderTransition(
+  order: OrderRecord,
+  nextStatus: OrderStatus,
+  fields?: {
+    shopierOrderId?: string | null;
+    paidAt?: string | null;
+    deliveredAt?: string | null;
+  }
+): Promise<OrderRecord | null> {
+  const nowIso = new Date().toISOString();
+  let dbHandled = false;
+
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const adminSupabase = createAdminSupabase();
+      const { data: claimedRows, error: updateErr } = await adminSupabase
+        .from('orders')
+        .update({
+          status: nextStatus,
+          ...(fields?.shopierOrderId !== undefined ? { shopier_order_id: fields.shopierOrderId } : {}),
+          ...(fields?.paidAt !== undefined ? { paid_at: fields.paidAt } : {}),
+          ...(fields?.deliveredAt !== undefined ? { delivered_at: fields.deliveredAt } : {}),
+          updated_at: nowIso,
+        })
+        .eq('id', order.id)
+        .eq('status', 'pending_payment')
+        .select('*');
+
+      if (!updateErr && Array.isArray(claimedRows)) {
+        if (claimedRows.length > 0) {
+          const mapped = mapDbOrder(claimedRows[0]);
+          const localState = await readLocalOrdersState();
+          const lIdx = localState.orders.findIndex((o) => o.id === mapped.id);
+          if (lIdx !== -1) {
+            localState.orders[lIdx] = mapped;
+            await writeLocalOrdersState(localState);
+          }
+          return mapped;
+        }
+        const { data: existingRow, error: selErr } = await adminSupabase
+          .from('orders')
+          .select('id')
+          .eq('id', order.id)
+          .maybeSingle();
+        if (!selErr && existingRow) {
+          dbHandled = true;
+        }
+      }
+    } catch {
+      // fall through to local store
+    }
   }
 
-  const targetOrders =
-    candidateOrders || (await listAllOrdersAdmin(100)).orders;
-  const pending = targetOrders.filter((o) => o.status === 'pending_payment');
-  const matchedRefs: string[] = [];
+  if (dbHandled) return null;
 
-  for (const ord of pending) {
-    const match = matchShopierOrderToInternal(ord, shopierOrders);
-    if (!match) continue;
+  const localState = await readLocalOrdersState();
+  const idx = localState.orders.findIndex(
+    (o) => (o.id === order.id || o.referenceCode === order.referenceCode) && o.status === 'pending_payment'
+  );
+  if (idx === -1) return null;
 
-    const paidIso = match.dateCreated ? new Date(match.dateCreated).toISOString() : new Date().toISOString();
-    const nextStatus: OrderStatus = match.status === 'fulfilled' ? 'delivered' : 'preparing';
-    const nextOrder = await updateOrderStatusAndDelivery({
-      order: ord,
-      status: nextStatus,
-      shopierOrderId: String(match.id),
-      paidAt: paidIso,
-    });
+  const nextOrder: OrderRecord = {
+    ...localState.orders[idx],
+    status: nextStatus,
+    shopierOrderId: fields?.shopierOrderId !== undefined ? fields.shopierOrderId : localState.orders[idx].shopierOrderId,
+    paidAt: fields?.paidAt !== undefined ? fields.paidAt : localState.orders[idx].paidAt,
+    deliveredAt: fields?.deliveredAt !== undefined ? fields.deliveredAt : localState.orders[idx].deliveredAt,
+    updatedAt: nowIso,
+  };
+  localState.orders[idx] = nextOrder;
+  await writeLocalOrdersState(localState);
+  return nextOrder;
+}
+
+async function revertCancelledToPending(orderId: string): Promise<void> {
+  const nowIso = new Date().toISOString();
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const adminSupabase = createAdminSupabase();
+      await adminSupabase
+        .from('orders')
+        .update({ status: 'pending_payment', updated_at: nowIso })
+        .eq('id', orderId)
+        .eq('status', 'cancelled');
+    } catch {
+      // ignore
+    }
+  }
+  const localState = await readLocalOrdersState();
+  const idx = localState.orders.findIndex((o) => o.id === orderId && o.status === 'cancelled');
+  if (idx !== -1) {
+    localState.orders[idx] = { ...localState.orders[idx], status: 'pending_payment', updatedAt: nowIso };
+    await writeLocalOrdersState(localState);
+  }
+}
+
+async function promoteMatchedShopierOrder(ord: OrderRecord, match: ShopierOrderRecord): Promise<boolean> {
+  const paidIso = match.dateCreated ? new Date(match.dateCreated).toISOString() : new Date().toISOString();
+  const nextStatus: OrderStatus = match.status === 'fulfilled' ? 'delivered' : 'preparing';
+  const nextOrder = await claimPendingOrderTransition(ord, nextStatus, {
+    shopierOrderId: String(match.id),
+    paidAt: paidIso,
+  });
+  if (!nextOrder) return false;
+
+  await appendOrderMessage({
+    order: nextOrder,
+    senderUserId: null,
+    senderRole: 'system',
+    senderName: 'Shopier Ödeme Doğrulama',
+    senderAvatar: '/assets/newlogo.png',
+    messageType: 'status_update',
+    body: `Shopier ödemesi doğrulandı (Shopier Sipariş #${match.id}). Siparişiniz hazırlık sırasına alındı. ${DELIVERY_SLA_NOTICE_TR}`,
+  });
+  return true;
+}
+
+async function listExpiredPendingShopierCandidates(nowMs = Date.now()): Promise<OrderRecord[]> {
+  const cutoffIso = new Date(nowMs - SHOPIER_LISTING_TTL_MS).toISOString();
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const adminSupabase = createAdminSupabase();
+      const { data, error } = await adminSupabase
+        .from('orders')
+        .select('*')
+        .eq('status', 'pending_payment')
+        .eq('payment_provider', 'shopier')
+        .lte('created_at', cutoffIso)
+        .limit(60);
+      if (!error && Array.isArray(data)) {
+        return data.map(mapDbOrder);
+      }
+    } catch {
+      // fall through to local state
+    }
+  }
+  const localState = await readLocalOrdersState();
+  return localState.orders.filter((o) => isPendingShopierOrderExpired(o, nowMs));
+}
+
+export interface ShopierCleanupResult {
+  checked: number;
+  cancelledRefs: string[];
+  promotedRefs: string[];
+  skippedReason?: string;
+}
+
+const globalCleanupState = globalThis as unknown as {
+  __rsLastShopierCleanupAt?: number;
+  __rsShopierCleanupPromise?: Promise<ShopierCleanupResult> | null;
+};
+
+async function runExpiredShopierCleanup(
+  candidates: OrderRecord[],
+  request?: Request
+): Promise<ShopierCleanupResult> {
+  const nowMs = Date.now();
+  const expired = candidates.filter((o) => isPendingShopierOrderExpired(o, nowMs));
+  if (expired.length === 0) {
+    return { checked: 0, cancelledRefs: [], promotedRefs: [] };
+  }
+
+  let shopierOrders: ShopierOrderRecord[] = [];
+  const shopierEnabled = isShopierConfigured();
+  if (shopierEnabled) {
+    const res = await fetchShopierOrdersSafe(50);
+    if (!res.ok) {
+      return {
+        checked: expired.length,
+        cancelledRefs: [],
+        promotedRefs: [],
+        skippedReason: 'shopier_fetch_failed',
+      };
+    }
+    shopierOrders = res.orders;
+  }
+
+  const cancelledRefs: string[] = [];
+  const promotedRefs: string[] = [];
+
+  for (const ord of expired) {
+    if (shopierOrders.length > 0) {
+      const match = matchShopierOrderToInternal(ord, shopierOrders);
+      if (match) {
+        if (await promoteMatchedShopierOrder(ord, match)) {
+          promotedRefs.push(ord.referenceCode);
+        }
+        continue;
+      }
+    }
+
+    const claimed = await claimPendingOrderTransition(ord, 'cancelled');
+    if (!claimed) continue;
+
+    if (shopierEnabled && ord.shopierProductId) {
+      const delRes = await deleteDynamicShopierListingResult(ord.shopierProductId);
+      if (!delRes.ok) {
+        await revertCancelledToPending(ord.id);
+        continue;
+      }
+    }
 
     await appendOrderMessage({
-      order: nextOrder,
+      order: claimed,
       senderUserId: null,
       senderRole: 'system',
-      senderName: 'Shopier Ödeme Doğrulama',
+      senderName: 'Otomatik Süre Sonu',
       senderAvatar: '/assets/newlogo.png',
       messageType: 'status_update',
-      body: `Shopier ödemesi doğrulandı (Shopier Sipariş #${match.id}). Siparişiniz hazırlık sırasına alındı. ${DELIVERY_SLA_NOTICE_TR}`,
+      body: `Ödeme süresi (${SHOPIER_LISTING_TTL_MINUTES} dakika) dolduğu için referanslı Shopier ödeme ilanı (${ord.referenceCode}) otomatik olarak kaldırıldı ve sipariş iptal edildi. Satın almak isterseniz sepetinizden yeni ilan oluşturabilirsiniz.`,
     });
 
-    matchedRefs.push(ord.referenceCode);
+    await writeAuditLog({
+      request,
+      actorId: 'system-expiry',
+      actorType: 'system',
+      action: 'SHOPIER_EXPIRED_LISTING_REMOVED',
+      resourceType: 'order',
+      resourceId: ord.referenceCode,
+      metadata: {
+        shopierProductId: ord.shopierProductId,
+        createdAt: ord.createdAt,
+      },
+    });
+
+    cancelledRefs.push(ord.referenceCode);
   }
 
-  return { checked: pending.length, matchedRefs };
+  return { checked: expired.length, cancelledRefs, promotedRefs };
+}
+
+/**
+ * Deletes expired unpaid dynamic Shopier listings (>= 15 minutes old) unless Shopier confirms payment.
+ */
+export async function cleanupExpiredPendingShopierOrders(options?: {
+  force?: boolean;
+  candidateOrders?: OrderRecord[];
+  minIntervalMs?: number;
+  request?: Request;
+}): Promise<ShopierCleanupResult> {
+  const now = Date.now();
+  if (options?.candidateOrders) {
+    const expiredSubset = options.candidateOrders.filter((o) => isPendingShopierOrderExpired(o, now));
+    if (expiredSubset.length === 0) {
+      return { checked: 0, cancelledRefs: [], promotedRefs: [] };
+    }
+    return runExpiredShopierCleanup(expiredSubset, options.request);
+  }
+
+  const minInterval = options?.minIntervalMs ?? 20_000;
+  if (!options?.force && globalCleanupState.__rsLastShopierCleanupAt && now - globalCleanupState.__rsLastShopierCleanupAt < minInterval) {
+    return { checked: 0, cancelledRefs: [], promotedRefs: [], skippedReason: 'throttled' };
+  }
+
+  if (globalCleanupState.__rsShopierCleanupPromise) {
+    return globalCleanupState.__rsShopierCleanupPromise;
+  }
+
+  globalCleanupState.__rsLastShopierCleanupAt = now;
+  const promise = (async () => {
+    const candidates = await listExpiredPendingShopierCandidates(now);
+    return runExpiredShopierCleanup(candidates, options?.request);
+  })().finally(() => {
+    globalCleanupState.__rsShopierCleanupPromise = null;
+  });
+
+  globalCleanupState.__rsShopierCleanupPromise = promise;
+  return promise;
+}
+
+/**
+ * Reconciles pending internal orders against live Shopier `GET /v1/orders` API,
+ * and cleans up any unpaid orders past the 15-minute payment window.
+ */
+export async function reconcilePendingOrdersWithShopier(
+  candidateOrders?: OrderRecord[],
+  request?: Request
+): Promise<{ checked: number; matchedRefs: string[]; expiredCancelledRefs: string[] }> {
+  const targetOrders = candidateOrders || (await listAllOrdersAdmin(100)).orders;
+  const pending = targetOrders.filter((o) => o.status === 'pending_payment');
+  if (pending.length === 0) {
+    return { checked: 0, matchedRefs: [], expiredCancelledRefs: [] };
+  }
+
+  const matchedRefs: string[] = [];
+  const shopierRes = await fetchShopierOrdersSafe(50);
+
+  if (shopierRes.ok && shopierRes.orders.length > 0) {
+    for (const ord of pending) {
+      const match = matchShopierOrderToInternal(ord, shopierRes.orders);
+      if (match && (await promoteMatchedShopierOrder(ord, match))) {
+        matchedRefs.push(ord.referenceCode);
+      }
+    }
+  }
+
+  let expiredCancelledRefs: string[] = [];
+  if (shopierRes.ok || !isShopierConfigured()) {
+    const stillPending = pending.filter((o) => !matchedRefs.includes(o.referenceCode));
+    if (stillPending.some((o) => isPendingShopierOrderExpired(o))) {
+      const cleanRes = await cleanupExpiredPendingShopierOrders({
+        force: true,
+        candidateOrders: stillPending,
+        request,
+      });
+      matchedRefs.push(...cleanRes.promotedRefs);
+      expiredCancelledRefs = cleanRes.cancelledRefs;
+    }
+  }
+
+  return { checked: pending.length, matchedRefs, expiredCancelledRefs };
 }
 
 export async function fulfillDeliveredOrderOnShopier(order: OrderRecord): Promise<boolean> {

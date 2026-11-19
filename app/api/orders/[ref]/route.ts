@@ -6,7 +6,12 @@ import {
   resolveCustomerSession,
 } from '@/lib/customer-session';
 import { verifyAdminAuth } from '@/lib/admin-auth';
-import { DELIVERY_SLA_NOTICE_TR, getOrderWithMessages } from '@/lib/orders-store';
+import {
+  DELIVERY_SLA_NOTICE_TR,
+  cleanupExpiredPendingShopierOrders,
+  getOrderWithMessages,
+  isPendingShopierOrderExpired,
+} from '@/lib/orders-store';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,11 +53,23 @@ export async function GET(
     );
   }
 
+  let resolvedData = data;
+  if (isPendingShopierOrderExpired(data.order)) {
+    const cleanRes = await cleanupExpiredPendingShopierOrders({
+      force: true,
+      candidateOrders: [data.order],
+      request,
+    });
+    if (cleanRes.cancelledRefs.length > 0 || cleanRes.promotedRefs.length > 0) {
+      resolvedData = await getOrderWithMessages(ref);
+    }
+  }
+
   const res = NextResponse.json(
     {
       success: true,
-      order: data.order,
-      messages: data.messages,
+      order: resolvedData.order || data.order,
+      messages: resolvedData.messages,
       slaNotice: DELIVERY_SLA_NOTICE_TR,
     },
     { headers: { 'Cache-Control': 'no-store' } }

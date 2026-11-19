@@ -2,7 +2,11 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { verifyServerDashboardSession } from '@/lib/customer-session';
 import { getUserProfile } from '@/lib/account-store';
-import { listOrdersForUser } from '@/lib/orders-store';
+import {
+  cleanupExpiredPendingShopierOrders,
+  isPendingShopierOrderExpired,
+  listOrdersForUser,
+} from '@/lib/orders-store';
 import AccountPortalClient from '@/components/AccountPortalClient';
 
 export const dynamic = 'force-dynamic';
@@ -24,10 +28,21 @@ export default async function HesabimPage({
   }
 
   const sp = await searchParams;
-  const [{ profile }, orders] = await Promise.all([
+  const [{ profile }, initialOrders] = await Promise.all([
     getUserProfile(session.user),
     listOrdersForUser(session.user.id),
   ]);
+
+  let orders = initialOrders;
+  if (orders.some((o) => isPendingShopierOrderExpired(o))) {
+    const cleaned = await cleanupExpiredPendingShopierOrders({
+      force: true,
+      candidateOrders: orders,
+    });
+    if (cleaned.cancelledRefs.length > 0 || cleaned.promotedRefs.length > 0) {
+      orders = await listOrdersForUser(session.user.id);
+    }
+  }
 
   const initialTab =
     sp.tab === 'profile' ? 'profile' : sp.tab === 'security' ? 'security' : 'orders';

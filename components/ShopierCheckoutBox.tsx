@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import ShopierLogo from '@/components/ShopierLogo';
+import { formatCountdownMmSs, getOrderRemainingSeconds } from '@/lib/order-timer';
 import type { Locale } from '@/lib/i18n';
 
 export const SHOPIER_UI_COPY: Record<
@@ -24,6 +25,8 @@ export const SHOPIER_UI_COPY: Record<
     openPaymentBtn: string;
     openChatBtn: string;
     popupHint: string;
+    countdownPrefix: string;
+    expiredNotice: string;
     closeBtn: string;
   }
 > = {
@@ -47,6 +50,9 @@ export const SHOPIER_UI_COPY: Record<
     openChatBtn: 'Özel Teslimat Sohbetine Git',
     popupHint:
       'Ödemenizi tamamladıktan sonra sipariş durumunuzu ve teslimat sohbetinizi "Hesabım" üzerinden anlık takip edebilirsiniz.',
+    countdownPrefix: 'Ödeme süresi',
+    expiredNotice:
+      '15 dakikalık ödeme süresi dolduğu için bu Shopier ilanı otomatik olarak kaldırıldı. Satın almak isterseniz yeni ilan oluşturabilirsiniz.',
     closeBtn: 'Kapat',
   },
   en: {
@@ -69,6 +75,9 @@ export const SHOPIER_UI_COPY: Record<
     openChatBtn: 'Open Private Delivery Chat',
     popupHint:
       'After completing payment on Shopier, track live status and receive files directly inside your private delivery chat.',
+    countdownPrefix: 'Expires in',
+    expiredNotice:
+      'Payment window (15 min) expired, so the dynamic Shopier listing has been automatically removed. Start a new checkout to purchase.',
     closeBtn: 'Close',
   },
   ru: {
@@ -91,6 +100,9 @@ export const SHOPIER_UI_COPY: Record<
     openChatBtn: 'Перейти в чат выдачи',
     popupHint:
       'После оплаты отслеживайте статус и получайте файлы в личном чате выдачи в разделе «Аккаунт».',
+    countdownPrefix: 'Осталось',
+    expiredNotice:
+      'Время оплаты (15 мин) истекло — ссылка Shopier автоматически удалена. Для покупки оформите заказ заново.',
     closeBtn: 'Закрыть',
   },
   fr: {
@@ -113,6 +125,9 @@ export const SHOPIER_UI_COPY: Record<
     openChatBtn: 'Ouvrir le salon de livraison',
     popupHint:
       'Une fois le paiement effectué, suivez votre commande et recevez vos fichiers dans votre salon privé.',
+    countdownPrefix: 'Expire dans',
+    expiredNotice:
+      'Le délai de paiement (15 min) a expiré : cette annonce Shopier a été supprimée automatiquement.',
     closeBtn: 'Fermer',
   },
 };
@@ -124,6 +139,7 @@ export interface ShopierCheckoutOrderSummary {
   title: string;
   totalAmount: number;
   slaNotice: string;
+  expiresAt?: string | null;
 }
 
 export type ShopierCheckoutResponse =
@@ -175,6 +191,7 @@ export async function requestShopierCheckout(
         title: data.order.title || 'Sipariş',
         totalAmount: Number(data.order.totalAmount || 0),
         slaNotice: data.slaNotice || '',
+        expiresAt: data.expiresAt || data.order.expiresAt || null,
       },
     };
   } catch {
@@ -202,6 +219,31 @@ export function ShopierCheckoutStatusBox({
   onClear?: () => void;
 }) {
   const copy = SHOPIER_UI_COPY[locale] || SHOPIER_UI_COPY.tr;
+  const [remainingSecs, setRemainingSecs] = useState<number>(() =>
+    createdOrder?.expiresAt ? getOrderRemainingSeconds({ expiresAt: createdOrder.expiresAt }) : 900
+  );
+  const autoVerifiedRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!createdOrder?.expiresAt) {
+      setRemainingSecs(900);
+      return;
+    }
+    const tick = () => {
+      const secs = getOrderRemainingSeconds({ expiresAt: createdOrder.expiresAt });
+      setRemainingSecs(secs);
+      if (secs === 0 && autoVerifiedRef.current !== createdOrder.referenceCode) {
+        autoVerifiedRef.current = createdOrder.referenceCode;
+        void fetch(`/api/orders/${encodeURIComponent(createdOrder.referenceCode)}/verify`, {
+          method: 'POST',
+          credentials: 'same-origin',
+        }).catch(() => undefined);
+      }
+    };
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, [createdOrder?.referenceCode, createdOrder?.expiresAt]);
 
   if (!requiresAuth && !errorMessage && !createdOrder) {
     return null;
@@ -245,6 +287,7 @@ export function ShopierCheckoutStatusBox({
   }
 
   if (createdOrder) {
+    const isExpired = Boolean(createdOrder.expiresAt && remainingSecs === 0);
     return (
       <div className="rs-shopier-box is-ready" role="status">
         <div className="rs-shopier-box-head">
@@ -262,19 +305,26 @@ export function ShopierCheckoutStatusBox({
           <span>
             {copy.amountLabel}: <strong>{createdOrder.totalAmount.toLocaleString('tr-TR')} TL</strong>
           </span>
+          {createdOrder.expiresAt && !isExpired && (
+            <span>
+              {copy.countdownPrefix}: <strong>{formatCountdownMmSs(remainingSecs)}</strong>
+            </span>
+          )}
         </div>
         <p className="rs-shopier-sla">{copy.slaNotice}</p>
-        <p className="rs-shopier-hint">{copy.popupHint}</p>
+        <p className="rs-shopier-hint">{isExpired ? copy.expiredNotice : copy.popupHint}</p>
         <div className="rs-shopier-actions">
-          <a
-            href={createdOrder.checkoutUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="st-pill-btn is-shopier is-sm is-full"
-          >
-            <ShopierLogo width={16} height={16} />
-            <span>{copy.openPaymentBtn} ↗</span>
-          </a>
+          {!isExpired && (
+            <a
+              href={createdOrder.checkoutUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="st-pill-btn is-shopier is-sm is-full"
+            >
+              <ShopierLogo width={16} height={16} />
+              <span>{copy.openPaymentBtn} ↗</span>
+            </a>
+          )}
           <Link href={createdOrder.chatUrl} className="st-pill-btn is-light is-sm is-full">
             {copy.openChatBtn} →
           </Link>

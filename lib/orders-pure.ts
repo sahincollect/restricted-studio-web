@@ -44,6 +44,7 @@ export interface OrderRecord {
   deliveryPayload: DeliveryPayload | null;
   paidAt: string | null;
   deliveredAt: string | null;
+  expiresAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
