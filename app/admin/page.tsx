@@ -508,10 +508,11 @@ export default function AdminPage() {
                     </label>
                     <input
                       id="admin-username"
+                      name="rs_admin_username"
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      autoComplete="username"
+                      autoComplete="section-admin username"
                       placeholder="Yönetici kullanıcı adı"
                       autoFocus
                       required
@@ -526,10 +527,11 @@ export default function AdminPage() {
                     <div className="rs-admin-input-wrap">
                       <input
                         id="admin-password"
+                        name="rs_admin_password"
                         type={showPassword ? 'text' : 'password'}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        autoComplete="current-password"
+                        autoComplete="section-admin current-password"
                         placeholder="••••••••"
                         required
                         className="rs-admin-input"

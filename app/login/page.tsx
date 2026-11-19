@@ -223,12 +223,13 @@ function LoginFormContent() {
               </label>
               <input
                 id="login-identifier"
+                name="customer_identifier"
                 type="text"
                 required
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 placeholder={t.auth.identifierPlaceholder}
-                autoComplete="username"
+                autoComplete="section-customer username"
                 className="rs-auth-input"
               />
             </div>
@@ -261,12 +262,13 @@ function LoginFormContent() {
               <div className="rs-auth-input-wrap">
                 <input
                   id="login-password"
+                  name="customer_password"
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  autoComplete="current-password"
+                  autoComplete="section-customer current-password"
                   className="rs-auth-input has-toggle"
                 />
                 <button

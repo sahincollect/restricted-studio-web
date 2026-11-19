@@ -12,7 +12,7 @@ import {
   issueCustomerSession,
   isSecureRequest,
 } from '@/lib/customer-session';
-import { syncProfileFromOAuth } from '@/lib/account-store';
+import { resolveCustomerDisplayName, syncProfileFromOAuth } from '@/lib/account-store';
 import { isSafeHttpsUrl } from '@/lib/validation';
 import { writeAuditLog } from '@/lib/audit-log';
 
@@ -92,13 +92,10 @@ export async function GET(request: NextRequest) {
       : null;
   const safeAvatar = rawAvatar && isSafeHttpsUrl(rawAvatar) ? rawAvatar : null;
 
-  const displayName =
-    (typeof meta.username === 'string' && meta.username) ||
-    (typeof customClaims.global_name === 'string' && customClaims.global_name) ||
-    (typeof meta.full_name === 'string' && meta.full_name) ||
-    (typeof meta.name === 'string' && meta.name) ||
-    data.user.email?.split('@')[0] ||
-    'Müşteri';
+  const fallbackOauthName = resolveCustomerDisplayName({
+    userMetadata: meta,
+    email: data.user.email,
+  });
 
   const discordHandle =
     oauthProvider === 'discord'
@@ -109,11 +106,11 @@ export async function GET(request: NextRequest) {
       ? meta.provider_id.slice(0, 48)
       : null;
 
-  await syncProfileFromOAuth({
+  const syncedProfile = await syncProfileFromOAuth({
     userId: data.user.id,
     email: data.user.email,
     provider: oauthProvider,
-    displayName,
+    displayName: fallbackOauthName,
     avatarUrl: safeAvatar,
     discordHandle,
     discordId,
@@ -123,7 +120,7 @@ export async function GET(request: NextRequest) {
   await issueCustomerSession(request, redirectRes, {
     id: data.user.id,
     email: data.user.email,
-    name: displayName,
+    name: syncedProfile.displayName || fallbackOauthName,
   });
 
   // Explicitly clear any sb-* session/verifier cookies so no JS-readable token persists

@@ -598,7 +598,12 @@ export default function AccountPortalClient({
         throw new Error(data.message || 'Profil güncellenemedi.');
       }
       setProfile(data.profile);
+      setDisplayName(data.profile.displayName || '');
+      setUsername(data.profile.username || '');
       setAvatarUrl(data.profile.avatarUrl);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('rs-account-updated', { detail: data.profile }));
+      }
       if (preferredLocale !== locale) {
         setLocale(preferredLocale);
       }
@@ -1048,7 +1053,7 @@ export default function AccountPortalClient({
             <section className="rs-portal-panel spotlight-surface" style={{ maxWidth: '760px' }}>
               <h2 style={{ fontSize: '20px', fontWeight: 700 }}>{ui.profileTitle}</h2>
 
-              <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '14px' }}>
+              <form onSubmit={handleSaveProfile} autoComplete="off" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '14px' }}>
                 <div className="rs-avatar-picker-row">
                   {renderAvatarVisual(avatarUrl, displayName, 72)}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
@@ -1096,47 +1101,59 @@ export default function AccountPortalClient({
 
                 <div className="rs-portal-grid-2" style={{ gap: '14px' }}>
                   <div className="rs-auth-field">
-                    <label className="rs-auth-label">{ui.displayNameLbl}</label>
+                    <label htmlFor="rs-acct-display" className="rs-auth-label">{ui.displayNameLbl}</label>
                     <input
+                      id="rs-acct-display"
+                      name="rs_acct_display"
                       type="text"
                       required
                       minLength={2}
                       maxLength={48}
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
+                      autoComplete="off"
                       className="st-input"
                     />
                   </div>
                   <div className="rs-auth-field">
-                    <label className="rs-auth-label">{ui.usernameLbl}</label>
+                    <label htmlFor="rs-acct-handle" className="rs-auth-label">{ui.usernameLbl}</label>
                     <input
+                      id="rs-acct-handle"
+                      name="rs_acct_handle"
                       type="text"
                       minLength={3}
                       maxLength={40}
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
+                      autoComplete="off"
                       className="st-input"
                     />
                   </div>
                   <div className="rs-auth-field">
-                    <label className="rs-auth-label">{ui.discordLbl}</label>
+                    <label htmlFor="rs-acct-discord" className="rs-auth-label">{ui.discordLbl}</label>
                     <input
+                      id="rs-acct-discord"
+                      name="rs_acct_discord"
                       type="text"
                       maxLength={64}
                       value={discordHandle}
                       onChange={(e) => setDiscordHandle(e.target.value)}
                       placeholder="kullanici#0000"
+                      autoComplete="off"
                       className="st-input"
                     />
                   </div>
                   <div className="rs-auth-field">
-                    <label className="rs-auth-label">{ui.serverLbl}</label>
+                    <label htmlFor="rs-acct-server" className="rs-auth-label">{ui.serverLbl}</label>
                     <input
+                      id="rs-acct-server"
+                      name="rs_acct_server"
                       type="text"
                       maxLength={80}
                       value={serverName}
                       onChange={(e) => setServerName(e.target.value)}
-                      placeholder="Örn: Restricted Roleplay"
+                      placeholder="Örn: Horizon Roleplay"
+                      autoComplete="off"
                       className="st-input"
                     />
                   </div>
@@ -1197,24 +1214,30 @@ export default function AccountPortalClient({
               <form onSubmit={handleChangePassword} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
                 {profile.authProviders.includes('email') && (
                   <div className="rs-auth-field">
-                    <label className="rs-auth-label">{ui.curPassLbl}</label>
+                    <label htmlFor="rs-acct-curpass" className="rs-auth-label">{ui.curPassLbl}</label>
                     <input
+                      id="rs-acct-curpass"
+                      name="rs_acct_curpass"
                       type="password"
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
+                      autoComplete="section-customer current-password"
                       className="st-input"
                     />
                   </div>
                 )}
                 <div className="rs-auth-field">
-                  <label className="rs-auth-label">{ui.newPassLbl}</label>
+                  <label htmlFor="rs-acct-newpass" className="rs-auth-label">{ui.newPassLbl}</label>
                   <input
+                    id="rs-acct-newpass"
+                    name="rs_acct_newpass"
                     type="password"
                     required
                     minLength={8}
                     maxLength={128}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
+                    autoComplete="section-customer new-password"
                     className="st-input"
                   />
                 </div>

@@ -175,12 +175,13 @@ function RegisterFormContent() {
           </label>
           <input
             id="reg-identifier"
+            name="rs_new_acct_id"
             type="text"
             required
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
             placeholder={t.auth.registerIdentifierPlaceholder}
-            autoComplete="username"
+            autoComplete="off"
             className="rs-auth-input"
           />
         </div>

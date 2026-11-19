@@ -6,6 +6,7 @@ import {
   clearCustomerSessionCookies,
   resolveCustomerSession,
 } from '@/lib/customer-session';
+import { getUserProfile } from '@/lib/account-store';
 import { getCatalogItemsByIds } from '@/lib/catalog-server';
 import { fetchItemsatisListings } from '@/lib/itemsatis-store';
 import { mergeStoreProducts, readStorePriceOverrides } from '@/lib/store-pricing';
@@ -147,8 +148,10 @@ export async function POST(request: Request) {
 
   await cleanupExpiredPendingShopierOrders({ request }).catch(() => undefined);
 
+  const { profile } = await getUserProfile(session.user);
+  const customerDisplayName = profile.displayName || session.user.name || 'Üye';
   const referenceCode = generateOrderReferenceCode();
-  const buyerLabel = session.user.name || session.user.email || session.user.id;
+  const buyerLabel = customerDisplayName || session.user.email || session.user.id;
   const listingRes = await createDynamicShopierListing({
     referenceCode,
     title: orderTitle,
@@ -170,8 +173,8 @@ export async function POST(request: Request) {
     created = await createOrderWithWelcomeMessage({
       referenceCode,
       userId: session.user.id,
-      buyerEmail: session.user.email || '',
-      buyerName: session.user.name || 'Müşteri',
+      buyerEmail: profile.email || session.user.email || '',
+      buyerName: customerDisplayName,
       source: payload.source,
       paymentProvider: 'shopier',
       title: orderTitle,
@@ -194,7 +197,8 @@ export async function POST(request: Request) {
       order: created.order,
       senderUserId: session.user.id,
       senderRole: 'customer',
-      senderName: session.user.name || 'Müşteri',
+      senderName: customerDisplayName,
+      senderAvatar: profile.avatarUrl,
       messageType: 'text',
       body: customerNote,
     });

@@ -458,22 +458,41 @@ export default function SiteNavbar({
   useEffect(() => {
     if (mainOrigin) return;
     let cancelled = false;
-    fetch('/api/account?summary=1', { cache: 'no-store', credentials: 'same-origin' })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (!cancelled && data && data.authenticated) {
-          setAccountSummary({
-            authenticated: true,
-            displayName: data.profile?.displayName || 'Üye',
-            avatarUrl: data.profile?.avatarUrl || 'preset:ember',
-            isGuest: Boolean(data.profile?.isGuest),
-            pendingOrdersCount: Number(data.pendingOrdersCount || 0),
-          });
-        }
-      })
-      .catch(() => undefined);
+    const pullSummary = () => {
+      fetch('/api/account?summary=1', { cache: 'no-store', credentials: 'same-origin' })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!cancelled && data && data.authenticated) {
+            setAccountSummary({
+              authenticated: true,
+              displayName: data.profile?.displayName || 'Üye',
+              avatarUrl: data.profile?.avatarUrl || 'preset:ember',
+              isGuest: Boolean(data.profile?.isGuest),
+              pendingOrdersCount: Number(data.pendingOrdersCount || 0),
+            });
+          }
+        })
+        .catch(() => undefined);
+    };
+    pullSummary();
+    const onAccountUpdated = (ev: Event) => {
+      const detail = (ev as CustomEvent<{ displayName?: string; avatarUrl?: string | null; isGuest?: boolean }>).detail;
+      if (detail?.displayName) {
+        setAccountSummary((prev) => ({
+          authenticated: true,
+          displayName: detail.displayName,
+          avatarUrl: detail.avatarUrl || prev?.avatarUrl || 'preset:ember',
+          isGuest: detail.isGuest ?? prev?.isGuest,
+          pendingOrdersCount: prev?.pendingOrdersCount ?? 0,
+        }));
+      } else {
+        pullSummary();
+      }
+    };
+    window.addEventListener('rs-account-updated', onAccountUpdated);
     return () => {
       cancelled = true;
+      window.removeEventListener('rs-account-updated', onAccountUpdated);
     };
   }, [mainOrigin, pathname]);
 
@@ -931,7 +950,7 @@ export default function SiteNavbar({
                             NAV_AVATAR_PRESETS['preset:ember'],
                         }}
                       >
-                        {(accountSummary.displayName || 'R').slice(0, 1).toUpperCase()}
+                        {(accountSummary.displayName || 'Ü').slice(0, 1).toUpperCase()}
                       </span>
                     )}
                     {(accountSummary.pendingOrdersCount ?? 0) > 0 && (

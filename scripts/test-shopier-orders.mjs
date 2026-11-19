@@ -21,6 +21,10 @@ import {
   createTelegramCustomerBindUrl,
   verifyTelegramStartToken,
 } from '../lib/telegram-tokens.ts';
+import {
+  isGenericOrPollutedCustomerName,
+  resolveCustomerDisplayName,
+} from '../lib/account-pure.ts';
 
 test('validateAvatarInput enforces presets, HTTPS URLs, magic bytes, and size limits', () => {
   assert.deepEqual(validateAvatarInput('preset:Ember'), { ok: true, value: 'preset:ember' });
@@ -226,4 +230,65 @@ test('Telegram start token links stay within 64 chars, verify HMAC, and reject t
   else process.env.TELEGRAM_BOT_USERNAME = prevUser;
   if (prevSecret === undefined) delete process.env.TELEGRAM_WEBHOOK_SECRET;
   else process.env.TELEGRAM_WEBHOOK_SECRET = prevSecret;
+});
+
+test('resolveCustomerDisplayName recovers real customer identity over polluted Restricted autofill or generic fallbacks', () => {
+  assert.equal(
+    isGenericOrPollutedCustomerName('RESTRICTED', 'ahmet@gmail.com'),
+    true
+  );
+  assert.equal(
+    isGenericOrPollutedCustomerName('Restricted', 'restricted@kullanici.restrictedstudio.shop'),
+    false
+  );
+
+  assert.equal(
+    resolveCustomerDisplayName({
+      profileDisplayName: 'RESTRICTED',
+      userMetadata: { full_name: 'Ahmet Yılmaz', username: 'ahmety' },
+      email: 'ahmet@gmail.com',
+    }),
+    'Ahmet Yılmaz'
+  );
+
+  assert.equal(
+    resolveCustomerDisplayName({
+      profileDisplayName: 'Kayıtlı Kullanıcı',
+      userMetadata: { custom_claims: { global_name: 'EmreDev' }, full_name: 'emre#0' },
+      email: 'emre@example.com',
+    }),
+    'Kayıtlı Kullanıcı'
+  );
+
+  assert.equal(
+    resolveCustomerDisplayName({
+      profileDisplayName: null,
+      userMetadata: { custom_claims: { global_name: 'DiscordUserTR' } },
+      sessionName: 'Müşteri',
+      email: 'user@outlook.com',
+    }),
+    'DiscordUserTR'
+  );
+
+  assert.equal(
+    isGenericOrPollutedCustomerName('RESTRICTED', ''),
+    true
+  );
+  assert.equal(
+    resolveCustomerDisplayName({
+      profileDisplayName: 'Restricted',
+      userMetadata: { name: 'RealDiscordName' },
+      email: '',
+    }),
+    'RealDiscordName'
+  );
+  assert.equal(
+    resolveCustomerDisplayName({
+      profileDisplayName: 'Restricted',
+      userMetadata: null,
+      sessionName: 'Restricted',
+      email: 'misafir-88af12@anon.restrictedstudio.shop',
+    }),
+    'misafir-88af12'
+  );
 });

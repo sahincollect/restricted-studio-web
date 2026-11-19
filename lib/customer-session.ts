@@ -353,7 +353,7 @@ export function clearCustomerSessionCookies(request: Request, response: NextResp
 export async function issueCustomerSession(
   request: Request,
   response: NextResponse,
-  user: { id: string; email?: string; name?: string }
+  user: { id: string; email?: string; name?: string; familyId?: string }
 ): Promise<CustomerUserSession> {
   const tokens = createAccessAndRefreshTokens(user);
   await persistRefreshToken({

@@ -11,6 +11,7 @@ import {
 } from '@/lib/shopier';
 import { writeAuditLog } from '@/lib/audit-log';
 import { dispatchOrderNotification } from '@/lib/notifications';
+import { isGenericOrPollutedCustomerName, resolveCustomerDisplayName } from '@/lib/account-pure';
 import {
   SHOPIER_LISTING_TTL_MINUTES,
   SHOPIER_LISTING_TTL_MS,
@@ -265,6 +266,70 @@ export async function listOrdersForUser(userId: string): Promise<OrderRecord[]> 
   return localState.orders.filter((o) => o.userId === userId);
 }
 
+async function enrichOrdersWithLiveProfiles(orders: OrderRecord[]): Promise<OrderRecord[]> {
+  if (orders.length === 0 || !process.env.SUPABASE_SERVICE_ROLE_KEY) return orders;
+  try {
+    const userIds = Array.from(new Set(orders.map((o) => o.userId).filter(Boolean)));
+    if (userIds.length === 0) return orders;
+    const adminSupabase = createAdminSupabase();
+    const { data: profiles } = await adminSupabase
+      .from('user_profiles')
+      .select('user_id, display_name')
+      .in('user_id', userIds);
+
+    const nameMap = new Map<string, string>();
+    if (Array.isArray(profiles)) {
+      for (const p of profiles) {
+        const uid = typeof p.user_id === 'string' ? p.user_id : '';
+        const dn = typeof p.display_name === 'string' ? p.display_name.trim() : '';
+        if (uid && dn) nameMap.set(uid, dn);
+      }
+    }
+
+    const unresolvedIds = orders
+      .filter((ord) => {
+        const mapped = nameMap.get(ord.userId);
+        return mapped
+          ? isGenericOrPollutedCustomerName(mapped, ord.buyerEmail)
+          : isGenericOrPollutedCustomerName(ord.buyerName, ord.buyerEmail);
+      })
+      .map((ord) => ord.userId);
+
+    const uniqueUnresolved = Array.from(new Set(unresolvedIds)).slice(0, 20);
+    await Promise.all(
+      uniqueUnresolved.map(async (uid) => {
+        try {
+          const { data: authRes } = await adminSupabase.auth.admin.getUserById(uid);
+          if (authRes?.user) {
+            const resolved = resolveCustomerDisplayName({
+              profileDisplayName: nameMap.get(uid) || null,
+              userMetadata: (authRes.user.user_metadata || {}) as Record<string, unknown>,
+              email: authRes.user.email,
+            });
+            nameMap.set(uid, resolved);
+          }
+        } catch {
+          // ignore per-user fallback failure
+        }
+      })
+    );
+
+    return orders.map((ord) => {
+      const candidate = nameMap.get(ord.userId);
+      if (candidate && !isGenericOrPollutedCustomerName(candidate, ord.buyerEmail)) {
+        return { ...ord, buyerName: candidate };
+      }
+      if (isGenericOrPollutedCustomerName(ord.buyerName, ord.buyerEmail)) {
+        const fallback = ord.buyerEmail?.split('@')[0]?.trim();
+        return { ...ord, buyerName: fallback || 'Üye' };
+      }
+      return ord;
+    });
+  } catch {
+    return orders;
+  }
+}
+
 export async function listAllOrdersAdmin(limit = 100): Promise<{
   orders: OrderRecord[];
   tableReady: boolean;
@@ -278,7 +343,8 @@ export async function listAllOrdersAdmin(limit = 100): Promise<{
         .order('created_at', { ascending: false })
         .limit(limit);
       if (!error && Array.isArray(data)) {
-        return { orders: data.map(mapDbOrder), tableReady: true };
+        const enriched = await enrichOrdersWithLiveProfiles(data.map(mapDbOrder));
+        return { orders: enriched, tableReady: true };
       }
     } catch {
       // fall through
@@ -310,9 +376,17 @@ export async function getOrderWithMessages(referenceCode: string): Promise<{
           .order('created_at', { ascending: true })
           .limit(300);
 
+        const [enrichedOrder] = await enrichOrdersWithLiveProfiles([mapDbOrder(orderRow)]);
+        const liveBuyerName = enrichedOrder?.buyerName;
+        const mappedMessages = Array.isArray(msgRows)
+          ? msgRows.map(mapDbMessage).map((m) =>
+              m.senderRole === 'customer' && liveBuyerName ? { ...m, senderName: liveBuyerName } : m
+            )
+          : [];
+
         return {
-          order: mapDbOrder(orderRow),
-          messages: Array.isArray(msgRows) ? msgRows.map(mapDbMessage) : [],
+          order: enrichedOrder,
+          messages: mappedMessages,
         };
       }
     } catch {

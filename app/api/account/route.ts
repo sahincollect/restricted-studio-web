@@ -3,6 +3,7 @@ import { guardApiRequest, parseJsonBodySafe } from '@/lib/security-server';
 import {
   attachCustomerCookies,
   clearCustomerSessionCookies,
+  issueCustomerSession,
   resolveCustomerSession,
 } from '@/lib/customer-session';
 import { getUserProfile, updateUserProfile } from '@/lib/account-store';
@@ -127,6 +128,14 @@ export async function PATCH(request: Request) {
     },
     { headers: { 'Cache-Control': 'no-store' } }
   );
-  if (session.refreshedTokens) attachCustomerCookies(request, res, session.refreshedTokens);
+
+  // Sync updated displayName into the active session cookies (preserving session family)
+  await issueCustomerSession(request, res, {
+    id: session.user.id,
+    email: session.user.email,
+    name: updated.profile.displayName,
+    familyId: session.user.familyId,
+  });
+
   return res;
 }

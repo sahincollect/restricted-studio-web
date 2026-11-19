@@ -11,6 +11,7 @@ import {
   verifyArgon2idPassword,
 } from '@/lib/password-security';
 import { issueCustomerSession } from '@/lib/customer-session';
+import { getUserProfile, resolveCustomerDisplayName } from '@/lib/account-store';
 import { writeAuditLog } from '@/lib/audit-log';
 
 export async function POST(request: Request) {
@@ -124,11 +125,16 @@ export async function POST(request: Request) {
 
     await clearAuthLockout(lockKeys);
 
-    const displayName =
-      authenticatedUser.user_metadata?.username ||
-      authenticatedUser.user_metadata?.full_name ||
-      authenticatedUser.email?.split('@')[0] ||
-      'Müşteri';
+    const metaFallbackName = resolveCustomerDisplayName({
+      userMetadata: authenticatedUser.user_metadata,
+      email: authenticatedUser.email,
+    });
+    const { profile } = await getUserProfile({
+      id: authenticatedUser.id,
+      email: authenticatedUser.email,
+      name: metaFallbackName,
+    });
+    const displayName = profile.displayName || metaFallbackName;
 
     const res = NextResponse.json(
       {

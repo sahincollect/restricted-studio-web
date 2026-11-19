@@ -2,6 +2,13 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createAdminSupabase } from '@/lib/supabase';
 import type { Locale } from '@/lib/i18n';
+import {
+  cleanCustomerNameCandidate,
+  isGenericOrPollutedCustomerName,
+  resolveCustomerDisplayName,
+} from '@/lib/account-pure';
+
+export { isGenericOrPollutedCustomerName, resolveCustomerDisplayName };
 
 export interface UserProfileRecord {
   userId: string;
@@ -55,16 +62,7 @@ async function writeLocalProfilesMap(map: Record<string, UserProfileRecord>): Pr
 }
 
 function defaultDisplayName(email?: string, name?: string): string {
-  if (name && name.trim()) return name.trim().slice(0, 48);
-  if (email) {
-    return email
-      .replace(
-        /@(kullanici\.restrictedstudio\.shop|anon\.restrictedstudio\.shop|restrictedstudio\.com|restrictedstudio\.local|restricted\.studio|gmail\.com)$/i,
-        ''
-      )
-      .slice(0, 48);
-  }
-  return 'Üye';
+  return resolveCustomerDisplayName({ sessionName: name, email });
 }
 
 function deriveProviderList(authUser: {
@@ -137,12 +135,11 @@ export async function getUserProfile(sessionUser: {
             : '';
 
         authMetaProfile = {
-          displayName:
-            typeof um.rs_display_name === 'string' && um.rs_display_name
-              ? um.rs_display_name
-              : typeof um.full_name === 'string' && um.full_name
-              ? um.full_name
-              : fallbackName,
+          displayName: resolveCustomerDisplayName({
+            userMetadata: um,
+            sessionName: sessionUser.name,
+            email: authUser.email || sessionUser.email,
+          }),
           username:
             typeof um.username === 'string' && um.username
               ? um.username
@@ -178,7 +175,7 @@ export async function getUserProfile(sessionUser: {
           profile: {
             userId: sessionUser.id,
             email: sessionUser.email || authUser?.email || '',
-            displayName: row.display_name || authMetaProfile?.displayName || fallbackName,
+            displayName: cleanCustomerNameCandidate(row.display_name, sessionUser.email || authUser?.email) || authMetaProfile?.displayName || fallbackName,
             username: row.username || authMetaProfile?.username || fallbackName,
             avatarUrl: row.avatar_url ?? authMetaProfile?.avatarUrl ?? null,
             discordHandle: row.discord_handle || authMetaProfile?.discordHandle || '',
@@ -324,6 +321,14 @@ export async function updateUserProfile(
           rs_locale: updated.preferredLocale,
         },
       });
+      try {
+        await adminSupabase
+          .from('orders')
+          .update({ buyer_name: updated.displayName, updated_at: nowIso })
+          .eq('user_id', updated.userId);
+      } catch {
+        // Non-fatal if orders table is not migrated yet
+      }
       if (!upsertErr || existingAuth?.user) {
         persistent = true;
       }
@@ -350,13 +355,21 @@ export async function syncProfileFromOAuth(params: {
   avatarUrl?: string | null;
   discordHandle?: string;
   discordId?: string | null;
-}): Promise<void> {
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) return;
+}): Promise<{ displayName: string; username: string }> {
+  const sanitizedUsername =
+    params.displayName
+      .toLowerCase()
+      .replace(/[^a-z0-9._-]/g, '')
+      .slice(0, 36) || `uye-${params.userId.slice(0, 8)}`;
+
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return { displayName: params.displayName, username: sanitizedUsername };
+  }
   try {
     const adminSupabase = createAdminSupabase();
     const { data: existing } = await adminSupabase
       .from('user_profiles')
-      .select('display_name, avatar_url, discord_handle, discord_id, auth_providers')
+      .select('display_name, username, avatar_url, discord_handle, discord_id, auth_providers')
       .eq('user_id', params.userId)
       .maybeSingle();
 
@@ -364,22 +377,24 @@ export async function syncProfileFromOAuth(params: {
       ? existing.auth_providers
       : [];
     const nextProviders = Array.from(new Set([...prevProviders, params.provider]));
+    const resolvedDisplayName = cleanCustomerNameCandidate(existing?.display_name, params.email) || params.displayName;
+    const resolvedUsername =
+      (typeof existing?.username === 'string' && existing.username.trim()) || sanitizedUsername;
 
     await adminSupabase.from('user_profiles').upsert({
       user_id: params.userId,
-      display_name: existing?.display_name || params.displayName,
-      username: params.displayName
-        .toLowerCase()
-        .replace(/[^a-z0-9._-]/g, '')
-        .slice(0, 36),
+      display_name: resolvedDisplayName,
+      username: resolvedUsername,
       avatar_url: existing?.avatar_url || params.avatarUrl || null,
       discord_handle: existing?.discord_handle || params.discordHandle || '',
       discord_id: existing?.discord_id || params.discordId || null,
       auth_providers: nextProviders,
       updated_at: new Date().toISOString(),
     });
+    return { displayName: resolvedDisplayName, username: resolvedUsername };
   } catch {
     // Non-fatal if user_profiles table hasn't been created yet
+    return { displayName: params.displayName, username: sanitizedUsername };
   }
 }
 
