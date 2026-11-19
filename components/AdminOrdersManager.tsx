@@ -244,7 +244,8 @@ export default function AdminOrdersManager() {
               Telegram Bot Bildirimleri (@{tgInfo.botUsername})
             </strong>
             <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>
-              Bot: {tgInfo.configured ? 'Aktif' : 'Token Eksik'} · Webhook:{' '}
+              Bot: {tgInfo.configured ? 'Aktif' : 'Token Eksik (Redeploy Gerekebilir)'} · Secret:{' '}
+              {tgInfo.webhookSecretConfigured ? 'Tanımlı' : 'Eksik'} · Webhook:{' '}
               {tgInfo.webhookUrl ? 'Bağlı' : 'Kurulmadı'} · Yönetici Sohbeti:{' '}
               {tgInfo.adminChatIdsCount} bağlı
             </span>
@@ -263,18 +264,18 @@ export default function AdminOrdersManager() {
             <button
               type="button"
               onClick={() => void handleTelegramAction('setup_webhook')}
-              disabled={!tgInfo.configured || tgInfo.busy}
+              disabled={tgInfo.busy}
               className="rs-admin-store-btn-ghost"
             >
-              Webhook Kur
+              {tgInfo.busy ? 'İşleniyor...' : 'Webhook Kur'}
             </button>
             <button
               type="button"
               onClick={() => void handleTelegramAction('test_admin_message')}
-              disabled={!tgInfo.configured || tgInfo.busy}
+              disabled={tgInfo.busy}
               className="rs-admin-store-btn-primary"
             >
-              Test Gönder
+              {tgInfo.busy ? 'Gönderiliyor...' : 'Test Gönder'}
             </button>
           </div>
         </div>
