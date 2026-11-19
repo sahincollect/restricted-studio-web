@@ -213,32 +213,46 @@ function backoffDurationMs(failures: number): number {
 export async function checkAuthBackoff(keys: string[]): Promise<{ locked: boolean; retryAfter: number }> {
   const now = Date.now();
   let maxLockedUntil = 0;
-
-  for (const key of keys) {
-    const mem = memLockouts.get(key);
-    if (mem && mem.lockedUntil > now) {
-      maxLockedUntil = Math.max(maxLockedUntil, mem.lockedUntil);
-    }
-  }
+  let dbAuthoritative = false;
 
   if (process.env.SUPABASE_SERVICE_ROLE_KEY && keys.length > 0) {
     try {
       const adminSupabase = createAdminSupabase();
-      const { data } = await adminSupabase
+      const { data, error } = await adminSupabase
         .from('auth_lockouts')
         .select('lock_key, locked_until')
         .in('lock_key', keys);
 
-      if (Array.isArray(data)) {
+      if (!error && Array.isArray(data)) {
+        dbAuthoritative = true;
+        const dbLockedByKey = new Map<string, number>();
         for (const row of data) {
-          if (row.locked_until) {
+          if (row.locked_until && typeof row.lock_key === 'string') {
             const ts = new Date(row.locked_until).getTime();
-            if (ts > now) maxLockedUntil = Math.max(maxLockedUntil, ts);
+            if (ts > now) {
+              dbLockedByKey.set(row.lock_key, ts);
+              maxLockedUntil = Math.max(maxLockedUntil, ts);
+            }
+          }
+        }
+        // Keep in-memory cache synchronized if an admin cleared rows in Supabase SQL
+        for (const key of keys) {
+          if (!dbLockedByKey.has(key)) {
+            memLockouts.delete(key);
           }
         }
       }
     } catch {
       // Safe fallback to in-memory lockout tracking
+    }
+  }
+
+  if (!dbAuthoritative) {
+    for (const key of keys) {
+      const mem = memLockouts.get(key);
+      if (mem && mem.lockedUntil > now) {
+        maxLockedUntil = Math.max(maxLockedUntil, mem.lockedUntil);
+      }
     }
   }
 
