@@ -65,7 +65,12 @@ const adminRefreshMap = (globalAdminRefresh.__rsAdminRefreshMap ||= new Map());
 const adminRevokedFamilies = (globalAdminRefresh.__rsAdminRevokedFamilies ||= new Set());
 
 function sessionSecret(): string | null {
-  return process.env.ADMIN_SESSION_SECRET || null;
+  const s = (process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_SECRET_KEY || '').trim();
+  return s.length >= 16 ? s : null;
+}
+
+export function isAdminSessionSecretConfigured(): boolean {
+  return Boolean(sessionSecret());
 }
 
 function sha256Buf(value: string) {
@@ -175,14 +180,16 @@ export async function verifyAdminCredentials(username: string, password: string)
   const cleanUser = username.trim();
   if (!cleanUser || !password) return false;
 
-  const u = process.env.ADMIN_USERNAME;
+  const u = process.env.ADMIN_USERNAME?.trim();
   const p = process.env.ADMIN_PASSWORD;
-  const pHash = process.env.ADMIN_PASSWORD_HASH;
+  const pHash = process.env.ADMIN_PASSWORD_HASH?.trim();
   if (u && (p || pHash)) {
-    const userOk = safeEqual(cleanUser, u);
+    const userOk = safeEqual(cleanUser.toLowerCase(), u.toLowerCase());
     let passOk = false;
     if (pHash && pHash.startsWith('$argon2id$')) {
       passOk = await verifyArgon2idPassword(password, pHash);
+    } else if (p && p.trim().startsWith('$argon2id$')) {
+      passOk = await verifyArgon2idPassword(password, p.trim());
     } else if (p) {
       passOk = safeEqual(password, p);
     }
@@ -209,13 +216,13 @@ export async function verifyAdminCredentials(username: string, password: string)
 
       if (!error && Array.isArray(rows)) {
         for (const row of rows) {
+          const dbHash = typeof row.password_hash === 'string' ? row.password_hash.trim() : '';
           if (
             typeof row.username === 'string' &&
-            typeof row.password_hash === 'string' &&
             safeEqual(cleanUser.toLowerCase(), row.username.toLowerCase()) &&
-            row.password_hash.startsWith('$argon2id$')
+            dbHash.startsWith('$argon2id$')
           ) {
-            if (await verifyArgon2idPassword(password, row.password_hash)) {
+            if (await verifyArgon2idPassword(password, dbHash)) {
               return true;
             }
           }

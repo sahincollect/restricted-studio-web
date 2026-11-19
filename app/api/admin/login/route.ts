@@ -7,6 +7,7 @@ import {
   clearAdminCookies,
   createEnrollmentCookieValue,
   createPreAuthToken,
+  isAdminSessionSecretConfigured,
   readCookie,
   resolveElevatedAdminSession,
   attachAdminElevatedCookies,
@@ -54,6 +55,7 @@ export async function GET(request: Request) {
     {
       authenticated: false,
       mfaPending: Boolean(preauth),
+      secretConfigured: isAdminSessionSecretConfigured(),
     },
     { headers: { 'Cache-Control': 'no-store' } }
   );
@@ -63,6 +65,16 @@ export async function POST(request: Request) {
   const startedAt = Date.now();
   const guard = guardApiRequest(request, 'admin_login', { checkSameOrigin: true });
   if (!guard.ok) return guard.response;
+
+  if (!isAdminSessionSecretConfigured()) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Sunucuda ADMIN_SESSION_SECRET (veya ADMIN_SECRET_KEY) ortam değişkeni tanımlı değil.',
+      },
+      { status: 503, headers: { 'Cache-Control': 'no-store' } }
+    );
+  }
 
   const parsed = await parseJsonBodySafe(request, 4096);
   if (!parsed.ok) return parsed.response;
