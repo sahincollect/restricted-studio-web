@@ -367,6 +367,19 @@ export default function AccountPortalClient({
   const [verifyingPay, setVerifyingPay] = useState(false);
   const [pendingRemainingSecs, setPendingRemainingSecs] = useState<number>(900);
   const autoExpiredVerifyRef = useRef<string | null>(null);
+  const [tgState, setTgState] = useState<{
+    configured: boolean;
+    linked: boolean;
+    username: string | null;
+    bindUrl: string | null;
+    busy: boolean;
+  }>({
+    configured: false,
+    linked: Boolean(initialProfile.telegramLinked),
+    username: initialProfile.telegramUsername || null,
+    bindUrl: null,
+    busy: false,
+  });
 
   // Profile form
   const [displayName, setDisplayName] = useState(initialProfile.displayName);
@@ -387,6 +400,48 @@ export default function AccountPortalClient({
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
+
+  const loadTelegramNotifState = useCallback(async () => {
+    try {
+      const res = await fetch('/api/notifications', {
+        credentials: 'same-origin',
+        cache: 'no-store',
+      });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.success) {
+        setTgState((prev) => ({
+          ...prev,
+          configured: Boolean(data.telegramBotConfigured),
+          linked: Boolean(data.telegramLinked),
+          username: data.telegramUsername || null,
+          bindUrl: data.telegramBindUrl || null,
+        }));
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadTelegramNotifState();
+  }, [loadTelegramNotifState]);
+
+  const handleUnlinkTelegram = async () => {
+    setTgState((prev) => ({ ...prev, busy: true }));
+    try {
+      const res = await fetch('/api/notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ action: 'unlink_telegram' }),
+      });
+      if (res.ok) {
+        await loadTelegramNotifState();
+      }
+    } finally {
+      setTgState((prev) => ({ ...prev, busy: false }));
+    }
+  };
 
   const loadOrderThread = useCallback(async (ref: string, silent = false) => {
     if (!silent) setChatLoading(true);
@@ -723,6 +778,60 @@ export default function AccountPortalClient({
                   <span className="rs-sla-tag">{ui.slaTitle}</span>
                   <p>{ui.slaText}</p>
                 </div>
+
+                {tgState.configured && (
+                  <div className="rs-tg-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <strong style={{ fontSize: '12.5px', color: '#e0f2fe' }}>
+                        Telegram Anlık Bildirim
+                      </strong>
+                      <span className={`rs-status-badge ${tgState.linked ? 'is-ok' : 'is-warn'}`}>
+                        {tgState.linked
+                          ? tgState.username
+                            ? `Bağlı (@${tgState.username})`
+                            : 'Bağlı'
+                          : 'Bağlı Değil'}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '11.5px', color: 'var(--text-secondary)', lineHeight: 1.45, margin: 0 }}>
+                      {tgState.linked
+                        ? 'Ödeme onayı, yetkili yanıtı ve ürün hazır bildirimleri Telegram hesabınıza anında iletilir.'
+                        : 'Ürününüz hazır olduğunda ve yeni mesaj geldiğinde ücretsiz Telegram bildirimi almak için bota bağlanın.'}
+                    </p>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      {tgState.linked ? (
+                        <button
+                          type="button"
+                          onClick={() => void handleUnlinkTelegram()}
+                          disabled={tgState.busy}
+                          className="st-pill-btn is-outline is-sm"
+                        >
+                          Bağlantıyı Kes
+                        </button>
+                      ) : (
+                        <>
+                          {tgState.bindUrl && (
+                            <a
+                              href={tgState.bindUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="st-pill-btn is-ember is-sm"
+                            >
+                              Telegram Bildirimlerini Aç ↗
+                            </a>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => void loadTelegramNotifState()}
+                            className="st-pill-btn is-outline is-sm"
+                          >
+                            Durumu Yenile
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {orders.length === 0 ? (
                   <div style={{ padding: '24px 8px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>

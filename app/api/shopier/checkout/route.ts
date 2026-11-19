@@ -20,6 +20,7 @@ import {
   type OrderLineItem,
 } from '@/lib/orders-store';
 import { writeAuditLog } from '@/lib/audit-log';
+import { dispatchOrderNotification } from '@/lib/notifications';
 
 export const dynamic = 'force-dynamic';
 
@@ -213,6 +214,8 @@ export async function POST(request: Request) {
       persistent: created.persistent,
     },
   });
+
+  await dispatchOrderNotification({ type: 'order_created', order: created.order });
 
   const res = NextResponse.json(
     {

@@ -10,6 +10,7 @@ import {
   type ShopierOrderRecord,
 } from '@/lib/shopier';
 import { writeAuditLog } from '@/lib/audit-log';
+import { dispatchOrderNotification } from '@/lib/notifications';
 import {
   SHOPIER_LISTING_TTL_MINUTES,
   SHOPIER_LISTING_TTL_MS,
@@ -551,6 +552,12 @@ async function promoteMatchedShopierOrder(ord: OrderRecord, match: ShopierOrderR
     messageType: 'status_update',
     body: `Shopier ödemesi doğrulandı (Shopier Sipariş #${match.id}). Siparişiniz hazırlık sırasına alındı. ${DELIVERY_SLA_NOTICE_TR}`,
   });
+
+  await dispatchOrderNotification({
+    type: 'order_paid',
+    order: nextOrder,
+    shopierOrderId: String(match.id),
+  });
   return true;
 }
 
@@ -660,6 +667,11 @@ async function runExpiredShopierCleanup(
         shopierProductId: ord.shopierProductId,
         createdAt: ord.createdAt,
       },
+    });
+
+    await dispatchOrderNotification({
+      type: 'order_expired',
+      order: claimed,
     });
 
     cancelledRefs.push(ord.referenceCode);

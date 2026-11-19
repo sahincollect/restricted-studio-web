@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { guardApiRequest, parseJsonBodySafe, verifyTurnstileToken } from '@/lib/security-server';
 import { ServiceRequestSchema, escapeHtml, sanitizePlainText } from '@/lib/validation';
 import { writeAuditLog } from '@/lib/audit-log';
+import { notifyServiceRequestTelegram } from '@/lib/notifications';
 
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 const DEFAULT_TO_EMAIL = 'info@restrictedstudio.shop';
@@ -202,6 +203,16 @@ export async function POST(request: Request) {
         budget,
         resendId: resendPayload.id || null,
       },
+    });
+
+    await notifyServiceRequestTelegram({
+      requestId,
+      serviceTitle,
+      fullName,
+      email,
+      discordHandle,
+      packageTier,
+      budget,
     });
 
     return NextResponse.json(

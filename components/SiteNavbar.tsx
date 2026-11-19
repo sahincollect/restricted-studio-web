@@ -261,6 +261,9 @@ const ACCOUNT_NAV_COPY: Record<
     logout: string;
     loggingOut: string;
     ordersBadge: (n: number) => string;
+    notificationsTitle: string;
+    notificationsEmpty: string;
+    markAllRead: string;
   }
 > = {
   tr: {
@@ -271,6 +274,9 @@ const ACCOUNT_NAV_COPY: Record<
     logout: 'Çıkış',
     loggingOut: 'Çıkış yapılıyor...',
     ordersBadge: (n) => `${n} aktif sipariş`,
+    notificationsTitle: 'Bildirimler',
+    notificationsEmpty: 'Yeni bildiriminiz bulunmuyor.',
+    markAllRead: 'Tümünü Oku',
   },
   en: {
     account: 'My Account',
@@ -280,6 +286,9 @@ const ACCOUNT_NAV_COPY: Record<
     logout: 'Sign Out',
     loggingOut: 'Signing out...',
     ordersBadge: (n) => `${n} active orders`,
+    notificationsTitle: 'Notifications',
+    notificationsEmpty: 'No new notifications yet.',
+    markAllRead: 'Mark All Read',
   },
   ru: {
     account: 'Аккаунт',
@@ -289,6 +298,9 @@ const ACCOUNT_NAV_COPY: Record<
     logout: 'Выйти',
     loggingOut: 'Выход...',
     ordersBadge: (n) => `Активных заказов: ${n}`,
+    notificationsTitle: 'Уведомления',
+    notificationsEmpty: 'Новых уведомлений пока нет.',
+    markAllRead: 'Прочитать все',
   },
   fr: {
     account: 'Mon compte',
@@ -298,6 +310,9 @@ const ACCOUNT_NAV_COPY: Record<
     logout: 'Déconnexion',
     loggingOut: 'Déconnexion...',
     ordersBadge: (n) => `${n} commande(s) active(s)`,
+    notificationsTitle: 'Notifications',
+    notificationsEmpty: 'Aucune nouvelle notification.',
+    markAllRead: 'Tout marquer lu',
   },
 };
 
@@ -336,6 +351,15 @@ interface AccountNavSummary {
   pendingOrdersCount?: number;
 }
 
+interface NavNotificationItem {
+  id: string;
+  title: string;
+  body: string;
+  href: string;
+  readAt: string | null;
+  createdAt: string;
+}
+
 export default function SiteNavbar({
   activePath,
   mainOrigin = '',
@@ -350,11 +374,15 @@ export default function SiteNavbar({
   const [catalogMenuOpen, setCatalogMenuOpen] = useState(false);
   const [mobileCatalogOpen, setMobileCatalogOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [notifMenuOpen, setNotifMenuOpen] = useState(false);
+  const [notifications, setNotifications] = useState<NavNotificationItem[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [mobileAccountOpen, setMobileAccountOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [accountSummary, setAccountSummary] = useState<AccountNavSummary | null>(null);
   const catalogDropRef = useRef<HTMLDivElement | null>(null);
   const accountDropRef = useRef<HTMLDivElement | null>(null);
+  const notifDropRef = useRef<HTMLDivElement | null>(null);
 
   const current = activePath || pathname || '/';
   const siteLink = (path: string) => (mainOrigin ? `${mainOrigin}${path}` : path);
@@ -363,6 +391,7 @@ export default function SiteNavbar({
     setDrawerOpen(false);
     setCatalogMenuOpen(false);
     setAccountMenuOpen(false);
+    setNotifMenuOpen(false);
     setMobileAccountOpen(false);
     if (current.startsWith('/katalog') || current.startsWith('/lisanslar') || current.startsWith('/hizmetler')) {
       setMobileCatalogOpen(true);
@@ -375,6 +404,7 @@ export default function SiteNavbar({
         setDrawerOpen(false);
         setCatalogMenuOpen(false);
         setAccountMenuOpen(false);
+        setNotifMenuOpen(false);
       }
     };
     const onOutsideClick = (e: MouseEvent) => {
@@ -383,6 +413,9 @@ export default function SiteNavbar({
       }
       if (accountDropRef.current && !accountDropRef.current.contains(e.target as Node)) {
         setAccountMenuOpen(false);
+      }
+      if (notifDropRef.current && !notifDropRef.current.contains(e.target as Node)) {
+        setNotifMenuOpen(false);
       }
     };
     window.addEventListener('keydown', onKey);
@@ -443,6 +476,48 @@ export default function SiteNavbar({
       cancelled = true;
     };
   }, [mainOrigin, pathname]);
+
+  useEffect(() => {
+    if (mainOrigin || !accountSummary?.authenticated) return;
+    let cancelled = false;
+    const pullNotifications = () => {
+      fetch('/api/notifications', { cache: 'no-store', credentials: 'same-origin' })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!cancelled && data?.success) {
+            setNotifications(Array.isArray(data.notifications) ? data.notifications : []);
+            setUnreadCount(Number(data.unreadCount || 0));
+          }
+        })
+        .catch(() => undefined);
+    };
+    pullNotifications();
+    const id = window.setInterval(() => {
+      if (document.visibilityState === 'visible') pullNotifications();
+    }, 30_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [mainOrigin, accountSummary?.authenticated]);
+
+  const handleMarkNotificationsRead = async (notificationId?: string) => {
+    try {
+      const res = await fetch('/api/notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ action: 'mark_read', notificationId }),
+      });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.success) {
+        setNotifications(Array.isArray(data.notifications) ? data.notifications : []);
+        setUnreadCount(Number(data.unreadCount || 0));
+      }
+    } catch {
+      // ignore
+    }
+  };
 
   const isActive = (href: string) => {
     if (href === '/') return current === '/';
@@ -730,11 +805,89 @@ export default function SiteNavbar({
                   </svg>
                 </a>
               ) : accountSummary?.authenticated ? (
-                <div className="st-nav-account-wrap" ref={accountDropRef}>
-                  <button
-                    type="button"
-                    onClick={() => setAccountMenuOpen((prev) => !prev)}
-                    className="st-circle-btn is-account-active"
+                <>
+                  <div className="st-nav-account-wrap" ref={notifDropRef}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNotifMenuOpen((prev) => !prev);
+                        setAccountMenuOpen(false);
+                      }}
+                      className="st-circle-btn"
+                      title={accountCopy.notificationsTitle}
+                      aria-label={accountCopy.notificationsTitle}
+                      aria-expanded={notifMenuOpen}
+                      aria-haspopup="menu"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.1"
+                        aria-hidden="true"
+                      >
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                      </svg>
+                      {unreadCount > 0 && (
+                        <span className="st-notif-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+                      )}
+                    </button>
+
+                    {notifMenuOpen && (
+                      <div className="st-notif-dropdown" role="menu" aria-label={accountCopy.notificationsTitle}>
+                        <div className="st-notif-head">
+                          <strong style={{ fontSize: '12.5px', color: '#fff' }}>
+                            {accountCopy.notificationsTitle} {unreadCount > 0 ? `(${unreadCount})` : ''}
+                          </strong>
+                          {notifications.length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => void handleMarkNotificationsRead()}
+                              className="st-notif-mark-btn"
+                            >
+                              {accountCopy.markAllRead}
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="st-notif-list">
+                          {notifications.length === 0 ? (
+                            <div style={{ padding: '14px 8px', textAlign: 'center', fontSize: '12px', color: 'var(--text-muted)' }}>
+                              {accountCopy.notificationsEmpty}
+                            </div>
+                          ) : (
+                            notifications.slice(0, 8).map((n) => (
+                              <Link
+                                key={n.id}
+                                href={n.href}
+                                prefetch={false}
+                                className={`st-notif-item ${!n.readAt ? 'is-unread' : ''}`}
+                                onClick={() => {
+                                  if (!n.readAt) void handleMarkNotificationsRead(n.id);
+                                  setNotifMenuOpen(false);
+                                }}
+                              >
+                                <span className="st-notif-item-title">{n.title}</span>
+                                <span className="st-notif-item-body">{n.body}</span>
+                              </Link>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="st-nav-account-wrap" ref={accountDropRef}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAccountMenuOpen((prev) => !prev);
+                        setNotifMenuOpen(false);
+                      }}
+                      className="st-circle-btn is-account-active"
                     title={`${accountSummary.displayName || accountCopy.account}${
                       accountSummary.pendingOrdersCount
                         ? ` · ${accountCopy.ordersBadge(accountSummary.pendingOrdersCount)}`
@@ -822,7 +975,8 @@ export default function SiteNavbar({
                       </button>
                     </div>
                   )}
-                </div>
+                  </div>
+                </>
               ) : (
                 <Link
                   href="/login"
@@ -973,6 +1127,20 @@ export default function SiteNavbar({
                       <span>{accountCopy.viewProfile}</span>
                       <span aria-hidden="true">→</span>
                     </Link>
+                    {unreadCount > 0 && (
+                      <Link
+                        href="/hesabim?tab=orders"
+                        prefetch={false}
+                        className="st-account-drop-item"
+                        onClick={() => {
+                          void handleMarkNotificationsRead();
+                          setDrawerOpen(false);
+                        }}
+                      >
+                        <span>{accountCopy.notificationsTitle} ({unreadCount})</span>
+                        <span aria-hidden="true">🔔</span>
+                      </Link>
+                    )}
                     <button
                       type="button"
                       onClick={() => void handleAccountLogout()}

@@ -9,6 +9,7 @@ import {
 import { getUserProfile } from '@/lib/account-store';
 import { appendOrderMessage, getOrderWithMessages } from '@/lib/orders-store';
 import { writeAuditLog } from '@/lib/audit-log';
+import { dispatchOrderNotification } from '@/lib/notifications';
 
 export const dynamic = 'force-dynamic';
 
@@ -82,6 +83,13 @@ export async function POST(
     action: 'ORDER_CHAT_CUSTOMER_MESSAGE',
     resourceType: 'order',
     resourceId: found.order.referenceCode,
+  });
+
+  await dispatchOrderNotification({
+    type: 'customer_message',
+    order: found.order,
+    senderName: profile.displayName || session.user.name || 'Müşteri',
+    messageBody: cleanBody,
   });
 
   const res = NextResponse.json(

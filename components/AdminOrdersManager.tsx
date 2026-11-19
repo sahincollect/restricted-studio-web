@@ -21,6 +21,15 @@ export default function AdminOrdersManager() {
     'Kurulum dosyası / lisans aktivasyon adımları hazır. Sorunuz olursa bu oda üzerinden yanıt verebilirsiniz.'
   );
   const [busy, setBusy] = useState(false);
+  const [tgInfo, setTgInfo] = useState<{
+    configured: boolean;
+    botUsername: string;
+    webhookSecretConfigured: boolean;
+    webhookUrl: string | null;
+    adminChatIdsCount: number;
+    adminBindUrl: string | null;
+    busy: boolean;
+  } | null>(null);
 
   const loadOrders = useCallback(async () => {
     setLoading(true);
@@ -61,9 +70,53 @@ export default function AdminOrdersManager() {
     }
   }, []);
 
+  const loadTelegramAdmin = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/telegram', {
+        credentials: 'same-origin',
+        cache: 'no-store',
+      });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.success) {
+        setTgInfo({
+          configured: Boolean(data.configured),
+          botUsername: data.botUsername || 'restrictedstudio_bot',
+          webhookSecretConfigured: Boolean(data.webhookSecretConfigured),
+          webhookUrl: data.webhookUrl || null,
+          adminChatIdsCount: Number(data.adminChatIdsCount || 0),
+          adminBindUrl: data.adminBindUrl || null,
+          busy: false,
+        });
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
   useEffect(() => {
     void loadOrders();
-  }, [loadOrders]);
+    void loadTelegramAdmin();
+  }, [loadOrders, loadTelegramAdmin]);
+
+  const handleTelegramAction = async (action: 'setup_webhook' | 'test_admin_message') => {
+    setTgInfo((prev) => (prev ? { ...prev, busy: true } : prev));
+    setStatusMsg(null);
+    try {
+      const res = await fetch('/api/admin/telegram', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ action }),
+      });
+      const data = await res.json().catch(() => null);
+      setStatusMsg(data?.message || 'Telegram işlemi tamamlandı.');
+      await loadTelegramAdmin();
+    } catch {
+      setStatusMsg('Telegram isteği sırasında bağlantı hatası.');
+    } finally {
+      setTgInfo((prev) => (prev ? { ...prev, busy: false } : prev));
+    }
+  };
 
   useEffect(() => {
     if (selectedRef) void loadOrderThread(selectedRef);
@@ -183,6 +236,49 @@ export default function AdminOrdersManager() {
           </button>
         </div>
       </div>
+
+      {tgInfo && (
+        <div className="rs-admin-tg-bar">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+            <strong style={{ fontSize: '12.5px', color: '#e0f2fe' }}>
+              Telegram Bot Bildirimleri (@{tgInfo.botUsername})
+            </strong>
+            <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>
+              Bot: {tgInfo.configured ? 'Aktif' : 'Token Eksik'} · Webhook:{' '}
+              {tgInfo.webhookUrl ? 'Bağlı' : 'Kurulmadı'} · Yönetici Sohbeti:{' '}
+              {tgInfo.adminChatIdsCount} bağlı
+            </span>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            {tgInfo.adminBindUrl && (
+              <a
+                href={tgInfo.adminBindUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rs-admin-store-btn-ghost"
+              >
+                Admin Telegram Bağla ↗
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={() => void handleTelegramAction('setup_webhook')}
+              disabled={!tgInfo.configured || tgInfo.busy}
+              className="rs-admin-store-btn-ghost"
+            >
+              Webhook Kur
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleTelegramAction('test_admin_message')}
+              disabled={!tgInfo.configured || tgInfo.busy}
+              className="rs-admin-store-btn-primary"
+            >
+              Test Gönder
+            </button>
+          </div>
+        </div>
+      )}
 
       {!tableReady && (
         <div

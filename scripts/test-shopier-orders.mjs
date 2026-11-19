@@ -16,6 +16,11 @@ import {
   getOrderRemainingSeconds,
   isPendingShopierOrderExpired,
 } from '../lib/order-timer.ts';
+import {
+  createTelegramAdminBindUrl,
+  createTelegramCustomerBindUrl,
+  verifyTelegramStartToken,
+} from '../lib/telegram-tokens.ts';
 
 test('validateAvatarInput enforces presets, HTTPS URLs, magic bytes, and size limits', () => {
   assert.deepEqual(validateAvatarInput('preset:Ember'), { ok: true, value: 'preset:ember' });
@@ -185,4 +190,40 @@ test('15-minute Shopier listing expiry helpers detect unpaid timeouts accurately
     isPendingShopierOrderExpired({ ...pendingOrder, paymentProvider: 'itemsatis' }, exact15m00s),
     false
   );
+});
+
+test('Telegram start token links stay within 64 chars, verify HMAC, and reject tampering/expiry', () => {
+  const prevTok = process.env.TELEGRAM_BOT_TOKEN;
+  const prevUser = process.env.TELEGRAM_BOT_USERNAME;
+  const prevSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
+
+  process.env.TELEGRAM_BOT_TOKEN = '9173303927:AAG_TEST_TOKEN_SECRET_VALUE';
+  process.env.TELEGRAM_BOT_USERNAME = 'restrictedstudio_bot';
+  process.env.TELEGRAM_WEBHOOK_SECRET = 'telegram-test-signing-key-987654321';
+
+  const uid = 'a1b2c3d4-e5f6-4789-8abc-1234567890ef';
+  const custUrl = createTelegramCustomerBindUrl(uid, 600);
+  assert.ok(custUrl);
+  const custToken = new URL(custUrl).searchParams.get('start');
+  assert.ok(custToken && custToken.length <= 64);
+  assert.deepEqual(verifyTelegramStartToken(custToken), { role: 'customer', userId: uid });
+
+  const tampered = custToken.slice(0, -1) + (custToken.endsWith('0') ? '1' : '0');
+  assert.equal(verifyTelegramStartToken(tampered), null);
+
+  const expiredNow = Math.floor(Date.now() / 1000) + 1200;
+  assert.equal(verifyTelegramStartToken(custToken, expiredNow), null);
+
+  const adminUrl = createTelegramAdminBindUrl(600);
+  assert.ok(adminUrl);
+  const adminToken = new URL(adminUrl).searchParams.get('start');
+  assert.ok(adminToken && adminToken.length <= 64);
+  assert.deepEqual(verifyTelegramStartToken(adminToken), { role: 'admin' });
+
+  if (prevTok === undefined) delete process.env.TELEGRAM_BOT_TOKEN;
+  else process.env.TELEGRAM_BOT_TOKEN = prevTok;
+  if (prevUser === undefined) delete process.env.TELEGRAM_BOT_USERNAME;
+  else process.env.TELEGRAM_BOT_USERNAME = prevUser;
+  if (prevSecret === undefined) delete process.env.TELEGRAM_WEBHOOK_SECRET;
+  else process.env.TELEGRAM_WEBHOOK_SECRET = prevSecret;
 });

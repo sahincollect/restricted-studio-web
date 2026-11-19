@@ -10,6 +10,7 @@ import {
   type OrderRecord,
 } from '@/lib/orders-store';
 import { writeAuditLog } from '@/lib/audit-log';
+import { dispatchOrderNotification } from '@/lib/notifications';
 
 export const dynamic = 'force-dynamic';
 
@@ -98,6 +99,12 @@ export async function POST(request: Request) {
       resourceType: 'order',
       resourceId: targetOrder.referenceCode,
       metadata: { eventName, shopierOrderId: String(shopierOrder.id) },
+    });
+
+    await dispatchOrderNotification({
+      type: 'order_paid',
+      order: updated,
+      shopierOrderId: String(shopierOrder.id),
     });
   }
 

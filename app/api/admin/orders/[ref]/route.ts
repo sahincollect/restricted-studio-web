@@ -11,6 +11,7 @@ import {
   type DeliveryPayload,
 } from '@/lib/orders-store';
 import { writeAuditLog } from '@/lib/audit-log';
+import { dispatchOrderNotification } from '@/lib/notifications';
 
 export const dynamic = 'force-dynamic';
 
@@ -123,6 +124,20 @@ export async function POST(
       metadata: { nextStatus: input.nextStatus || null },
     });
 
+    if (input.nextStatus === 'delivered') {
+      await dispatchOrderNotification({
+        type: 'order_delivered',
+        order: updatedOrder,
+        instructions: cleanBody,
+      });
+    } else {
+      await dispatchOrderNotification({
+        type: 'admin_message',
+        order: updatedOrder,
+        messageBody: cleanBody,
+      });
+    }
+
     const fresh = await getOrderWithMessages(ref);
     return finalizeAdminResponse(request, auth, {
       success: true,
@@ -184,6 +199,14 @@ export async function POST(
     resourceType: 'order',
     resourceId: deliveredOrder.referenceCode,
     afterState: { status: 'delivered', hasCode: Boolean(cleanCode), hasUrl: Boolean(cleanUrl), shopierFulfilled },
+  });
+
+  await dispatchOrderNotification({
+    type: 'order_delivered',
+    order: deliveredOrder,
+    instructions: cleanInstructions,
+    hasCode: Boolean(cleanCode),
+    hasUrl: Boolean(cleanUrl),
   });
 
   const fresh = await getOrderWithMessages(ref);

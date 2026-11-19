@@ -344,5 +344,55 @@ create policy "deny_all_admin_operators"
 
 revoke all on public.admin_operators from anon, authenticated;
 
+-- 14. Telegram Bildirim Alanları, Admin Ayarları & Site İçi Bildirimler
+alter table public.user_profiles add column if not exists telegram_chat_id text;
+alter table public.user_profiles add column if not exists telegram_username text;
+create index if not exists user_profiles_tg_chat_idx on public.user_profiles (telegram_chat_id);
+
+create table if not exists public.admin_settings (
+  key        text primary key,
+  value      jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.admin_settings enable row level security;
+
+drop policy if exists "deny_all_admin_settings" on public.admin_settings;
+create policy "deny_all_admin_settings"
+  on public.admin_settings
+  for all
+  to anon, authenticated
+  using (false)
+  with check (false);
+
+revoke all on public.admin_settings from anon, authenticated;
+
+create table if not exists public.user_notifications (
+  id             uuid primary key default gen_random_uuid(),
+  user_id        uuid not null references auth.users(id) on delete cascade,
+  reference_code text,
+  kind           text not null default 'info',
+  title          text not null,
+  body           text not null,
+  href           text not null default '/hesabim',
+  read_at        timestamptz,
+  created_at     timestamptz not null default now()
+);
+
+create index if not exists user_notifications_user_created_idx
+  on public.user_notifications (user_id, created_at desc);
+
+alter table public.user_notifications enable row level security;
+
+drop policy if exists "user_notifications_select_own" on public.user_notifications;
+create policy "user_notifications_select_own"
+  on public.user_notifications
+  for select
+  to authenticated
+  using (auth.uid() = user_id);
+
+revoke all on public.user_notifications from anon, authenticated;
+grant select on public.user_notifications to authenticated;
+
 -- PostgREST şema önbelleğini yenile
 notify pgrst, 'reload schema';
