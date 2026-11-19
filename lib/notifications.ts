@@ -332,11 +332,12 @@ export async function dispatchOrderNotification(event: OrderNotificationEvent): 
 
     if (event.type === 'customer_message') {
       const snippet = sanitizePlainText(event.messageBody, 450);
+      const isSupport = order.source === 'support' || order.paymentProvider === 'direct';
       const msg = [
-        `💬 <b>Müşteriden Yeni Mesaj</b>`,
+        isSupport ? `💬 <b>Canlı Destek Mesajı</b>` : `💬 <b>Müşteriden Yeni Mesaj</b>`,
         `<b>Ref:</b> <code>${escapeTelegramHtml(ref)}</code>`,
         `<b>Gönderen:</b> ${escapeTelegramHtml(event.senderName)}`,
-        `<b>Ürün:</b> ${escapeTelegramHtml(order.title)}`,
+        `<b>${isSupport ? 'Konu' : 'Ürün'}:</b> ${escapeTelegramHtml(order.title)}`,
         ``,
         `“${escapeTelegramHtml(snippet)}”`,
       ].join('\n');
@@ -397,7 +398,8 @@ export async function dispatchOrderNotification(event: OrderNotificationEvent): 
 
     if (event.type === 'admin_message') {
       const preview = sanitizePlainText(event.messageBody, 350);
-      const custTitle = `Yetkili Mesaj Gönderdi · ${ref}`;
+      const isSupport = order.source === 'support' || order.paymentProvider === 'direct';
+      const custTitle = isSupport ? `Destek Yanıtı · ${ref}` : `Yetkili Mesaj Gönderdi · ${ref}`;
 
       await createUserNotification({
         userId: order.userId,
@@ -413,7 +415,7 @@ export async function dispatchOrderNotification(event: OrderNotificationEvent): 
           contact.telegramChatId,
           [
             `💬 <b>${escapeTelegramHtml(custTitle)}</b>`,
-            `<b>Ürün:</b> ${escapeTelegramHtml(order.title)}`,
+            `<b>${isSupport ? 'Konu' : 'Ürün'}:</b> ${escapeTelegramHtml(order.title)}`,
             ``,
             `“${escapeTelegramHtml(preview)}”`,
           ].join('\n'),
@@ -425,7 +427,7 @@ export async function dispatchOrderNotification(event: OrderNotificationEvent): 
         toEmail: order.buyerEmail || contact.email,
         subject: `[Restricted Studio] ${custTitle}`,
         headline: custTitle,
-        bodyText: `${order.title} siparişiniz için teslimat ekibimiz yeni bir mesaj paylaştı:\n\n"${preview}"`,
+        bodyText: `${order.title} görüşmeniz için ekibimiz yeni bir yanıt paylaştı:\n\n"${preview}"`,
         ctaUrl: orderFullUrl,
         ctaLabel: 'Mesajı Görüntüle',
       });

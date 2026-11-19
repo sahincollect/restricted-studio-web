@@ -21,6 +21,8 @@ import {
 import {
   DELIVERY_SLA_NOTICE_TR,
   generateOrderReferenceCode,
+  generateSupportReferenceCode,
+  isSupportThread,
   matchShopierOrderToInternal,
   type DeliveryPayload,
   type OrderLineItem,
@@ -35,7 +37,9 @@ export {
   DELIVERY_SLA_NOTICE_TR,
   computeOrderExpiresAtIso,
   generateOrderReferenceCode,
+  generateSupportReferenceCode,
   isPendingShopierOrderExpired,
+  isSupportThread,
   matchShopierOrderToInternal,
   type DeliveryPayload,
   type OrderLineItem,
@@ -133,16 +137,19 @@ export async function createOrderWithWelcomeMessage(params: {
   userId: string;
   buyerEmail: string;
   buyerName: string;
-  source: 'catalog' | 'store' | 'service';
-  paymentProvider: 'shopier' | 'itemsatis';
+  source: 'catalog' | 'store' | 'service' | 'support';
+  paymentProvider: 'shopier' | 'itemsatis' | 'direct';
   title: string;
   items: OrderLineItem[];
   totalAmount: number;
   shopierProductId: string | null;
   shopierCheckoutUrl: string | null;
+  initialStatus?: OrderStatus;
+  welcomeBody?: string;
 }): Promise<{ order: OrderRecord; persistent: boolean; backend: 'supabase' | 'local-file' | 'memory-only' }> {
   const nowIso = new Date().toISOString();
   const orderId = crypto.randomUUID();
+  const isDirectSupport = params.source === 'support' || params.paymentProvider === 'direct';
   const record: OrderRecord = {
     id: orderId,
     referenceCode: params.referenceCode,
@@ -155,15 +162,17 @@ export async function createOrderWithWelcomeMessage(params: {
     items: params.items,
     currency: 'TRY',
     totalAmount: params.totalAmount,
-    status: 'pending_payment',
+    status: params.initialStatus || (isDirectSupport ? 'preparing' : 'pending_payment'),
     shopierProductId: params.shopierProductId,
     shopierCheckoutUrl: params.shopierCheckoutUrl,
     shopierOrderId: null,
-    deliverySlaNote: DELIVERY_SLA_NOTICE_TR,
+    deliverySlaNote: isDirectSupport
+      ? 'Canlı destek ve doğrudan müşteri mesajlaşma görüşmesi.'
+      : DELIVERY_SLA_NOTICE_TR,
     deliveryPayload: null,
     paidAt: null,
     deliveredAt: null,
-    expiresAt: computeOrderExpiresAtIso(nowIso),
+    expiresAt: isDirectSupport ? null : computeOrderExpiresAtIso(nowIso),
     createdAt: nowIso,
     updatedAt: nowIso,
   };
@@ -174,10 +183,14 @@ export async function createOrderWithWelcomeMessage(params: {
     referenceCode: params.referenceCode,
     senderUserId: null,
     senderRole: 'system',
-    senderName: 'Restricted Studio Teslimat Masası',
+    senderName: isDirectSupport ? 'Restricted Studio Canlı Destek' : 'Restricted Studio Teslimat Masası',
     senderAvatar: '/assets/newlogo.png',
     messageType: 'status_update',
-    body: `Sipariş kaydınız (${params.referenceCode}) oluşturuldu. Referanslı Shopier ödeme ilanı ${SHOPIER_LISTING_TTL_MINUTES} dakika boyunca aktiftir; bu süre içinde satın alım yapılmazsa ilan otomatik kaldırılır. Ödeme tamamlandığında teslimat süreci başlatılacaktır. ${DELIVERY_SLA_NOTICE_TR}`,
+    body:
+      params.welcomeBody ||
+      (isDirectSupport
+        ? `Canlı destek sohbeti başlatıldı (${params.referenceCode}). Ekibimiz mesajınızı aldığında en kısa sürede buradan yanıt verecektir.`
+        : `Sipariş kaydınız (${params.referenceCode}) oluşturuldu. Referanslı Shopier ödeme ilanı ${SHOPIER_LISTING_TTL_MINUTES} dakika boyunca aktiftir; bu süre içinde satın alım yapılmazsa ilan otomatik kaldırılır. Ödeme tamamlandığında teslimat süreci başlatılacaktır. ${DELIVERY_SLA_NOTICE_TR}`),
     attachmentMeta: null,
     createdAt: nowIso,
   };
@@ -253,7 +266,7 @@ export async function listOrdersForUser(userId: string): Promise<OrderRecord[]> 
         .from('orders')
         .select('*')
         .eq('user_id', userId)
-        .order('created_at', { ascending: false })
+        .order('updated_at', { ascending: false })
         .limit(100);
       if (!error && Array.isArray(data)) {
         return data.map(mapDbOrder);
@@ -263,7 +276,9 @@ export async function listOrdersForUser(userId: string): Promise<OrderRecord[]> 
     }
   }
   const localState = await readLocalOrdersState();
-  return localState.orders.filter((o) => o.userId === userId);
+  return localState.orders
+    .filter((o) => o.userId === userId)
+    .sort((a, b) => Date.parse(b.updatedAt || b.createdAt) - Date.parse(a.updatedAt || a.createdAt));
 }
 
 async function enrichOrdersWithLiveProfiles(orders: OrderRecord[]): Promise<OrderRecord[]> {
@@ -340,7 +355,7 @@ export async function listAllOrdersAdmin(limit = 100): Promise<{
       const { data, error } = await adminSupabase
         .from('orders')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('updated_at', { ascending: false })
         .limit(limit);
       if (!error && Array.isArray(data)) {
         const enriched = await enrichOrdersWithLiveProfiles(data.map(mapDbOrder));

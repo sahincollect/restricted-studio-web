@@ -1,10 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
-import { ShopierCheckoutSchema, validateAvatarInput } from '../lib/validation.ts';
+import {
+  ShopierCheckoutSchema,
+  SupportThreadMessageSchema,
+  validateAvatarInput,
+} from '../lib/validation.ts';
 import {
   DELIVERY_SLA_NOTICE_TR,
   generateOrderReferenceCode,
+  generateSupportReferenceCode,
+  isSupportThread,
   matchShopierOrderToInternal,
   verifyShopierWebhookSignature,
 } from '../lib/orders-pure.ts';
@@ -290,5 +296,72 @@ test('resolveCustomerDisplayName recovers real customer identity over polluted R
       email: 'misafir-88af12@anon.restrictedstudio.shop',
     }),
     'misafir-88af12'
+  );
+});
+
+test('direct support messaging reference codes, schema validation, and non-expiring status work cleanly', () => {
+  const refA = generateSupportReferenceCode();
+  const refB = generateSupportReferenceCode();
+  assert.match(refA, /^RS-MSG-\d{6}-[A-F0-9]{6}$/);
+  assert.notEqual(refA, refB);
+
+  assert.equal(
+    isSupportThread({
+      referenceCode: refA,
+      source: 'support',
+      paymentProvider: 'direct',
+    }),
+    true
+  );
+  assert.equal(
+    isSupportThread({
+      referenceCode: 'RS-ORD-261119-ABCDEF',
+      source: 'catalog',
+      paymentProvider: 'shopier',
+    }),
+    false
+  );
+
+  // Direct support threads never expire via Shopier 15-min timer
+  assert.equal(
+    isPendingShopierOrderExpired(
+      {
+        status: 'preparing',
+        paymentProvider: 'direct',
+        createdAt: '2026-11-19T00:00:00.000Z',
+        expiresAt: null,
+      },
+      Date.parse('2026-11-20T00:00:00.000Z')
+    ),
+    false
+  );
+
+  assert.equal(
+    SupportThreadMessageSchema.safeParse({
+      topic: 'Kurulum & Teknik Destek',
+      body: 'Merhaba, kurulum hakkında destek istiyorum.',
+    }).success,
+    true
+  );
+  assert.equal(
+    SupportThreadMessageSchema.safeParse({
+      referenceCode: refA,
+      body: 'Ek bilgi paylaşıyorum.',
+    }).success,
+    true
+  );
+  assert.equal(
+    SupportThreadMessageSchema.safeParse({
+      referenceCode: '../bad',
+      body: 'test',
+    }).success,
+    false
+  );
+  assert.equal(
+    SupportThreadMessageSchema.safeParse({
+      topic: 'Test',
+      body: '   ',
+    }).success,
+    false
   );
 });

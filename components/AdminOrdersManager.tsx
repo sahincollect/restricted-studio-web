@@ -10,6 +10,7 @@ export default function AdminOrdersManager() {
   const [loading, setLoading] = useState<boolean>(true);
   const [syncing, setSyncing] = useState<boolean>(false);
   const [selectedRef, setSelectedRef] = useState<string | null>(null);
+  const [threadFilter, setThreadFilter] = useState<'all' | 'orders' | 'support'>('all');
   const [selectedOrder, setSelectedOrder] = useState<OrderRecord | null>(null);
   const [messages, setMessages] = useState<OrderMessageRecord[]>([]);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
@@ -322,42 +323,87 @@ export default function AdminOrdersManager() {
           Henüz oluşturulmuş Shopier siparişi yok.
         </div>
       ) : (
-        <div className="rs-admin-orders-grid">
-          <div className="rs-admin-orders-list">
-            {orders.map((ord) => (
+        <>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+            {(
+              [
+                { key: 'all', label: `Tümü (${orders.length})` },
+                {
+                  key: 'orders',
+                  label: `Siparişler (${orders.filter((o) => o.source !== 'support' && o.paymentProvider !== 'direct').length})`,
+                },
+                {
+                  key: 'support',
+                  label: `Canlı Destek Mesajları (${orders.filter((o) => o.source === 'support' || o.paymentProvider === 'direct').length})`,
+                },
+              ] as const
+            ).map((f) => (
               <button
-                key={ord.referenceCode}
+                key={f.key}
                 type="button"
-                onClick={() => setSelectedRef(ord.referenceCode)}
-                className={`rs-order-list-btn ${selectedRef === ord.referenceCode ? 'is-selected' : ''}`}
+                onClick={() => setThreadFilter(f.key)}
+                className={`st-filter-pill ${threadFilter === f.key ? 'is-active' : ''}`}
+                style={{ padding: '6px 13px', fontSize: '12px' }}
               >
-                <div className="rs-order-list-top">
-                  <span className="rs-order-ref">{ord.referenceCode}</span>
-                  <span style={{ fontSize: '11px', color: ord.status === 'delivered' ? '#4ade80' : '#f97316' }}>
-                    {ord.status}
-                  </span>
-                </div>
-                <div className="rs-order-title">{ord.title}</div>
-                <div className="rs-order-meta">
-                  <span>{ord.buyerName || ord.buyerEmail || 'Üye'}</span>
-                  <span>{ord.totalAmount} TL</span>
-                </div>
+                {f.label}
               </button>
             ))}
           </div>
 
-          {selectedOrder && (
-            <div className="rs-admin-order-room">
-              <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
-                <div>
-                  <strong style={{ fontSize: '15px', color: '#fff' }}>
-                    {selectedOrder.referenceCode} · {selectedOrder.title}
-                  </strong>
-                  <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.65)' }}>
-                    Alıcı: {selectedOrder.buyerName} ({selectedOrder.buyerEmail || selectedOrder.userId}) · {selectedOrder.totalAmount} TL
+          <div className="rs-admin-orders-grid">
+            <div className="rs-admin-orders-list">
+              {orders
+                .filter((ord) => {
+                  const isSup = ord.source === 'support' || ord.paymentProvider === 'direct';
+                  if (threadFilter === 'support') return isSup;
+                  if (threadFilter === 'orders') return !isSup;
+                  return true;
+                })
+                .map((ord) => {
+                  const isSup = ord.source === 'support' || ord.paymentProvider === 'direct';
+                  return (
+                    <button
+                      key={ord.referenceCode}
+                      type="button"
+                      onClick={() => setSelectedRef(ord.referenceCode)}
+                      className={`rs-order-list-btn ${selectedRef === ord.referenceCode ? 'is-selected' : ''}`}
+                    >
+                      <div className="rs-order-list-top">
+                        <span className="rs-order-ref">{ord.referenceCode}</span>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            color: isSup ? '#38bdf8' : ord.status === 'delivered' ? '#4ade80' : '#f97316',
+                          }}
+                        >
+                          {isSup ? 'CANLI DESTEK' : ord.status}
+                        </span>
+                      </div>
+                      <div className="rs-order-title">{ord.title}</div>
+                      <div className="rs-order-meta">
+                        <span>{ord.buyerName || ord.buyerEmail || 'Üye'}</span>
+                        <span>{isSup ? 'Mesajlaşma' : `${ord.totalAmount} TL`}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+            </div>
+
+            {selectedOrder && (
+              <div className="rs-admin-order-room">
+                <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+                  <div>
+                    <strong style={{ fontSize: '15px', color: '#fff' }}>
+                      {selectedOrder.referenceCode} · {selectedOrder.title}
+                    </strong>
+                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.65)' }}>
+                      Gönderen: {selectedOrder.buyerName} ({selectedOrder.buyerEmail || selectedOrder.userId}) ·{' '}
+                      {selectedOrder.source === 'support' || selectedOrder.paymentProvider === 'direct'
+                        ? 'Canlı Destek Mesajı'
+                        : `${selectedOrder.totalAmount} TL`}
+                    </div>
                   </div>
                 </div>
-              </div>
 
               <div className="rs-chat-feed" style={{ maxHeight: '260px', marginBottom: '12px' }}>
                 {messages.map((m) => (
@@ -384,54 +430,57 @@ export default function AdminOrdersManager() {
                 </button>
               </form>
 
-              <form
-                onSubmit={handleDeliverBundle}
-                style={{
-                  padding: '14px',
-                  borderRadius: '14px',
-                  background: 'rgba(239, 91, 56, 0.08)',
-                  border: '1px solid rgba(239, 91, 56, 0.3)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '10px',
-                }}
-              >
-                <strong style={{ fontSize: '12.5px', color: '#ef5b38' }}>
-                  KURUMSAL DİJİTAL TESLİMAT YAP (MÜŞTERİ KASASINA SABİTLENİR)
-                </strong>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px' }}>
-                  <input
-                    type="text"
-                    value={licenseCode}
-                    onChange={(e) => setLicenseCode(e.target.value)}
-                    placeholder="Aktivasyon / Lisans Kodu (opsiyonel)"
+              {selectedOrder.source !== 'support' && selectedOrder.paymentProvider !== 'direct' && (
+                <form
+                  onSubmit={handleDeliverBundle}
+                  style={{
+                    padding: '14px',
+                    borderRadius: '14px',
+                    background: 'rgba(239, 91, 56, 0.08)',
+                    border: '1px solid rgba(239, 91, 56, 0.3)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                  }}
+                >
+                  <strong style={{ fontSize: '12.5px', color: '#ef5b38' }}>
+                    KURUMSAL DİJİTAL TESLİMAT YAP (MÜŞTERİ KASASINA SABİTLENİR)
+                  </strong>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px' }}>
+                    <input
+                      type="text"
+                      value={licenseCode}
+                      onChange={(e) => setLicenseCode(e.target.value)}
+                      placeholder="Aktivasyon / Lisans Kodu (opsiyonel)"
+                      className="st-input"
+                    />
+                    <input
+                      type="url"
+                      value={downloadUrl}
+                      onChange={(e) => setDownloadUrl(e.target.value)}
+                      placeholder="https:// indirme / dosya linki (opsiyonel)"
+                      className="st-input"
+                    />
+                  </div>
+                  <textarea
+                    rows={2}
+                    required
+                    value={instructions}
+                    onChange={(e) => setInstructions(e.target.value)}
+                    placeholder="Teslimat & kurulum açıklaması..."
                     className="st-input"
                   />
-                  <input
-                    type="url"
-                    value={downloadUrl}
-                    onChange={(e) => setDownloadUrl(e.target.value)}
-                    placeholder="https:// indirme / dosya linki (opsiyonel)"
-                    className="st-input"
-                  />
-                </div>
-                <textarea
-                  rows={2}
-                  required
-                  value={instructions}
-                  onChange={(e) => setInstructions(e.target.value)}
-                  placeholder="Teslimat & kurulum açıklaması..."
-                  className="st-input"
-                />
-                <div>
-                  <button type="submit" disabled={busy} className="rs-admin-store-btn-primary">
-                    {busy ? 'Gönderiliyor...' : 'Ürünü Teslim Et (Teslim Edildi İşaretle)'}
-                  </button>
-                </div>
-              </form>
+                  <div>
+                    <button type="submit" disabled={busy} className="rs-admin-store-btn-primary">
+                      {busy ? 'Gönderiliyor...' : 'Ürünü Teslim Et (Teslim Edildi İşaretle)'}
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           )}
         </div>
+        </>
       )}
     </section>
   );

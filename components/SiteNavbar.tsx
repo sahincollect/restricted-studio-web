@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useI18n } from '@/components/I18nProvider';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import MessagingCenterModal from '@/components/MessagingCenterModal';
 import type { Locale } from '@/lib/i18n';
 
 const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
@@ -264,6 +265,7 @@ const ACCOUNT_NAV_COPY: Record<
     notificationsTitle: string;
     notificationsEmpty: string;
     markAllRead: string;
+    messagesBtn: string;
   }
 > = {
   tr: {
@@ -277,6 +279,7 @@ const ACCOUNT_NAV_COPY: Record<
     notificationsTitle: 'Bildirimler',
     notificationsEmpty: 'Yeni bildiriminiz bulunmuyor.',
     markAllRead: 'Tümünü Oku',
+    messagesBtn: 'Canlı Mesajlaşma',
   },
   en: {
     account: 'My Account',
@@ -289,6 +292,7 @@ const ACCOUNT_NAV_COPY: Record<
     notificationsTitle: 'Notifications',
     notificationsEmpty: 'No new notifications yet.',
     markAllRead: 'Mark All Read',
+    messagesBtn: 'Messages',
   },
   ru: {
     account: 'Аккаунт',
@@ -301,6 +305,7 @@ const ACCOUNT_NAV_COPY: Record<
     notificationsTitle: 'Уведомления',
     notificationsEmpty: 'Новых уведомлений пока нет.',
     markAllRead: 'Прочитать все',
+    messagesBtn: 'Сообщения',
   },
   fr: {
     account: 'Mon compte',
@@ -313,6 +318,7 @@ const ACCOUNT_NAV_COPY: Record<
     notificationsTitle: 'Notifications',
     notificationsEmpty: 'Aucune nouvelle notification.',
     markAllRead: 'Tout marquer lu',
+    messagesBtn: 'Messagerie',
   },
 };
 
@@ -353,6 +359,8 @@ interface AccountNavSummary {
 
 interface NavNotificationItem {
   id: string;
+  referenceCode?: string | null;
+  kind?: string;
   title: string;
   body: string;
   href: string;
@@ -375,6 +383,8 @@ export default function SiteNavbar({
   const [mobileCatalogOpen, setMobileCatalogOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [notifMenuOpen, setNotifMenuOpen] = useState(false);
+  const [msgModalOpen, setMsgModalOpen] = useState(false);
+  const [msgModalInitialRef, setMsgModalInitialRef] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<NavNotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [mobileAccountOpen, setMobileAccountOpen] = useState(false);
@@ -383,6 +393,26 @@ export default function SiteNavbar({
   const catalogDropRef = useRef<HTMLDivElement | null>(null);
   const accountDropRef = useRef<HTMLDivElement | null>(null);
   const notifDropRef = useRef<HTMLDivElement | null>(null);
+
+  const unreadMsgCount = notifications.filter((n) => !n.readAt && n.kind === 'admin_message').length;
+
+  const openMessagingCenter = (refCode: string | null = null) => {
+    setCatalogMenuOpen(false);
+    setAccountMenuOpen(false);
+    setNotifMenuOpen(false);
+    setDrawerOpen(false);
+    setMsgModalInitialRef(refCode);
+    setMsgModalOpen(true);
+  };
+
+  useEffect(() => {
+    if (mainOrigin || typeof window === 'undefined') return;
+    const chatParam = new URLSearchParams(window.location.search).get('chat');
+    if (chatParam) {
+      setMsgModalInitialRef(chatParam === 'open' ? null : chatParam);
+      setMsgModalOpen(true);
+    }
+  }, [mainOrigin, pathname]);
 
   const current = activePath || pathname || '/';
   const siteLink = (path: string) => (mainOrigin ? `${mainOrigin}${path}` : path);
@@ -743,48 +773,6 @@ export default function SiteNavbar({
             </div>
 
             <div className="st-nav-circles">
-              {mainOrigin ? (
-                <a
-                  href={siteLink('/iletisim')}
-                  className="st-circle-btn"
-                  title={labels.contact}
-                  aria-label={labels.contact}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.1"
-                    aria-hidden="true"
-                  >
-                    <rect x="3" y="5" width="18" height="14" rx="2.2" />
-                    <polyline points="3 7 12 13 21 7" />
-                  </svg>
-                </a>
-              ) : (
-                <Link
-                  href="/iletisim"
-                  className="st-circle-btn"
-                  title={labels.contact}
-                  aria-label={labels.contact}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.1"
-                    aria-hidden="true"
-                  >
-                    <rect x="3" y="5" width="18" height="14" rx="2.2" />
-                    <polyline points="3 7 12 13 21 7" />
-                  </svg>
-                </Link>
-              )}
-
               <a
                 href={ITEMSATIS_URL}
                 target="_blank"
@@ -802,6 +790,51 @@ export default function SiteNavbar({
                   style={{ borderRadius: '4px', objectFit: 'contain' }}
                 />
               </a>
+
+              {mainOrigin ? (
+                <a
+                  href={siteLink('/?chat=open')}
+                  className="st-circle-btn"
+                  title={accountCopy.messagesBtn}
+                  aria-label={accountCopy.messagesBtn}
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.1"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                  </svg>
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => openMessagingCenter(null)}
+                  className="st-circle-btn st-circle-msg"
+                  title={accountCopy.messagesBtn}
+                  aria-label={accountCopy.messagesBtn}
+                  style={{ position: 'relative' }}
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.1"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                  </svg>
+                  {unreadMsgCount > 0 && (
+                    <span className="st-notif-badge">{unreadMsgCount > 9 ? '9+' : unreadMsgCount}</span>
+                  )}
+                </button>
+              )}
 
               {mainOrigin ? (
                 <a
@@ -878,21 +911,36 @@ export default function SiteNavbar({
                               {accountCopy.notificationsEmpty}
                             </div>
                           ) : (
-                            notifications.slice(0, 8).map((n) => (
-                              <Link
-                                key={n.id}
-                                href={n.href}
-                                prefetch={false}
-                                className={`st-notif-item ${!n.readAt ? 'is-unread' : ''}`}
-                                onClick={() => {
-                                  if (!n.readAt) void handleMarkNotificationsRead(n.id);
-                                  setNotifMenuOpen(false);
-                                }}
-                              >
-                                <span className="st-notif-item-title">{n.title}</span>
-                                <span className="st-notif-item-body">{n.body}</span>
-                              </Link>
-                            ))
+                            notifications.slice(0, 8).map((n) =>
+                              n.kind === 'admin_message' && n.referenceCode ? (
+                                <button
+                                  key={n.id}
+                                  type="button"
+                                  className={`st-notif-item ${!n.readAt ? 'is-unread' : ''}`}
+                                  onClick={() => {
+                                    if (!n.readAt) void handleMarkNotificationsRead(n.id);
+                                    openMessagingCenter(n.referenceCode || null);
+                                  }}
+                                >
+                                  <span className="st-notif-item-title">{n.title}</span>
+                                  <span className="st-notif-item-body">{n.body}</span>
+                                </button>
+                              ) : (
+                                <Link
+                                  key={n.id}
+                                  href={n.href}
+                                  prefetch={false}
+                                  className={`st-notif-item ${!n.readAt ? 'is-unread' : ''}`}
+                                  onClick={() => {
+                                    if (!n.readAt) void handleMarkNotificationsRead(n.id);
+                                    setNotifMenuOpen(false);
+                                  }}
+                                >
+                                  <span className="st-notif-item-title">{n.title}</span>
+                                  <span className="st-notif-item-body">{n.body}</span>
+                                </Link>
+                              )
+                            )
                           )}
                         </div>
                       </div>
@@ -1097,6 +1145,25 @@ export default function SiteNavbar({
           </div>
 
           <div className="st-mobile-drawer-ctas">
+            {mainOrigin ? (
+              <a
+                href={siteLink('/?chat=open')}
+                className="st-pill-btn is-light is-full"
+                onClick={() => setDrawerOpen(false)}
+              >
+                {accountCopy.messagesBtn} 💬
+              </a>
+            ) : (
+              <button
+                type="button"
+                className="st-pill-btn is-light is-full"
+                onClick={() => openMessagingCenter(null)}
+              >
+                {accountCopy.messagesBtn}
+                {unreadMsgCount > 0 ? ` (${unreadMsgCount})` : ''} 💬
+              </button>
+            )}
+
             {onCartOpen && (
               <button
                 type="button"
@@ -1201,6 +1268,14 @@ export default function SiteNavbar({
             </a>
           </div>
         </div>
+      )}
+
+      {!mainOrigin && (
+        <MessagingCenterModal
+          open={msgModalOpen}
+          initialRef={msgModalInitialRef}
+          onClose={() => setMsgModalOpen(false)}
+        />
       )}
     </>
   );

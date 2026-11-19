@@ -30,8 +30,8 @@ export interface OrderRecord {
   userId: string;
   buyerEmail: string;
   buyerName: string;
-  source: 'catalog' | 'store' | 'service';
-  paymentProvider: 'shopier' | 'itemsatis';
+  source: 'catalog' | 'store' | 'service' | 'support';
+  paymentProvider: 'shopier' | 'itemsatis' | 'direct';
   title: string;
   items: OrderLineItem[];
   currency: 'TRY';
@@ -101,6 +101,25 @@ export function generateOrderReferenceCode(): string {
   const dd = String(now.getUTCDate()).padStart(2, '0');
   const rand = crypto.randomBytes(3).toString('hex').toUpperCase();
   return `RS-ORD-${yy}${mm}${dd}-${rand}`;
+}
+
+export function generateSupportReferenceCode(): string {
+  const now = new Date();
+  const yy = String(now.getUTCFullYear()).slice(-2);
+  const mm = String(now.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(now.getUTCDate()).padStart(2, '0');
+  const rand = crypto.randomBytes(3).toString('hex').toUpperCase();
+  return `RS-MSG-${yy}${mm}${dd}-${rand}`;
+}
+
+export function isSupportThread(
+  order: Pick<OrderRecord, 'source' | 'paymentProvider' | 'referenceCode'>
+): boolean {
+  return (
+    order.source === 'support' ||
+    order.paymentProvider === 'direct' ||
+    order.referenceCode.startsWith('RS-MSG-')
+  );
 }
 
 export function matchShopierOrderToInternal(

@@ -45,7 +45,9 @@ export async function GET(request: Request) {
             authProviders: profile.authProviders,
             isGuest: profile.isGuest,
           },
-          pendingOrdersCount: orders.filter((o) => o.status !== 'delivered' && o.status !== 'cancelled').length,
+          pendingOrdersCount: orders.filter(
+            (o) => o.source !== 'support' && o.status !== 'delivered' && o.status !== 'cancelled'
+          ).length,
         }
       : {
           authenticated: true,

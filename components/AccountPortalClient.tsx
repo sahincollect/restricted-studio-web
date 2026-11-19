@@ -856,7 +856,10 @@ export default function AccountPortalClient({
                 ) : (
                   <div className="rs-orders-items">
                     {orders.map((ord) => {
-                      const sm = statusMap[ord.status] || statusMap.pending_payment;
+                      const isSup = ord.source === 'support' || ord.paymentProvider === 'direct';
+                      const sm = isSup
+                        ? { label: 'Canlı Destek', tone: 'info' }
+                        : statusMap[ord.status] || statusMap.pending_payment;
                       const isSel = ord.referenceCode === selectedRef;
                       return (
                         <button
@@ -871,7 +874,7 @@ export default function AccountPortalClient({
                           </div>
                           <div className="rs-order-title">{ord.title}</div>
                           <div className="rs-order-meta">
-                            <span>{formatNumber(ord.totalAmount)} TL</span>
+                            <span>{isSup ? 'Destek Sohbeti' : `${formatNumber(ord.totalAmount)} TL`}</span>
                             <span>{new Date(ord.createdAt).toLocaleDateString('tr-TR')}</span>
                           </div>
                         </button>
@@ -896,7 +899,9 @@ export default function AccountPortalClient({
                           {activeOrder.title}
                         </h2>
                         <div style={{ fontSize: '12.5px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                          {formatNumber(activeOrder.totalAmount)} TL · {activeOrder.items.length} kalem
+                          {activeOrder.source === 'support' || activeOrder.paymentProvider === 'direct'
+                            ? 'Canlı Destek Görüşmesi · Birebir Şifreli Oda'
+                            : `${formatNumber(activeOrder.totalAmount)} TL · ${activeOrder.items.length} kalem`}
                         </div>
                       </div>
 
@@ -933,19 +938,21 @@ export default function AccountPortalClient({
                     </div>
 
                     {/* Corporate Delivery Progress Stepper */}
-                    <div className="rs-order-stepper" aria-label="Order timeline">
-                      {ui.steps.map((label, idx) => (
-                        <div
-                          key={label}
-                          className={`rs-order-step ${idx <= stepIndex ? 'is-done' : ''} ${
-                            idx === stepIndex ? 'is-current' : ''
-                          }`}
-                        >
-                          <span className="rs-order-step-dot">{idx + 1}</span>
-                          <span className="rs-order-step-lbl">{label}</span>
-                        </div>
-                      ))}
-                    </div>
+                    {activeOrder.source !== 'support' && activeOrder.paymentProvider !== 'direct' && (
+                      <div className="rs-order-stepper" aria-label="Order timeline">
+                        {ui.steps.map((label, idx) => (
+                          <div
+                            key={label}
+                            className={`rs-order-step ${idx <= stepIndex ? 'is-done' : ''} ${
+                              idx === stepIndex ? 'is-current' : ''
+                            }`}
+                          >
+                            <span className="rs-order-step-dot">{idx + 1}</span>
+                            <span className="rs-order-step-lbl">{label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
 
                     {/* Pinned Corporate Delivery Vault */}
                     {activeOrder.deliveryPayload && (

@@ -344,6 +344,22 @@ export const OrderMessageSchema = z
   })
   .strict();
 
+export const SupportThreadMessageSchema = z
+  .object({
+    referenceCode: z
+      .string()
+      .trim()
+      .regex(/^RS-(?:ORD|MSG)-\d{6}-[A-Z0-9]{6}$/i, 'Geçersiz sohbet kodu.')
+      .optional(),
+    topic: z.string().trim().min(2, 'Konu en az 2 karakter olmalıdır.').max(80).optional(),
+    body: z
+      .string()
+      .trim()
+      .min(1, 'Mesaj boş olamaz.')
+      .max(1500, 'Mesaj en fazla 1500 karakter olabilir.'),
+  })
+  .strict();
+
 export const AdminOrderActionSchema = z.discriminatedUnion('mode', [
   z
     .object({
