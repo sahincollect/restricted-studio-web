@@ -519,38 +519,13 @@ export default function CatalogClient({
     return items;
   }, [search, selectedCategory, viewMode, sortMode, searchIndex, locale, clickCounts]);
 
-  const topPopularStrip = useMemo(() => {
-    return allItems
-      .map((item) => ({
-        item,
-        score: getItemPopularityScore(item.id, clickCounts),
-      }))
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 4);
-  }, [allItems, clickCounts]);
-
-  const showPopularStrip =
-    viewMode === 'all' && selectedCategory === 'Tümü' && !search.trim() && topPopularStrip.length > 0;
-
-  const stripIds = useMemo(
-    () => new Set(topPopularStrip.map((entry) => entry.item.id)),
-    [topPopularStrip]
-  );
-
-  const gridItems = useMemo(() => {
-    if (showPopularStrip && sortMode === 'popular') {
-      return filteredItems.filter((item) => !stripIds.has(item.id));
-    }
-    return filteredItems;
-  }, [filteredItems, showPopularStrip, sortMode, stripIds]);
-
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [search, selectedCategory, viewMode, sortMode]);
 
   const displayedItems = useMemo(() => {
-    return gridItems.slice(0, visibleCount);
-  }, [gridItems, visibleCount]);
+    return filteredItems.slice(0, visibleCount);
+  }, [filteredItems, visibleCount]);
 
   const handleLoadMore = () => {
     setVisibleCount((prev) => prev + PAGE_SIZE);
@@ -917,58 +892,6 @@ export default function CatalogClient({
               </div>
             </div>
 
-            {showPopularStrip && (
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-                  gap: '12px',
-                  marginBottom: '22px',
-                }}
-              >
-                {topPopularStrip.map(({ item, score }, idx) => {
-                  const inCart = cartIds.has(item.id);
-                  const intel = analyzeCatalogItem(item, locale);
-                  return (
-                    <div
-                      key={item.id}
-                      className="st-product-card spotlight-surface"
-                      style={{ padding: '14px', cursor: 'pointer', gap: '8px' }}
-                      onClick={() => {
-                        trackItemClick(item);
-                        setPreviewItem(item);
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span className="st-product-badge" style={{ color: 'var(--accent-coral)' }}>
-                          #{idx + 1} · {intel.studio || intel.roleLabel}
-                        </span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text-muted)' }}>
-                          ▲ {formatNumber(score)}
-                        </span>
-                      </div>
-                      <div className="st-product-title">{item.title}</div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff' }}>
-                          {isDiscounted ? '50 TL' : '100 TL'}
-                        </span>
-                        <button
-                          type="button"
-                          className={`st-btn-card-add ${inCart ? 'in-cart' : ''}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleCartItem(item);
-                          }}
-                        >
-                          {inCart ? '✓' : '+'}
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
             {displayedItems.length > 0 ? (
               <div className="st-product-grid">
                 {displayedItems.map((item) => {
@@ -1070,10 +993,10 @@ export default function CatalogClient({
               </div>
             )}
 
-            {gridItems.length > visibleCount && (
+            {filteredItems.length > visibleCount && (
               <div style={{ marginTop: '28px', display: 'flex', justifyContent: 'center' }}>
                 <button type="button" className="st-pill-btn is-outline" onClick={handleLoadMore}>
-                  {t.catalog.loadMoreBtn(PAGE_SIZE)} ({formatNumber(Math.min(visibleCount, gridItems.length))} / {formatNumber(gridItems.length)})
+                  {t.catalog.loadMoreBtn(PAGE_SIZE)} ({formatNumber(Math.min(visibleCount, filteredItems.length))} / {formatNumber(filteredItems.length)})
                 </button>
               </div>
             )}
