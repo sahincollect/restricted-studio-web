@@ -918,7 +918,14 @@ export default function CatalogClient({
                         </span>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
                           {isFeatured && (
-                            <span className="st-product-badge" style={{ background: 'var(--accent-ember)', color: '#fff' }}>
+                            <span
+                              className="st-product-badge"
+                              style={{
+                                background: 'rgba(114, 86, 206, 0.16)',
+                                border: '1px solid rgba(220, 71, 202, 0.36)',
+                                color: '#f5d0fe',
+                              }}
+                            >
                               ★ {extraT.featuredTag}
                             </span>
                           )}

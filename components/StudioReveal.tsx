@@ -48,7 +48,6 @@ export function HeroPrismBackdrop({ interactive = true }: { interactive?: boolea
       aria-hidden="true"
     >
       <div className="st-hero-top-glow" />
-      <div className="st-vice-sun" />
     </div>
   );
 }

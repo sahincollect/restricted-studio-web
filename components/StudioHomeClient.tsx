@@ -561,7 +561,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
             <p className="st-hero-subtitle">{copy.heroSubtitle}</p>
 
             <div className="st-hero-actions">
-              <Link href="/katalog" className="st-pill-btn is-ember st-hero-cta">
+              <Link href="/katalog" className="st-pill-btn is-light st-hero-cta">
                 {copy.heroCta}
               </Link>
               <Link href="/lisanslar" className="st-hero-secondary-link">
