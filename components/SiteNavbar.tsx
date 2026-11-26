@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useI18n } from '@/components/I18nProvider';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import MessagingCenterModal from '@/components/MessagingCenterModal';
@@ -56,6 +56,13 @@ function renderChoiceIcon(icon: CatalogChoice['icon']) {
       );
   }
 }
+
+const CATALOG_SEARCH_PLACEHOLDER: Record<string, string> = {
+  tr: 'Paket ara: LB Phone, Gabz, Qbox…',
+  en: 'Search packages: LB Phone, Gabz, Qbox…',
+  ru: 'Поиск пакетов: LB Phone, Gabz, Qbox…',
+  fr: 'Rechercher : LB Phone, Gabz, Qbox…',
+};
 
 interface CatalogCategoryShortcut {
   href: string;
@@ -429,7 +436,7 @@ interface NavNotificationItem {
   createdAt: string;
 }
 
-export default function SiteNavbar({
+function SiteNavbar({
   activePath,
   mainOrigin = '',
   cartCount = 0,
@@ -451,6 +458,11 @@ export default function SiteNavbar({
   const [mobileAccountOpen, setMobileAccountOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [accountSummary, setAccountSummary] = useState<AccountNavSummary | null>(null);
+  const router = useRouter();
+  const [catalogQuery, setCatalogQuery] = useState('');
+  const catalogHoverTimer = useRef<number | null>(null);
+  const catalogPinnedRef = useRef(false);
+  const catalogSearchInputRef = useRef<HTMLInputElement | null>(null);
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<any>(null);
   const [isStandalonePwa, setIsStandalonePwa] = useState(false);
   const [iosInstallHintOpen, setIosInstallHintOpen] = useState(false);
@@ -472,8 +484,70 @@ export default function SiteNavbar({
     window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
     return () => {
       window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+      if (catalogHoverTimer.current) window.clearTimeout(catalogHoverTimer.current);
     };
   }, []);
+
+  const closeCatalogMenu = () => {
+    if (catalogHoverTimer.current) window.clearTimeout(catalogHoverTimer.current);
+    catalogPinnedRef.current = false;
+    setCatalogMenuOpen(false);
+  };
+
+  const handleCatalogHoverOpen = () => {
+    if (typeof window === 'undefined' || !window.matchMedia('(hover: hover)').matches) return;
+    if (catalogHoverTimer.current) window.clearTimeout(catalogHoverTimer.current);
+    if (catalogMenuOpen) return;
+    catalogHoverTimer.current = window.setTimeout(() => {
+      setCatalogMenuOpen(true);
+    }, 65);
+  };
+
+  const handleCatalogHoverClose = () => {
+    if (typeof window === 'undefined' || !window.matchMedia('(hover: hover)').matches) return;
+    if (catalogHoverTimer.current) window.clearTimeout(catalogHoverTimer.current);
+    if (catalogPinnedRef.current) return;
+    if (
+      catalogSearchInputRef.current &&
+      document.activeElement === catalogSearchInputRef.current
+    ) {
+      return;
+    }
+    catalogHoverTimer.current = window.setTimeout(() => {
+      if (!catalogPinnedRef.current) {
+        setCatalogMenuOpen(false);
+      }
+    }, 170);
+  };
+
+  const handleCatalogTriggerClick = () => {
+    if (catalogHoverTimer.current) window.clearTimeout(catalogHoverTimer.current);
+    if (!catalogMenuOpen) {
+      catalogPinnedRef.current = true;
+      setCatalogMenuOpen(true);
+      return;
+    }
+    if (!catalogPinnedRef.current) {
+      // Hover already opened the dropdown; clicking pins it open instead of slamming it shut
+      catalogPinnedRef.current = true;
+      return;
+    }
+    catalogPinnedRef.current = false;
+    setCatalogMenuOpen(false);
+  };
+
+  const handleCatalogSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = catalogQuery.trim();
+    const href = q ? `/katalog?q=${encodeURIComponent(q)}` : '/katalog';
+    closeCatalogMenu();
+    setCatalogQuery('');
+    if (mainOrigin) {
+      window.location.href = `${mainOrigin}${href}`;
+    } else {
+      router.push(href);
+    }
+  };
 
   const handleInstallAppClick = async () => {
     if (deferredInstallPrompt) {
@@ -515,6 +589,7 @@ export default function SiteNavbar({
 
   useEffect(() => {
     setDrawerOpen(false);
+    catalogPinnedRef.current = false;
     setCatalogMenuOpen(false);
     setAccountMenuOpen(false);
     setNotifMenuOpen(false);
@@ -528,6 +603,7 @@ export default function SiteNavbar({
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setDrawerOpen(false);
+        catalogPinnedRef.current = false;
         setCatalogMenuOpen(false);
         setAccountMenuOpen(false);
         setNotifMenuOpen(false);
@@ -535,6 +611,7 @@ export default function SiteNavbar({
     };
     const onOutsideClick = (e: MouseEvent) => {
       if (catalogDropRef.current && !catalogDropRef.current.contains(e.target as Node)) {
+        catalogPinnedRef.current = false;
         setCatalogMenuOpen(false);
       }
       if (accountDropRef.current && !accountDropRef.current.contains(e.target as Node)) {
@@ -685,7 +762,8 @@ export default function SiteNavbar({
     className: string,
     content: React.ReactNode,
     onClick?: () => void,
-    isStatusRoute?: boolean
+    isStatusRoute?: boolean,
+    noPrefetch = false
   ) => {
     if (mainOrigin && !isStatusRoute) {
       return (
@@ -695,7 +773,13 @@ export default function SiteNavbar({
       );
     }
     return (
-      <Link key={href} href={href} className={className} onClick={onClick}>
+      <Link
+        key={href}
+        href={href}
+        prefetch={noPrefetch ? false : undefined}
+        className={className}
+        onClick={onClick}
+      >
         {content}
       </Link>
     );
@@ -728,7 +812,7 @@ export default function SiteNavbar({
       );
     }
     return (
-      <Link key={choice.href} href={choice.href} className={className} onClick={onClick}>
+      <Link key={choice.href} href={choice.href} prefetch={false} className={className} onClick={onClick}>
         {body}
       </Link>
     );
@@ -784,13 +868,18 @@ export default function SiteNavbar({
               </>
             )}
 
-            <div className="st-nav-dropdown-wrap" ref={catalogDropRef}>
+            <div
+              className="st-nav-dropdown-wrap"
+              ref={catalogDropRef}
+              onMouseEnter={handleCatalogHoverOpen}
+              onMouseLeave={handleCatalogHoverClose}
+            >
               <button
                 type="button"
                 className={`st-nav-link st-nav-dropdown-trigger ${
                   isActive('/katalog') || catalogMenuOpen ? 'is-active' : ''
                 }`}
-                onClick={() => setCatalogMenuOpen((prev) => !prev)}
+                onClick={handleCatalogTriggerClick}
                 aria-expanded={catalogMenuOpen}
                 aria-haspopup="menu"
               >
@@ -811,41 +900,73 @@ export default function SiteNavbar({
               </button>
 
               {catalogMenuOpen && (
-                <div className="st-catalog-dropdown" role="menu" aria-label={labels.catalog}>
-                  <div className="st-catalog-dropdown-head">
-                    <span>{labels.catalogChoicesTitle}</span>
-                    {renderLink(
-                      '/katalog',
-                      'st-catalog-head-all',
-                      labels.catalogOpenAllCta,
-                      () => setCatalogMenuOpen(false)
+                <div className="st-catalog-dropdown is-mega" role="menu" aria-label={labels.catalog}>
+                  <form className="st-mega-search" onSubmit={handleCatalogSearchSubmit} role="search">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+                      <circle cx="11" cy="11" r="7" />
+                      <line x1="21" y1="21" x2="16.6" y2="16.6" />
+                    </svg>
+                    <input
+                      ref={catalogSearchInputRef}
+                      type="search"
+                      value={catalogQuery}
+                      onChange={(e) => setCatalogQuery(e.target.value)}
+                      placeholder={CATALOG_SEARCH_PLACEHOLDER[locale] || CATALOG_SEARCH_PLACEHOLDER.tr}
+                      aria-label={CATALOG_SEARCH_PLACEHOLDER[locale] || CATALOG_SEARCH_PLACEHOLDER.tr}
+                      className="st-mega-search-input"
+                    />
+                    {catalogQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setCatalogQuery('')}
+                        className="st-mega-search-clear"
+                        aria-label="Clear"
+                      >
+                        ✕
+                      </button>
                     )}
-                  </div>
-                  <div className="st-catalog-dropdown-grid is-two-col">
-                    {labels.catalogChoices.map((choice) =>
-                      renderChoiceLink(
-                        choice,
-                        `st-cat-choice-card ${current === choice.href ? 'is-current' : ''}`,
-                        () => setCatalogMenuOpen(false)
-                      )
-                    )}
+                    <button type="submit" className="st-mega-search-btn" aria-label={labels.catalog}>
+                      ↵
+                    </button>
+                  </form>
+
+                  <div className="st-mega-body">
+                    <div className="st-mega-col st-mega-col-cats">
+                      <div className="st-mega-col-title">{labels.catalogCategoriesTitle}</div>
+                      <div className="st-mega-cat-list">
+                        {labels.catalogCategories.map((cat) =>
+                          renderLink(
+                            cat.href,
+                            'st-mega-cat-row',
+                            <>
+                              <span className="st-mega-cat-dot" aria-hidden="true" />
+                              <span className="st-mega-cat-label">{cat.label}</span>
+                              <span className="st-catalog-subcat-count">{cat.count}</span>
+                            </>,
+                            closeCatalogMenu,
+                            false,
+                            true
+                          )
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="st-mega-col">
+                      <div className="st-mega-col-title">{labels.catalogChoicesTitle}</div>
+                      <div className="st-mega-svc-list">
+                        {labels.catalogChoices.map((choice) =>
+                          renderChoiceLink(
+                            choice,
+                            `st-cat-choice-card is-compact ${current === choice.href ? 'is-current' : ''}`,
+                            closeCatalogMenu
+                          )
+                        )}
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="st-catalog-subcats-block">
-                    <div className="st-catalog-subcats-title">{labels.catalogCategoriesTitle}</div>
-                    <div className="st-catalog-subcats-pills">
-                      {labels.catalogCategories.map((cat) =>
-                        renderLink(
-                          cat.href,
-                          'st-catalog-subcat-pill',
-                          <>
-                            <span>{cat.label}</span>
-                            <span className="st-catalog-subcat-count">{cat.count}</span>
-                          </>,
-                          () => setCatalogMenuOpen(false)
-                        )
-                      )}
-                    </div>
+                  <div className="st-mega-foot">
+                    {renderLink('/katalog', 'st-mega-foot-cta', labels.catalogOpenAllCta, closeCatalogMenu, false, true)}
                   </div>
                 </div>
               )}
@@ -1251,7 +1372,9 @@ export default function SiteNavbar({
                           <span>{cat.label}</span>
                           <span className="st-catalog-subcat-count">{cat.count}</span>
                         </>,
-                        () => setDrawerOpen(false)
+                        () => setDrawerOpen(false),
+                        false,
+                        true
                       )
                     )}
                   </div>
@@ -1432,3 +1555,5 @@ export default function SiteNavbar({
     </>
   );
 }
+
+export default React.memo(SiteNavbar);

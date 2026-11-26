@@ -26,6 +26,7 @@ interface HealthPayload {
 const DEFAULT_SERVICE_IDS: readonly PublicServiceId[] = ['web', 'auth', 'database', 'catalog'];
 const UPTIME_BAR_COUNT = 60;
 const FALLBACK_TICK_INDICES = Array.from({ length: UPTIME_BAR_COUNT }, (_, idx) => idx);
+const REFRESH_INTERVAL_SEC = 60;
 
 function splitDuration(totalSeconds: number): {
   days: string;
@@ -46,14 +47,89 @@ function splitDuration(totalSeconds: number): {
   };
 }
 
+/**
+ * Isolated 1-second leaf counter so StatusBoard, SiteNavbar, and the 60-tick bar
+ * never re-render every second.
+ */
+const StatusLiveCountdown = React.memo(function StatusLiveCountdown({
+  checkedAt,
+  formattedTime,
+  prefix,
+  fallback,
+  onExpire,
+}: {
+  checkedAt: string | null;
+  formattedTime: string;
+  prefix: string;
+  fallback: string;
+  onExpire: () => void;
+}) {
+  const [countdown, setCountdown] = useState(REFRESH_INTERVAL_SEC);
+
+  useEffect(() => {
+    setCountdown(REFRESH_INTERVAL_SEC);
+  }, [checkedAt]);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      if (document.visibilityState !== 'visible') return;
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          onExpire();
+          return REFRESH_INTERVAL_SEC;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [onExpire]);
+
+  return (
+    <p style={{ marginTop: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+      {checkedAt ? `${prefix} ${formattedTime} · ${countdown}s` : fallback}
+    </p>
+  );
+});
+
+const StatusLiveUptime = React.memo(function StatusLiveUptime({
+  baseSeconds,
+  isOutage,
+  loading,
+  resetKey,
+}: {
+  baseSeconds: number;
+  isOutage: boolean;
+  loading: boolean;
+  resetKey: string | null;
+}) {
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    setElapsed(0);
+  }, [resetKey, baseSeconds]);
+
+  useEffect(() => {
+    if (isOutage || baseSeconds <= 0) return;
+    const id = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        setElapsed((prev) => prev + 1);
+      }
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [isOutage, baseSeconds]);
+
+  if (loading) return <>--</>;
+  const total = isOutage ? 0 : baseSeconds > 0 ? baseSeconds + elapsed : 0;
+  const d = splitDuration(total);
+  return <>{`${d.days}g ${d.hours}:${d.minutes}:${d.seconds}`}</>;
+});
+
 export default function StatusBoard() {
   const { t, formatTime } = useI18n();
   const [data, setData] = useState<HealthPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
-  const [countdown, setCountdown] = useState(60);
-  const [elapsedSinceCheck, setElapsedSinceCheck] = useState(0);
   const [mainOrigin, setMainOrigin] = useState('');
 
   useEffect(() => {
@@ -77,8 +153,6 @@ export default function StatusBoard() {
 
         setData(payload);
         setFetchError(null);
-        setCountdown(60);
-        setElapsedSinceCheck(0);
       } catch {
         setFetchError(t.statusPage.errorFallback);
       } finally {
@@ -89,22 +163,12 @@ export default function StatusBoard() {
     [t.statusPage.errorFallback, t.statusPage.invalidResponseError]
   );
 
-  useEffect(() => {
-    runHealthCheck(false);
+  const handleAutoRefresh = useCallback(() => {
+    void runHealthCheck(false);
   }, [runHealthCheck]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setElapsedSinceCheck((prev) => prev + 1);
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          runHealthCheck(false);
-          return 60;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
+    void runHealthCheck(false);
   }, [runHealthCheck]);
 
   const activeStatus: ComponentHealthState = data ? data.status : 'operational';
@@ -125,12 +189,8 @@ export default function StatusBoard() {
       : t.statusPage.pillTag;
 
   const baseSeconds = data?.uptime?.continuousSeconds ?? 0;
-  const liveContinuousSeconds =
-    heroState === 'outage' ? 0 : baseSeconds > 0 ? baseSeconds + elapsedSinceCheck : 0;
-  const duration = splitDuration(liveContinuousSeconds);
 
   const ratio24h = data?.uptime?.ratio24h ?? '100.00%';
-  const ratio7d = data?.uptime?.ratio7d ?? '99.99%';
   const ratio30d = data?.uptime?.ratio30d ?? '99.98%';
   const ratio90d = data?.uptime?.ratio90d ?? '99.98%';
 
@@ -164,11 +224,13 @@ export default function StatusBoard() {
                     ? t.statusPage.errorHeadline
                     : currentLabels.headline}
                 </h1>
-                <p style={{ marginTop: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                  {data
-                    ? `${t.statusPage.lastCheckedPrefix} ${formatTime(data.checkedAt)} · ${countdown}s`
-                    : t.statusPage.verifyingLive}
-                </p>
+                <StatusLiveCountdown
+                  checkedAt={data?.checkedAt ?? null}
+                  formattedTime={data ? formatTime(data.checkedAt) : ''}
+                  prefix={t.statusPage.lastCheckedPrefix}
+                  fallback={t.statusPage.verifyingLive}
+                  onExpire={handleAutoRefresh}
+                />
               </div>
 
               <button
@@ -186,7 +248,12 @@ export default function StatusBoard() {
             <div className="st-status-metrics">
               <div className="st-stat-chip is-light">
                 <span className="st-stat-chip-val">
-                  {loading && !data ? '--' : `${duration.days}g ${duration.hours}:${duration.minutes}:${duration.seconds}`}
+                  <StatusLiveUptime
+                    baseSeconds={baseSeconds}
+                    isOutage={heroState === 'outage'}
+                    loading={loading && !data}
+                    resetKey={data?.checkedAt ?? null}
+                  />
                 </span>
                 <span className="st-stat-chip-lbl">{t.statusPage.uptimeDurationLabel}</span>
               </div>

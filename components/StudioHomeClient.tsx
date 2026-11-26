@@ -544,7 +544,7 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
       <main className="st-main">
         {/* 1. Hero + Diagonal Prism Ribs + Signature Asymmetric Split Card */}
         <section className="st-hero-section">
-          <HeroPrismBackdrop />
+          <HeroPrismBackdrop showArc />
 
           <div className="st-container st-hero-inner">
             <Link href="/GTAVI" className="st-hero-kicker-badge is-vetra-pill">

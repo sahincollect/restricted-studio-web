@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useDeferredValue } from 'react';
 import Link from 'next/link';
 import ItemsatisLogo from '@/components/ItemsatisLogo';
 import ShopierLogo from '@/components/ShopierLogo';
@@ -223,6 +223,16 @@ export default function CatalogClient({
   const [shopierError, setShopierError] = useState<string | null>(null);
   const [shopierOrder, setShopierOrder] = useState<ShopierCheckoutOrderSummary | null>(null);
   const shopierT = SHOPIER_UI_COPY[locale] || SHOPIER_UI_COPY.tr;
+
+  // Keep filters in sync when navigating within /katalog via menu links (same mounted component)
+  useEffect(() => {
+    setSearch(initialQuery);
+    setSelectedCategory(CATEGORIES.includes(initialCategory) ? initialCategory : 'Tümü');
+    const nextView: CatalogViewMode =
+      initialView === 'featured' ? 'featured' : initialView === 'popular' ? 'popular' : 'all';
+    setViewMode(nextView);
+    setSortMode(nextView === 'featured' ? 'featured' : 'popular');
+  }, [initialQuery, initialCategory, initialView]);
 
   // Sync URL params, load full compacted catalog index asynchronously, and fetch live click counts
   useEffect(() => {
@@ -456,8 +466,9 @@ export default function CatalogClient({
   const totalCount = catalogLoaded ? allItems.length : totalCatalogCount;
 
   // Filter, score search relevance, and sort items
+  const deferredSearch = useDeferredValue(search);
   const filteredItems = useMemo(() => {
-    const rawNormalized = normalizeSearchText(search);
+    const rawNormalized = normalizeSearchText(deferredSearch);
     const tokens = rawNormalized ? rawNormalized.split(/\s+/).filter(Boolean) : [];
     let entries = searchIndex;
 
@@ -517,11 +528,11 @@ export default function CatalogClient({
     }
 
     return items;
-  }, [search, selectedCategory, viewMode, sortMode, searchIndex, locale, clickCounts]);
+  }, [deferredSearch, selectedCategory, viewMode, sortMode, searchIndex, locale, clickCounts]);
 
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [search, selectedCategory, viewMode, sortMode]);
+  }, [deferredSearch, selectedCategory, viewMode, sortMode]);
 
   const displayedItems = useMemo(() => {
     return filteredItems.slice(0, visibleCount);
