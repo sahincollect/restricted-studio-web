@@ -14,11 +14,16 @@ test('sitemap.ts and robots.ts define complete canonical routes and sitemap refe
   const sitemapSrc = fs.readFileSync(new URL('../app/sitemap.ts', import.meta.url), 'utf8');
   const robotsSrc = fs.readFileSync(new URL('../app/robots.ts', import.meta.url), 'utf8');
 
-  for (const route of ['/', '/katalog', '/lisanslar', '/hizmetler/web-kurulum', '/hizmetler/discord-bot', '/hakkimizda', '/status', '/iletisim']) {
+  for (const route of ['/', '/katalog', '/lisanslar', '/GTAVI', '/hizmetler/web-kurulum', '/hizmetler/discord-bot', '/hakkimizda', '/status', '/iletisim']) {
     assert.ok(sitemapSrc.includes(route), `sitemap.ts missing route: ${route}`);
   }
+  assert.ok(sitemapSrc.includes('/assets/gtavi-ps-banner.jpg'), 'sitemap.ts must include GTA VI product banner image');
   assert.ok(sitemapSrc.includes('/yasal/'), 'sitemap.ts must include legal routes');
+  assert.ok(robotsSrc.includes('/GTAVI'), 'robots.ts must explicitly allow /GTAVI');
   assert.ok(robotsSrc.includes('/sitemap.xml'), 'robots.ts must expose sitemap.xml');
+  const gtaviPageSrc = fs.readFileSync(new URL('../app/GTAVI/page.tsx', import.meta.url), 'utf8');
+  assert.ok(gtaviPageSrc.includes('499.00'), 'app/GTAVI/page.tsx must expose 499.00 TRY Offer schema');
+  assert.ok(gtaviPageSrc.includes('https://www.itemsatis.com/gta-6/gta-vi-ultimate-edition-playstation-48-saat-6103139.html'), 'app/GTAVI/page.tsx must link to İtemsatış #6103139');
   assert.ok(robotsSrc.includes('/yasal/'), 'robots.ts must allow /yasal/ routes');
   assert.ok(robotsSrc.includes('/.well-known/security.txt'), 'robots.ts must allow security.txt');
   const secTxt = fs.readFileSync(new URL('../public/.well-known/security.txt', import.meta.url), 'utf8');

@@ -10,6 +10,7 @@ export default function robots(): MetadataRoute.Robots {
           '/',
           '/katalog',
           '/lisanslar',
+          '/GTAVI',
           '/hizmetler/',
           '/hakkimizda',
           '/iletisim',

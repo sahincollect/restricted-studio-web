@@ -41,8 +41,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${SITE_URL}/GTAVI`,
       lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.85,
+      changeFrequency: 'daily',
+      priority: 0.95,
+      images: [
+        `${SITE_URL}/assets/gtavi-ps-banner.jpg`,
+        `${SITE_URL}/assets/vice-backdrop.jpg`,
+      ],
     },
     {
       url: `${SITE_URL}/hakkimizda`,
