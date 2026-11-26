@@ -921,9 +921,9 @@ export default function CatalogClient({
                             <span
                               className="st-product-badge"
                               style={{
-                                background: 'rgba(114, 86, 206, 0.16)',
-                                border: '1px solid rgba(220, 71, 202, 0.36)',
-                                color: '#f5d0fe',
+                                background: 'rgba(249, 115, 22, 0.16)',
+                                border: '1px solid rgba(251, 146, 60, 0.42)',
+                                color: '#fed7aa',
                               }}
                             >
                               ★ {extraT.featuredTag}
@@ -1174,7 +1174,8 @@ export default function CatalogClient({
                       type="button"
                       onClick={() => removeFromCart(item.id)}
                       aria-label={t.catalog.drawerRemoveAria}
-                      style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px 8px' }}
+                      title={t.catalog.drawerRemoveTitle}
+                      className="st-drawer-remove-btn"
                     >
                       ✕
                     </button>
@@ -1241,11 +1242,11 @@ export default function CatalogClient({
                   <span>{shopierT.altItemsatis}</span>
                 </button>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-muted)' }}>
-                  <button type="button" onClick={clearCart} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}>
+                  <button type="button" onClick={clearCart} className="st-drawer-clear-btn">
                     {t.catalog.clearCartBtn}
                   </button>
-                  <button type="button" onClick={() => setIsCartOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#fff' }}>
+                  <button type="button" onClick={() => setIsCartOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#fff', fontWeight: 600 }}>
                     {t.catalog.continueCatalogBtn}
                   </button>
                 </div>

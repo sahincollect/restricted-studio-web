@@ -283,6 +283,16 @@ export async function middleware(request: NextRequest) {
     requestHeaders.set('x-nonce', nonce);
     requestHeaders.set('Content-Security-Policy', secHeaders['Content-Security-Policy']);
 
+    // Case-insensitive alias support for /gtavi -> /GTAVI
+    if (path !== '/GTAVI' && path.toLowerCase() === '/gtavi') {
+      const rewriteUrl = new URL('/GTAVI', request.url);
+      rewriteUrl.search = search;
+      const rewriteRes = NextResponse.rewrite(rewriteUrl, {
+        request: { headers: requestHeaders },
+      });
+      return applyResponseHeaders(rewriteRes, request, secHeaders, false);
+    }
+
     // Dedicated public status subdomain routing (status.restrictedstudio.shop -> /status)
     if (isStatusSubdomain) {
       if (path === '/' || path === '/status') {

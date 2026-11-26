@@ -42,7 +42,7 @@ const FOOTER_COPY: Record<Locale, FooterCopy> = {
       home: 'Ana Sayfa',
       catalog: 'Katalog Arşivi',
       licenses: 'Dijital Lisanslar',
-      about: 'Hakkımızda',
+      about: 'GTA VI Özel Seri',
       status: 'Sistem Durumu',
       contact: 'İletişim',
     },
@@ -62,7 +62,7 @@ const FOOTER_COPY: Record<Locale, FooterCopy> = {
       home: 'Home',
       catalog: 'Catalog Archive',
       licenses: 'Digital Licenses',
-      about: 'About Studio',
+      about: 'GTA VI Special Series',
       status: 'System Status',
       contact: 'Contact',
     },
@@ -82,7 +82,7 @@ const FOOTER_COPY: Record<Locale, FooterCopy> = {
       home: 'Главная',
       catalog: 'Каталог',
       licenses: 'Лицензии',
-      about: 'О нас',
+      about: 'GTA VI Серия',
       status: 'Статус систем',
       contact: 'Контакты',
     },
@@ -102,7 +102,7 @@ const FOOTER_COPY: Record<Locale, FooterCopy> = {
       home: 'Accueil',
       catalog: 'Catalogue',
       licenses: 'Licences numériques',
-      about: 'À propos',
+      about: 'Série GTA VI',
       status: 'Statut système',
       contact: 'Contact',
     },
@@ -160,7 +160,7 @@ export default function SiteFooter({ mainOrigin = '' }: { mainOrigin?: string })
             {linkOrA('/', copy.nav.home)}
             {linkOrA('/katalog', copy.nav.catalog)}
             {linkOrA('/lisanslar', copy.nav.licenses)}
-            {linkOrA('/hakkimizda', copy.nav.about)}
+            {linkOrA('/GTAVI', copy.nav.about)}
             {linkOrA('/status', copy.nav.status, true)}
             {linkOrA('/iletisim', copy.nav.contact)}
           </div>

@@ -547,10 +547,13 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
           <HeroPrismBackdrop />
 
           <div className="st-container st-hero-inner">
-            <div className="st-hero-kicker-badge">
+            <Link href="/GTAVI" className="st-hero-kicker-badge is-vetra-pill">
               <span className="st-eyebrow-dot" aria-hidden="true" />
               <span>RESTRICTED STUDIO · FIVEM &amp; REDM &amp; GTA VI ARCHITECTURE</span>
-            </div>
+              <span className="st-vetra-pill-arrow" aria-hidden="true">
+                →
+              </span>
+            </Link>
 
             <h1 className="st-hero-title">
               <span>{copy.heroLine1}</span>
@@ -560,13 +563,18 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
 
             <p className="st-hero-subtitle">{copy.heroSubtitle}</p>
 
-            <div className="st-hero-actions">
-              <Link href="/katalog" className="st-pill-btn is-light st-hero-cta">
+            <div className="st-hero-actions is-row">
+              <Link href="/lisanslar" className="st-pill-btn is-outline st-hero-cta-secondary">
+                <span className="st-play-dot" aria-hidden="true">▶</span>
+                <span>{copy.heroSecondaryCta.replace(/\s*→$/, '')}</span>
+              </Link>
+              <Link href="/katalog" className="st-pill-btn is-ember st-hero-cta">
                 {copy.heroCta}
               </Link>
-              <Link href="/lisanslar" className="st-hero-secondary-link">
-                {copy.heroSecondaryCta}
-              </Link>
+            </div>
+
+            <div className="st-vetra-trust-caption">
+              6.446+ AÇIK KAYNAK PAKET · DESTEKLENEN PLATFORMLAR
             </div>
 
             <PlatformLogosBar variant="hero" />

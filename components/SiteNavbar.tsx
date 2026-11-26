@@ -78,7 +78,7 @@ const NAV_COPY: Record<Locale, NavLabels> = {
     home: 'Ana Sayfa',
     catalog: 'Katalog',
     licenses: 'Lisanslar',
-    about: 'Hakkımızda',
+    about: 'GTA VI',
     status: 'Durum',
     contact: 'İletişim',
     portal: 'Müşteri Portalı',
@@ -122,7 +122,7 @@ const NAV_COPY: Record<Locale, NavLabels> = {
     home: 'Home',
     catalog: 'Catalog',
     licenses: 'Licenses',
-    about: 'About',
+    about: 'GTA VI',
     status: 'Status',
     contact: 'Contact',
     portal: 'Client Portal',
@@ -166,7 +166,7 @@ const NAV_COPY: Record<Locale, NavLabels> = {
     home: 'Главная',
     catalog: 'Каталог',
     licenses: 'Лицензии',
-    about: 'О нас',
+    about: 'GTA VI',
     status: 'Статус',
     contact: 'Контакты',
     portal: 'Портал',
@@ -210,7 +210,7 @@ const NAV_COPY: Record<Locale, NavLabels> = {
     home: 'Accueil',
     catalog: 'Catalogue',
     licenses: 'Licences',
-    about: 'À propos',
+    about: 'GTA VI',
     status: 'Statut',
     contact: 'Contact',
     portal: 'Portail Client',
@@ -323,8 +323,8 @@ const ACCOUNT_NAV_COPY: Record<
 };
 
 const NAV_AVATAR_PRESETS: Record<string, string> = {
-  'preset:ember': 'linear-gradient(135deg,#FFB458,#F36A78,#C9349B)',
-  'preset:crimson': 'linear-gradient(135deg,#C9349B,#7B208F,#3B146B)',
+  'preset:ember': 'linear-gradient(135deg,#FDBA74,#F97316,#EA580C)',
+  'preset:crimson': 'linear-gradient(135deg,#F97316,#C2410C,#431407)',
   'preset:obsidian': 'linear-gradient(135deg,#27272a,#09090b)',
   'preset:minimal': 'linear-gradient(135deg,#1f2937,#0f172a)',
 };
@@ -334,6 +334,8 @@ export interface SiteNavbarProps {
     | '/'
     | '/katalog'
     | '/lisanslar'
+    | '/GTAVI'
+    | '/gtavi'
     | '/hakkimizda'
     | '/status'
     | '/iletisim'
@@ -570,6 +572,9 @@ export default function SiteNavbar({
 
   const isActive = (href: string) => {
     if (href === '/') return current === '/';
+    if (href === '/GTAVI') {
+      return current.toLowerCase() === '/gtavi' || current.toLowerCase().startsWith('/gtavi/');
+    }
     if (href === '/katalog') {
       return (
         current === '/katalog' ||
@@ -635,8 +640,8 @@ export default function SiteNavbar({
     );
   };
 
-  const plainNavItems: { href: string; label: string; isStatusRoute?: boolean }[] = [
-    { href: '/hakkimizda', label: labels.about },
+  const plainNavItems: { href: string; label: string; isStatusRoute?: boolean; isGtaVi?: boolean }[] = [
+    { href: '/GTAVI', label: labels.about, isGtaVi: true },
     { href: '/status', label: labels.status, isStatusRoute: true },
     { href: '/iletisim', label: labels.contact },
   ];
