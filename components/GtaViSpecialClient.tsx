@@ -224,7 +224,7 @@ export default function GtaViSpecialClient() {
               <div className="gtavi-ps-banner">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/assets/gtavi-ps-banner.jpg"
+                  src="/assets/gtavi-rockstar-banner.jpg"
                   alt={RENTAL_TITLE}
                   className="gtavi-ps-banner-img"
                   loading="eager"

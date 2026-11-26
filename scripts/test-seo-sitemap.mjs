@@ -17,7 +17,7 @@ test('sitemap.ts and robots.ts define complete canonical routes and sitemap refe
   for (const route of ['/', '/katalog', '/lisanslar', '/GTAVI', '/hizmetler/web-kurulum', '/hizmetler/discord-bot', '/hakkimizda', '/status', '/iletisim']) {
     assert.ok(sitemapSrc.includes(route), `sitemap.ts missing route: ${route}`);
   }
-  assert.ok(sitemapSrc.includes('/assets/gtavi-ps-banner.jpg'), 'sitemap.ts must include GTA VI product banner image');
+  assert.ok(sitemapSrc.includes('/assets/gtavi-rockstar-banner.jpg'), 'sitemap.ts must include GTA VI product banner image');
   assert.ok(sitemapSrc.includes('/yasal/'), 'sitemap.ts must include legal routes');
   assert.ok(robotsSrc.includes('/GTAVI'), 'robots.ts must explicitly allow /GTAVI');
   assert.ok(robotsSrc.includes('/sitemap.xml'), 'robots.ts must expose sitemap.xml');

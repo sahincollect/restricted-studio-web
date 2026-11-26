@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     url: canonicalUrl('/GTAVI'),
     images: [
       {
-        url: '/assets/gtavi-ps-banner.jpg',
+        url: '/assets/gtavi-rockstar-banner.jpg',
         width: 1920,
         height: 1080,
         alt: 'GTA VI Ultimate Edition PlayStation | 48 Saat — 499 TL',
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     title: 'GTA VI Ultimate Edition PlayStation | 48 Saat — 499 TL',
     description:
       'GTA VI 499 TL: PlayStation 48 saat dijital erişim kiralama (#6103139) ve özel seri GTA 6 temalı FiveM içerikleri.',
-    images: ['/assets/gtavi-ps-banner.jpg'],
+    images: ['/assets/gtavi-rockstar-banner.jpg'],
   },
 };
 
@@ -62,7 +62,7 @@ export default function GtaViPage() {
         mpn: '6103139',
         category: 'Video Games > PlayStation > Digital Rental',
         image: [
-          canonicalUrl('/assets/gtavi-ps-banner.jpg'),
+          canonicalUrl('/assets/gtavi-rockstar-banner.jpg'),
           canonicalUrl('/assets/vice-backdrop.jpg'),
         ],
         description:

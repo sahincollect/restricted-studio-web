@@ -44,7 +44,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily',
       priority: 0.95,
       images: [
-        `${SITE_URL}/assets/gtavi-ps-banner.jpg`,
+        `${SITE_URL}/assets/gtavi-rockstar-banner.jpg`,
         `${SITE_URL}/assets/vice-backdrop.jpg`,
       ],
     },
