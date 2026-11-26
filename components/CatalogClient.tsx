@@ -731,7 +731,7 @@ export default function CatalogClient({
                 )}
               </div>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              <div className="st-popular-tags-row">
                 {POPULAR_TAGS.map((tag) => (
                   <button
                     key={tag}
@@ -744,9 +744,62 @@ export default function CatalogClient({
                   </button>
                 ))}
               </div>
+
+              {/* Mobile Horizontal Quick Category & View Bar */}
+              <div className="st-mobile-cat-quickbar" aria-label={t.catalog.categoriesTitle}>
+                <div className="st-mobile-cat-scroll">
+                  {CATEGORIES.map((cat) => {
+                    const count = categoryCounts[cat] || 0;
+                    const isActive = selectedCategory === cat;
+                    return (
+                      <button
+                        key={`mob-${cat}`}
+                        type="button"
+                        className={`st-mobile-cat-chip ${isActive ? 'is-active' : ''}`}
+                        onClick={() => setSelectedCategory(cat)}
+                      >
+                        <span>{t.catalog.categoryLabels[cat] || cat}</span>
+                        <span className="st-mobile-cat-chip-count">{formatNumber(count)}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="st-mobile-view-row">
+                  <button
+                    type="button"
+                    className={`st-filter-pill ${viewMode === 'all' ? 'is-active' : ''}`}
+                    style={{ padding: '6px 11px', fontSize: '11.5px' }}
+                    onClick={() => setViewMode('all')}
+                  >
+                    {extraT.viewAll}
+                  </button>
+                  <button
+                    type="button"
+                    className={`st-filter-pill is-ember ${viewMode === 'featured' ? 'is-active' : ''}`}
+                    style={{ padding: '6px 11px', fontSize: '11.5px' }}
+                    onClick={() => {
+                      setViewMode('featured');
+                      setSortMode('featured');
+                    }}
+                  >
+                    ★ {extraT.viewFeatured}
+                  </button>
+                  <button
+                    type="button"
+                    className={`st-filter-pill is-ember ${viewMode === 'popular' ? 'is-active' : ''}`}
+                    style={{ padding: '6px 11px', fontSize: '11.5px' }}
+                    onClick={() => {
+                      setViewMode('popular');
+                      setSortMode('popular');
+                    }}
+                  >
+                    ▲ {extraT.viewPopular}
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div className="st-sidebar-card">
+            <div className="st-sidebar-card st-desktop-cat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span className="st-sidebar-title">{t.catalog.categoriesTitle}</span>
                 <span className="st-cat-count">{formatNumber(totalCount)}</span>
@@ -948,7 +1001,7 @@ export default function CatalogClient({
                           {titleSegments
                             ? titleSegments.map((seg, i) =>
                                 seg.match ? (
-                                  <mark key={i} style={{ background: 'rgba(201,52,155,0.42)', color: '#fff', borderRadius: '4px', padding: '0 2px' }}>
+                                  <mark key={i} style={{ background: 'rgba(249,115,22,0.38)', color: '#fff', borderRadius: '4px', padding: '0 2px' }}>
                                     {seg.text}
                                   </mark>
                                 ) : (
@@ -1141,7 +1194,7 @@ export default function CatalogClient({
               </button>
             </div>
 
-            <div style={{ padding: '14px 22px', background: isDiscounted ? 'rgba(243,106,120,0.16)' : 'rgba(255,255,255,0.03)', borderBottom: '1px solid var(--border-hairline)' }}>
+            <div style={{ padding: '14px 22px', background: isDiscounted ? 'rgba(249,115,22,0.16)' : 'rgba(255,255,255,0.03)', borderBottom: '1px solid var(--border-hairline)' }}>
               <strong style={{ display: 'block', fontSize: '13px', color: isDiscounted ? 'var(--accent-coral)' : '#fff' }}>
                 {isDiscounted ? t.catalog.drawerDiscountTitle : t.catalog.drawerCampaignTitle}
               </strong>

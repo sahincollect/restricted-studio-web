@@ -291,7 +291,7 @@ export default function ContactTerminalClient() {
                   fontFamily: 'var(--font-mono)',
                   fontSize: '10.5px',
                   fontWeight: 700,
-                  color: '#7B208F',
+                  color: '#EA580C',
                   letterSpacing: '0.08em',
                 }}
               >
@@ -319,7 +319,7 @@ export default function ContactTerminalClient() {
                   fontFamily: 'var(--font-mono)',
                   fontSize: '10.5px',
                   fontWeight: 700,
-                  color: '#7B208F',
+                  color: '#EA580C',
                   letterSpacing: '0.08em',
                 }}
               >
@@ -344,7 +344,7 @@ export default function ContactTerminalClient() {
                   fontFamily: 'var(--font-mono)',
                   fontSize: '10.5px',
                   fontWeight: 700,
-                  color: '#7B208F',
+                  color: '#EA580C',
                   letterSpacing: '0.08em',
                 }}
               >

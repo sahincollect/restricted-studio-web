@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from 'next/font/google';
 import { cookies, headers } from 'next/headers';
 import './globals.css';
@@ -48,6 +48,15 @@ const OG_LOCALE_MAP = {
   fr: 'fr_FR',
 } as const;
 
+export const viewport: Viewport = {
+  themeColor: '#060608',
+  colorScheme: 'dark',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
   const cookieStore = await cookies();
@@ -76,6 +85,14 @@ export async function generateMetadata(): Promise<Metadata> {
       apple: [{ url: `/apple-touch-icon.png?v=${ICON_VERSION}`, sizes: '180x180', type: 'image/png' }],
     },
     manifest: `/manifest.webmanifest?v=${ICON_VERSION}`,
+    appleWebApp: {
+      capable: true,
+      title: 'Restricted Studio',
+      statusBarStyle: 'black-translucent',
+    },
+    formatDetection: {
+      telephone: false,
+    },
     openGraph: {
       type: 'website',
       locale: OG_LOCALE_MAP[locale],

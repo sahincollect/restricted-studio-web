@@ -23,8 +23,8 @@ interface AccountPortalClientProps {
 }
 
 const PRESET_AVATARS: Array<{ id: string; label: string; bg: string; border: string }> = [
-  { id: 'preset:ember', label: 'Vice Sunset', bg: 'linear-gradient(135deg,#FFB458,#F36A78,#C9349B)', border: '#F36A78' },
-  { id: 'preset:crimson', label: 'Vice Neon', bg: 'linear-gradient(135deg,#C9349B,#7B208F,#3B146B)', border: '#C9349B' },
+  { id: 'preset:ember', label: 'Vetra Orange', bg: 'linear-gradient(135deg,#FDBA74,#F97316,#EA580C)', border: '#F97316' },
+  { id: 'preset:crimson', label: 'Deep Copper', bg: 'linear-gradient(135deg,#F97316,#C2410C,#431407)', border: '#EA580C' },
   { id: 'preset:obsidian', label: 'Obsidian', bg: 'linear-gradient(135deg,#27272a,#09090b)', border: '#71717a' },
   { id: 'preset:minimal', label: 'Carbon', bg: 'linear-gradient(135deg,#1f2937,#0f172a)', border: '#94a3b8' },
 ];

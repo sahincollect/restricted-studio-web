@@ -717,7 +717,7 @@ export default function ServiceRequestPageClient({ serviceType }: { serviceType:
                   fontFamily: 'var(--font-mono)',
                   fontSize: '10.5px',
                   fontWeight: 700,
-                  color: '#7B208F',
+                  color: '#EA580C',
                   letterSpacing: '0.08em',
                 }}
               >
@@ -735,7 +735,7 @@ export default function ServiceRequestPageClient({ serviceType }: { serviceType:
                   fontFamily: 'var(--font-mono)',
                   fontSize: '10.5px',
                   fontWeight: 700,
-                  color: '#7B208F',
+                  color: '#EA580C',
                   letterSpacing: '0.08em',
                 }}
               >
@@ -760,7 +760,7 @@ export default function ServiceRequestPageClient({ serviceType }: { serviceType:
                         width: '7px',
                         height: '7px',
                         borderRadius: '50%',
-                        background: '#F36A78',
+                        background: '#F97316',
                         marginTop: '6px',
                         flexShrink: 0,
                       }}
@@ -777,7 +777,7 @@ export default function ServiceRequestPageClient({ serviceType }: { serviceType:
                   fontFamily: 'var(--font-mono)',
                   fontSize: '10.5px',
                   fontWeight: 700,
-                  color: '#7B208F',
+                  color: '#EA580C',
                   letterSpacing: '0.08em',
                 }}
               >

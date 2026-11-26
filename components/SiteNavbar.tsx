@@ -57,6 +57,12 @@ function renderChoiceIcon(icon: CatalogChoice['icon']) {
   }
 }
 
+interface CatalogCategoryShortcut {
+  href: string;
+  label: string;
+  count: string;
+}
+
 interface NavLabels {
   home: string;
   catalog: string;
@@ -70,7 +76,12 @@ interface NavLabels {
   openMenu: string;
   closeMenu: string;
   catalogChoicesTitle: string;
+  catalogCategoriesTitle: string;
+  catalogOpenAllCta: string;
+  installAppBtn: string;
+  installAppHintIos: string;
   catalogChoices: CatalogChoice[];
+  catalogCategories: CatalogCategoryShortcut[];
 }
 
 const NAV_COPY: Record<Locale, NavLabels> = {
@@ -87,18 +98,22 @@ const NAV_COPY: Record<Locale, NavLabels> = {
     openMenu: 'Menüyü aç',
     closeMenu: 'Menüyü kapat',
     catalogChoicesTitle: 'KATALOG VE HİZMETLER',
+    catalogCategoriesTitle: 'HIZLI FİVEM KATEGORİLERİ',
+    catalogOpenAllCta: 'Tüm 6.446+ Paketi Aç →',
+    installAppBtn: '📲 Uygulamayı İndir (Ana Ekrana Ekle)',
+    installAppHintIos: 'iOS Safari: Paylaş butonuna basıp "Ana Ekrana Ekle" seçeneğini seçin.',
     catalogChoices: [
       {
         href: '/katalog',
         badge: '6.446+',
-        title: 'FiveM / RedM',
+        title: 'FiveM & RedM Katalog Arşivi',
         desc: 'Script, MLO, Araç Paketleri, Kıyafet & Mod arşivi',
         icon: 'code',
       },
       {
         href: '/lisanslar',
         badge: '19 İlan',
-        title: 'Lisanslar',
+        title: 'Dijital Lisanslar',
         desc: 'Yapay zeka, tasarım & medya dijital abonelikleri',
         icon: 'key',
       },
@@ -117,6 +132,14 @@ const NAV_COPY: Record<Locale, NavLabels> = {
         icon: 'bot',
       },
     ],
+    catalogCategories: [
+      { href: '/katalog?category=Script%20%26%20Sistemler', label: 'Script & Sistemler', count: '3.561' },
+      { href: '/katalog?category=MLO%20%26%20Mekanlar', label: 'MLO & Mekanlar', count: '1.298' },
+      { href: '/katalog?category=Ara%C3%A7%20Paketleri', label: 'Araç Paketleri', count: '1.152' },
+      { href: '/katalog?category=Modlar%20%26%20Eklentiler', label: 'Modlar & Eklentiler', count: '230' },
+      { href: '/katalog?category=K%C4%B1yafet%20%26%20EUP', label: 'Kıyafet & EUP', count: '192' },
+      { href: '/katalog?view=featured', label: '★ Öne Çıkanlar', count: 'VİTRİN' },
+    ],
   },
   en: {
     home: 'Home',
@@ -131,18 +154,22 @@ const NAV_COPY: Record<Locale, NavLabels> = {
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
     catalogChoicesTitle: 'CATALOG & SERVICES',
+    catalogCategoriesTitle: 'QUICK FIVEM CATEGORIES',
+    catalogOpenAllCta: 'Browse All 6,446+ Packages →',
+    installAppBtn: '📲 Install App (Add to Home Screen)',
+    installAppHintIos: 'iOS Safari: Tap Share and select "Add to Home Screen".',
     catalogChoices: [
       {
         href: '/katalog',
         badge: '6,446+',
-        title: 'FiveM / RedM',
+        title: 'FiveM & RedM Archive',
         desc: 'Scripts, MLO interiors, vehicles & EUP packages',
         icon: 'code',
       },
       {
         href: '/lisanslar',
         badge: '19 Packs',
-        title: 'Licenses',
+        title: 'Digital Licenses',
         desc: 'Verified AI, design & media digital subscriptions',
         icon: 'key',
       },
@@ -161,6 +188,14 @@ const NAV_COPY: Record<Locale, NavLabels> = {
         icon: 'bot',
       },
     ],
+    catalogCategories: [
+      { href: '/katalog?category=Script%20%26%20Sistemler', label: 'Scripts & Systems', count: '3,561' },
+      { href: '/katalog?category=MLO%20%26%20Mekanlar', label: 'MLO & Interiors', count: '1,298' },
+      { href: '/katalog?category=Ara%C3%A7%20Paketleri', label: 'Vehicle Packs', count: '1,152' },
+      { href: '/katalog?category=Modlar%20%26%20Eklentiler', label: 'Mods & Add-ons', count: '230' },
+      { href: '/katalog?category=K%C4%B1yafet%20%26%20EUP', label: 'Clothing & EUP', count: '192' },
+      { href: '/katalog?view=featured', label: '★ Featured Picks', count: 'TOP' },
+    ],
   },
   ru: {
     home: 'Главная',
@@ -175,11 +210,15 @@ const NAV_COPY: Record<Locale, NavLabels> = {
     openMenu: 'Открыть меню',
     closeMenu: 'Закрыть меню',
     catalogChoicesTitle: 'КАТАЛОГ И УСЛУГИ',
+    catalogCategoriesTitle: 'КАТЕГОРИИ FIVEM',
+    catalogOpenAllCta: 'Открыть все 6 446+ пакетов →',
+    installAppBtn: '📲 Установить приложение',
+    installAppHintIos: 'iOS Safari: Нажмите «Поделиться» и выберите «На экран Домой».',
     catalogChoices: [
       {
         href: '/katalog',
         badge: '6 446+',
-        title: 'FiveM / RedM',
+        title: 'FiveM / RedM Архив',
         desc: 'Скрипты, интерьеры MLO, авто и одежда EUP',
         icon: 'code',
       },
@@ -205,6 +244,14 @@ const NAV_COPY: Record<Locale, NavLabels> = {
         icon: 'bot',
       },
     ],
+    catalogCategories: [
+      { href: '/katalog?category=Script%20%26%20Sistemler', label: 'Скрипты и системы', count: '3 561' },
+      { href: '/katalog?category=MLO%20%26%20Mekanlar', label: 'MLO и локации', count: '1 298' },
+      { href: '/katalog?category=Ara%C3%A7%20Paketleri', label: 'Автопаки', count: '1 152' },
+      { href: '/katalog?category=Modlar%20%26%20Eklentiler', label: 'Моды и аддоны', count: '230' },
+      { href: '/katalog?category=K%C4%B1yafet%20%26%20EUP', label: 'Одежда и EUP', count: '192' },
+      { href: '/katalog?view=featured', label: '★ Избранное', count: 'ТОП' },
+    ],
   },
   fr: {
     home: 'Accueil',
@@ -219,11 +266,15 @@ const NAV_COPY: Record<Locale, NavLabels> = {
     openMenu: 'Ouvrir le menu',
     closeMenu: 'Fermer le menu',
     catalogChoicesTitle: 'CATALOGUE & SERVICES',
+    catalogCategoriesTitle: 'CATÉGORIES FIVEM RAPIDES',
+    catalogOpenAllCta: 'Voir les 6 446+ ressources →',
+    installAppBtn: '📲 Installer l’application',
+    installAppHintIos: 'iOS Safari : Appuyez sur Partager puis « Sur l’écran d’accueil ».',
     catalogChoices: [
       {
         href: '/katalog',
         badge: '6 446+',
-        title: 'FiveM / RedM',
+        title: 'Archives FiveM / RedM',
         desc: 'Scripts, intérieurs MLO, véhicules & tenues EUP',
         icon: 'code',
       },
@@ -248,6 +299,14 @@ const NAV_COPY: Record<Locale, NavLabels> = {
         desc: 'Bots personnalisés et passerelle FiveM/RedM',
         icon: 'bot',
       },
+    ],
+    catalogCategories: [
+      { href: '/katalog?category=Script%20%26%20Sistemler', label: 'Scripts & Systèmes', count: '3 561' },
+      { href: '/katalog?category=MLO%20%26%20Mekanlar', label: 'MLO & Intérieurs', count: '1 298' },
+      { href: '/katalog?category=Ara%C3%A7%20Paketleri', label: 'Packs Véhicules', count: '1 152' },
+      { href: '/katalog?category=Modlar%20%26%20Eklentiler', label: 'Mods & Addons', count: '230' },
+      { href: '/katalog?category=K%C4%B1yafet%20%26%20EUP', label: 'Vêtements & EUP', count: '192' },
+      { href: '/katalog?view=featured', label: '★ En vedette', count: 'TOP' },
     ],
   },
 };
@@ -392,9 +451,44 @@ export default function SiteNavbar({
   const [mobileAccountOpen, setMobileAccountOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [accountSummary, setAccountSummary] = useState<AccountNavSummary | null>(null);
+  const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<any>(null);
+  const [isStandalonePwa, setIsStandalonePwa] = useState(false);
+  const [iosInstallHintOpen, setIosInstallHintOpen] = useState(false);
   const catalogDropRef = useRef<HTMLDivElement | null>(null);
   const accountDropRef = useRef<HTMLDivElement | null>(null);
   const notifDropRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const checkStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      Boolean((window.navigator as any).standalone);
+    setIsStandalonePwa(checkStandalone);
+
+    const onBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredInstallPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallAppClick = async () => {
+    if (deferredInstallPrompt) {
+      try {
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+      } catch {
+        // ignore
+      }
+      setDeferredInstallPrompt(null);
+      setDrawerOpen(false);
+      return;
+    }
+    setIosInstallHintOpen((prev) => !prev);
+  };
 
   const unreadMsgCount = notifications.filter((n) => !n.readAt && n.kind === 'admin_message').length;
 
@@ -718,8 +812,16 @@ export default function SiteNavbar({
 
               {catalogMenuOpen && (
                 <div className="st-catalog-dropdown" role="menu" aria-label={labels.catalog}>
-                  <div className="st-catalog-dropdown-head">{labels.catalogChoicesTitle}</div>
-                  <div className="st-catalog-dropdown-grid">
+                  <div className="st-catalog-dropdown-head">
+                    <span>{labels.catalogChoicesTitle}</span>
+                    {renderLink(
+                      '/katalog',
+                      'st-catalog-head-all',
+                      labels.catalogOpenAllCta,
+                      () => setCatalogMenuOpen(false)
+                    )}
+                  </div>
+                  <div className="st-catalog-dropdown-grid is-two-col">
                     {labels.catalogChoices.map((choice) =>
                       renderChoiceLink(
                         choice,
@@ -727,6 +829,23 @@ export default function SiteNavbar({
                         () => setCatalogMenuOpen(false)
                       )
                     )}
+                  </div>
+
+                  <div className="st-catalog-subcats-block">
+                    <div className="st-catalog-subcats-title">{labels.catalogCategoriesTitle}</div>
+                    <div className="st-catalog-subcats-pills">
+                      {labels.catalogCategories.map((cat) =>
+                        renderLink(
+                          cat.href,
+                          'st-catalog-subcat-pill',
+                          <>
+                            <span>{cat.label}</span>
+                            <span className="st-catalog-subcat-count">{cat.count}</span>
+                          </>,
+                          () => setCatalogMenuOpen(false)
+                        )
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -1123,6 +1242,19 @@ export default function SiteNavbar({
 
               {mobileCatalogOpen && (
                 <div className="st-mobile-cat-choices">
+                  <div className="st-mobile-quick-cats">
+                    {labels.catalogCategories.map((cat) =>
+                      renderLink(
+                        cat.href,
+                        'st-catalog-subcat-pill is-mobile',
+                        <>
+                          <span>{cat.label}</span>
+                          <span className="st-catalog-subcat-count">{cat.count}</span>
+                        </>,
+                        () => setDrawerOpen(false)
+                      )
+                    )}
+                  </div>
                   {labels.catalogChoices.map((choice) =>
                     renderChoiceLink(
                       choice,
@@ -1150,6 +1282,21 @@ export default function SiteNavbar({
           </div>
 
           <div className="st-mobile-drawer-ctas">
+            {!isStandalonePwa && (
+              <div className="st-mobile-install-wrap">
+                <button
+                  type="button"
+                  className="st-pill-btn is-outline is-full st-mobile-install-btn"
+                  onClick={() => void handleInstallAppClick()}
+                >
+                  {labels.installAppBtn}
+                </button>
+                {iosInstallHintOpen && (
+                  <p className="st-mobile-install-hint">{labels.installAppHintIos}</p>
+                )}
+              </div>
+            )}
+
             {mainOrigin ? (
               <a
                 href={siteLink('/?chat=open')}

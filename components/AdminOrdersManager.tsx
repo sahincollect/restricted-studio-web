@@ -288,8 +288,8 @@ export default function AdminOrdersManager() {
             marginBottom: '12px',
             padding: '10px 14px',
             borderRadius: '12px',
-            backgroundColor: 'rgba(243, 106, 120, 0.14)',
-            border: '1px solid rgba(243, 106, 120, 0.42)',
+            backgroundColor: 'rgba(249, 115, 22, 0.14)',
+            border: '1px solid rgba(249, 115, 22, 0.42)',
             fontSize: '12.5px',
             color: '#f3f2f2',
           }}
@@ -436,8 +436,8 @@ export default function AdminOrdersManager() {
                   style={{
                     padding: '14px',
                     borderRadius: '14px',
-                    background: 'rgba(243, 106, 120, 0.09)',
-                    border: '1px solid rgba(243, 106, 120, 0.34)',
+                    background: 'rgba(249, 115, 22, 0.09)',
+                    border: '1px solid rgba(249, 115, 22, 0.34)',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '10px',

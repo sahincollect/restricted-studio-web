@@ -87,18 +87,17 @@ export default function BearClawIntro() {
             >
               <defs>
                 <linearGradient id={`rsClawGrad${idx}`} x1="88%" y1="6%" x2="14%" y2="94%">
-                  <stop offset="0%" stopColor="#F99A60" />
-                  <stop offset="28%" stopColor="#FC73A9" />
-                  <stop offset="56%" stopColor="#DC47CA" />
-                  <stop offset="82%" stopColor="#7256CE" />
-                  <stop offset="100%" stopColor="#420452" />
+                  <stop offset="0%" stopColor="#FED7AA" />
+                  <stop offset="32%" stopColor="#FB923C" />
+                  <stop offset="68%" stopColor="#F97316" />
+                  <stop offset="100%" stopColor="#C2410C" />
                 </linearGradient>
               </defs>
 
               <path
                 d={d}
                 fill="none"
-                stroke="rgba(243, 106, 120, 0.22)"
+                stroke="rgba(249, 115, 22, 0.24)"
                 strokeWidth="4.5"
                 strokeLinejoin="round"
               />

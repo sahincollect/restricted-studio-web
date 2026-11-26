@@ -1,11 +1,37 @@
 {
   "name": "Restricted Studio",
   "short_name": "Restricted",
-  "description": "FiveM Open-Source Software, Scripts, MLO & Digital Licensing Engineering",
+  "description": "FiveM & RedM Open-Source Software, Scripts, MLO & Digital Licensing Engineering",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#420452",
-  "theme_color": "#DC47CA",
+  "orientation": "portrait-primary",
+  "background_color": "#060608",
+  "theme_color": "#060608",
+  "categories": ["developer tools", "shopping", "games"],
+  "shortcuts": [
+    {
+      "name": "FiveM & RedM Katalog",
+      "short_name": "Katalog",
+      "description": "6.446+ açık kaynak Script, MLO ve Araç Paketi",
+      "url": "/katalog",
+      "icons": [{ "src": "/icon-192.png?v=20261126", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Dijital Lisanslar",
+      "short_name": "Lisanslar",
+      "description": "İtemsatış güvenceli dijital yazılım ve AI lisansları",
+      "url": "/lisanslar",
+      "icons": [{ "src": "/icon-192.png?v=20261126", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "GTA VI Özel Seri",
+      "short_name": "GTA VI",
+      "description": "Özel seri GTA 6 temalı FiveM içerikleri",
+      "url": "/GTAVI",
+      "icons": [{ "src": "/icon-192.png?v=20261126", "sizes": "192x192", "type": "image/png" }]
+    }
+  ],
   "icons": [
     {
       "src": "/icon-48.png?v=20261126",
