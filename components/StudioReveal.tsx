@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { HERO_LEFT_PALM_PATH, HERO_RIGHT_PALM_PATH } from '@/components/ViceBackdrop';
 
 /**
  * Ambient mouse-reactive parallax controller for Hero volumetric prism ribs.
@@ -56,22 +55,6 @@ export function HeroPrismBackdrop({ interactive = true }: { interactive?: boolea
         <span className="st-prism-bar st-prism-3" />
         <span className="st-prism-bar st-prism-4" />
         <span className="st-prism-bar st-prism-5" />
-      </div>
-      <div className="st-hero-palms-layer">
-        <svg
-          className="st-hero-palm is-left"
-          viewBox="0 0 320 360"
-          preserveAspectRatio="xMinYMax meet"
-        >
-          <path d={HERO_LEFT_PALM_PATH} fill="#250330" />
-        </svg>
-        <svg
-          className="st-hero-palm is-right"
-          viewBox="0 0 320 360"
-          preserveAspectRatio="xMaxYMax meet"
-        >
-          <path d={HERO_RIGHT_PALM_PATH} fill="#250330" />
-        </svg>
       </div>
     </div>
   );
