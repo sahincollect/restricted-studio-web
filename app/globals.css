@@ -1333,7 +1333,8 @@ img {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  border: 1px solid rgba(249, 115, 22, 0.22);
+  border: 1px solid rgba(249, 115, 22, 0.32);
+  box-shadow: 0 18px 48px rgba(249, 115, 22, 0.16), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
 .st-split-visual-img {
@@ -1343,7 +1344,7 @@ img {
   height: 100%;
   object-fit: cover;
   object-position: center 46%;
-  filter: hue-rotate(60deg) saturate(1.18) brightness(0.95) contrast(1.08);
+  filter: none;
   transition: transform 0.65s var(--ease-expo);
 }
 
