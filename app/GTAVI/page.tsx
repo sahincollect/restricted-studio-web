@@ -33,8 +33,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: '/assets/gtavi-ps-banner.jpg',
-        width: 1408,
-        height: 768,
+        width: 1920,
+        height: 1080,
         alt: 'GTA VI Ultimate Edition PlayStation | 48 Saat — 499 TL',
       },
     ],

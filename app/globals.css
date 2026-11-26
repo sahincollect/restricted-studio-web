@@ -6668,7 +6668,7 @@ body.has-catalog-cart .st-cookie-banner {
 
 .gtavi-ps-banner {
   position: relative;
-  height: 310px;
+  height: 340px;
   background: #140720;
   overflow: hidden;
 }
@@ -6679,7 +6679,7 @@ body.has-catalog-cart .st-cookie-banner {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 54%;
+  object-position: center 12%;
 }
 
 .gtavi-ps-banner-scrim {
@@ -6688,14 +6688,15 @@ body.has-catalog-cart .st-cookie-banner {
   background:
     linear-gradient(
       90deg,
-      rgba(13, 6, 20, 0.78) 0%,
-      rgba(66, 4, 82, 0.28) 44%,
-      rgba(13, 6, 20, 0.14) 100%
+      rgba(13, 6, 20, 0.72) 0%,
+      rgba(66, 4, 82, 0.24) 40%,
+      rgba(13, 6, 20, 0.04) 72%,
+      rgba(13, 6, 20, 0.18) 100%
     ),
     linear-gradient(
       180deg,
-      rgba(13, 6, 20, 0.2) 0%,
-      rgba(13, 6, 20, 0.08) 58%,
+      rgba(13, 6, 20, 0.12) 0%,
+      rgba(13, 6, 20, 0.04) 62%,
       #0d0614 100%
     );
 }
@@ -7119,12 +7120,17 @@ body.has-catalog-cart .st-cookie-banner {
   }
 
   .gtavi-ps-banner {
-    height: 196px;
+    height: 215px;
+  }
+
+  .gtavi-ps-banner-img {
+    object-position: 62% 12%;
   }
 
   .gtavi-ps-banner-emblem {
     top: 12px;
-    right: 12px;
+    left: 12px;
+    right: auto;
     padding: 5px 10px 5px 8px;
   }
 
