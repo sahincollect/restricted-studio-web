@@ -2521,28 +2521,39 @@ img {
   background: var(--accent-ember);
 }
 
-/* Auth Portal (/login, /register) */
+/* Auth Portal (/login, /register) — Locked Dark Nocturnal Theme */
 .rs-auth-shell {
-  min-height: 100vh;
-  background-color: transparent;
+  min-height: 100dvh;
+  background-color: #07010b;
   background-image:
-    radial-gradient(circle at 20% 24%, rgba(243, 106, 120, 0.18), transparent 46%),
-    radial-gradient(circle at 82% 76%, rgba(123, 32, 143, 0.24), transparent 48%);
+    radial-gradient(ellipse 70% 55% at 50% 0%, rgba(66, 4, 82, 0.28), transparent 65%),
+    radial-gradient(circle at 20% 80%, rgba(66, 4, 82, 0.16), transparent 48%);
   color: var(--text-primary);
   display: flex;
   flex-direction: column;
   position: relative;
   z-index: 1;
+  overflow-x: clip;
+  overscroll-behavior: none;
+}
+
+.rs-auth-viewport-stage {
+  position: relative;
+  flex: 1 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .rs-auth-grid {
   width: 100%;
-  max-width: 1080px;
+  max-width: 1060px;
   margin: auto;
-  padding: 32px 24px 72px;
+  padding: 20px 24px 28px;
   display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  gap: 24px;
+  grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
+  gap: 22px;
   align-items: stretch;
   position: relative;
   z-index: 2;
@@ -2550,22 +2561,22 @@ img {
 
 .rs-auth-dossier {
   background: linear-gradient(
-    155deg,
-    rgba(30, 3, 40, 0.88) 0%,
-    rgba(66, 4, 82, 0.78) 58%,
-    rgba(114, 86, 206, 0.26) 100%
+    160deg,
+    rgba(16, 2, 24, 0.96) 0%,
+    rgba(9, 1, 14, 0.98) 68%,
+    rgba(30, 3, 40, 0.94) 100%
   );
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border: 1px solid rgba(252, 115, 169, 0.28);
-  box-shadow: 0 28px 80px rgba(12, 1, 18, 0.68), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(114, 86, 206, 0.24);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   color: var(--text-primary);
   border-radius: var(--radius-asym-md);
-  padding: 36px 32px;
+  padding: 28px 28px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 28px;
+  gap: 20px;
 }
 
 .rs-auth-eyebrow {
@@ -2633,16 +2644,20 @@ img {
 }
 
 .rs-auth-card {
-  background: linear-gradient(155deg, rgba(76, 24, 122, 0.72) 0%, rgba(59, 20, 107, 0.58) 100%);
-  backdrop-filter: blur(26px) saturate(165%);
-  -webkit-backdrop-filter: blur(26px) saturate(165%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-  border-radius: 26px;
-  padding: 36px 32px;
+  background: linear-gradient(
+    160deg,
+    rgba(14, 2, 20, 0.97) 0%,
+    rgba(8, 1, 12, 0.99) 100%
+  );
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid rgba(114, 86, 206, 0.24);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.84), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 30px 28px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
 .rs-auth-title {
@@ -2714,16 +2729,14 @@ img {
 
 .rs-auth-input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.055);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(8, 1, 12, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 14px;
   padding: 12px 14px;
   font-size: 13.5px;
   color: #ffffff;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
 .rs-auth-input.has-toggle {
@@ -2806,19 +2819,20 @@ img {
   width: 100%;
   padding: 13px 20px;
   border-radius: var(--radius-pill);
-  background: linear-gradient(135deg, #7B208F 0%, #C9349B 50%, #F36A78 100%);
+  background: linear-gradient(135deg, #270336 0%, #420452 46%, #7256CE 100%);
   color: #ffffff;
-  border: 1px solid rgba(255, 180, 88, 0.3);
+  border: 1px solid rgba(220, 71, 202, 0.42);
   font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
 .rs-auth-btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #C9349B 0%, #F36A78 52%, #FF9B55 100%);
-  box-shadow: 0 12px 30px rgba(243, 106, 120, 0.32);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #350447 0%, #5b1475 50%, #DC47CA 100%);
+  border-color: rgba(252, 115, 169, 0.65);
+  box-shadow: 0 8px 24px rgba(66, 4, 82, 0.65);
+  transform: none;
 }
 
 .rs-auth-btn-google,
@@ -2826,8 +2840,8 @@ img {
   width: 100%;
   padding: 12px 18px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--border-strong);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(10, 2, 15, 0.88);
   color: #ffffff;
   font-size: 13px;
   font-weight: 600;
@@ -2836,13 +2850,14 @@ img {
   justify-content: center;
   gap: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.16s ease, background-color 0.16s ease;
 }
 
 .rs-auth-btn-google:hover:not(:disabled),
 .rs-auth-btn-secondary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--accent-ember);
+  background: rgba(24, 3, 32, 0.94);
+  border-color: rgba(220, 71, 202, 0.55);
+  transform: none;
 }
 
 .rs-auth-divider {
@@ -6472,5 +6487,93 @@ body.has-catalog-cart .st-cookie-banner {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+}
+
+/* ============================================================================
+ * LOCKED STATIC DARK AUTH MODE (/login, /register) — NO MOTION / NO PARALLAX
+ * ============================================================================ */
+.st-hero-prism-wrap.is-static .st-prism-cluster,
+.st-hero-prism-wrap.is-static .st-vice-sun,
+.st-hero-prism-wrap.is-static .st-hero-palms-layer,
+.vice-backdrop.is-static-dark .vice-palm-sway-a,
+.vice-backdrop.is-static-dark .vice-palm-sway-b,
+.rs-auth-shell .st-eyebrow-dot {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.st-hero-prism-wrap.is-static .st-vice-sun {
+  left: 50%;
+  transform: translateX(-50%) !important;
+  opacity: 0.16;
+  box-shadow: none;
+}
+
+.st-hero-prism-wrap.is-static .st-hero-top-glow {
+  opacity: 0.28;
+}
+
+.st-hero-prism-wrap.is-static .st-prism-bar {
+  opacity: 0.22;
+  box-shadow: none;
+}
+
+.st-hero-prism-wrap.is-static .st-hero-palm {
+  opacity: 0.35;
+  filter: none;
+}
+
+.vice-backdrop.is-static-dark .vice-sky-wash {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(66, 4, 82, 0.32) 0%, transparent 72%),
+    linear-gradient(180deg, #06010a 0%, #0b0211 46%, #14021c 82%, #1d0326 100%);
+}
+
+.vice-backdrop.is-static-dark .vice-horizon-glow {
+  background: radial-gradient(
+    ellipse 84% 64% at 50% 106%,
+    rgba(66, 4, 82, 0.32) 0%,
+    rgba(30, 3, 40, 0.16) 58%,
+    transparent 100%
+  );
+}
+
+.vice-backdrop.is-static-dark .vice-horizon-ridge {
+  opacity: 0.72;
+}
+
+.vice-backdrop.is-static-dark .vice-palm-cluster {
+  opacity: 0.38;
+  filter: none;
+}
+
+.rs-auth-shell .st-platform-item {
+  background: rgba(10, 1, 15, 0.94);
+  border-color: rgba(114, 86, 206, 0.24);
+  box-shadow: none;
+  transition: border-color 0.16s ease !important;
+}
+
+.rs-auth-shell .st-platform-item:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  border-color: rgba(220, 71, 202, 0.45);
+}
+
+.rs-auth-shell .st-navbar-wrap {
+  background: rgba(7, 1, 11, 0.94);
+  border-bottom: 1px solid rgba(114, 86, 206, 0.16);
+}
+
+@media (min-width: 961px) and (min-height: 780px) {
+  .rs-auth-shell {
+    min-height: 100dvh;
+    overflow-x: clip;
+  }
+
+  .rs-auth-viewport-stage {
+    overflow: hidden;
   }
 }

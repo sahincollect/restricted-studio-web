@@ -87,12 +87,37 @@ export default function AboutStudioClient() {
                 </div>
 
                 <div className="st-split-content">
-                  <div className="st-offer-tag">{t.home.modals.archiveDistribution}</div>
-                  <h2 className="st-split-heading" style={{ marginTop: '12px' }}>
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      padding: '5px 12px',
+                      borderRadius: '999px',
+                      background: '#ffffff',
+                      color: '#000000',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {t.home.modals.archiveDistribution}
+                  </span>
+                  <h2 className="st-split-heading" style={{ marginTop: '12px', color: '#ffffff' }}>
                     {formatNumber(catalogStats.total)} {t.home.modals.archivePackagesUnit}
                   </h2>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '18px' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px',
+                      marginTop: '18px',
+                      padding: '16px',
+                      borderRadius: '16px',
+                      background: '#09090b',
+                      border: '1px solid rgba(255, 255, 255, 0.24)',
+                    }}
+                  >
                     {statRows.map(([cat, count]) => {
                       const pct = Math.max(3, Math.round((count / catalogStats.total) * 100));
                       return (
@@ -101,20 +126,35 @@ export default function AboutStudioClient() {
                             style={{
                               display: 'flex',
                               justifyContent: 'space-between',
-                              fontSize: '12px',
+                              alignItems: 'center',
+                              gap: '12px',
+                              fontSize: '13px',
                               fontWeight: 600,
-                              marginBottom: '5px',
+                              marginBottom: '6px',
                             }}
                           >
-                            <span style={{ color: '#111113' }}>
+                            <span style={{ color: '#ffffff' }}>
                               {t.catalog.categoryLabels[cat] || cat}
                             </span>
-                            <span style={{ fontFamily: 'var(--font-mono)', color: '#7B208F' }}>
+                            <span
+                              style={{
+                                fontFamily: 'var(--font-mono)',
+                                color: '#ffffff',
+                                fontWeight: 700,
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
                               {formatNumber(count)} ({formatPercent(pct)})
                             </span>
                           </div>
-                          <div className="st-progress-track">
-                            <div className="st-progress-fill" style={{ width: `${pct}%` }} />
+                          <div
+                            className="st-progress-track"
+                            style={{ background: 'rgba(255, 255, 255, 0.16)' }}
+                          >
+                            <div
+                              className="st-progress-fill"
+                              style={{ width: `${pct}%`, background: '#ffffff' }}
+                            />
                           </div>
                         </div>
                       );

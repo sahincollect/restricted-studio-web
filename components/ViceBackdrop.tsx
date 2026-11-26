@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { usePathname } from 'next/navigation';
 
 interface FrondSpec {
   endX: number;
@@ -275,8 +278,14 @@ const RIGHT_COMPANION_PALM_PATH = buildPalmSilhouettePath({
 });
 
 export default function ViceBackdrop() {
+  const pathname = usePathname();
+  const isStaticDark = pathname === '/login' || pathname === '/register';
+
   return (
-    <div className="vice-backdrop" aria-hidden="true">
+    <div
+      className={`vice-backdrop ${isStaticDark ? 'is-static-dark' : ''}`.trim()}
+      aria-hidden="true"
+    >
       {/* Dark plum-violet primary canvas with proportional sunset horizon transition */}
       <div className="vice-sky-wash" />
       <div className="vice-horizon-glow" />

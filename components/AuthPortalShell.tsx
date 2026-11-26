@@ -29,8 +29,8 @@ export default function AuthPortalShell({
     <div className="rs-auth-shell">
       <SiteNavbar activePath="/login" />
 
-      <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
-        <HeroPrismBackdrop />
+      <div className="rs-auth-viewport-stage">
+        <HeroPrismBackdrop interactive={false} />
 
         <main className="rs-auth-grid">
           <aside className="rs-auth-dossier">

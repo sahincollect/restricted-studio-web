@@ -7,10 +7,11 @@ import { HERO_LEFT_PALM_PATH, HERO_RIGHT_PALM_PATH } from '@/components/ViceBack
  * Ambient mouse-reactive parallax controller for Hero volumetric prism ribs.
  * Respects reduced-motion and coarse pointers.
  */
-export function HeroPrismBackdrop() {
+export function HeroPrismBackdrop({ interactive = true }: { interactive?: boolean }) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    if (!interactive) return;
     const el = wrapRef.current;
     if (!el || typeof window === 'undefined') return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -39,10 +40,14 @@ export function HeroPrismBackdrop() {
       if (rafId) window.cancelAnimationFrame(rafId);
       window.removeEventListener('pointermove', onMove);
     };
-  }, []);
+  }, [interactive]);
 
   return (
-    <div ref={wrapRef} className="st-hero-prism-wrap" aria-hidden="true">
+    <div
+      ref={wrapRef}
+      className={`st-hero-prism-wrap ${interactive ? '' : 'is-static'}`.trim()}
+      aria-hidden="true"
+    >
       <div className="st-hero-top-glow" />
       <div className="st-vice-sun" />
       <div className="st-prism-cluster">
