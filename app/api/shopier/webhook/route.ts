@@ -86,7 +86,7 @@ export async function POST(request: Request) {
       senderUserId: null,
       senderRole: 'system',
       senderName: 'Shopier Webhook Doğrulama',
-      senderAvatar: '/assets/newlogo.png',
+      senderAvatar: '/assets/newstlogo.jpg',
       messageType: 'status_update',
       body: `Shopier ödemesi doğrulandı (Sipariş #${shopierOrder.id}). Siparişiniz teslimat ekibine iletildi. ${DELIVERY_SLA_NOTICE_TR}`,
     });

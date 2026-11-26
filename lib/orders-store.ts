@@ -184,7 +184,7 @@ export async function createOrderWithWelcomeMessage(params: {
     senderUserId: null,
     senderRole: 'system',
     senderName: isDirectSupport ? 'Restricted Studio Canlı Destek' : 'Restricted Studio Teslimat Masası',
-    senderAvatar: '/assets/newlogo.png',
+    senderAvatar: '/assets/newstlogo.jpg',
     messageType: 'status_update',
     body:
       params.welcomeBody ||
@@ -637,7 +637,7 @@ async function promoteMatchedShopierOrder(ord: OrderRecord, match: ShopierOrderR
     senderUserId: null,
     senderRole: 'system',
     senderName: 'Shopier Ödeme Doğrulama',
-    senderAvatar: '/assets/newlogo.png',
+    senderAvatar: '/assets/newstlogo.jpg',
     messageType: 'status_update',
     body: `Shopier ödemesi doğrulandı (Shopier Sipariş #${match.id}). Siparişiniz hazırlık sırasına alındı. ${DELIVERY_SLA_NOTICE_TR}`,
   });
@@ -740,7 +740,7 @@ async function runExpiredShopierCleanup(
       senderUserId: null,
       senderRole: 'system',
       senderName: 'Otomatik Süre Sonu',
-      senderAvatar: '/assets/newlogo.png',
+      senderAvatar: '/assets/newstlogo.jpg',
       messageType: 'status_update',
       body: `Ödeme süresi (${SHOPIER_LISTING_TTL_MINUTES} dakika) dolduğu için referanslı Shopier ödeme ilanı (${ord.referenceCode}) otomatik olarak kaldırıldı ve sipariş iptal edildi. Satın almak isterseniz sepetinizden yeni ilan oluşturabilirsiniz.`,
     });

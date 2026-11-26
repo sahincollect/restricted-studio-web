@@ -12,7 +12,7 @@ export {
 };
 
 const SHOPIER_API_BASE = 'https://api.shopier.com/v1';
-const FALLBACK_PRODUCT_MEDIA_URL = `${SITE_URL}/assets/newlogo.png`;
+const FALLBACK_PRODUCT_MEDIA_URL = `${SITE_URL}/assets/newstlogo.jpg`;
 const VALID_MEDIA_EXT_RE = /\.(jpg|jpeg|png|bmp)(\?.*)?$/i;
 
 export interface ShopierProductResponse {

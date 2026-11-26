@@ -384,7 +384,7 @@ export default function AdminPage() {
         <div className="rs-admin-header-inner">
           <Link href="/" className="rs-admin-brand">
             <Image
-              src="/assets/newlogo.png"
+              src="/assets/newstlogo.jpg"
               alt="Restricted Studio"
               width={28}
               height={28}

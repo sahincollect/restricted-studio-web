@@ -109,7 +109,7 @@ export async function POST(
       senderUserId: null,
       senderRole: 'admin',
       senderName: 'Restricted Studio Yetkilisi',
-      senderAvatar: '/assets/newlogo.png',
+      senderAvatar: '/assets/newstlogo.jpg',
       messageType: 'text',
       body: cleanBody,
     });
@@ -185,7 +185,7 @@ export async function POST(
     senderUserId: null,
     senderRole: 'admin',
     senderName: 'Restricted Studio Teslimat Yetkilisi',
-    senderAvatar: '/assets/newlogo.png',
+    senderAvatar: '/assets/newstlogo.jpg',
     messageType: 'delivery_bundle',
     body: cleanInstructions,
     attachmentMeta: deliveryPayload,

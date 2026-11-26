@@ -649,7 +649,7 @@ export default function SiteNavbar({
             {mainOrigin ? (
               <a href={siteLink('/')} className="st-brand-link" aria-label={`Restricted Studio ${labels.home}`}>
                 <Image
-                  src="/assets/newlogo.png"
+                  src="/assets/newstlogo.jpg"
                   alt="Restricted Studio"
                   width={34}
                   height={34}
@@ -662,7 +662,7 @@ export default function SiteNavbar({
             ) : (
               <Link href="/" className="st-brand-link" aria-label={`Restricted Studio ${labels.home}`}>
                 <Image
-                  src="/assets/newlogo.png"
+                  src="/assets/newstlogo.jpg"
                   alt="Restricted Studio"
                   width={34}
                   height={34}

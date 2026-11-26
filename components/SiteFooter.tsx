@@ -139,7 +139,7 @@ export default function SiteFooter({ mainOrigin = '' }: { mainOrigin?: string })
         <div className="st-footer-brand-col">
           <div className="st-footer-logo-row">
             <Image
-              src="/assets/newlogo.png"
+              src="/assets/newstlogo.jpg"
               alt="Restricted Studio"
               width={36}
               height={36}

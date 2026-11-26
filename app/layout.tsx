@@ -39,7 +39,7 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 });
 
-const ICON_VERSION = '20261118';
+const ICON_VERSION = '20261126';
 
 const OG_LOCALE_MAP = {
   tr: 'tr_TR',
