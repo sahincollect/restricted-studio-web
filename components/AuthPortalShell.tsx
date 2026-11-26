@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import { useI18n } from '@/components/I18nProvider';
 import SiteNavbar from '@/components/SiteNavbar';
+import PlatformLogosBar from '@/components/PlatformLogosBar';
 import { HeroPrismBackdrop } from '@/components/StudioReveal';
 
 interface AuthPortalShellProps {
@@ -46,6 +47,10 @@ export default function AuthPortalShell({
                   </li>
                 ))}
               </ul>
+
+              <div style={{ marginTop: '22px' }}>
+                <PlatformLogosBar variant="compact" />
+              </div>
             </div>
 
             <div className="rs-auth-dossier-foot">

@@ -4,8 +4,8 @@
   "description": "FiveM Open-Source Software, Scripts, MLO & Digital Licensing Engineering",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#3B146B",
-  "theme_color": "#C9349B",
+  "background_color": "#420452",
+  "theme_color": "#DC47CA",
   "icons": [
     {
       "src": "/icon-48.png?v=20261126",

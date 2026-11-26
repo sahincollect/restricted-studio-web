@@ -7,6 +7,7 @@ import catalogStats from '@/lib/catalog-stats.json';
 import { useI18n } from '@/components/I18nProvider';
 import SiteNavbar from '@/components/SiteNavbar';
 import SiteFooter from '@/components/SiteFooter';
+import PlatformLogosBar from '@/components/PlatformLogosBar';
 import { HeroPrismBackdrop, StudioReveal } from '@/components/StudioReveal';
 import type { Locale } from '@/lib/i18n';
 
@@ -546,6 +547,11 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
           <HeroPrismBackdrop />
 
           <div className="st-container st-hero-inner">
+            <div className="st-hero-kicker-badge">
+              <span className="st-eyebrow-dot" aria-hidden="true" />
+              <span>RESTRICTED STUDIO · FIVEM &amp; REDM &amp; GTA VI ARCHITECTURE</span>
+            </div>
+
             <h1 className="st-hero-title">
               <span>{copy.heroLine1}</span>
               <span className="is-accent">{copy.heroLineAccent}</span>
@@ -555,13 +561,15 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
             <p className="st-hero-subtitle">{copy.heroSubtitle}</p>
 
             <div className="st-hero-actions">
-              <Link href="/katalog" className="st-pill-btn is-light st-hero-cta">
+              <Link href="/katalog" className="st-pill-btn is-ember st-hero-cta">
                 {copy.heroCta}
               </Link>
               <Link href="/lisanslar" className="st-hero-secondary-link">
                 {copy.heroSecondaryCta}
               </Link>
             </div>
+
+            <PlatformLogosBar variant="hero" />
           </div>
 
           <div className="st-container st-split-card-wrap">

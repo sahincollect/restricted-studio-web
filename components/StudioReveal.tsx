@@ -58,14 +58,14 @@ export function HeroPrismBackdrop() {
           viewBox="0 0 320 360"
           preserveAspectRatio="xMinYMax meet"
         >
-          <path d={HERO_LEFT_PALM_PATH} fill="#3B146B" />
+          <path d={HERO_LEFT_PALM_PATH} fill="#250330" />
         </svg>
         <svg
           className="st-hero-palm is-right"
           viewBox="0 0 320 360"
           preserveAspectRatio="xMaxYMax meet"
         >
-          <path d={HERO_RIGHT_PALM_PATH} fill="#3B146B" />
+          <path d={HERO_RIGHT_PALM_PATH} fill="#250330" />
         </svg>
       </div>
     </div>
