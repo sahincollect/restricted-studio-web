@@ -6411,44 +6411,57 @@ body.has-catalog-cart .st-cookie-banner {
 .st-hero-kicker-badge {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 14px;
-  margin-bottom: 18px;
+  gap: 9px;
+  padding: 4px 12px 4px 5px;
+  margin-bottom: 22px;
   border-radius: var(--radius-pill);
-  background: rgba(18, 18, 22, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.9);
-  transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.st-hero-kicker-badge.is-vetra-pill {
-  padding: 5px 6px 5px 14px;
+  background: rgba(255, 255, 255, 0.032);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.78);
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
 .st-hero-kicker-badge.is-vetra-pill:hover {
-  border-color: rgba(249, 115, 22, 0.52);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(249, 115, 22, 0.36);
+  color: #ffffff;
 }
 
-.st-vetra-pill-arrow {
+.st-kicker-tag {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
   height: 20px;
+  padding: 0 8px;
   border-radius: 999px;
-  background: linear-gradient(180deg, #FB923C 0%, #F97316 60%, #EA580C 100%);
-  color: #ffffff;
-  font-size: 11px;
+  background: rgba(249, 115, 22, 0.13);
+  border: 1px solid rgba(249, 115, 22, 0.28);
+  font-size: 10.5px;
   font-weight: 700;
-  box-shadow: 0 2px 10px rgba(249, 115, 22, 0.45);
+  letter-spacing: 0.04em;
+  color: #FB923C;
+  flex-shrink: 0;
+}
+
+.st-kicker-text {
+  line-height: 1.25;
+}
+
+.st-kicker-chevron {
+  color: rgba(255, 255, 255, 0.42);
+  flex-shrink: 0;
+  margin-left: -2px;
+  transition: transform 0.18s var(--ease-expo), color 0.18s ease;
+}
+
+.st-hero-kicker-badge.is-vetra-pill:hover .st-kicker-chevron {
+  transform: translateX(2px);
+  color: #FB923C;
 }
 
 .st-platform-dock {
@@ -6914,9 +6927,9 @@ body.has-catalog-cart .st-cookie-banner {
   }
 
   .st-hero-kicker-badge {
-    font-size: 9.5px;
-    padding: 6px 12px;
-    text-align: center;
+    font-size: 11.5px;
+    gap: 7px;
+    padding: 4px 10px 4px 5px;
   }
 
   .gtavi-showcase-banner {

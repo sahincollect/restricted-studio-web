@@ -16,6 +16,7 @@ const ITEMSATIS_URL = 'https://www.itemsatis.com/p/saintstudio';
 type CodeTabKey = 'bridge' | 'security' | 'database';
 
 interface HomeLocaleCopy {
+  kickerText: string;
   heroLine1: string;
   heroLineAccent: string;
   heroLine3: string;
@@ -61,6 +62,7 @@ interface HomeLocaleCopy {
 
 const HOME_COPY: Record<Locale, HomeLocaleCopy> = {
   tr: {
+    kickerText: 'Özel seri FiveM içerikleri yakında',
     heroLine1: 'FiveM altyapısında',
     heroLineAccent: 'ölçülebilir performans,',
     heroLine3: 'sadece kod değil',
@@ -155,6 +157,7 @@ const HOME_COPY: Record<Locale, HomeLocaleCopy> = {
     bannerSecondary: 'İletişime Geç',
   },
   en: {
+    kickerText: 'Special series FiveM packs coming soon',
     heroLine1: 'FiveM engineering that',
     heroLineAccent: 'delivers measurable speed,',
     heroLine3: 'not locked code',
@@ -249,6 +252,7 @@ const HOME_COPY: Record<Locale, HomeLocaleCopy> = {
     bannerSecondary: 'Contact Us',
   },
   ru: {
+    kickerText: 'Спецсерия пакетов FiveM скоро',
     heroLine1: 'Архитектура FiveM,',
     heroLineAccent: 'дающая измеримую скорость,',
     heroLine3: 'а не закрытый код',
@@ -343,6 +347,7 @@ const HOME_COPY: Record<Locale, HomeLocaleCopy> = {
     bannerSecondary: 'Связаться',
   },
   fr: {
+    kickerText: 'Série spéciale FiveM bientôt disponible',
     heroLine1: 'Une ingénierie FiveM',
     heroLineAccent: 'aux résultats mesurables,',
     heroLine3: 'sans code verrouillé',
@@ -548,11 +553,22 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
 
           <div className="st-container st-hero-inner">
             <Link href="/GTAVI" className="st-hero-kicker-badge is-vetra-pill">
-              <span className="st-eyebrow-dot" aria-hidden="true" />
-              <span>RESTRICTED STUDIO · FIVEM &amp; REDM &amp; GTA VI ARCHITECTURE</span>
-              <span className="st-vetra-pill-arrow" aria-hidden="true">
-                →
-              </span>
+              <span className="st-kicker-tag">GTA VI</span>
+              <span className="st-kicker-text">{copy.kickerText}</span>
+              <svg
+                className="st-kicker-chevron"
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M9 18l6-6-6-6" />
+              </svg>
             </Link>
 
             <h1 className="st-hero-title">
