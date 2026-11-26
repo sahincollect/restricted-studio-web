@@ -250,43 +250,72 @@ export default function ViceBackdrop() {
       <div className="vice-sky-wash" />
       <div className="vice-horizon-glow" />
 
-      {/* Distant dark Art Deco coastal skyline silhouette ridge along bottom horizon */}
+      {/* Distant Deep Violet Art Deco coastal skyline silhouette ridge along bottom horizon */}
       <svg
         className="vice-horizon-ridge"
         viewBox="0 0 1440 120"
         preserveAspectRatio="none"
       >
+        <defs>
+          <linearGradient id="viceRidgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#3B146B" />
+            <stop offset="50%" stopColor="#4F187C" />
+            <stop offset="100%" stopColor="#3B146B" />
+          </linearGradient>
+        </defs>
         <path
           d="M 0 120 L 0 88 L 48 88 L 48 64 L 74 64 L 74 78 L 122 78 L 122 52 L 154 52 L 154 70 L 210 70 L 210 86 L 340 86 L 340 72 L 368 62 L 396 72 L 396 88 L 540 88 L 540 74 L 574 74 L 574 60 L 604 60 L 604 82 L 730 82 L 730 70 L 762 70 L 762 88 L 910 88 L 910 64 L 944 54 L 976 64 L 976 82 L 1110 82 L 1110 58 L 1142 58 L 1142 74 L 1245 74 L 1245 50 L 1278 50 L 1278 72 L 1368 72 L 1368 84 L 1440 84 L 1440 120 Z"
-          fill="#06020d"
+          fill="url(#viceRidgeGrad)"
         />
       </svg>
 
-      {/* Left viewport framing palm tree silhouettes */}
+      {/* Left viewport framing palm tree silhouettes in Deep Violet & Purple */}
       <svg
         className="vice-palm-cluster is-left"
         viewBox="0 0 400 680"
         preserveAspectRatio="xMinYMax meet"
       >
+        <defs>
+          <linearGradient id="vicePalmGradL" x1="20%" y1="0%" x2="50%" y2="100%">
+            <stop offset="0%" stopColor="#4E187D" />
+            <stop offset="45%" stopColor="#3B146B" />
+            <stop offset="100%" stopColor="#2B0E50" />
+          </linearGradient>
+          <linearGradient id="vicePalmSubL" x1="0%" y1="0%" x2="60%" y2="100%">
+            <stop offset="0%" stopColor="#7B208F" />
+            <stop offset="100%" stopColor="#3B146B" />
+          </linearGradient>
+        </defs>
         <g className="vice-palm-sway-a">
-          <path d={LEFT_TALL_PALM_PATH} fill="#05020b" />
+          <path d={LEFT_TALL_PALM_PATH} fill="url(#vicePalmGradL)" />
         </g>
         <g className="vice-palm-sway-b">
-          <path d={LEFT_COMPANION_PALM_PATH} fill="#080312" />
+          <path d={LEFT_COMPANION_PALM_PATH} fill="url(#vicePalmSubL)" opacity="0.9" />
         </g>
       </svg>
 
-      {/* Right viewport framing palm tree silhouettes */}
+      {/* Right viewport framing palm tree silhouettes in Deep Violet & Purple */}
       <svg
         className="vice-palm-cluster is-right"
         viewBox="0 0 400 680"
         preserveAspectRatio="xMaxYMax meet"
       >
+        <defs>
+          <linearGradient id="vicePalmGradR" x1="80%" y1="0%" x2="50%" y2="100%">
+            <stop offset="0%" stopColor="#4E187D" />
+            <stop offset="45%" stopColor="#3B146B" />
+            <stop offset="100%" stopColor="#2B0E50" />
+          </linearGradient>
+          <linearGradient id="vicePalmSubR" x1="100%" y1="0%" x2="40%" y2="100%">
+            <stop offset="0%" stopColor="#7B208F" />
+            <stop offset="100%" stopColor="#3B146B" />
+          </linearGradient>
+        </defs>
         <g className="vice-palm-sway-b">
-          <path d={RIGHT_TALL_PALM_PATH} fill="#05020b" />
+          <path d={RIGHT_TALL_PALM_PATH} fill="url(#vicePalmGradR)" />
         </g>
         <g className="vice-palm-sway-a">
-          <path d={RIGHT_COMPANION_PALM_PATH} fill="#080312" />
+          <path d={RIGHT_COMPANION_PALM_PATH} fill="url(#vicePalmSubR)" opacity="0.9" />
         </g>
       </svg>
     </div>
