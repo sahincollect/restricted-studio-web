@@ -577,8 +577,8 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
               <article className="st-asym-split-card">
                 <div className="st-split-visual">
                   <Image
-                    src="/assets/studio-work-visual.jpg"
-                    alt="Restricted Studio"
+                    src="/assets/newstlogo.jpg"
+                    alt="Restricted Studio Logo"
                     fill
                     priority
                     sizes="(max-width: 960px) 100vw, 520px"

@@ -1111,11 +1111,12 @@ img {
 .st-split-visual {
   position: relative;
   min-height: 248px;
+  padding: 20px;
   border-radius: 16px 52px 16px 68px;
   overflow: hidden;
   background: linear-gradient(135deg, #24032E 0%, #420452 45%, #7256CE 100%);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -1126,7 +1127,8 @@ img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(1.08) contrast(1.05);
+  object-position: center 46%;
+  filter: saturate(1.04) contrast(1.04);
   transition: transform 0.65s var(--ease-expo);
 }
 
@@ -1139,9 +1141,9 @@ img {
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(18, 9, 28, 0.32) 0%,
-    rgba(14, 7, 22, 0.66) 54%,
-    rgba(66, 4, 82, 0.38) 100%
+    rgba(18, 9, 28, 0.12) 0%,
+    rgba(14, 7, 22, 0.24) 54%,
+    rgba(11, 7, 17, 0.72) 100%
   );
 }
 

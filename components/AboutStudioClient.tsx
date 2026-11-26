@@ -73,8 +73,8 @@ export default function AboutStudioClient() {
               <div className="st-asym-split-card">
                 <div className="st-split-visual" style={{ padding: '24px', alignItems: 'flex-end' }}>
                   <Image
-                    src="/assets/studio-work-visual.jpg"
-                    alt="Restricted Studio"
+                    src="/assets/newstlogo.jpg"
+                    alt="Restricted Studio Logo"
                     fill
                     priority
                     sizes="(max-width: 960px) 100vw, 520px"
