@@ -56,17 +56,17 @@ function buildEmailHtml(params: {
     .join('');
 
   return `
-  <div style="background:#0d0c0d;padding:28px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#ffffff;">
-    <div style="max-width:640px;margin:0 auto;background:#141316;border:1px solid #2a272c;border-radius:20px;overflow:hidden;">
-      <div style="padding:22px 24px;background:linear-gradient(135deg,#1d1210 0%,#141316 100%);border-bottom:1px solid #2a272c;">
-        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#ef5b38;">RESTRICTED STUDIO · OTOMATİK HİZMET TALEBİ</div>
+  <div style="background:#0e071a;padding:28px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#ffffff;">
+    <div style="max-width:640px;margin:0 auto;background:#160c27;border:1px solid #3B146B;border-radius:20px;overflow:hidden;">
+      <div style="padding:22px 24px;background:linear-gradient(135deg,#250d44 0%,#160c27 100%);border-bottom:1px solid #3B146B;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#FF9B55;">RESTRICTED STUDIO · OTOMATİK HİZMET TALEBİ</div>
         <h1 style="margin:8px 0 0;font-size:20px;font-weight:600;color:#ffffff;">${escapeHtml(params.serviceTitle)}</h1>
       </div>
       <table style="width:100%;border-collapse:collapse;">
         ${rowsHtml}
       </table>
-      <div style="padding:18px 24px;background:#0f0e11;">
-        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#ef5b38;margin-bottom:8px;">PROJE DETAYLARI &amp; TALEPLER</div>
+      <div style="padding:18px 24px;background:#110820;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#F36A78;margin-bottom:8px;">PROJE DETAYLARI &amp; TALEPLER</div>
         <div style="white-space:pre-wrap;font-size:13.5px;line-height:1.6;color:#e4e4e7;">${escapeHtml(params.details)}</div>
       </div>
     </div>

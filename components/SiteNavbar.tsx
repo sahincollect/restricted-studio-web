@@ -323,8 +323,8 @@ const ACCOUNT_NAV_COPY: Record<
 };
 
 const NAV_AVATAR_PRESETS: Record<string, string> = {
-  'preset:ember': 'linear-gradient(135deg,#ef5b38,#8f2612)',
-  'preset:crimson': 'linear-gradient(135deg,#A50000,#3d0808)',
+  'preset:ember': 'linear-gradient(135deg,#FFB458,#F36A78,#C9349B)',
+  'preset:crimson': 'linear-gradient(135deg,#C9349B,#7B208F,#3B146B)',
   'preset:obsidian': 'linear-gradient(135deg,#27272a,#09090b)',
   'preset:minimal': 'linear-gradient(135deg,#1f2937,#0f172a)',
 };

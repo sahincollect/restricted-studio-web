@@ -4,6 +4,7 @@ import { cookies, headers } from 'next/headers';
 import './globals.css';
 import CursorSpotlight from '@/components/CursorSpotlight';
 import BearClawIntro from '@/components/BearClawIntro';
+import ViceBackdrop from '@/components/ViceBackdrop';
 import CookieNoticeBanner from '@/components/CookieNoticeBanner';
 import { I18nProvider } from '@/components/I18nProvider';
 import { Analytics } from '@vercel/analytics/next';
@@ -178,6 +179,7 @@ export default async function RootLayout({
       <body className="studio-root-body">
         <BearClawIntro />
         <CursorSpotlight />
+        <ViceBackdrop />
         <I18nProvider
           initialLocale={locale}
           initialDetectedFromHeader={initialDetectedFromHeader}

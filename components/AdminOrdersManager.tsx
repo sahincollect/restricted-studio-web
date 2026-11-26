@@ -288,8 +288,8 @@ export default function AdminOrdersManager() {
             marginBottom: '12px',
             padding: '10px 14px',
             borderRadius: '12px',
-            backgroundColor: 'rgba(239, 91, 56, 0.14)',
-            border: '1px solid rgba(239, 91, 56, 0.4)',
+            backgroundColor: 'rgba(243, 106, 120, 0.14)',
+            border: '1px solid rgba(243, 106, 120, 0.42)',
             fontSize: '12.5px',
             color: '#f3f2f2',
           }}
@@ -436,14 +436,14 @@ export default function AdminOrdersManager() {
                   style={{
                     padding: '14px',
                     borderRadius: '14px',
-                    background: 'rgba(239, 91, 56, 0.08)',
-                    border: '1px solid rgba(239, 91, 56, 0.3)',
+                    background: 'rgba(243, 106, 120, 0.09)',
+                    border: '1px solid rgba(243, 106, 120, 0.34)',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '10px',
                   }}
                 >
-                  <strong style={{ fontSize: '12.5px', color: '#ef5b38' }}>
+                  <strong style={{ fontSize: '12.5px', color: '#FF9B55' }}>
                     KURUMSAL DİJİTAL TESLİMAT YAP (MÜŞTERİ KASASINA SABİTLENİR)
                   </strong>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px' }}>

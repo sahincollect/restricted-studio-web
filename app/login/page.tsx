@@ -308,7 +308,7 @@ function LoginFormContent() {
             disabled={loading || anonLoading}
             className="rs-auth-btn-secondary"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A50000" strokeWidth="2.2" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F36A78" strokeWidth="2.2" aria-hidden="true">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
             <span>{anonLoading ? t.auth.anonOpeningBtn : t.auth.anonContinueBtn}</span>

@@ -509,7 +509,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
         status: 'SİSTEM DURUMU',
       },
       hero: {
-        eyebrow: 'RESTRICTED STUDIO · YILBAŞI SÜRÜMÜ 2026',
+        eyebrow: 'RESTRICTED STUDIO · VICE EDITION 2026',
         headline1: 'KARARLI ALTYAPI.',
         headline2: 'ŞEFFAF MÜHENDİSLİK.',
         headline3: 'YÜKSEK PERFORMANS.',
@@ -642,7 +642,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       },
     },
     catalog: {
-      eyebrow: 'Yılbaşı Sezonu · Kurumsal FiveM Arşivi',
+      eyebrow: 'Vice Sürümü · Kurumsal FiveM Arşivi',
       title: 'FiveM Yazılım & Altyapı Arşivi',
       descBeforeCount: 'Doğrulanmış',
       descMiddle: 'paket. Parça başı 100 TL, 15+ seçimde anında',
@@ -1065,7 +1065,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
         status: 'SYSTEM STATUS',
       },
       hero: {
-        eyebrow: 'RESTRICTED STUDIO · NEW YEAR EDITION 2026',
+        eyebrow: 'RESTRICTED STUDIO · VICE EDITION 2026',
         headline1: 'SOLID INFRASTRUCTURE.',
         headline2: 'TRANSPARENT CODE.',
         headline3: 'PEAK PERFORMANCE.',
@@ -1198,7 +1198,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       },
     },
     catalog: {
-      eyebrow: 'New Year Edition · Enterprise FiveM Archive',
+      eyebrow: 'Vice Edition · Enterprise FiveM Archive',
       title: 'FiveM Software & Infrastructure Archive',
       descBeforeCount: 'Verified',
       descMiddle: 'packages. Flat 100 TL per unit, instant',
@@ -1621,7 +1621,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
         status: 'СТАТУС СИСТЕМЫ',
       },
       hero: {
-        eyebrow: 'RESTRICTED STUDIO · НОВОГОДНИЙ РЕЛИЗ 2026',
+        eyebrow: 'RESTRICTED STUDIO · VICE EDITION 2026',
         headline1: 'НАДЁЖНАЯ БАЗА.',
         headline2: 'ОТКРЫТЫЙ КОД.',
         headline3: 'ВЫСОКИЙ FPS.',
@@ -1754,7 +1754,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       },
     },
     catalog: {
-      eyebrow: 'Новогодний сезон · Архив FiveM',
+      eyebrow: 'Vice Edition · Архив FiveM',
       title: 'Каталог скриптов и инфраструктуры FiveM',
       descBeforeCount: 'Проверено',
       descMiddle: 'пакетов. Фиксированная цена 100 TL, от 16 позиций —',
@@ -2177,7 +2177,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
         status: 'ÉTAT DU SYSTÈME',
       },
       hero: {
-        eyebrow: 'RESTRICTED STUDIO · ÉDITION NOUVEL AN 2026',
+        eyebrow: 'RESTRICTED STUDIO · VICE EDITION 2026',
         headline1: 'BASE FIABLE.',
         headline2: 'CODE OUVERT.',
         headline3: 'HAUTE PERFORMANCE.',
@@ -2310,7 +2310,7 @@ export const TRANSLATIONS: Record<Locale, TranslationDictionary> = {
       },
     },
     catalog: {
-      eyebrow: 'Édition Nouvel An · Archive FiveM Pro',
+      eyebrow: 'Édition Vice · Archive FiveM Pro',
       title: 'Archive Logicielle & Infrastructure FiveM',
       descBeforeCount: 'Plus de',
       descMiddle: 'packs vérifiés. 100 TL l’unité, remise immédiate de',

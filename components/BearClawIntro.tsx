@@ -87,17 +87,18 @@ export default function BearClawIntro() {
             >
               <defs>
                 <linearGradient id={`rsClawGrad${idx}`} x1="88%" y1="6%" x2="14%" y2="94%">
-                  <stop offset="0%" stopColor="#ff7a56" />
-                  <stop offset="34%" stopColor="#ef5b38" />
-                  <stop offset="76%" stopColor="#c91810" />
-                  <stop offset="100%" stopColor="#6f0906" />
+                  <stop offset="0%" stopColor="#FFB458" />
+                  <stop offset="28%" stopColor="#FF9B55" />
+                  <stop offset="56%" stopColor="#F36A78" />
+                  <stop offset="82%" stopColor="#C9349B" />
+                  <stop offset="100%" stopColor="#3B146B" />
                 </linearGradient>
               </defs>
 
               <path
                 d={d}
                 fill="none"
-                stroke="rgba(239, 91, 56, 0.16)"
+                stroke="rgba(243, 106, 120, 0.22)"
                 strokeWidth="4.5"
                 strokeLinejoin="round"
               />
@@ -105,7 +106,7 @@ export default function BearClawIntro() {
                 d={d}
                 fill={`url(#rsClawGrad${idx})`}
                 fillRule="evenodd"
-                stroke="rgba(255, 142, 108, 0.45)"
+                stroke="rgba(255, 180, 88, 0.5)"
                 strokeWidth="0.65"
                 strokeLinejoin="round"
               />

@@ -941,7 +941,7 @@ export default function CatalogClient({
                           {titleSegments
                             ? titleSegments.map((seg, i) =>
                                 seg.match ? (
-                                  <mark key={i} style={{ background: 'rgba(239,91,56,0.32)', color: '#fff', borderRadius: '4px', padding: '0 2px' }}>
+                                  <mark key={i} style={{ background: 'rgba(201,52,155,0.42)', color: '#fff', borderRadius: '4px', padding: '0 2px' }}>
                                     {seg.text}
                                   </mark>
                                 ) : (
@@ -1134,7 +1134,7 @@ export default function CatalogClient({
               </button>
             </div>
 
-            <div style={{ padding: '14px 22px', background: isDiscounted ? 'rgba(239,91,56,0.16)' : 'rgba(255,255,255,0.03)', borderBottom: '1px solid var(--border-hairline)' }}>
+            <div style={{ padding: '14px 22px', background: isDiscounted ? 'rgba(243,106,120,0.16)' : 'rgba(255,255,255,0.03)', borderBottom: '1px solid var(--border-hairline)' }}>
               <strong style={{ display: 'block', fontSize: '13px', color: isDiscounted ? 'var(--accent-coral)' : '#fff' }}>
                 {isDiscounted ? t.catalog.drawerDiscountTitle : t.catalog.drawerCampaignTitle}
               </strong>

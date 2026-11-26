@@ -109,7 +109,7 @@ export default function AboutStudioClient() {
                             <span style={{ color: '#111113' }}>
                               {t.catalog.categoryLabels[cat] || cat}
                             </span>
-                            <span style={{ fontFamily: 'var(--font-mono)', color: '#c83918' }}>
+                            <span style={{ fontFamily: 'var(--font-mono)', color: '#7B208F' }}>
                               {formatNumber(count)} ({formatPercent(pct)})
                             </span>
                           </div>
