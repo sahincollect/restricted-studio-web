@@ -49,13 +49,6 @@ export function HeroPrismBackdrop({ interactive = true }: { interactive?: boolea
     >
       <div className="st-hero-top-glow" />
       <div className="st-vice-sun" />
-      <div className="st-prism-cluster">
-        <span className="st-prism-bar st-prism-1" />
-        <span className="st-prism-bar st-prism-2" />
-        <span className="st-prism-bar st-prism-3" />
-        <span className="st-prism-bar st-prism-4" />
-        <span className="st-prism-bar st-prism-5" />
-      </div>
     </div>
   );
 }
