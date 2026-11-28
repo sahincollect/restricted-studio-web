@@ -8,6 +8,7 @@ import { useI18n } from '@/components/I18nProvider';
 import SiteNavbar from '@/components/SiteNavbar';
 import SiteFooter from '@/components/SiteFooter';
 import PlatformLogosBar from '@/components/PlatformLogosBar';
+import HeroCampaignSlider from '@/components/HeroCampaignSlider';
 import { HeroPrismBackdrop, StudioReveal } from '@/components/StudioReveal';
 import type { Locale } from '@/lib/i18n';
 
@@ -547,9 +548,13 @@ CREATE TABLE IF NOT EXISTS \`restricted_records\` (
       <SiteNavbar activePath="/" />
 
       <main className="st-main">
-        {/* 1. Hero + Diagonal Prism Ribs + Signature Asymmetric Split Card */}
-        <section className="st-hero-section">
+        {/* 1. Hero Campaign Slider + Vetra Horizon Hero + Split Card */}
+        <section className="st-hero-section has-campaign-slider">
           <HeroPrismBackdrop showArc />
+
+          <div className="st-container st-hero-slider-wrap">
+            <HeroCampaignSlider />
+          </div>
 
           <div className="st-container st-hero-inner">
             <Link href="/GTAVI" className="st-hero-kicker-badge is-vetra-pill">

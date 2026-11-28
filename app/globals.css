@@ -922,6 +922,666 @@ img {
   overflow-x: clip;
 }
 
+.st-hero-section.has-campaign-slider {
+  padding-top: 24px;
+}
+
+.st-hero-section.has-campaign-slider .st-vetra-planet-stage {
+  top: 760px;
+}
+
+/* ============================================================================
+ * HOMEPAGE HERO CAMPAIGN CAROUSEL (SLIDER)
+ * Slide 1: GTA VI 499 TL (Vice Palette) | Slide 2: FiveM 6.400+ (Obsidian & Orange)
+ * Zero backdrop-filter, GPU-composited translate3d, touch-swipe & responsive
+ * ============================================================================ */
+.st-hero-slider-wrap {
+  position: relative;
+  z-index: 4;
+  margin-bottom: 42px;
+}
+
+.st-campaign-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.st-campaign-viewport {
+  position: relative;
+  width: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #0a080d;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.78);
+  transition: border-color 0.35s ease;
+}
+
+.st-campaign-viewport.is-vice-active {
+  border-color: rgba(252, 115, 169, 0.36);
+}
+
+.st-campaign-viewport.is-ember-active {
+  border-color: rgba(249, 115, 22, 0.36);
+}
+
+.st-campaign-track {
+  display: flex;
+  width: 100%;
+  will-change: transform;
+  transition: transform 0.52s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.st-campaign-slide {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  min-height: 368px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.st-campaign-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.st-campaign-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.st-campaign-img.is-gtavi-img {
+  object-position: 66% 14%;
+}
+
+.st-campaign-img.is-fivem-img {
+  object-position: 72% 56%;
+}
+
+.st-campaign-scrim {
+  position: absolute;
+  inset: 0;
+}
+
+.st-campaign-scrim.is-vice-scrim {
+  background:
+    linear-gradient(
+      96deg,
+      rgba(13, 5, 22, 0.96) 0%,
+      rgba(26, 7, 44, 0.88) 38%,
+      rgba(66, 4, 82, 0.36) 60%,
+      rgba(13, 5, 22, 0.08) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(13, 5, 22, 0.14) 0%,
+      rgba(13, 5, 22, 0) 50%,
+      rgba(13, 5, 22, 0.62) 100%
+    );
+}
+
+.st-campaign-scrim.is-ember-scrim {
+  background:
+    linear-gradient(
+      96deg,
+      rgba(6, 6, 8, 0.96) 0%,
+      rgba(10, 9, 11, 0.88) 38%,
+      rgba(18, 11, 8, 0.28) 60%,
+      rgba(6, 6, 8, 0.06) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(6, 6, 8, 0.16) 0%,
+      rgba(6, 6, 8, 0) 50%,
+      rgba(6, 6, 8, 0.56) 100%
+    );
+}
+
+.st-campaign-corner-vi {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: rgba(16, 6, 28, 0.82);
+  border: 1px solid rgba(252, 115, 169, 0.38);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #FC73A9;
+}
+
+.st-campaign-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 600px;
+  padding: 36px 48px 36px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.st-campaign-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.st-campaign-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.st-campaign-badge.is-vice {
+  background: linear-gradient(135deg, rgba(114, 86, 206, 0.34), rgba(220, 71, 202, 0.32));
+  border: 1px solid rgba(252, 115, 169, 0.48);
+  color: #ffe8f5;
+}
+
+.st-campaign-badge.is-vice-ghost {
+  background: rgba(18, 7, 30, 0.78);
+  border: 1px solid rgba(249, 154, 96, 0.38);
+  color: #F99A60;
+}
+
+.st-campaign-badge.is-ember {
+  background: rgba(249, 115, 22, 0.18);
+  border: 1px solid rgba(249, 115, 22, 0.45);
+  color: #FDBA74;
+}
+
+.st-campaign-badge.is-ember-ghost {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.st-campaign-title {
+  font-size: clamp(28px, 3.4vw, 42px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+}
+
+.st-campaign-title.is-vice-title {
+  background: linear-gradient(112deg, #ffffff 0%, #ffe6f3 56%, #F99A60 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.st-campaign-title.is-ember-title {
+  background: linear-gradient(112deg, #ffffff 0%, #fff0e2 58%, #FB923C 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.st-campaign-sub {
+  margin-top: 8px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgba(244, 244, 248, 0.78);
+  max-width: 450px;
+}
+
+/* Slide 1: GTA VI 499 TL Highlight Strip */
+.st-campaign-gtavi-price-box {
+  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 18px;
+  border-radius: 16px;
+  background: rgba(22, 8, 36, 0.9);
+  border: 1px solid rgba(252, 115, 169, 0.34);
+}
+
+.st-campaign-gtavi-price {
+  font-size: clamp(28px, 2.8vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  white-space: nowrap;
+  background: linear-gradient(120deg, #F99A60 0%, #FC73A9 55%, #DC47CA 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.st-campaign-price-sep {
+  width: 1px;
+  height: 30px;
+  background: rgba(252, 115, 169, 0.28);
+  flex-shrink: 0;
+}
+
+.st-campaign-price-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.st-campaign-price-meta strong {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.st-campaign-price-meta span {
+  font-size: 11px;
+  color: rgba(248, 232, 252, 0.72);
+}
+
+/* Slide 2: FiveM Dual-Tier Pricing (100 TL -> 50 TL) */
+.st-campaign-pricing-tiers {
+  margin-top: 20px;
+  display: inline-flex;
+  align-items: stretch;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.st-campaign-tier {
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: rgba(16, 16, 20, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+}
+
+.st-campaign-tier.is-highlight {
+  background: linear-gradient(145deg, rgba(46, 19, 7, 0.92) 0%, rgba(24, 12, 7, 0.96) 100%);
+  border-color: rgba(249, 115, 22, 0.56);
+}
+
+.st-campaign-tier-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.st-campaign-tier-lbl {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.64);
+}
+
+.st-campaign-tier.is-highlight .st-campaign-tier-lbl {
+  color: #FDBA74;
+}
+
+.st-campaign-tier-off {
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #F97316;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.st-campaign-tier-val {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: #ffffff;
+}
+
+.st-campaign-tier.is-highlight .st-campaign-tier-val {
+  color: #FB923C;
+}
+
+.st-campaign-tier-arrow {
+  align-self: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(251, 146, 60, 0.72);
+}
+
+/* Slide CTA Buttons */
+.st-campaign-actions {
+  margin-top: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.st-campaign-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  transition: transform 0.16s var(--ease-expo), opacity 0.16s ease, border-color 0.16s ease, background-color 0.16s ease;
+}
+
+.st-campaign-btn:hover {
+  transform: translateY(-1px);
+}
+
+.st-campaign-btn.is-vice-primary {
+  background: linear-gradient(135deg, #7256CE 0%, #DC47CA 48%, #FC73A9 78%, #F99A60 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: 0 10px 28px rgba(220, 71, 202, 0.34);
+}
+
+.st-campaign-btn.is-vice-secondary {
+  background: rgba(22, 8, 36, 0.82);
+  color: #ffe8f5;
+  border: 1px solid rgba(252, 115, 169, 0.42);
+}
+
+.st-campaign-btn.is-vice-secondary:hover {
+  background: rgba(66, 4, 82, 0.82);
+  border-color: rgba(249, 154, 96, 0.7);
+}
+
+.st-campaign-btn.is-ember-primary {
+  background: linear-gradient(180deg, #FB923C 0%, #F97316 55%, #EA580C 100%);
+  color: #ffffff;
+  border: 1px solid rgba(253, 186, 116, 0.38);
+  box-shadow: 0 10px 28px rgba(249, 115, 22, 0.32);
+}
+
+.st-campaign-btn.is-ember-secondary {
+  background: rgba(14, 14, 18, 0.86);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.st-campaign-btn.is-ember-secondary:hover {
+  border-color: rgba(249, 115, 22, 0.5);
+  background: rgba(249, 115, 22, 0.14);
+}
+
+/* Prev/Next Edge Arrows */
+.st-campaign-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(10, 9, 14, 0.78);
+  color: rgba(255, 255, 255, 0.88);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+
+.st-campaign-arrow.is-prev {
+  left: 12px;
+}
+
+.st-campaign-arrow.is-next {
+  right: 12px;
+}
+
+.st-campaign-arrow:hover {
+  background: rgba(24, 20, 30, 0.96);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+/* Bottom 2-Tab Selector Strip */
+.st-campaign-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  max-width: 520px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.st-campaign-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 12px;
+  background: rgba(16, 15, 20, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+}
+
+.st-campaign-tab::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.st-campaign-tab.is-vice-tab::after {
+  background: linear-gradient(90deg, #7256CE, #DC47CA, #F99A60);
+}
+
+.st-campaign-tab.is-ember-tab::after {
+  background: linear-gradient(90deg, #EA580C, #F97316, #FDBA74);
+}
+
+.st-campaign-tab.is-active {
+  color: #ffffff;
+  background: rgba(22, 20, 28, 0.96);
+}
+
+.st-campaign-tab.is-vice-tab.is-active {
+  border-color: rgba(252, 115, 169, 0.45);
+}
+
+.st-campaign-tab.is-ember-tab.is-active {
+  border-color: rgba(249, 115, 22, 0.45);
+}
+
+.st-campaign-tab.is-active::after {
+  opacity: 1;
+}
+
+.st-campaign-tab-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0.65;
+}
+
+.st-campaign-tab-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+  .st-campaign-content {
+    padding: 28px 34px;
+    max-width: 500px;
+  }
+
+  .st-campaign-arrow {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .st-hero-slider-wrap {
+    margin-bottom: 28px;
+  }
+
+  .st-hero-section.has-campaign-slider .st-vetra-planet-stage {
+    top: 790px;
+  }
+
+  .st-campaign-slide {
+    min-height: 0;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .st-campaign-media {
+    position: relative;
+    height: 190px;
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  .st-campaign-img.is-gtavi-img {
+    object-position: 62% 14%;
+  }
+
+  .st-campaign-img.is-fivem-img {
+    object-position: 70% 58%;
+  }
+
+  .st-campaign-scrim.is-vice-scrim {
+    background: linear-gradient(180deg, rgba(13, 5, 22, 0.08) 0%, rgba(13, 5, 22, 0.22) 60%, #11061c 100%);
+  }
+
+  .st-campaign-scrim.is-ember-scrim {
+    background: linear-gradient(180deg, rgba(6, 6, 8, 0.08) 0%, rgba(6, 6, 8, 0.22) 60%, #09090c 100%);
+  }
+
+  .st-campaign-corner-vi {
+    top: 12px;
+    left: 12px;
+    right: auto;
+    width: 36px;
+    height: 36px;
+    font-size: 15px;
+  }
+
+  .st-campaign-slide.is-gtavi-slide .st-campaign-content {
+    background: #11061c;
+  }
+
+  .st-campaign-slide.is-fivem-slide .st-campaign-content {
+    background: #09090c;
+  }
+
+  .st-campaign-content {
+    max-width: 100%;
+    flex: 1 1 auto;
+    justify-content: space-between;
+    padding: 18px 18px 20px;
+  }
+
+  .st-campaign-title {
+    font-size: 24px;
+  }
+
+  .st-campaign-gtavi-price-box {
+    width: 100%;
+    gap: 12px;
+    padding: 10px 14px;
+  }
+
+  .st-campaign-pricing-tiers {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 0.88fr) auto minmax(0, 1.32fr);
+    align-items: stretch;
+  }
+
+  .st-campaign-tier {
+    padding: 9px 11px;
+  }
+
+  .st-campaign-tier-top {
+    flex-wrap: wrap;
+    gap: 4px 6px;
+  }
+
+  .st-campaign-tier-val {
+    font-size: 21px;
+  }
+
+  .st-campaign-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .st-campaign-btn {
+    width: 100%;
+    padding: 0 12px;
+    font-size: 12.5px;
+  }
+
+  .st-campaign-tabs {
+    gap: 8px;
+  }
+
+  .st-campaign-tab {
+    padding: 0 8px;
+    font-size: 11px;
+    gap: 5px;
+  }
+
+  .st-campaign-tab-num {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-campaign-track {
+    transition: none;
+  }
+}
+
 .st-hero-prism-wrap {
   position: absolute;
   inset: -90px 0 -40px 0;
